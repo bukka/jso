@@ -1,0 +1,6 @@
+# object files
+*.o
+# executable file
+jso
+# generated from jso_scanner.re
+jso_scanner.c
