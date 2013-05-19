@@ -16,19 +16,18 @@
    +----------------------------------------------------------------------+
 */
 
-#ifndef JSO_BASICS_H
-#define JSO_BASICS_H
+#ifndef JSO_IO_FILE_H
+#define JSO_IO_FILE_H
 
-#define JSO_TRUE  1
-#define JSO_FALSE 0
+#include "jso_io.h"
 
-#define JSO_MAX(_v1, _v2) ((_v1) > (_v2) ? (_v1) : (_v2))
-#define JSO_MIN(_v1, _v2) ((_v1) < (_v2) ? (_v1) : (_v2))
+#define JSO_IO_FILE_BUFF_SIZE 4096
 
-typedef unsigned char  jso_bool;
-typedef unsigned char  jso_uchar;
-typedef unsigned int   jso_uint;
-typedef unsigned long  jso_ulong;
-typedef unsigned short jso_ushort;
+#define JSO_IO_FILE_HANDLE_GET(io) ((FILE *) JSO_IO_HANDLE_PTR(io))
+#define JSO_IO_FILE_HANDLE_SET(io, file_ptr) (JSO_IO_HANDLE_PTR(io) = (void *) (file_ptr))
 
-#endif /* JSO_BASICS_H */
+JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype);
+
+JSO_API int jso_io_file_close(jso_io *io);
+
+#endif /* PHP_JSO_IO_FILE_H */

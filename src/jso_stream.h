@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "jso_basics.h"
+#include "jso.h"
 
 #define JSO_STREAM_UNDEFINED  0x1  
 #define JSO_STREAM_BUFF_COPY  0x2

@@ -16,22 +16,36 @@
    +----------------------------------------------------------------------+
 */
 
-#ifndef JSO_SCANNER_H
-#define JSO_SCANNER_H
+#ifndef JSO_H
+#define JSO_H
 
-#include "jso.h"
-#include "jso_tokens.h"
-#include "jso_stream.h"
+#include <config.h>
+#include <sys/types.h>
 
-typedef struct _jso_scanner {
-	jso_stream *stream;
-	char *limit;
-	char *ptr;
-	char *cursor;
-} jso_scanner;
+/* exported library functions */
+#define JSO_API
 
+/* bool values */
+#define JSO_TRUE  1
+#define JSO_FALSE 0
 
-void jso_scanner_init(jso_scanner *scanner, jso_stream *stream);
-int jso_scan(jso_scanner *s);
+#define JSO_MAX(_v1, _v2) ((_v1) > (_v2) ? (_v1) : (_v2))
+#define JSO_MIN(_v1, _v2) ((_v1) < (_v2) ? (_v1) : (_v2))
 
-#endif /* JSO_SCANNER_H */
+/* int types */
+typedef unsigned char  jso_bool;
+typedef unsigned char  jso_uchar;
+typedef unsigned int   jso_uint;
+typedef unsigned long  jso_ulong;
+typedef unsigned short jso_ushort;
+
+/* character type for scanner */
+typedef char jso_ctype;
+
+/* memeroy functions - just redefinitions for future extending (checking) */
+#define jso_malloc malloc
+#define jso_realloc realloc
+#define jso_calloc calloc
+#define jso_free free
+
+#endif /* JSO_H */
