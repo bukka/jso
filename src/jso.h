@@ -29,8 +29,8 @@
 #define JSO_TRUE  1
 #define JSO_FALSE 0
 
-#define JSO_MAX(_v1, _v2) ((_v1) > (_v2) ? (_v1) : (_v2))
-#define JSO_MIN(_v1, _v2) ((_v1) < (_v2) ? (_v1) : (_v2))
+#define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
+#define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
 /* int types */
 typedef unsigned char  jso_bool;

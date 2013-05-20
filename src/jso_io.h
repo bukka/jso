@@ -55,19 +55,19 @@ struct _jso_io {
 #define JSO_IO_ALLOC(io) ((jso_io *) jso_calloc(1, sizeof(jso_io)));
 
 /* buffer accessor macro */
-#define JSO_IO_BUFFER(io) (io)->buffer
+#define JSO_IO_BUFFER(io) ((io)->buffer)
 /* cursor accessor macro */
-#define JSO_IO_CURSOR(io) (io)->cursor
+#define JSO_IO_CURSOR(io) ((io)->cursor)
 /* limit accessor macro */
-#define JSO_IO_LIMIT(io)  (io)->limit
+#define JSO_IO_LIMIT(io)  ((io)->limit)
 /* marker accessor macro */
-#define JSO_IO_MARKER(io) (io)->marker
+#define JSO_IO_MARKER(io) ((io)->marker)
 /* buffer size accessor macro */
-#define JSO_IO_SIZE(io) (io)->size
+#define JSO_IO_SIZE(io) ((io)->size)
 /* saved error code */
-#define JSO_IO_ERRNO(io) (io)->errno
+#define JSO_IO_ERRNO(io) ((io)->errno)
 /* operation accessor macro */
-#define JSO_IO_OP(io, op) (io)->ops.op
+#define JSO_IO_OP(io, op) ((io)->ops.op)
 
 /* error code or 0 if no error */
 #define JSO_IO_ERROR(io) JSO_IO_OP(io, error)
@@ -79,8 +79,8 @@ struct _jso_io {
 #define JSO_IO_END(io) ((io)->limit == (io)->cursor)
 
 /* handle accessors - pointer */
-#define JSO_IO_HANDLE_PTR(io) (io)->handle.ptr
+#define JSO_IO_HANDLE_PTR(io) ((io)->handle.ptr)
 /* handle accessors - descriptor */
-#define JSO_IO_HANDLE_DSC(io) (io)->handle.dsc
+#define JSO_IO_HANDLE_DSC(io) ((io)->handle.dsc)
 
 #endif /* PHP_JSO_IO_H */
