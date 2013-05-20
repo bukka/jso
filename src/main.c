@@ -23,7 +23,7 @@
 #include "jso_stream.h"
 #include "jso_scanner.h"
 
-int main(int argc, const char *argv[])
+void parse_file(const char *fname)
 {
 	jso_stream stream;
 	jso_scanner scanner;
@@ -31,13 +31,8 @@ int main(int argc, const char *argv[])
 	int i, t;
 	size_t size;
 
-	if (argc < 2) {
-		puts("File path not specified");
-		exit(0);
-	}
-
 	jso_stream_init(&stream);
-	if (jso_stream_open_file(&stream, argv[1])) {
+	if (jso_stream_open_file(&stream, fname)) {
 		puts("INPUT: ");
 		size = 4;
 		while (jso_stream_read(&stream, &buff, &size) == JSO_STREAM_SUCCESS) {
@@ -45,21 +40,30 @@ int main(int argc, const char *argv[])
 				printf("%c", buff[i]);
 			}
 		}
-		puts("");
 	}
 	else {
-		puts("Error\n");
+		puts("Error");
 	}
 	jso_stream_reset(&stream);
 
 	
 	jso_scanner_init(&scanner, &stream);
 
-	puts("TOKENS");
+	puts("TOKENS:");
 	while ((t = jso_scan(&scanner)) != JSO_T_EOI) {
 		printf("%d\n", t);
     }
 	
 	jso_stream_destroy(&stream);
-	return EXIT_SUCCESS;
+}
+
+int main(int argc, const char *argv[])
+{
+	if (argc < 2) {
+		puts("File path not specified");
+		return EXIT_FAILURE;
+	}
+
+	parse_file(argv[1]);
+ 	return EXIT_SUCCESS;
 }
