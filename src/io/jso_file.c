@@ -20,8 +20,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static ssize_t jso_io_file_read(jso_io *io, size_t size)
+static size_t jso_io_file_read(jso_io *io, size_t size)
 {
+	size_t count;
+
 	/* check if there is enough space in the buffer */
 	if (size > JSO_IO_SIZE(io)) {
 		if (!JSO_IO_SIZE(io)) {
@@ -32,13 +34,14 @@ static ssize_t jso_io_file_read(jso_io *io, size_t size)
 			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size);
 			JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
 		}
-		JSO_IO_CURSOR(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
-		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + JSO_IO_SIZE(io);
 	}
-	return fread(JSO_IO_BUFFER(io), sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
+	count = fread(JSO_IO_BUFFER(io), sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
+	JSO_IO_CURSOR(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
+	JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count;
+	return count;
 }
 
-static ssize_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size)
+static size_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size)
 {
 	return fwrite(buffer, sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
 }

@@ -21,19 +21,19 @@
 
 #include "jso.h"
 
-typedef struct _jso_io jso_io;
+typedef struct jso_io jso_io;
 
 /* input operation */
-typedef ssize_t (*jso_io_read_t)(jso_io *io, size_t size);
+typedef size_t (*jso_io_read_t)(jso_io *io, size_t size);
 
 /* output operation */
-typedef ssize_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t size);
+typedef size_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t size);
 
 /* error operation */
 typedef int (*jso_io_error_t)(jso_io *io);
 
 /* io structure */
-struct _jso_io {
+struct jso_io {
 	jso_ctype *buffer;
 	jso_ctype *cursor;
 	jso_ctype *limit;
@@ -51,7 +51,7 @@ struct _jso_io {
 	} ops;
 };
 
-/* alloc io structure */
+/* allocate io structure */
 #define JSO_IO_ALLOC(io) ((jso_io *) jso_calloc(1, sizeof(jso_io)));
 
 /* buffer accessor macro */
@@ -68,6 +68,11 @@ struct _jso_io {
 #define JSO_IO_ERRNO(io) ((io)->errno)
 /* operation accessor macro */
 #define JSO_IO_OP(io, op) ((io)->ops.op)
+
+/* read operation */
+#define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))
+/* write operation */
+#define JSO_IO_WRITE(io, iow_buffer, iow_size) (JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
 
 /* error code or 0 if no error */
 #define JSO_IO_ERROR(io) JSO_IO_OP(io, error)

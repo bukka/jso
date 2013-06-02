@@ -20,10 +20,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "io/jso_file.h"
 #include "jso_stream.h"
 #include "jso_scanner.h"
 
-void parse_file(const char *fname)
+void parse_file_old(const char *fname)
 {
 	jso_stream stream;
 	jso_scanner scanner;
@@ -55,6 +56,23 @@ void parse_file(const char *fname)
     }
 	
 	jso_stream_destroy(&stream);
+}
+
+void parse_file(const char *filename)
+{
+	jso_io *io;
+	size_t size;
+	ssize_t read;
+	
+	io = jso_io_file_open(filename, "r");
+	if (io) {
+		size = 4;
+		while ((read = JSO_IO_READ(io, size)) > 0) {
+			for (; !JSO_IO_END(io); JSO_IO_CURSOR(io)++)
+				printf("%c", *JSO_IO_CURSOR(io));
+		}
+	}
+	jso_io_file_close(io);
 }
 
 int main(int argc, const char *argv[])
