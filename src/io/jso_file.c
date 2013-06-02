@@ -19,25 +19,48 @@
 #include "jso_file.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {
-	size_t count;
+	size_t count, buffered, total_size;
+	void *buffer_pos;
 
+	/* number of characters in the buffer that have not been processed yet */
+    buffered = JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io);
+
+	/* already in the buffer */
+	if (buffered >= size)
+		return size;
+
+	/* total size that needs to be allocated */
+	total_size = size + buffered;
+	
 	/* check if there is enough space in the buffer */
-	if (size > JSO_IO_SIZE(io)) {
+	if (total_size > JSO_IO_SIZE(io)) {
 		if (!JSO_IO_SIZE(io)) {
-			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_FILE_BUFF_SIZE, size);
+			/* total size is equal to size (limit = cursor = 0) */
+			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_FILE_BUFF_SIZE, total_size);
 			JSO_IO_BUFFER(io) = (jso_ctype *) jso_malloc(JSO_IO_SIZE(io) * sizeof(jso_ctype));
-		}
-		else {
-			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size);
+		} else {
+			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, total_size);
 			JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
 		}
 	}
-	count = fread(JSO_IO_BUFFER(io), sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
-	JSO_IO_CURSOR(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
-	JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count;
+	/* check if there are any characters that have not been processed yet */
+	if (buffered > 0) {
+		/* copy character that have not been processed to the beginning of the buffer  */
+		memmove(JSO_IO_BUFFER(io), JSO_IO_CURSOR(io), buffered * sizeof(jso_ctype));
+		buffer_pos = JSO_IO_BUFFER(io) + buffered;
+	} else {
+		buffer_pos = JSO_IO_BUFFER(io);
+	}
+	/* read data from file */
+	count = fread(buffer_pos, sizeof(jso_ctype), JSO_IO_SIZE(io), JSO_IO_FILE_HANDLE_GET(io));
+	if (count > 0) {
+		JSO_IO_CURSOR(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
+		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count;
+	}
 	return count;
 }
 

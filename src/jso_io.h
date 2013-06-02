@@ -75,7 +75,7 @@ struct jso_io {
 #define JSO_IO_WRITE(io, iow_buffer, iow_size) (JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
 
 /* error code or 0 if no error */
-#define JSO_IO_ERROR(io) JSO_IO_OP(io, error)
+#define JSO_IO_ERROR(io) (JSO_IO_OP(io, error)(io))
 /* io is without any error */
 #define JSO_IO_GOOD(io) (JSO_IO_OP(io, error) == 0)
 /* error during the io operation  */

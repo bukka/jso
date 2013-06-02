@@ -22,39 +22,24 @@
 #include <string.h>
 
 #include "jso_scanner.h"
-#include "jso_stream.h"
 
 #define	JSO_SCANNER_BSIZE 4096
 
-#define	YYCTYPE     char
-#define	YYCURSOR    s->cursor
-#define	YYLIMIT     s->limit
-#define	YYMARKER    s->ptr
-#define	YYFILL(n)   { int fill_rc = fill(s, n); \
-		if (fill_rc != JSO_STREAM_SUCCESS && s->ptr == s->limit) \
-			return fill_rc == JSO_STREAM_EOI ? JSO_TOK(EOI) : JSO_TOK(ERROR); }
+#define	YYCTYPE     jso_ctype
+#define	YYCURSOR    JSO_IO_CURSOR(s->io)
+#define	YYLIMIT     JSO_IO_LIMIT(s->io)
+#define	YYMARKER    JSO_MARKER(s->io)
+#define	YYFILL(n)   { JSO_IO_READ(s->io, n); \
+	if (JSO_IO_ERROR(s->io)) return JSO_TOK(ERROR); \
+	if (JSO_IO_END(s->io)) return JSO_TOK(EOI); }
 
-#define JSO_TOK(_token)  JSO_T_ ## _token
-#define	JSO_RTOK(_token)  return JSO_TOK(_token)
+#define JSO_TOK(token)  JSO_T_##token
+#define	JSO_RTOK(token)  return JSO_TOK(token)
 
-int fill(jso_scanner *s, int n)
-{
-	size_t size;
-	int rc;
-
-	size = JSO_SCANNER_BSIZE;
-	rc = jso_stream_read(s->stream, &s->ptr, &size);
-	if (rc == JSO_STREAM_SUCCESS) {
-		s->cursor = s->ptr;
-		s->limit = s->ptr + size;
-	}
-	return rc;
-}
-
-void jso_scanner_init(jso_scanner *scanner, jso_stream *stream)
+void jso_scanner_init(jso_scanner *scanner, jso_io *io)
 {
 	memset(scanner, 0, sizeof (jso_scanner));
-	scanner->stream = stream;
+	scanner->io = io;
 }
 
 int jso_scan(jso_scanner *s)

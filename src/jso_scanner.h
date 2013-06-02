@@ -21,17 +21,14 @@
 
 #include "jso.h"
 #include "jso_tokens.h"
-#include "jso_stream.h"
+#include "jso_io.h"
 
 typedef struct _jso_scanner {
-	jso_stream *stream;
-	char *limit;
-	char *ptr;
-	char *cursor;
+	jso_io *io;
 } jso_scanner;
 
 
-void jso_scanner_init(jso_scanner *scanner, jso_stream *stream);
+void jso_scanner_init(jso_scanner *scanner, jso_io *io);
 int jso_scan(jso_scanner *s);
 
 #endif /* JSO_SCANNER_H */

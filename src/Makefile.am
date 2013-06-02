@@ -1,4 +1,4 @@
-AM_CFLAGS = -pedantic -ansi -Wall -g
+AM_CFLAGS = -pedantic -ansi -Wall
 
 bin_PROGRAMS = jso
 jso_SOURCES =  main.c jso_scanner.c jso_stream.c jso.h jso_scanner.h jso_tokens.h jso_stream.h jso_io.h io/jso_file.c io/jso_file.h
