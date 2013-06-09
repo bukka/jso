@@ -23,8 +23,8 @@
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {
-	size_t count, buffered, total_size;
-	void *buffer_pos;
+	size_t count, buffered, total_size, read_size;
+	jso_ctype *read_pos;
 
 	/* number of characters in the buffer that have not been processed yet */
     buffered = JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io);
@@ -34,7 +34,7 @@ static size_t jso_io_file_read(jso_io *io, size_t size)
 		return size;
 
 	/* total size that needs to be allocated */
-	total_size = size + buffered;
+	total_size = size - buffered;
 	
 	/* check if there is enough space in the buffer */
 	if (total_size > JSO_IO_SIZE(io)) {
@@ -51,15 +51,17 @@ static size_t jso_io_file_read(jso_io *io, size_t size)
 	if (buffered > 0) {
 		/* copy character that have not been processed to the beginning of the buffer  */
 		memmove(JSO_IO_BUFFER(io), JSO_IO_CURSOR(io), buffered * sizeof(jso_ctype));
-		buffer_pos = JSO_IO_BUFFER(io) + buffered;
+		read_pos = JSO_IO_BUFFER(io) + buffered;
+		read_size = JSO_IO_SIZE(io) - buffered;
 	} else {
-		buffer_pos = JSO_IO_BUFFER(io);
+		read_pos = JSO_IO_BUFFER(io);
+		read_size = JSO_IO_SIZE(io);
 	}
 	/* read data from file */
-	count = fread(buffer_pos, sizeof(jso_ctype), JSO_IO_SIZE(io), JSO_IO_FILE_HANDLE_GET(io));
+	count = fread(read_pos, sizeof(jso_ctype), read_size, JSO_IO_FILE_HANDLE_GET(io));
 	if (count > 0) {
 		JSO_IO_CURSOR(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
-		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count;
+		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count + buffered;
 	}
 	return count;
 }

@@ -26,12 +26,12 @@
 void parse_file(const char *filename)
 {
 	jso_io *io;
-	size_t size;
 	int token;
 	jso_scanner scanner;
 	/*
 	io = jso_io_file_open(filename, "r");
 	if (io) {
+		size_t size;
 		puts("INPUT: ");
 		size = 4;
 		while (JSO_IO_READ(io, size) > 0) {
