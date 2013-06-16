@@ -34,21 +34,22 @@ typedef int (*jso_io_error_t)(jso_io *io);
 
 /* io structure */
 struct jso_io {
-	jso_ctype *buffer;
-	jso_ctype *cursor;
-	jso_ctype *limit;
-	jso_ctype *marker;
-	size_t size;
-	int errno;
+	jso_ctype *buffer;			/* the position of  first character in the buffer */
+	jso_ctype *cursor;			/* cursor position */
+	jso_ctype *token;			/* token position */
+	jso_ctype *limit;			/* the last read character + 1 position */
+	jso_ctype *marker;			/* marker position for backtracking */
+	size_t size;				/* size of the buffer */
+	int errno;					/* the last error number */
 	union {
-		void *ptr;
-		int   dsc;
-	} handle;
+		void *ptr;				/* pointer (e.g. FILE *) */
+		int   dsc;				/* dsc (e.g. file descriptor) */
+	} handle;					/* io handle */
 	struct {
 		jso_io_read_t read;
 		jso_io_write_t write;
 		jso_io_error_t error;
-	} ops;
+	} ops;						/* io operations */
 };
 
 /* allocate io structure */
@@ -58,6 +59,10 @@ struct jso_io {
 #define JSO_IO_BUFFER(io) ((io)->buffer)
 /* cursor accessor macro */
 #define JSO_IO_CURSOR(io) ((io)->cursor)
+/* token accessor macro */
+#define JSO_IO_TOKEN(io) ((io)->token)
+/* token length */
+#define JSO_IO_TOKEN_LENGTH(io) ((io)->cursor - (io)->token)
 /* limit accessor macro */
 #define JSO_IO_LIMIT(io)  ((io)->limit)
 /* marker accessor macro */
@@ -68,6 +73,9 @@ struct jso_io {
 #define JSO_IO_ERRNO(io) ((io)->errno)
 /* operation accessor macro */
 #define JSO_IO_OP(io, op) ((io)->ops.op)
+
+/* reset token (token = cursor) */
+#define JSO_IO_RESET_TOKEN(io) ((io)->token = (io)->cursor)
 
 /* read operation */
 #define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))

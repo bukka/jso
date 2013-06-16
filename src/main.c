@@ -47,6 +47,10 @@ void parse_file(const char *filename)
 	do {
 		token = jso_scan(&scanner);
 		printf("%d\n", token);
+		if (token == JSO_T_IDENT) {
+			fwrite(JSO_IO_TOKEN(io), sizeof(jso_ctype), JSO_IO_TOKEN_LENGTH(io), stdout);
+			puts("");
+		}
 	} while (token != JSO_T_EOI && token != JSO_T_ERROR);
 	jso_io_file_close(io);
 }

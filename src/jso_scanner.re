@@ -45,20 +45,22 @@ void jso_scanner_init(jso_scanner *scanner, jso_io *io)
 int jso_scan(jso_scanner *s)
 {
 std:
-/*!re2c
-DIGIT   = [0-9];
-OCT     = "0" DIGIT+;
-INT     = "0" | ( [1-9] DIGIT* ) ;
-HEX     = "0x" [a-fA-F0-9]+ ;
-ALPHA   = [a-zA-Z_$] ;
-ALNUM   = ALPHA | DIGIT ;
-IDENT   = ALPHA ALNUM+ ;
-WS      = [ \t]+ ;
-NL      = "\r"? "\n" ;
-EOI     = "\000";
-*/
+	JSO_IO_RESET_TOKEN(s->io);
 
 /*!re2c
+	re2c:indent:top = 2;
+
+	DIGIT   = [0-9];
+	OCT     = "0" DIGIT+;
+	INT     = "0" | ( [1-9] DIGIT* ) ;
+	HEX     = "0x" [a-fA-F0-9]+ ;
+	ALPHA   = [a-zA-Z_$] ;
+	ALNUM   = ALPHA | DIGIT ;
+	IDENT   = ALPHA ALNUM+ ;
+	WS      = [ \t]+ ;
+	NL      = "\r"? "\n" ;
+	EOI     = "\000";
+	
 	"undefined"      { JSO_RTOK(UNDEFINED); }
 	"null"           { JSO_RTOK(NUL); }
 	"NaN"            { JSO_RTOK(NAN); }
