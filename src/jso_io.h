@@ -85,9 +85,9 @@ struct jso_io {
 /* error code or 0 if no error */
 #define JSO_IO_ERROR(io) (JSO_IO_OP(io, error)(io))
 /* io is without any error */
-#define JSO_IO_GOOD(io) (JSO_IO_OP(io, error) == 0)
+#define JSO_IO_GOOD(io) (JSO_IO_ERROR(io) == 0)
 /* error during the io operation  */
-#define JSO_IO_BAD(io)  (JSO_IO_OP(io, error) != 0)
+#define JSO_IO_BAD(io)  (JSO_IO_ERROR(io) != 0)
 /* end of io */
 #define JSO_IO_END(io) ((io)->limit == (io)->cursor)
 
