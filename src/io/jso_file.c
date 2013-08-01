@@ -100,6 +100,8 @@ JSO_API int jso_io_file_close(jso_io *io)
 	FILE *fp = JSO_IO_FILE_HANDLE_GET(io);
 	if (fp)
 		rc = fclose(fp);
+	if (JSO_IO_BUFFER(io))
+		jso_free(JSO_IO_BUFFER(io));
 	jso_free(io);
 	return rc;
 }
