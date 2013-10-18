@@ -28,7 +28,7 @@
 #define	YYCTYPE     jso_ctype
 #define	YYCURSOR    JSO_IO_CURSOR(s->io)
 #define	YYLIMIT     JSO_IO_LIMIT(s->io)
-#define	YYMARKER    JSO_MARKER(s->io)
+#define	YYMARKER    JSO_IO_MARKER(s->io)
 #define	YYFILL(n)   { JSO_IO_READ(s->io, n); \
 	if (JSO_IO_ERROR(s->io)) return JSO_TOK(ERROR); \
 	if (JSO_IO_END(s->io)) return JSO_TOK(EOI); }
@@ -51,33 +51,30 @@ std:
 	re2c:indent:top = 2;
 
 	DIGIT   = [0-9];
-	OCT     = "0" DIGIT+;
 	INT     = "0" | ( [1-9] DIGIT* ) ;
-	HEX     = "0x" [a-fA-F0-9]+ ;
-	ALPHA   = [a-zA-Z_$] ;
-	ALNUM   = ALPHA | DIGIT ;
-	IDENT   = ALPHA ALNUM+ ;
+	FLOAT   = INT "." INT ;
+	EXP     = ( INT | FLOAT ) [eE] [+-]? INT ;
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
-	
-	"undefined"      { JSO_RTOK(UNDEFINED); }
+	ANY     = [^] ;
+
 	"null"           { JSO_RTOK(NUL); }
-	"NaN"            { JSO_RTOK(NAN); }
-	"Infinity"       { JSO_RTOK(INFINITY); }
-	"{"              { JSO_RTOK(LBRACE); }
-	"}"              { JSO_RTOK(RBRACE); }
-	"("              { JSO_RTOK(LPAR); }
-	")"              { JSO_RTOK(RPAR); }
-	";"              { JSO_RTOK(SEMICOLON); }
-	":"              { JSO_RTOK(COLON); }
-	","              { JSO_RTOK(COMMA); }
+	"true"           { JSO_RTOK(TRUE); }
+	"false"          { JSO_RTOK(FALSE); }
+	"{"              { return '{'; }
+	"}"              { return '}'; }
+	"["              { return '['; }
+	"]"              { return ']'; }
+	":"              { return ':'; }
+	","              { return ','; }
 	INT              { JSO_RTOK(INT); }
-	IDENT            { JSO_RTOK(IDENT); }
+	FLOAT            { JSO_RTOK(FLOAT); }
+	FLOAT            { JSO_RTOK(EXP); }
 	EOI              { JSO_RTOK(EOI); }
 
 	WS|NL            { goto std; }
-	[^]              { JSO_RTOK(ERROR); }
+	ANY              { JSO_RTOK(ERROR); }
 */
 
 }
