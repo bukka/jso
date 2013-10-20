@@ -30,11 +30,11 @@
 #define	YYLIMIT     JSO_IO_LIMIT(s->io)
 #define	YYMARKER    JSO_IO_MARKER(s->io)
 #define	YYFILL(n)   { JSO_IO_READ(s->io, n); \
-	if (JSO_IO_ERROR(s->io)) return JSO_TOK(ERROR); \
-	if (JSO_IO_END(s->io)) return JSO_TOK(EOI); }
+	if (JSO_IO_ERROR(s->io)) return JSO_TOKEN(ERROR); \
+	if (JSO_IO_END(s->io)) return JSO_TOKEN(EOI); }
 
-#define JSO_TOK(token)  JSO_T_##token
-#define	JSO_RTOK(token)  return JSO_TOK(token)
+#define JSO_TOKEN(token)  JSO_T_##token
+#define	JSO_TOKEN_RETURN(token)  return JSO_TOKEN(token)
 
 void jso_scanner_init(jso_scanner *scanner, jso_io *io)
 {
@@ -51,30 +51,37 @@ std:
 	re2c:indent:top = 2;
 
 	DIGIT   = [0-9];
-	INT     = "0" | ( [1-9] DIGIT* ) ;
-	FLOAT   = INT "." INT ;
-	EXP     = ( INT | FLOAT ) [eE] [+-]? INT ;
+	UINT    = "0" | ( [1-9] DIGIT* ) ;
+	INT     = "-"? UINT ;
+	FLOAT   = INT "." UINT ;
+	EXP     = ( INT | FLOAT ) [eE] [+-]? UINT ;
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
 	ANY     = [^] ;
 
-	"null"           { JSO_RTOK(NUL); }
-	"true"           { JSO_RTOK(TRUE); }
-	"false"          { JSO_RTOK(FALSE); }
+	"null"           { JSO_TOKEN_RETURN(NUL); }
+	"true"           { JSO_TOKEN_RETURN(TRUE); }
+	"false"          { JSO_TOKEN_RETURN(FALSE); }
 	"{"              { return '{'; }
 	"}"              { return '}'; }
 	"["              { return '['; }
 	"]"              { return ']'; }
 	":"              { return ':'; }
 	","              { return ','; }
-	INT              { JSO_RTOK(INT); }
-	FLOAT            { JSO_RTOK(FLOAT); }
-	FLOAT            { JSO_RTOK(EXP); }
-	EOI              { JSO_RTOK(EOI); }
-
+	INT              {
+		char *tailptr;
+		JSO_VALUE_SET_LONG(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
+		JSO_TOKEN_RETURN(LONG);
+	}
+	FLOAT|EXP        {
+		char *tailptr;
+		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
+		JSO_TOKEN_RETURN(DOUBLE);
+	}
+	EOI              { JSO_TOKEN_RETURN(EOI); }
 	WS|NL            { goto std; }
-	ANY              { JSO_RTOK(ERROR); }
+	ANY              { JSO_TOKEN_RETURN(ERROR); }
 */
 
 }

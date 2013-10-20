@@ -46,10 +46,31 @@ void parse_file(const char *filename)
 	puts("TOKENS:");
 	do {
 		token = jso_scan(&scanner);
-		printf("%d\n", token);
-		if (token == JSO_T_INT) {
-			fwrite(JSO_IO_TOKEN(io), sizeof(jso_ctype), JSO_IO_TOKEN_LENGTH(io), stdout);
-			puts("");
+		switch (token) {
+			case JSO_T_NUL:
+				puts("NULL");
+				break;
+			case JSO_T_FALSE:
+				puts("FALSE");
+				break;
+			case JSO_T_TRUE:
+				puts("TRUE");
+				break;
+			case JSO_T_LONG:
+				printf("LVAL: %ld\n", JSO_LVAL(scanner.value));
+				break;
+			case JSO_T_DOUBLE:
+				printf("DVAL: %f\n", JSO_DVAL(scanner.value));
+				break;
+			case JSO_T_EOI:
+				puts("EOI");
+				break;
+			case JSO_T_ERROR:
+				puts("ERROR");
+				break;
+			default:
+				printf("%c\n", (char) token);
+				break;
 		}
 	} while (token != JSO_T_EOI && token != JSO_T_ERROR);
 	jso_io_file_close(io);

@@ -18,12 +18,11 @@
 #ifndef JSO_TOKENS_H
 #define JSO_TOKENS_H
 
-#define JSO_T_NUL         2
-#define JSO_T_TRUE        3
-#define JSO_T_FALSE       4
-#define JSO_T_EXP        12
-#define JSO_T_INT        13
-#define JSO_T_FLOAT      14
+#define JSO_T_NUL         1
+#define JSO_T_TRUE        2
+#define JSO_T_FALSE       3
+#define JSO_T_LONG        4
+#define JSO_T_DOUBLE      5
 #define JSO_T_EOI       126
 #define JSO_T_ERROR     127
 
