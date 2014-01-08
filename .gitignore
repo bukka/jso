@@ -4,6 +4,7 @@
 jso
 # generated from jso_scanner.re
 jso_scanner.c
+jso_scanner_defs.h
 # automake and autoconf generated files
 Makefile
 Makefile.in

@@ -88,6 +88,7 @@ typedef struct _jso_value {
 #define jso_malloc malloc
 #define jso_realloc realloc
 #define jso_calloc calloc
+#define jso_strdup strdup
 #define jso_free free
 
 #endif /* JSO_H */

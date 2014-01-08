@@ -23,23 +23,31 @@
 
 #include "jso_scanner.h"
 
+#include "jso_scanner_defs.h"
+
 #define	JSO_SCANNER_BSIZE 4096
 
 #define	YYCTYPE     jso_ctype
 #define	YYCURSOR    JSO_IO_CURSOR(s->io)
 #define	YYLIMIT     JSO_IO_LIMIT(s->io)
 #define	YYMARKER    JSO_IO_MARKER(s->io)
+
+#define YYGETCONDITION()        s->state
+#define YYSETCONDITION(yystate) s->state = yystate
+
 #define	YYFILL(n)   { JSO_IO_READ(s->io, n); \
 	if (JSO_IO_ERROR(s->io)) return JSO_TOKEN(ERROR); \
 	if (JSO_IO_END(s->io)) return JSO_TOKEN(EOI); }
 
 #define JSO_TOKEN(token)  JSO_T_##token
 #define	JSO_TOKEN_RETURN(token)  return JSO_TOKEN(token)
+#define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
 
-void jso_scanner_init(jso_scanner *scanner, jso_io *io)
+void jso_scanner_init(jso_scanner *s, jso_io *io)
 {
-	memset(scanner, 0, sizeof (jso_scanner));
-	scanner->io = io;
+	memset(s, 0, sizeof (jso_scanner));
+	s->io = io;
+	JSO_CONDITION_SET(INITIAL);
 }
 
 int jso_scan(jso_scanner *s)
@@ -60,28 +68,28 @@ std:
 	EOI     = "\000";
 	ANY     = [^] ;
 
-	"null"           { JSO_TOKEN_RETURN(NUL); }
-	"true"           { JSO_TOKEN_RETURN(TRUE); }
-	"false"          { JSO_TOKEN_RETURN(FALSE); }
-	"{"              { return '{'; }
-	"}"              { return '}'; }
-	"["              { return '['; }
-	"]"              { return ']'; }
-	":"              { return ':'; }
-	","              { return ','; }
-	INT              {
+	<INITIAL>"null"           { JSO_TOKEN_RETURN(NUL); }
+	<INITIAL>"true"           { JSO_TOKEN_RETURN(TRUE); }
+	<INITIAL>"false"          { JSO_TOKEN_RETURN(FALSE); }
+	<INITIAL>"{"              { return '{'; }
+	<INITIAL>"}"              { return '}'; }
+	<INITIAL>"["              { return '['; }
+	<INITIAL>"]"              { return ']'; }
+	<INITIAL>":"              { return ':'; }
+	<INITIAL>","              { return ','; }
+	<INITIAL>INT              {
 		char *tailptr;
 		JSO_VALUE_SET_LONG(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
 		JSO_TOKEN_RETURN(LONG);
 	}
-	FLOAT|EXP        {
+	<INITIAL>FLOAT|EXP        {
 		char *tailptr;
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
-	EOI              { JSO_TOKEN_RETURN(EOI); }
-	WS|NL            { goto std; }
-	ANY              { JSO_TOKEN_RETURN(ERROR); }
+	<INITIAL>WS|NL            { goto std; }
+	<*>EOI              { JSO_TOKEN_RETURN(EOI); }
+	<*>ANY              { JSO_TOKEN_RETURN(ERROR); }
 */
 
 }

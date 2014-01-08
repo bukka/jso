@@ -26,6 +26,7 @@
 typedef struct _jso_scanner {
 	jso_io *io;
 	jso_value value;
+	int state;
 } jso_scanner;
 
 
