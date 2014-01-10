@@ -47,7 +47,7 @@ void jso_scanner_init(jso_scanner *s, jso_io *io)
 {
 	memset(s, 0, sizeof (jso_scanner));
 	s->io = io;
-	JSO_CONDITION_SET(INITIAL);
+	JSO_CONDITION_SET(JS);
 }
 
 int jso_scan(jso_scanner *s)
@@ -68,28 +68,29 @@ std:
 	EOI     = "\000";
 	ANY     = [^] ;
 
-	<INITIAL>"null"           { JSO_TOKEN_RETURN(NUL); }
-	<INITIAL>"true"           { JSO_TOKEN_RETURN(TRUE); }
-	<INITIAL>"false"          { JSO_TOKEN_RETURN(FALSE); }
-	<INITIAL>"{"              { return '{'; }
-	<INITIAL>"}"              { return '}'; }
-	<INITIAL>"["              { return '['; }
-	<INITIAL>"]"              { return ']'; }
-	<INITIAL>":"              { return ':'; }
-	<INITIAL>","              { return ','; }
-	<INITIAL>INT              {
+	<JS>"null"           { JSO_TOKEN_RETURN(NUL); }
+	<JS>"true"           { JSO_TOKEN_RETURN(TRUE); }
+	<JS>"false"          { JSO_TOKEN_RETURN(FALSE); }
+	<JS>"{"              { return '{'; }
+	<JS>"}"              { return '}'; }
+	<JS>"["              { return '['; }
+	<JS>"]"              { return ']'; }
+	<JS>":"              { return ':'; }
+	<JS>","              { return ','; }
+	<JS>INT              {
 		char *tailptr;
 		JSO_VALUE_SET_LONG(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
 		JSO_TOKEN_RETURN(LONG);
 	}
-	<INITIAL>FLOAT|EXP        {
+	<JS>FLOAT|EXP        {
 		char *tailptr;
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
-	<INITIAL>WS|NL            { goto std; }
-	<*>EOI              { JSO_TOKEN_RETURN(EOI); }
-	<*>ANY              { JSO_TOKEN_RETURN(ERROR); }
+	<JS>WS|NL            { goto std; }
+	<JS>ANY              { JSO_TOKEN_RETURN(ERROR); }
+	<*>EOI               { JSO_TOKEN_RETURN(EOI); }
+
 */
 
 }
