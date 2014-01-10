@@ -23,6 +23,6 @@ stamp-h1
 # QtCreator files
 jso.config
 jso.creator
-jso.creator.user
+jso.creator.user*
 jso.files
 jso.includes
