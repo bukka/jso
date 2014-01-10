@@ -56,7 +56,7 @@ typedef union _jso_value_data {
 	double dval;
 	struct {
 		jso_ctype *val;
-		int len;
+		size_t len;
 	} str;
 } jso_value_data;
 
