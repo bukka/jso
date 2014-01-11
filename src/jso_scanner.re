@@ -58,14 +58,21 @@ std:
 	re2c:yyfill:enable = 0;
 
 	DIGIT   = [0-9];
-	UINT    = "0" | ( [1-9] DIGIT* ) ;
+	DIGITNZ = [1-9];
+	UINT    = "0" | ( DIGITNZ DIGIT* ) ;
 	INT     = "-"? UINT ;
+	HEX     = DIGIT | [a-fA-F] ;
+	HEXNZ   = DIGITNZ | [a-fA-F] ;
 	FLOAT   = INT "." UINT ;
 	EXP     = ( INT | FLOAT ) [eE] [+-]? UINT ;
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
 	ANY     = [^] ;
+	ESC     = "\\" ("\"" | "\\" | "/" | [bfnrt] ) ;
+	UTF     = "\\u" HEX{4} ;
+	UTF1    = "\\u00" HEX{2} ;
+	UTF2    = "\\u" ( ( "0" HEXNZ ) | ( HEXNZ HEX ) ) HEX{2} ;
 
 	<JS>"null"           { JSO_TOKEN_RETURN(NUL); }
 	<JS>"true"           { JSO_TOKEN_RETURN(TRUE); }
@@ -88,6 +95,12 @@ std:
 	}
 	<JS>WS|NL            { goto std; }
 	<JS>EOI              { JSO_TOKEN_RETURN(EOI); }
+	<JS>["] => STR_P1    { JSO_IO_STR_SAVE_START(s->io); JSO_IO_STR_ESC_RESET(s->io);  }
+
+	<STR_P1>ESC|UTF1     { JSO_IO_STR_ESC_ADD(s->io, 1); }
+	<STR_P1>UTF2         { JSO_IO_STR_ESC_ADD(s->io, 2); }
+	<STR_P1>["] => JS    { JSO_IO_STR_SAVE_END(s->io); }
+
 	<*>ANY               { JSO_TOKEN_RETURN(ERROR); }
 */
 
