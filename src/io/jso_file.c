@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {
@@ -104,4 +105,14 @@ JSO_API int jso_io_file_close(jso_io *io)
 		jso_free(JSO_IO_BUFFER(io));
 	jso_free(io);
 	return rc;
+}
+
+JSO_API off_t jso_io_file_size(const char *filename)
+{
+	struct stat sbuf;
+	int sres = stat(filename, &sbuf);
+	if (sres) {
+		return -1;
+	}
+	return sbuf.st_size;
 }

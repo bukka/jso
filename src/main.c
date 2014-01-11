@@ -23,26 +23,30 @@
 #include "io/jso_file.h"
 #include "jso_scanner.h"
 
-void parse_file(const char *filename)
+int parse_file(const char *filename)
 {
 	jso_io *io;
 	int token;
 	jso_scanner scanner;
-	/*
-	io = jso_io_file_open(filename, "r");
-	if (io) {
-		size_t size;
-		puts("INPUT: ");
-		size = 4;
-		while (JSO_IO_READ(io, size) > 0) {
-			for (; !JSO_IO_END(io); JSO_IO_CURSOR(io)++)
-				printf("%c", *JSO_IO_CURSOR(io));
-		}
+	off_t filesize;
+
+	/* get file size */
+	filesize = jso_io_file_size(filename);
+	if (filesize < 0) {
+		fprintf(stderr, "Getting file size for file '%s' failed", filename);
+		return -1;
 	}
-	jso_io_file_close(io);
-	*/
+	/* open file */
 	io = jso_io_file_open(filename, "r");
+	if (!io) {
+		fprintf(stderr, "Opening the file '%s' failed", filename);
+		return -1;
+	}
+	/* read the whole file into the buffer */
+	JSO_IO_READ(io, filesize);
+	/* init scanner */
 	jso_scanner_init(&scanner, io);
+	/* scan */
 	puts("TOKENS:");
 	do {
 		token = jso_scan(&scanner);
@@ -74,6 +78,7 @@ void parse_file(const char *filename)
 		}
 	} while (token != JSO_T_EOI && token != JSO_T_ERROR);
 	jso_io_file_close(io);
+	return 0;
 }
 
 int main(int argc, const char *argv[])
@@ -83,6 +88,8 @@ int main(int argc, const char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	parse_file(argv[1]);
- 	return EXIT_SUCCESS;
+	if (parse_file(argv[1]) < 0)
+		return EXIT_FAILURE;
+	else
+		return EXIT_SUCCESS;
 }

@@ -25,8 +25,6 @@
 
 #include "jso_scanner_defs.h"
 
-#define	JSO_SCANNER_BSIZE 4096
-
 #define	YYCTYPE     jso_ctype
 #define	YYCURSOR    JSO_IO_CURSOR(s->io)
 #define	YYLIMIT     JSO_IO_LIMIT(s->io)
@@ -57,6 +55,7 @@ std:
 
 /*!re2c
 	re2c:indent:top = 2;
+	re2c:yyfill:enable = 0;
 
 	DIGIT   = [0-9];
 	UINT    = "0" | ( [1-9] DIGIT* ) ;
@@ -88,9 +87,8 @@ std:
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
 	<JS>WS|NL            { goto std; }
-	<JS>ANY              { JSO_TOKEN_RETURN(ERROR); }
-	<*>EOI               { JSO_TOKEN_RETURN(EOI); }
-
+	<JS>EOI              { JSO_TOKEN_RETURN(EOI); }
+	<*>ANY               { JSO_TOKEN_RETURN(ERROR); }
 */
 
 }
