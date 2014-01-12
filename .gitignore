@@ -9,11 +9,13 @@ jso_scanner_defs.h
 Makefile
 Makefile.in
 aclocal.m4
+autoscan.log
 autom4te.cache/
 config.h
 config.h.in*
 config.log
 config.status
+configure.scan
 configure
 depcomp
 install-sh
