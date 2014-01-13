@@ -83,6 +83,8 @@ typedef struct _jso_value {
 /* jso value setters */
 #define JSO_VALUE_SET_LONG(jv, lv)   do { JSO_TYPE(jv) = JSO_TYPE_LONG; JSO_LVAL(jv) = lv; } while(0)
 #define JSO_VALUE_SET_DOUBLE(jv, dv) do { JSO_TYPE(jv) = JSO_TYPE_DOUBLE; JSO_DVAL(jv) = (dv); } while(0)
+#define JSO_VALUE_SET_STRING(jv, sv, sl) \
+	do { JSO_TYPE(jv) = JSO_TYPE_STRING; JSO_SVAL(jv) = (sv); JSO_SLEN(jv) = (sl); } while(0)
 
 /* memeroy functions - just redefinitions for future extending (checking) */
 #define jso_malloc malloc

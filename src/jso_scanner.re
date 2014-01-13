@@ -40,6 +40,7 @@
 #define JSO_TOKEN(token)  JSO_T_##token
 #define	JSO_TOKEN_RETURN(token)  return JSO_TOKEN(token)
 #define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
+#define JSO_CONDITION_GOTO(condition) goto yyc_##condition
 
 void jso_scanner_init(jso_scanner *s, jso_io *io)
 {
@@ -74,34 +75,51 @@ std:
 	UTF1    = "\\u00" HEX{2} ;
 	UTF2    = "\\u" ( ( "0" HEXNZ ) | ( HEXNZ HEX ) ) HEX{2} ;
 
-	<JS>"null"           { JSO_TOKEN_RETURN(NUL); }
-	<JS>"true"           { JSO_TOKEN_RETURN(TRUE); }
-	<JS>"false"          { JSO_TOKEN_RETURN(FALSE); }
-	<JS>"{"              { return '{'; }
-	<JS>"}"              { return '}'; }
-	<JS>"["              { return '['; }
-	<JS>"]"              { return ']'; }
-	<JS>":"              { return ':'; }
-	<JS>","              { return ','; }
-	<JS>INT              {
+	<JS>"null"               { JSO_TOKEN_RETURN(NUL); }
+	<JS>"true"               { JSO_TOKEN_RETURN(TRUE); }
+	<JS>"false"              { JSO_TOKEN_RETURN(FALSE); }
+	<JS>"{"                  { return '{'; }
+	<JS>"}"                  { return '}'; }
+	<JS>"["                  { return '['; }
+	<JS>"]"                  { return ']'; }
+	<JS>":"                  { return ':'; }
+	<JS>","                  { return ','; }
+	<JS>INT                  {
 		char *tailptr;
 		JSO_VALUE_SET_LONG(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
 		JSO_TOKEN_RETURN(LONG);
 	}
-	<JS>FLOAT|EXP        {
+	<JS>FLOAT|EXP            {
 		char *tailptr;
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
-	<JS>WS|NL            { goto std; }
-	<JS>EOI              { JSO_TOKEN_RETURN(EOI); }
-	<JS>["] => STR_P1    { JSO_IO_STR_SAVE_START(s->io); JSO_IO_STR_ESC_RESET(s->io);  }
+	<JS>WS|NL                { goto std; }
+	<JS>EOI                  { JSO_TOKEN_RETURN(EOI); }
+	<JS>["] => STR_P1        { JSO_IO_STR_SET_START(s->io); JSO_IO_STR_CLEAR_ESC(s->io);  }
 
-	<STR_P1>ESC|UTF1     { JSO_IO_STR_ESC_ADD(s->io, 1); }
-	<STR_P1>UTF2         { JSO_IO_STR_ESC_ADD(s->io, 2); }
-	<STR_P1>["] => JS    { JSO_IO_STR_SAVE_END(s->io); }
+	<STR_P1>ESC|UTF1         { JSO_IO_STR_ADD_ESC(s->io, 1); JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>UTF2             { JSO_IO_STR_ADD_ESC(s->io, 2); JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>["]              {
+		size_t len = JSO_IO_STR_LENGTH(s->io);
+		jso_ctype *str = jso_malloc(len);
+		JSO_VALUE_SET_STRING(s->value, str, len * sizeof(jso_ctype));
+		if (JSO_IO_STR_GET_ESC(s->io)) {
+			JSO_CONDITION_SET(STR_P2);
+		} else {
+			memcpy(JSO_SVAL(s->value), JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
+			JSO_CONDITION_SET(JS);
+		}
+		goto std;
+	}
+	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 
-	<*>ANY               { JSO_TOKEN_RETURN(ERROR); }
+	<STR_P2>ESC              { JSO_CONDITION_GOTO(STR_P2); }
+	<STR_P2>UTF              { JSO_CONDITION_GOTO(STR_P2); }
+	<STR_P2>["] => JS        { JSO_CONDITION_GOTO(STR_P2); }
+	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
+
+	<*>ANY                   { JSO_TOKEN_RETURN(ERROR); }
 */
 
 }

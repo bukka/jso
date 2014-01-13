@@ -40,8 +40,7 @@ struct jso_io {
 	jso_ctype *limit;           /* the last read character + 1 position */
 	jso_ctype *marker;          /* marker position for backtracking */
 	jso_ctype *str_start;       /* start position of the string */
-	jso_ctype *str_end;         /* end position of the string */
-	size_t str_esc_size;        /* number of extra characters for escaping */
+	size_t str_esc;             /* number of extra characters for escaping */
 	size_t size;                /* size of the buffer */
 	int errno;                  /* the last error number */
 	union {
@@ -81,13 +80,17 @@ struct jso_io {
 #define JSO_IO_RESET_TOKEN(io) ((io)->token = (io)->cursor)
 
 /* save start position of the string */
-#define JSO_IO_STR_SAVE_START(io) ((io)->str_start = (io)->cursor)
+#define JSO_IO_STR_SET_START(io) ((io)->str_start = (io)->cursor)
+/* save start position of the string */
+#define JSO_IO_STR_GET_START(io) ((io)->str_start)
+/* reset escape counter */
+#define JSO_IO_STR_ADD_ESC(io, n) ((io)->str_esc += n)
+/* reset escape counter */
+#define JSO_IO_STR_CLEAR_ESC(io) ((io)->str_esc = 0)
+/* reset escape counter */
+#define JSO_IO_STR_GET_ESC(io) ((io)->str_esc)
 /* save end position of the string */
-#define JSO_IO_STR_SAVE_END(io) ((io)->str_end = (io)->cursor)
-/* reset escape counter */
-#define JSO_IO_STR_ESC_RESET(io) ((io)->str_esc_size = 0)
-/* reset escape counter */
-#define JSO_IO_STR_ESC_ADD(io, n) ((io)->str_esc_size += n)
+#define JSO_IO_STR_LENGTH(io) (((size_t) ((io)->cursor - (io)->str_start)) + (io)->str_esc)
 
 /* read operation */
 #define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))
