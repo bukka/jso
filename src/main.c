@@ -66,6 +66,13 @@ int parse_file(const char *filename)
 			case JSO_T_DOUBLE:
 				printf("DVAL: %f\n", JSO_DVAL(scanner.value));
 				break;
+			case JSO_T_STRING:
+				printf("SVAL: %s ; SLEN: %ld\n", JSO_SVAL(scanner.value), JSO_SLEN(scanner.value));
+				JSO_VALUE_FREE(scanner.value);
+				break;
+			case JSO_T_ESTRING:
+				puts("EMPTY STRING");
+				break;
 			case JSO_T_EOI:
 				puts("EOI");
 				break;

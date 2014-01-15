@@ -96,21 +96,32 @@ std:
 	}
 	<JS>WS|NL                { goto std; }
 	<JS>EOI                  { JSO_TOKEN_RETURN(EOI); }
-	<JS>["] => STR_P1        { JSO_IO_STR_SET_START(s->io); JSO_IO_STR_CLEAR_ESC(s->io);  }
+	<JS>["] => STR_P1        {
+		JSO_IO_STR_SET_START(s->io);
+		JSO_IO_STR_CLEAR_ESC(s->io);
+	}
 
-	<STR_P1>ESC|UTF1         { JSO_IO_STR_ADD_ESC(s->io, 1); JSO_CONDITION_GOTO(STR_P1); }
-	<STR_P1>UTF2             { JSO_IO_STR_ADD_ESC(s->io, 2); JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>ESC|UTF1         {
+		JSO_IO_STR_ADD_ESC(s->io, 1);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UTF2             {
+		JSO_IO_STR_ADD_ESC(s->io, 2);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
 	<STR_P1>["]              {
 		size_t len = JSO_IO_STR_LENGTH(s->io);
-		jso_ctype *str = jso_malloc(len);
-		JSO_VALUE_SET_STRING(s->value, str, len * sizeof(jso_ctype));
+		jso_ctype *str = jso_malloc((len + 1) * sizeof(jso_ctype));
+		str[len] = 0;
+		JSO_VALUE_SET_STRING(s->value, str, len);
 		if (JSO_IO_STR_GET_ESC(s->io)) {
 			JSO_CONDITION_SET(STR_P2);
+			goto std;
 		} else {
 			memcpy(JSO_SVAL(s->value), JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
 			JSO_CONDITION_SET(JS);
+			JSO_TOKEN_RETURN(STRING);
 		}
-		goto std;
 	}
 	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 

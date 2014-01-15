@@ -90,7 +90,7 @@ struct jso_io {
 /* reset escape counter */
 #define JSO_IO_STR_GET_ESC(io) ((io)->str_esc)
 /* save end position of the string */
-#define JSO_IO_STR_LENGTH(io) (((size_t) ((io)->cursor - (io)->str_start)) + (io)->str_esc)
+#define JSO_IO_STR_LENGTH(io) (((size_t) ((io)->cursor - (io)->str_start - 1)) + (io)->str_esc)
 
 /* read operation */
 #define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))

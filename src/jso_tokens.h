@@ -23,6 +23,8 @@
 #define JSO_T_FALSE       3
 #define JSO_T_LONG        4
 #define JSO_T_DOUBLE      5
+#define JSO_T_STRING      6
+#define JSO_T_ESTRING     7
 #define JSO_T_EOI       126
 #define JSO_T_ERROR     127
 

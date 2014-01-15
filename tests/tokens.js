@@ -3,5 +3,8 @@
 -1.33e14
 0.324
 -234
+"string" "long lst
+dsaf"
+
 0
 3E-2

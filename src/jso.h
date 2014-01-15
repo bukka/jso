@@ -29,6 +29,7 @@
 #define JSO_TRUE  1
 #define JSO_FALSE 0
 
+/* min max value funcs */
 #define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 #define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
@@ -81,10 +82,27 @@ typedef struct _jso_value {
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 
 /* jso value setters */
-#define JSO_VALUE_SET_LONG(jv, lv)   do { JSO_TYPE(jv) = JSO_TYPE_LONG; JSO_LVAL(jv) = lv; } while(0)
-#define JSO_VALUE_SET_DOUBLE(jv, dv) do { JSO_TYPE(jv) = JSO_TYPE_DOUBLE; JSO_DVAL(jv) = (dv); } while(0)
+#define JSO_VALUE_SET_LONG(jv, lv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_LONG; \
+		JSO_LVAL(jv) = lv; \
+	} while(0)
+#define JSO_VALUE_SET_DOUBLE(jv, dv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_DOUBLE; \
+		JSO_DVAL(jv) = (dv); \
+	} while(0)
 #define JSO_VALUE_SET_STRING(jv, sv, sl) \
-	do { JSO_TYPE(jv) = JSO_TYPE_STRING; JSO_SVAL(jv) = (sv); JSO_SLEN(jv) = (sl); } while(0)
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_STRING; \
+		JSO_SVAL(jv) = (sv); \
+		JSO_SLEN(jv) = (sl); \
+	} while(0)
+
+/* free jso_value data */
+#define JSO_VALUE_FREE(jv) \
+	if (JSO_TYPE(jv) == JSO_TYPE_STRING && JSO_SVAL(jv) && JSO_SLEN(jv) > 0) \
+		jso_free(JSO_SVAL(jv))
 
 /* memeroy functions - just redefinitions for future extending (checking) */
 #define jso_malloc malloc
