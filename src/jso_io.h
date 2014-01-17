@@ -39,6 +39,7 @@ struct jso_io {
 	jso_ctype *token;           /* token position */
 	jso_ctype *limit;           /* the last read character + 1 position */
 	jso_ctype *marker;          /* marker position for backtracking */
+	jso_ctype *ctxmarker;       /* marker position for context backtracking */
 	jso_ctype *str_start;       /* start position of the string */
 	size_t str_esc;             /* number of extra characters for escaping */
 	size_t size;                /* size of the buffer */
@@ -69,6 +70,8 @@ struct jso_io {
 #define JSO_IO_LIMIT(io)  ((io)->limit)
 /* marker accessor macro */
 #define JSO_IO_MARKER(io) ((io)->marker)
+/* context marker accessor macro */
+#define JSO_IO_CTXMARKER(io) ((io)->ctxmarker)
 /* buffer size accessor macro */
 #define JSO_IO_SIZE(io) ((io)->size)
 /* saved error code */
@@ -81,6 +84,8 @@ struct jso_io {
 
 /* save start position of the string */
 #define JSO_IO_STR_SET_START(io) ((io)->str_start = (io)->cursor)
+/* save start position of the string after n characters */
+#define JSO_IO_STR_SET_START_AFTER(io, n) ((io)->str_start = (io)->cursor + 1)
 /* save start position of the string */
 #define JSO_IO_STR_GET_START(io) ((io)->str_start)
 /* reset escape counter */
@@ -90,7 +95,7 @@ struct jso_io {
 /* reset escape counter */
 #define JSO_IO_STR_GET_ESC(io) ((io)->str_esc)
 /* save end position of the string */
-#define JSO_IO_STR_LENGTH(io) (((size_t) ((io)->cursor - (io)->str_start - 1)) + (io)->str_esc)
+#define JSO_IO_STR_LENGTH(io) ((size_t) ((io)->cursor - (io)->str_start - 1))
 
 /* read operation */
 #define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))

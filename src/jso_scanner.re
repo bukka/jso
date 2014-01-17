@@ -29,6 +29,7 @@
 #define	YYCURSOR    JSO_IO_CURSOR(s->io)
 #define	YYLIMIT     JSO_IO_LIMIT(s->io)
 #define	YYMARKER    JSO_IO_MARKER(s->io)
+#define	YYCTXMARKER JSO_IO_CTXMARKER(s->io)
 
 #define YYGETCONDITION()        s->state
 #define YYSETCONDITION(yystate) s->state = yystate
@@ -64,16 +65,22 @@ std:
 	INT     = "-"? UINT ;
 	HEX     = DIGIT | [a-fA-F] ;
 	HEXNZ   = DIGITNZ | [a-fA-F] ;
+	HEX2    = HEX{2} ;
+	HEX4    = HEX{4} ;
 	FLOAT   = INT "." UINT ;
 	EXP     = ( INT | FLOAT ) [eE] [+-]? UINT ;
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
 	ANY     = [^] ;
-	ESC     = "\\" ("\"" | "\\" | "/" | [bfnrt] ) ;
-	UTF     = "\\u" HEX{4} ;
-	UTF1    = "\\u00" HEX{2} ;
-	UTF2    = "\\u" ( ( "0" HEXNZ ) | ( HEXNZ HEX ) ) HEX{2} ;
+	ESCPREF = "\\" ;
+	ESCSYM  = ( "\"" | "\\" | "/" | [bfnrt] ) ;
+	ESC     = ESCPREF ESCSYM ;
+	UTFSYM  = "u" ;
+	UTFPREF = ESCPREF UTFSYM ;
+	UTF     = UTFPREF HEX4 ;
+	UTF1    = UTFPREF "00" HEX2 ;
+	UTF2    = UTFPREF ( ( "0" HEXNZ ) | ( HEXNZ HEX ) ) HEX2 ;
 
 	<JS>"null"               { JSO_TOKEN_RETURN(NUL); }
 	<JS>"true"               { JSO_TOKEN_RETURN(TRUE); }
@@ -113,7 +120,7 @@ std:
 	}
 	<STR_P1>["]              {
 		jso_ctype *str;
-		size_t len = JSO_IO_STR_LENGTH(s->io);
+		size_t len = JSO_IO_STR_LENGTH(s->io) + JSO_IO_STR_GET_ESC(s->io);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
 			JSO_TOKEN_RETURN(ESTRING);
@@ -122,8 +129,10 @@ std:
 		str[len] = 0;
 		JSO_VALUE_SET_STRING(s->value, str, len);
 		if (JSO_IO_STR_GET_ESC(s->io)) {
+			s->pstr = JSO_SVAL(s->value);
+			JSO_IO_CURSOR(s->io) = JSO_IO_STR_GET_START(s->io);
 			JSO_CONDITION_SET(STR_P2);
-			goto std;
+			JSO_CONDITION_GOTO(STR_P2);
 		} else {
 			memcpy(JSO_SVAL(s->value), JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
 			JSO_CONDITION_SET(JS);
@@ -132,9 +141,42 @@ std:
 	}
 	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 
-	<STR_P2>ESC              { JSO_CONDITION_GOTO(STR_P2); }
-	<STR_P2>UTF              { JSO_CONDITION_GOTO(STR_P2); }
-	<STR_P2>["] => JS        { JSO_CONDITION_GOTO(STR_P2); }
+	<STR_P2>ESCPREF/ESCSYM   {
+		char esc;
+		if (JSO_IO_STR_LENGTH(s->io)) {
+			size_t len = JSO_IO_STR_LENGTH(s->io);
+			memcpy(s->pstr, JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
+			s->pstr += len;
+			JSO_IO_STR_SET_START_AFTER(s->io, 1);
+		}
+		switch (*JSO_IO_CURSOR(s->io)) {
+			case 'b':
+				esc = '\b';
+				break;
+			case 'f':
+				esc = '\f';
+				break;
+			case 'n':
+				esc = '\n';
+				break;
+			case 'r':
+				esc = '\r';
+				break;
+			case 't':
+				esc = '\t';
+				break;
+			default:
+				esc = *JSO_IO_CURSOR(s->io);
+				break;
+		}
+		*s->pstr = esc;
+		s->pstr++;
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>UTFPREF/HEX4     {
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>["] => JS        { goto std; }
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
 
 	<*>ANY                   { JSO_TOKEN_RETURN(ERROR); }
