@@ -96,9 +96,11 @@ std:
 	}
 	<JS>WS|NL                { goto std; }
 	<JS>EOI                  { JSO_TOKEN_RETURN(EOI); }
-	<JS>["] => STR_P1        {
+	<JS>["]                  {
 		JSO_IO_STR_SET_START(s->io);
 		JSO_IO_STR_CLEAR_ESC(s->io);
+		JSO_CONDITION_SET(STR_P1);
+		JSO_CONDITION_GOTO(STR_P1);
 	}
 
 	<STR_P1>ESC|UTF1         {
@@ -110,8 +112,13 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>["]              {
+		jso_ctype *str;
 		size_t len = JSO_IO_STR_LENGTH(s->io);
-		jso_ctype *str = jso_malloc((len + 1) * sizeof(jso_ctype));
+		if (len == 0) {
+			JSO_CONDITION_SET(JS);
+			JSO_TOKEN_RETURN(ESTRING);
+		}
+		str = jso_malloc((len + 1) * sizeof(jso_ctype));
 		str[len] = 0;
 		JSO_VALUE_SET_STRING(s->value, str, len);
 		if (JSO_IO_STR_GET_ESC(s->io)) {
