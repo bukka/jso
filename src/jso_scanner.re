@@ -50,13 +50,22 @@ void jso_scanner_init(jso_scanner *s, jso_io *io)
 	JSO_CONDITION_SET(JS);
 }
 
+void jso_scanner_pre_esc_copy(jso_scanner *s)
+{
+	if (JSO_IO_STR_LENGTH(s->io)) {
+		size_t len = JSO_IO_STR_LENGTH(s->io);
+		memcpy(s->pstr, JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
+		s->pstr += len;
+	}
+}
+
 int jso_scan(jso_scanner *s)
 {
 std:
 	JSO_IO_RESET_TOKEN(s->io);
 
 /*!re2c
-	re2c:indent:top = 2;
+	re2c:indent:top = 1;
 	re2c:yyfill:enable = 0;
 
 	DIGIT   = [0-9];
@@ -141,14 +150,20 @@ std:
 	}
 	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 
-	<STR_P2>ESCPREF/ESCSYM   {
-		char esc;
-		if (JSO_IO_STR_LENGTH(s->io)) {
-			size_t len = JSO_IO_STR_LENGTH(s->io);
-			memcpy(s->pstr, JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
-			s->pstr += len;
+	<STR_P2>UTFPREF/HEX4     {
+		int code = 0;
+		jso_scanner_pre_esc_copy(s);
+
+		if (code > 255) {
+			JSO_IO_STR_SET_START_AFTER(s->io, 2);
+		} else {
 			JSO_IO_STR_SET_START_AFTER(s->io, 1);
 		}
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>ESCPREF          {
+		char esc;
+		jso_scanner_pre_esc_copy(s);
 		switch (*JSO_IO_CURSOR(s->io)) {
 			case 'b':
 				esc = '\b';
@@ -165,18 +180,23 @@ std:
 			case 't':
 				esc = '\t';
 				break;
-			default:
+			case '\\':
+			case '/':
+			case '"':
 				esc = *JSO_IO_CURSOR(s->io);
 				break;
+			default:
+				JSO_TOKEN_RETURN(ERROR);
 		}
 		*s->pstr = esc;
 		s->pstr++;
+		JSO_IO_STR_SET_START_AFTER(s->io, 1);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
-	<STR_P2>UTFPREF/HEX4     {
-		JSO_CONDITION_GOTO(STR_P2);
+	<STR_P2>["] => JS        {
+		jso_scanner_pre_esc_copy(s);
+		JSO_TOKEN_RETURN(STRING);
 	}
-	<STR_P2>["] => JS        { goto std; }
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
 
 	<*>ANY                   { JSO_TOKEN_RETURN(ERROR); }
