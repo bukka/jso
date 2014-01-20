@@ -119,11 +119,15 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 
-	<STR_P1>UTF2             {
-		JSO_IO_STR_ADD_ESC(s->io, 2);
+	<STR_P1>UTF1             {
+		JSO_IO_STR_ADD_ESC(s->io, 4);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
-	<STR_P1>ESC|UTF1         {
+	<STR_P1>UTF2             {
+		JSO_IO_STR_ADD_ESC(s->io, 3);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>ESC              {
 		JSO_IO_STR_ADD_ESC(s->io, 1);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
