@@ -119,17 +119,18 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 
-	<STR_P1>ESC|UTF1         {
-		JSO_IO_STR_ADD_ESC(s->io, 1);
-		JSO_CONDITION_GOTO(STR_P1);
-	}
 	<STR_P1>UTF2             {
 		JSO_IO_STR_ADD_ESC(s->io, 2);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
+	<STR_P1>ESC|UTF1         {
+		JSO_IO_STR_ADD_ESC(s->io, 1);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>ESCPREF           { JSO_TOKEN_RETURN(ERROR); }
 	<STR_P1>["]              {
 		jso_ctype *str;
-		size_t len = JSO_IO_STR_LENGTH(s->io) + JSO_IO_STR_GET_ESC(s->io);
+		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
 			JSO_TOKEN_RETURN(ESTRING);
@@ -190,7 +191,8 @@ std:
 		}
 		*s->pstr = esc;
 		s->pstr++;
-		JSO_IO_STR_SET_START_AFTER(s->io, 1);
+		++YYCURSOR;
+		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>["] => JS        {

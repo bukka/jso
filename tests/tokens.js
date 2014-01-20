@@ -5,10 +5,5 @@
 -234
 ""
 "string"
-"escape symbols: t: \t ; f: \f ; b: aaa\b ; n: \n ;"
-"escape slash: \/"
-"escape error: \q"
-"escape backslash: \\"
-"escape double quotes: \""
 0
 3E-2

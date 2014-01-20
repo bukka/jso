@@ -1,0 +1,5 @@
+"escape symbols: t: \t ; f: \f ; b: aaa\b ; n: \n ;"
+"escape slash: \/"
+"escape backslash: \\data"
+"escape double quotes: \"test\""
+"escape error: \q"
