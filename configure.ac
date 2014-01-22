@@ -1,7 +1,6 @@
-#                                               -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+# Configuration script for autoconf
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.59])
 AC_INIT([jso], [1.0], [jakub.php@gmail.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_CONFIG_SRCDIR([src/jso.h])
