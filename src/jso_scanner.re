@@ -43,20 +43,51 @@
 #define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
 #define JSO_CONDITION_GOTO(condition) goto yyc_##condition
 
-void jso_scanner_init(jso_scanner *s, jso_io *io)
-{
-	memset(s, 0, sizeof (jso_scanner));
-	s->io = io;
-	JSO_CONDITION_SET(JS);
-}
-
-void jso_scanner_pre_esc_copy(jso_scanner *s)
+static void jso_scanner_pre_esc_copy(jso_scanner *s)
 {
 	if (JSO_IO_STR_LENGTH(s->io)) {
 		size_t len = JSO_IO_STR_LENGTH(s->io);
 		memcpy(s->pstr, JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
 		s->pstr += len;
 	}
+}
+
+static int jso_hex_to_int(jso_ctype c)
+{
+	if (c >= '0' && c <= '9')
+	{
+		return c - '0';
+	}
+	else if (c >= 'A' && c <= 'F')
+	{
+		return c - ('A' - 10);
+	}
+	else if (c >= 'a' && c <= 'f')
+	{
+		return c - ('a' - 10);
+	}
+	else
+	{
+		/* this should never happened */
+		return -1;
+	}
+}
+
+static int jso_ucs2_to_int(jso_scanner *s, int size)
+{
+	int i, code = 0;
+	jso_ctype *pc = JSO_IO_CURSOR(s->io) - 1;
+	for (i = 0; i < size; i++) {
+		code |= jso_hex_to_int(*(pc--)) << (i * 4);
+	}
+	return code;
+}
+
+void jso_scanner_init(jso_scanner *s, jso_io *io)
+{
+	memset(s, 0, sizeof (jso_scanner));
+	s->io = io;
+	JSO_CONDITION_SET(JS);
 }
 
 int jso_scan(jso_scanner *s)
@@ -68,14 +99,14 @@ std:
 	re2c:indent:top = 1;
 	re2c:yyfill:enable = 0;
 
-	DIGIT   = [0-9];
-	DIGITNZ = [1-9];
+	DIGIT   = [0-9] ;
+	DIGITNZ = [1-9] ;
 	UINT    = "0" | ( DIGITNZ DIGIT* ) ;
 	INT     = "-"? UINT ;
 	HEX     = DIGIT | [a-fA-F] ;
 	HEXNZ   = DIGITNZ | [a-fA-F] ;
-	HEX2    = HEX{2} ;
-	HEX4    = HEX{4} ;
+	HEX7    = [0-7] ;
+	HEXC    = DIGIT | [a-cA-C] ;
 	FLOAT   = INT "." UINT ;
 	EXP     = ( INT | FLOAT ) [eE] [+-]? UINT ;
 	WS      = [ \t]+ ;
@@ -87,9 +118,11 @@ std:
 	ESC     = ESCPREF ESCSYM ;
 	UTFSYM  = "u" ;
 	UTFPREF = ESCPREF UTFSYM ;
-	UTF     = UTFPREF HEX4 ;
-	UTF1    = UTFPREF "00" HEX2 ;
-	UTF2    = UTFPREF ( ( "0" HEXNZ ) | ( HEXNZ HEX ) ) HEX2 ;
+	UCS2    = UTFPREF HEX{4} ;
+	UTF1    = UTFPREF "00" HEX7 HEX ;
+	UTF2    = UTFPREF "0" HEX7 HEX{2} ;
+	UTF3    = UTFPREF ( ( ( HEXC | [efEF] ) HEX ) | ( [dD] HEX7 ) ) HEX{2} ;
+	UTF4    = UTFPREF [dD] [89abAB] HEX{2} UTFPREF [dD] [c-fC-F] HEX{2} ;
 
 	<JS>"null"               { JSO_TOKEN_RETURN(NUL); }
 	<JS>"true"               { JSO_TOKEN_RETURN(TRUE); }
@@ -127,11 +160,24 @@ std:
 		JSO_IO_STR_ADD_ESC(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
+	<STR_P1>UTF3             {
+		JSO_IO_STR_ADD_ESC(s->io, 2);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UTF4             {
+		JSO_IO_STR_ADD_ESC(s->io, 7);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UCS2             {
+		JSO_TOKEN_RETURN(ERROR);
+	}
 	<STR_P1>ESC              {
 		JSO_IO_STR_ADD_ESC(s->io, 1);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
-	<STR_P1>ESCPREF           { JSO_TOKEN_RETURN(ERROR); }
+	<STR_P1>ESCPREF           {
+		JSO_TOKEN_RETURN(ERROR);
+	}
 	<STR_P1>["]              {
 		jso_ctype *str;
 		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
@@ -155,15 +201,28 @@ std:
 	}
 	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 
-	<STR_P2>UTFPREF/HEX4     {
-		int code = 0;
+	<STR_P2>UTF1             {
+		int utf16 = jso_ucs2_to_int(s, 1);
 		jso_scanner_pre_esc_copy(s);
-
-		if (code > 255) {
-			JSO_IO_STR_SET_START_AFTER(s->io, 2);
-		} else {
-			JSO_IO_STR_SET_START_AFTER(s->io, 1);
-		}
+		*(s->pstr++) = (jso_ctype) utf16;
+		JSO_IO_STR_SET_START_AFTER(s->io, 1);
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>UTF2             {
+		int utf16 = jso_ucs2_to_int(s, 3);
+		jso_scanner_pre_esc_copy(s);
+		*(s->pstr++) = (jso_ctype) (0xc0 | (utf16 >> 6));
+		*(s->pstr++) = (jso_ctype) (0x80 | (utf16 & 0x3f));
+		JSO_IO_STR_SET_START_AFTER(s->io, 2);
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>UTF3             {
+		int utf16 = jso_ucs2_to_int(s, 4);
+		jso_scanner_pre_esc_copy(s);
+		*(s->pstr++) = (jso_ctype) (0xe0 | (utf16 >> 12));
+		*(s->pstr++) = (jso_ctype) (0x80 | ((utf16 >> 6) & 0x3f));
+		*(s->pstr++) = (jso_ctype) (0x80 | (utf16 & 0x3f));
+		JSO_IO_STR_SET_START_AFTER(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>ESCPREF          {
@@ -193,8 +252,7 @@ std:
 			default:
 				JSO_TOKEN_RETURN(ERROR);
 		}
-		*s->pstr = esc;
-		s->pstr++;
+		*(s->pstr++) = esc;
 		++YYCURSOR;
 		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
