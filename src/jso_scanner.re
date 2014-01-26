@@ -43,10 +43,14 @@
 #define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
 #define JSO_CONDITION_GOTO(condition) goto yyc_##condition
 
-static void jso_scanner_pre_esc_copy(jso_scanner *s)
+#define JSO_SCANNER_COPY_ESC() jso_scanner_copy_string(s, 0)
+#define JSO_SCANNER_COPY_UTF() jso_scanner_copy_string(s, 5)
+
+
+static void jso_scanner_copy_string(jso_scanner *s, size_t esc_size)
 {
-	if (JSO_IO_STR_LENGTH(s->io)) {
-		size_t len = JSO_IO_STR_LENGTH(s->io);
+	size_t len = JSO_IO_STR_LENGTH(s->io) - esc_size;
+	if (len) {
 		memcpy(s->pstr, JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
 		s->pstr += len;
 	}
@@ -153,19 +157,19 @@ std:
 	}
 
 	<STR_P1>UTF1             {
-		JSO_IO_STR_ADD_ESC(s->io, 4);
+		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF2             {
-		JSO_IO_STR_ADD_ESC(s->io, 3);
+		JSO_IO_STR_ADD_ESC(s->io, 4);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF3             {
-		JSO_IO_STR_ADD_ESC(s->io, 2);
+		JSO_IO_STR_ADD_ESC(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF4             {
-		JSO_IO_STR_ADD_ESC(s->io, 7);
+		JSO_IO_STR_ADD_ESC(s->io, 8);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UCS2             {
@@ -202,32 +206,32 @@ std:
 	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
 
 	<STR_P2>UTF1             {
-		int utf16 = jso_ucs2_to_int(s, 1);
-		jso_scanner_pre_esc_copy(s);
+		int utf16 = jso_ucs2_to_int(s, 2);
+		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) utf16;
-		JSO_IO_STR_SET_START_AFTER(s->io, 1);
+		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>UTF2             {
 		int utf16 = jso_ucs2_to_int(s, 3);
-		jso_scanner_pre_esc_copy(s);
+		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) (0xc0 | (utf16 >> 6));
 		*(s->pstr++) = (jso_ctype) (0x80 | (utf16 & 0x3f));
-		JSO_IO_STR_SET_START_AFTER(s->io, 2);
+		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>UTF3             {
 		int utf16 = jso_ucs2_to_int(s, 4);
-		jso_scanner_pre_esc_copy(s);
+		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) (0xe0 | (utf16 >> 12));
 		*(s->pstr++) = (jso_ctype) (0x80 | ((utf16 >> 6) & 0x3f));
 		*(s->pstr++) = (jso_ctype) (0x80 | (utf16 & 0x3f));
-		JSO_IO_STR_SET_START_AFTER(s->io, 3);
+		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>ESCPREF          {
 		char esc;
-		jso_scanner_pre_esc_copy(s);
+		JSO_SCANNER_COPY_ESC();
 		switch (*JSO_IO_CURSOR(s->io)) {
 			case 'b':
 				esc = '\b';
@@ -258,7 +262,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P2);
 	}
 	<STR_P2>["] => JS        {
-		jso_scanner_pre_esc_copy(s);
+		JSO_SCANNER_COPY_ESC();
 		JSO_TOKEN_RETURN(STRING);
 	}
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
