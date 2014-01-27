@@ -26,5 +26,57 @@
 
 %}
 
+%token JSO_T_NULL
+%token JSO_T_TRUE
+%token JSO_T_FALSE
+%token JSO_T_INT
+%token JSO_T_FLOAT
+%token JSO_T_STR
+%token JSO_T_ESTR
+%token JSO_T_EOI
+%token JSO_T_ERROR
 
 %% /* Rules */
+
+start:
+		object
+	|	array
+	|   value
+;
+
+object:
+		'{' '}'
+	|	'{' members '}'
+;
+
+members:
+		pair
+	|	pair ',' members
+;
+
+pair:
+	JSO_T_STR ':' value
+;
+
+array:
+		'[' ']'
+	|	'[' elements ']'
+;
+
+elements:
+		value
+	|	value ',' elements
+;
+
+value:
+		object
+	|	array
+	|	JSO_T_STR
+	|	JSO_T_ESTR
+	|	JSO_T_INT
+	|	JSO_T_FLOAT
+	|	JSO_T_NULL
+	|	JSO_T_TRUE
+	|	JSO_T_FALSE
+;
+
