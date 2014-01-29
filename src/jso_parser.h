@@ -21,22 +21,10 @@
  *
  */
 
-#ifndef JSO_SCANNER_H
-#define JSO_SCANNER_H
+#ifndef JSO_PARSER_H
+#define JSO_PARSER_H
 
-#include "jso.h"
-#include "jso_parser.tab.h"
-#include "jso_io.h"
-
-typedef struct _jso_scanner {
-	jso_io *io;
-	jso_value value;
-	jso_ctype *pstr;
-	int state;
-} jso_scanner;
-
-
-void jso_scanner_init(jso_scanner *scanner, jso_io *io);
-int jso_scan(jso_scanner *s);
+int jso_yylex(jso_value *jv);
+void jso_yyerror(char const *s);
 
 #endif /* JSO_SCANNER_H */
