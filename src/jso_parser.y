@@ -30,10 +30,14 @@
 
 #define YYSTYPE jso_value
 
+void jso_yyerror(jso_scanner *s, char const *msg);
+
 %}
 
 %pure-parser
 %name-prefix "jso_yy"
+%lex-param  { jso_scanner *s  }
+%parse-param { jso_scanner *s }
 
 
 %token JSO_T_NUL
@@ -88,23 +92,25 @@ element:
 value:
 		object
 	|	array
-	|	JSO_T_STRING
-	|	JSO_T_ESTRING
-	|	JSO_T_LONG
-	|	JSO_T_DOUBLE
-	|	JSO_T_NUL
-	|	JSO_T_TRUE
-	|	JSO_T_FALSE
+	|	JSO_T_STRING            { printf("SVAL: %s ; SLEN: %ld\n", JSO_SVAL($1), JSO_SLEN($1)) }
+	|	JSO_T_ESTRING           { puts("EMPTY STRING"); }
+	|	JSO_T_LONG              { printf("LVAL: %ld\n", JSO_LVAL($1)); }
+	|	JSO_T_DOUBLE            { printf("DVAL: %f\n", JSO_DVAL($1)); }
+	|	JSO_T_NUL               { puts("NULL"); }
+	|	JSO_T_TRUE              { puts("TRUE"); }
+	|	JSO_T_FALSE             { puts("FALSE"); }
 ;
 
 %%
 
-int jso_yylex(jso_value *jv)
+int jso_yylex(jso_value *jv, jso_scanner *s)
 {
-	return 1;
+	int token = jso_scan(s);
+	jv = &s->value;
+	return token;
 }
 
-void jso_yyerror(char const *s)
+void jso_yyerror(jso_scanner *s, char const *msg)
 {
-  fprintf (stderr, "%s\n", s);
+  fprintf (stderr, "%s\n", msg);
 }

@@ -27,11 +27,11 @@
 
 #include "io/jso_file.h"
 #include "jso_scanner.h"
+#include "jso_parser.h"
 
 int parse_file(const char *filename)
 {
 	jso_io *io;
-	int token;
 	jso_scanner scanner;
 	off_t filesize;
 
@@ -51,10 +51,11 @@ int parse_file(const char *filename)
 	JSO_IO_READ(io, filesize);
 	/* init scanner */
 	jso_scanner_init(&scanner, io);
-	/* scan */
+
+	/* scan
 	puts("TOKENS:");
 	do {
-		token = jso_scan(&scanner);
+		int token = jso_scan(&scanner);
 		switch (token) {
 			case JSO_T_NUL:
 				puts("NULL");
@@ -89,6 +90,11 @@ int parse_file(const char *filename)
 				break;
 		}
 	} while (token != JSO_T_EOI && token != JSO_T_ERROR);
+	*/
+
+	/* parse */
+	jso_yyparse(&scanner);
+
 	jso_io_file_close(io);
 	return 0;
 }
