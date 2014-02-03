@@ -20,5 +20,14 @@
 - jso_value memory management
 
 ## Build
-- re2c AC check
-- bison AC check
+- buildconf.sh
+  - check for autoconf, automake, libtool (libtoolize)
+  - automake --add-missing (install-sh, missing, depcomp)
+  - autoreconf
+- re2c
+  - autoconf check
+  - try to replace Makefile AM rule with AC
+- bions
+  - autoconf check and automake rule
+  - remove Makefile AM rule (use AC)
+  - jso_parser.tab.h - prerequisite (build error when it's not created)
