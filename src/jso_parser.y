@@ -92,7 +92,7 @@ element:
 value:
 		object
 	|	array
-	|	JSO_T_STRING            { printf("SVAL: %s ; SLEN: %ld\n", JSO_SVAL($1), JSO_SLEN($1)) }
+	|	JSO_T_STRING            { printf("SVAL: %s ; SLEN: %zu\n", JSO_SVAL($1), JSO_SLEN($1)) }
 	|	JSO_T_ESTRING           { puts("EMPTY STRING"); }
 	|	JSO_T_LONG              { printf("LVAL: %ld\n", JSO_LVAL($1)); }
 	|	JSO_T_DOUBLE            { printf("DVAL: %f\n", JSO_DVAL($1)); }
