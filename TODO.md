@@ -20,6 +20,9 @@
 - jso_value memory management
 
 ## Build
+- debug build
+  - use option --enable-debug
+  - remove debug-configure.sh
 - buildconf.sh
   - check for autoconf, automake, libtool (libtoolize)
   - automake --add-missing (install-sh, missing, depcomp)
