@@ -53,6 +53,7 @@ typedef char jso_ctype;
 /* jso value types */
 typedef enum {
 	JSO_TYPE_NULL,
+	JSO_TYPE_BOOL,
 	JSO_TYPE_INT,
 	JSO_TYPE_DOUBLE,
 	JSO_TYPE_STRING
@@ -89,6 +90,15 @@ typedef struct _jso_value {
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 
 /* jso value setters */
+#define JSO_VALUE_SET_NULL(jv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_NULL; \
+	} while(0)
+#define JSO_VALUE_SET_BOOL(jv, bv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_BOOL; \
+		JSO_IVAL(jv) = bv; \
+	} while(0)
 #define JSO_VALUE_SET_INT(jv, lv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_INT; \
@@ -104,6 +114,12 @@ typedef struct _jso_value {
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
 		JSO_SVAL(jv) = (sv); \
 		JSO_SLEN(jv) = (sl); \
+	} while(0)
+#define JSO_VALUE_SET_EMPTY_STRING(jv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_STRING; \
+		JSO_SVAL(jv) = NULL; \
+		JSO_SLEN(jv) = 0; \
 	} while(0)
 
 /* free jso_value data */

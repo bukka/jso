@@ -133,15 +133,24 @@ std:
 	UTF3    = UTFPREF ( ( ( HEXC | [efEF] ) HEX ) | ( [dD] HEX7 ) ) HEX{2} ;
 	UTF4    = UTFPREF [dD] [89abAB] HEX{2} UTFPREF [dD] [c-fC-F] HEX{2} ;
 
-	<JS>"null"               { JSO_TOKEN_RETURN(NUL); }
-	<JS>"true"               { JSO_TOKEN_RETURN(TRUE); }
-	<JS>"false"              { JSO_TOKEN_RETURN(FALSE); }
 	<JS>"{"                  { return '{'; }
 	<JS>"}"                  { return '}'; }
 	<JS>"["                  { return '['; }
 	<JS>"]"                  { return ']'; }
 	<JS>":"                  { return ':'; }
 	<JS>","                  { return ','; }
+	<JS>"null"               {
+		JSO_VALUE_SET_NULL(s->value);
+		JSO_TOKEN_RETURN(NUL);
+	}
+	<JS>"true"               {
+		JSO_VALUE_SET_BOOL(s->value, JSO_TRUE);
+		JSO_TOKEN_RETURN(TRUE);
+	}
+	<JS>"false"              {
+		JSO_VALUE_SET_BOOL(s->value, JSO_FALSE);
+		JSO_TOKEN_RETURN(FALSE);
+	}
 	<JS>INT                  {
 		char *tailptr;
 		JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
@@ -192,6 +201,7 @@ std:
 		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
+			JSO_VALUE_SET_EMPTY_STRING(s->value);
 			JSO_TOKEN_RETURN(ESTRING);
 		}
 		str = jso_malloc((len + 1) * sizeof(jso_ctype));
