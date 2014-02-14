@@ -7,8 +7,11 @@
 
 ### String scanning
 - EOI check
-- UTF-8 validator
+- UTF-8 validator 
   - if >= 128, check if it's valid UTF-8
+  - MB2 = ([\xC0-\xDF][\x80-\xBF]);
+  - MB3 = ([\xE0-\xEF][\x80-\xBF]{2});
+  - MB4 = ([\xF0-\xF7][\x80-\xBF]{3});
 - UTF-16
   - surrogate pairs
 - add support for YYFILL
