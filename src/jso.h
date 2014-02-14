@@ -50,23 +50,36 @@ typedef double jso_double;
 /* character type for scanner */
 typedef char jso_ctype;
 
+/* pre-definition of array type */
+typedef struct _jso_array jso_array;
+
+/* pre-definition of object type */
+typedef struct _jso_object jso_object;
+
+/* string type */
+typedef struct _jso_string {
+	jso_ctype *val;
+	size_t len;
+} jso_string;
+
 /* jso value types */
 typedef enum {
 	JSO_TYPE_NULL,
 	JSO_TYPE_BOOL,
 	JSO_TYPE_INT,
 	JSO_TYPE_DOUBLE,
-	JSO_TYPE_STRING
+	JSO_TYPE_STRING,
+	JSO_TYPE_ARRAY,
+	JSO_TYPE_OBJECT
 } jso_value_type;
 
 /* jso value data union */
 typedef union _jso_value_data {
 	jso_int ival;
 	jso_double dval;
-	struct {
-		jso_ctype *val;
-		size_t len;
-	} str;
+	jso_string str;
+	jso_array *arr;
+	jso_object *obj;
 } jso_value_data;
 
 /* jso value structure */
@@ -74,6 +87,31 @@ typedef struct _jso_value {
 	jso_value_data data;
 	jso_value_type type;
 } jso_value;
+
+/* jso array element */
+typedef struct _jso_array_element {
+	jso_value *val;
+	struct _jso_array_element *next;
+} jso_array_element;
+
+/* jso array structure */
+struct _jso_array {
+	jso_array_element *head;
+	jso_array_element *tail;
+};
+
+/* jso object member */
+typedef struct _jso_object_member {
+	jso_string key;
+	jso_value *val;
+	struct _jso_object_member *next;
+} jso_object_member;
+
+/* jso object structure */
+struct _jso_object {
+	jso_object_member *head;
+	jso_object_member *tail;
+};
 
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
