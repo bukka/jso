@@ -38,12 +38,14 @@
 #define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 #define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
-/* int types */
-typedef unsigned char  jso_bool;
-typedef unsigned char  jso_uchar;
-typedef unsigned int   jso_uint;
-typedef unsigned long  jso_ulong;
-typedef unsigned short jso_ushort;
+/* bool type */
+typedef char  jso_bool;
+
+/* int type */
+typedef long  jso_int;
+
+/* double type */
+typedef double jso_double;
 
 /* character type for scanner */
 typedef char jso_ctype;
@@ -51,15 +53,15 @@ typedef char jso_ctype;
 /* jso value types */
 typedef enum {
 	JSO_TYPE_NULL,
-	JSO_TYPE_LONG,
+	JSO_TYPE_INT,
 	JSO_TYPE_DOUBLE,
 	JSO_TYPE_STRING
 } jso_value_type;
 
 /* jso value data union */
 typedef union _jso_value_data {
-	long lval;
-	double dval;
+	jso_int ival;
+	jso_double dval;
 	struct {
 		jso_ctype *val;
 		size_t len;
@@ -74,23 +76,23 @@ typedef struct _jso_value {
 
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
-#define JSO_LVAL_P(pjv) (pjv)->data.lval
+#define JSO_IVAL_P(pjv) (pjv)->data.ival
 #define JSO_DVAL_P(pjv) (pjv)->data.dval
 #define JSO_SVAL_P(pjv) (pjv)->data.str.val
 #define JSO_SLEN_P(pjv) (pjv)->data.str.len
 
 /* accessors for jso value */
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
-#define JSO_LVAL(jv) JSO_LVAL_P(&(jv))
+#define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
 #define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 
 /* jso value setters */
-#define JSO_VALUE_SET_LONG(jv, lv) \
+#define JSO_VALUE_SET_INT(jv, lv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_LONG; \
-		JSO_LVAL(jv) = lv; \
+		JSO_TYPE(jv) = JSO_TYPE_INT; \
+		JSO_IVAL(jv) = lv; \
 	} while(0)
 #define JSO_VALUE_SET_DOUBLE(jv, dv) \
 	do { \

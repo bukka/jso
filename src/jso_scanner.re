@@ -144,7 +144,7 @@ std:
 	<JS>","                  { return ','; }
 	<JS>INT                  {
 		char *tailptr;
-		JSO_VALUE_SET_LONG(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
+		JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
 		JSO_TOKEN_RETURN(LONG);
 	}
 	<JS>FLOAT|EXP            {
