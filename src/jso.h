@@ -202,12 +202,6 @@ JSO_API int jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
 JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk);
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
-
-/* free jso_value data */
-#define JSO_VALUE_FREE(jv) \
-	if (JSO_TYPE(jv) == JSO_TYPE_STRING && JSO_SVAL(jv) && JSO_SLEN(jv) > 0) \
-		jso_free(JSO_SVAL(jv))
-
 /* memeroy functions - just redefinitions for future extending (checking) */
 #define jso_malloc malloc
 #define jso_realloc realloc

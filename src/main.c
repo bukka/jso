@@ -52,46 +52,6 @@ int parse_file(const char *filename)
 	/* init scanner */
 	jso_scanner_init(&scanner, io);
 
-	/* scan
-	puts("TOKENS:");
-	do {
-		int token = jso_scan(&scanner);
-		switch (token) {
-			case JSO_T_NUL:
-				puts("NULL");
-				break;
-			case JSO_T_FALSE:
-				puts("FALSE");
-				break;
-			case JSO_T_TRUE:
-				puts("TRUE");
-				break;
-			case JSO_T_LONG:
-				printf("LVAL: %ld\n", JSO_LVAL(scanner.value));
-				break;
-			case JSO_T_DOUBLE:
-				printf("DVAL: %f\n", JSO_DVAL(scanner.value));
-				break;
-			case JSO_T_STRING:
-				printf("SVAL: %s ; SLEN: %ld\n", JSO_SVAL(scanner.value), JSO_SLEN(scanner.value));
-				JSO_VALUE_FREE(scanner.value);
-				break;
-			case JSO_T_ESTRING:
-				puts("EMPTY STRING");
-				break;
-			case JSO_T_EOI:
-				puts("EOI");
-				break;
-			case JSO_T_ERROR:
-				puts("ERROR");
-				break;
-			default:
-				printf("%c\n", (char) token);
-				break;
-		}
-	} while (token != JSO_T_EOI && token != JSO_T_ERROR);
-	*/
-
 	/* parse */
 	jso_yyparse(&scanner);
 
