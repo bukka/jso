@@ -29,8 +29,13 @@
 #include "jso_parser.h"
 
 #define YYSTYPE jso_value
+#define YYDEBUG 0
 
 void jso_yyerror(jso_scanner *s, char const *msg);
+
+#if YYDEBUG
+int jso_yydebug = 1;
+#endif
 
 %}
 

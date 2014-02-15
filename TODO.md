@@ -26,6 +26,9 @@
 - debug build
   - use option --enable-debug
   - remove debug-configure.sh
+- parser debug
+  - use option --enable-parser-debug
+  - set YYDEBUG macro to 1 if enabled, otherwise 0
 - buildconf.sh
   - check for autoconf, automake, libtool (libtoolize)
   - automake --add-missing (install-sh, missing, depcomp)
