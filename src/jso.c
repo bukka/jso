@@ -156,3 +156,67 @@ JSO_API void jso_array_print(jso_array *arr, jso_uint indent)
 		el = el->next;
 	}
 }
+
+/* allocate and init object */
+JSO_API jso_object *jso_object_alloc()
+{
+	return jso_calloc(1, sizeof(jso_object));
+}
+
+/* free object and its elements */
+JSO_API void jso_object_free(jso_object *obj)
+{
+	jso_object_member *tmp, *member = obj->head;
+	while (member) {
+		jso_value_free(member->val);
+		jso_free(member->key.val);
+		tmp = member->next;
+		jso_free(member);
+		member = tmp;
+	}
+	jso_free(obj);
+}
+
+/* add new element to the object obj */
+JSO_API int jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
+{
+	jso_object_member *member;
+	if (!key->val)
+		return JSO_FALSE;
+	member = jso_malloc(sizeof (jso_object_member));
+	if (!member)
+		return JSO_FALSE;
+	member->key = *key;
+	member->val = val;
+	member->next = NULL;
+	if (!obj->head) {
+		obj->head = obj->tail = member;
+	} else {
+		obj->tail->next = member;
+		obj->tail = member;
+	}
+	return JSO_TRUE;
+}
+
+/* call cbk function for each element in object */
+JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk)
+{
+	jso_object_member *member = obj->head;
+	while (member) {
+		cbk(&member->key, member->val);
+		member = member->next;
+	}
+}
+
+/* print object elements */
+JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
+{
+	jso_object_member *member = obj->head;
+	while (member) {
+		jso_print_indent(indent);
+		fprintf(JSO_PRINT_STREAM, "KEY: %s\n", member->key.val);
+		jso_value_print(member->val, indent + 1);
+		member = member->next;
+	}
+}
+

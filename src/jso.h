@@ -123,6 +123,7 @@ struct _jso_object {
 #define JSO_SVAL_P(pjv) (pjv)->data.str.val
 #define JSO_SLEN_P(pjv) (pjv)->data.str.len
 #define JSO_ARRVAL_P(pjv) (pjv)->data.arr
+#define JSO_OBJVAL_P(pjv) (pjv)->data.obj
 
 /* accessors for jso value */
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
@@ -131,6 +132,7 @@ struct _jso_object {
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 #define JSO_ARRVAL(jv) JSO_ARRVAL_P(&(jv))
+#define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
 
 /* jso value setters */
 #define JSO_VALUE_SET_NULL(jv) \
@@ -169,6 +171,11 @@ struct _jso_object {
 		JSO_TYPE(jv) = JSO_TYPE_ARRAY; \
 		JSO_ARRVAL(jv) = (av); \
 	} while(0)
+#define JSO_VALUE_SET_OBJECT(jv, ov) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_OBJECT; \
+		JSO_OBJVAL(jv) = (ov); \
+	} while(0)
 
 /* jso value functions */
 JSO_API void jso_value_free(jso_value *val);
@@ -184,6 +191,16 @@ JSO_API int jso_array_append(jso_array *arr, jso_value *val);
 JSO_API int jso_array_prepend(jso_array *arr, jso_value *val);
 JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk);
 JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
+
+/* callback function for iterating object */
+typedef int (*jso_object_callback)(jso_string *key, jso_value *val);
+
+/* object functions */
+JSO_API jso_object *jso_object_alloc();
+JSO_API void jso_object_free(jso_object *obj);
+JSO_API int jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
+JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk);
+JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
 
 /* free jso_value data */
