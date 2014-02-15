@@ -59,7 +59,7 @@ int jso_yydebug = 1;
 %% /* Rules */
 
 start:
-		value
+		value JSO_T_EOI         { YYACCEPT; }
 ;
 
 object:
