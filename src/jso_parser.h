@@ -24,8 +24,6 @@
 #ifndef JSO_PARSER_H
 #define JSO_PARSER_H
 
-int jso_yylex(jso_value *jv, jso_scanner *s);
-
 int jso_yyparse(jso_scanner *s);
 
 #endif /* JSO_SCANNER_H */

@@ -178,15 +178,13 @@ JSO_API void jso_object_free(jso_object *obj)
 }
 
 /* add new element to the object obj */
-JSO_API int jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
+JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val)
 {
 	jso_object_member *member;
-	if (!key->val)
-		return JSO_FALSE;
 	member = jso_malloc(sizeof (jso_object_member));
 	if (!member)
 		return JSO_FALSE;
-	member->key = *key;
+	member->key = key->data.str;
 	member->val = val;
 	member->next = NULL;
 	if (!obj->head) {

@@ -198,7 +198,7 @@ typedef int (*jso_object_callback)(jso_string *key, jso_value *val);
 /* object functions */
 JSO_API jso_object *jso_object_alloc();
 JSO_API void jso_object_free(jso_object *obj);
-JSO_API int jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
+JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
 JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk);
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
