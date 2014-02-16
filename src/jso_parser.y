@@ -77,7 +77,7 @@ member:
 ;
 
 pair:
-	JSO_T_STRING ':' value
+	key ':' value
 ;
 
 array:
@@ -94,16 +94,20 @@ element:
 	|	value ',' element
 ;
 
+key:
+		JSO_T_STRING
+	|	JSO_T_ESTRING
+
 value:
 		object
 	|	array
-	|	JSO_T_STRING            { printf("SVAL: %s ; SLEN: %zu\n", JSO_SVAL($1), JSO_SLEN($1)) }
-	|	JSO_T_ESTRING           { puts("EMPTY STRING"); }
-	|	JSO_T_LONG              { printf("LVAL: %ld\n", JSO_IVAL($1)); }
-	|	JSO_T_DOUBLE            { printf("DVAL: %f\n", JSO_DVAL($1)); }
-	|	JSO_T_NUL               { puts("NULL"); }
-	|	JSO_T_TRUE              { puts("TRUE"); }
-	|	JSO_T_FALSE             { puts("FALSE"); }
+	|	JSO_T_STRING
+	|	JSO_T_ESTRING
+	|	JSO_T_LONG
+	|	JSO_T_DOUBLE
+	|	JSO_T_NUL
+	|	JSO_T_TRUE
+	|	JSO_T_FALSE
 ;
 
 %%
@@ -111,7 +115,7 @@ value:
 int jso_yylex(jso_value *jv, jso_scanner *s)
 {
 	int token = jso_scan(s);
-	jv = &s->value;
+	*jv = s->value;
 	return token;
 }
 
