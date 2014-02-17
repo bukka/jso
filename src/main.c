@@ -32,7 +32,7 @@
 int parse_file(const char *filename)
 {
 	jso_io *io;
-	jso_scanner scanner;
+	jso_parser parser;
 	off_t filesize;
 
 	/* get file size */
@@ -50,10 +50,16 @@ int parse_file(const char *filename)
 	/* read the whole file into the buffer */
 	JSO_IO_READ(io, filesize);
 	/* init scanner */
-	jso_scanner_init(&scanner, io);
+	jso_scanner_init(&parser.scanner, io);
 
 	/* parse */
-	jso_yyparse(&scanner);
+	if (!jso_yyparse(&parser)) {
+		jso_value_print(&parser.result, 0);
+		jso_value_free(&parser.result);
+		puts("SUCCESS");
+	} else {
+		puts("FAILURE");
+	}
 
 	jso_io_file_close(io);
 	return 0;

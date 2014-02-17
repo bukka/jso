@@ -25,12 +25,9 @@
 #include <stdio.h>
 
 #include "jso.h"
-#include "jso_scanner.h"
 #include "jso_parser.h"
 
 #define YYDEBUG 0
-
-void jso_yyerror(jso_scanner *s, char const *msg);
 
 #if YYDEBUG
 int jso_yydebug = 1;
@@ -40,14 +37,14 @@ int jso_yydebug = 1;
 
 %pure-parser
 %name-prefix "jso_yy"
-%lex-param  { jso_scanner *s  }
-%parse-param { jso_scanner *s }
+%lex-param  { jso_parser *parser  }
+%parse-param { jso_parser *parser }
 
 %union {
 	jso_value value;
 	struct {
-		jso_value *key;
-		jso_value *val;
+		jso_value key;
+		jso_value val;
 	} pair;
 	jso_object *object;
 	jso_array *array;
@@ -69,13 +66,14 @@ int jso_yydebug = 1;
 %type <array> elements element
 
 %code {
-int jso_yylex(union YYSTYPE *value, jso_scanner *s);
+int jso_yylex(union YYSTYPE *value, jso_parser *parser);
+void jso_yyerror(jso_parser *parser, char const *msg);
 }
 
 %% /* Rules */
 
 start:
-		value JSO_T_EOI         { YYACCEPT; }
+		value JSO_T_EOI         { parser->result = $1; YYACCEPT; }
 ;
 
 object:
@@ -88,12 +86,12 @@ members:
 ;
 
 member:
-		pair                    { $$ = jso_object_alloc(); jso_object_add($$, $1.key, $1.val); }
-	|	pair ',' member         { jso_object_add($3, $1.key, $1.val); $$ = $3; }
+		pair                    { $$ = jso_object_alloc(); jso_object_add($$, &$1.key, &$1.val); }
+	|	pair ',' member         { jso_object_add($3, &$1.key, &$1.val); $$ = $3; }
 ;
 
 pair:
-		key ':' value           { $$.key = &$1; $$.val = &$3; }
+		key ':' value           { $$.key = $1; $$.val = $3; }
 ;
 
 array:
@@ -113,6 +111,7 @@ element:
 key:
 		JSO_T_STRING
 	|	JSO_T_ESTRING
+;
 
 value:
 		object
@@ -128,14 +127,14 @@ value:
 
 %%
 
-int jso_yylex(union YYSTYPE *value, jso_scanner *s)
+int jso_yylex(union YYSTYPE *value, jso_parser *parser)
 {
-	int token = jso_scan(s);
-	value->value = s->value;
+	int token = jso_scan(&parser->scanner);
+	value->value = parser->scanner.value;
 	return token;
 }
 
-void jso_yyerror(jso_scanner *s, char const *msg)
+void jso_yyerror(jso_parser *parser, char const *msg)
 {
   fprintf (stderr, "%s\n", msg);
 }

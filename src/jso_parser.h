@@ -24,6 +24,14 @@
 #ifndef JSO_PARSER_H
 #define JSO_PARSER_H
 
-int jso_yyparse(jso_scanner *s);
+#include "jso.h"
+#include "jso_scanner.h"
+
+typedef struct _jso_parser {
+	jso_scanner scanner;
+	jso_value result;
+} jso_parser;
+
+int jso_yyparse(jso_parser *parser);
 
 #endif /* JSO_SCANNER_H */

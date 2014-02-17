@@ -74,13 +74,16 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 			break;
 		case JSO_TYPE_STRING:
 			if (JSO_SVAL_P(val))
-				printf("STRING: \"%s\" ; LENGTH: %zu\n", JSO_SVAL_P(val), JSO_SLEN_P(val));
+				fprintf(JSO_PRINT_STREAM, "STRING: \"%s\" ; LENGTH: %zu\n", JSO_SVAL_P(val), JSO_SLEN_P(val));
 			else
 				fputs("EMPTY STRING", JSO_PRINT_STREAM);
 			break;
 		case JSO_TYPE_ARRAY:
-			fputs("ARRAY:", JSO_PRINT_STREAM);
+			fputs("ARRAY:\n", JSO_PRINT_STREAM);
 			jso_array_print(JSO_ARRVAL_P(val), indent + 1);
+		case JSO_TYPE_OBJECT:
+			fputs("OBJECT:\n", JSO_PRINT_STREAM);
+			jso_object_print(JSO_OBJVAL_P(val), indent + 1);
 		default:
 			break;
 	}
@@ -212,7 +215,7 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
 	jso_object_member *member = obj->head;
 	while (member) {
 		jso_print_indent(indent);
-		fprintf(JSO_PRINT_STREAM, "KEY: %s\n", member->key.val);
+		fprintf(JSO_PRINT_STREAM, " KEY: %s\n", member->key.val);
 		jso_value_print(member->val, indent + 1);
 		member = member->next;
 	}
