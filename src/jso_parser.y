@@ -87,7 +87,7 @@ members:
 
 member:
 		pair                    { $$ = jso_object_alloc(); jso_object_add($$, &$1.key, &$1.val); }
-	|	pair ',' member         { jso_object_add($3, &$1.key, &$1.val); $$ = $3; }
+	|	member ',' pair         { jso_object_add($1, &$3.key, &$3.val); $$ = $1; }
 ;
 
 pair:
@@ -105,7 +105,7 @@ elements:
 
 element:
 		value                   { $$ = jso_array_alloc(); jso_array_append($$, &$1); }
-	|	value ',' element       { jso_array_append($3, &$1); $$ = $3; }
+	|	element ',' value       { jso_array_append($1, &$3); $$ = $1; }
 ;
 
 key:

@@ -93,7 +93,7 @@ typedef struct _jso_value {
 
 /* jso array element */
 typedef struct _jso_array_element {
-	jso_value *val;
+	jso_value val;
 	struct _jso_array_element *next;
 } jso_array_element;
 
@@ -106,7 +106,7 @@ struct _jso_array {
 /* jso object member */
 typedef struct _jso_object_member {
 	jso_string key;
-	jso_value *val;
+	jso_value val;
 	struct _jso_object_member *next;
 } jso_object_member;
 

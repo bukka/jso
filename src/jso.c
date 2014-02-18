@@ -100,7 +100,7 @@ JSO_API void jso_array_free(jso_array *arr)
 {
 	jso_array_element *tmp, *el = arr->head;
 	while (el) {
-		jso_value_free(el->val);
+		jso_value_free(&el->val);
 		tmp = el->next;
 		jso_free(el);
 		el = tmp;
@@ -114,7 +114,7 @@ JSO_API int jso_array_append(jso_array *arr, jso_value *val)
 	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
 	if (!el)
 		return JSO_FALSE;
-	el->val = val;
+	el->val = *val;
 	el->next = NULL;
 	if (!arr->head) {
 		arr->head = arr->tail = el;
@@ -131,7 +131,7 @@ JSO_API int jso_array_prepend(jso_array *arr, jso_value *val)
 	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
 	if (!el)
 		return JSO_FALSE;
-	el->val = val;
+	el->val = *val;
 	el->next = arr->head;
 	arr->head = el;
 	if (!arr->tail)
@@ -145,7 +145,7 @@ JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk)
 	size_t pos = 0;
 	jso_array_element *el = arr->head;
 	while (el) {
-		cbk(pos++, el->val);
+		cbk(pos++, &el->val);
 		el = el->next;
 	}
 }
@@ -155,7 +155,7 @@ JSO_API void jso_array_print(jso_array *arr, jso_uint indent)
 {
 	jso_array_element *el = arr->head;
 	while (el) {
-		jso_value_print(el->val, indent);
+		jso_value_print(&el->val, indent);
 		el = el->next;
 	}
 }
@@ -171,7 +171,7 @@ JSO_API void jso_object_free(jso_object *obj)
 {
 	jso_object_member *tmp, *member = obj->head;
 	while (member) {
-		jso_value_free(member->val);
+		jso_value_free(&member->val);
 		jso_free(member->key.val);
 		tmp = member->next;
 		jso_free(member);
@@ -188,7 +188,7 @@ JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val)
 	if (!member)
 		return JSO_FALSE;
 	member->key = key->data.str;
-	member->val = val;
+	member->val = *val;
 	member->next = NULL;
 	if (!obj->head) {
 		obj->head = obj->tail = member;
@@ -204,7 +204,7 @@ JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk)
 {
 	jso_object_member *member = obj->head;
 	while (member) {
-		cbk(&member->key, member->val);
+		cbk(&member->key, &member->val);
 		member = member->next;
 	}
 }
@@ -216,7 +216,7 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
 	while (member) {
 		jso_print_indent(indent);
 		fprintf(JSO_PRINT_STREAM, " KEY: %s\n", member->key.val);
-		jso_value_print(member->val, indent + 1);
+		jso_value_print(&member->val, indent + 1);
 		member = member->next;
 	}
 }
