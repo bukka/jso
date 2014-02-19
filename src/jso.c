@@ -47,7 +47,6 @@ JSO_API void jso_value_free(jso_value *val)
 			break;
 		case JSO_TYPE_ARRAY:
 			jso_array_free(JSO_ARRVAL_P(val));
-			jso_free(JSO_ARRVAL_P(val));
 			break;
 		default:
 			break;
@@ -61,7 +60,7 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 
 	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_NULL:
-			fputs("NULL", JSO_PRINT_STREAM);
+			fputs("NULL\n", JSO_PRINT_STREAM);
 			break;
 		case JSO_TYPE_BOOL:
 			fprintf(JSO_PRINT_STREAM, "BOOL: %s\n", JSO_IVAL_P(val) ? "TRUE" : "FALSE");
@@ -76,14 +75,16 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 			if (JSO_SVAL_P(val))
 				fprintf(JSO_PRINT_STREAM, "STRING: \"%s\" ; LENGTH: %zu\n", JSO_SVAL_P(val), JSO_SLEN_P(val));
 			else
-				fputs("EMPTY STRING", JSO_PRINT_STREAM);
+				fputs("EMPTY STRING\n", JSO_PRINT_STREAM);
 			break;
 		case JSO_TYPE_ARRAY:
 			fputs("ARRAY:\n", JSO_PRINT_STREAM);
 			jso_array_print(JSO_ARRVAL_P(val), indent + 1);
+			break;
 		case JSO_TYPE_OBJECT:
 			fputs("OBJECT:\n", JSO_PRINT_STREAM);
 			jso_object_print(JSO_OBJVAL_P(val), indent + 1);
+			break;
 		default:
 			break;
 	}
