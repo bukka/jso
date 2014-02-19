@@ -1,0 +1,13 @@
+{
+  "v1": "string value",
+  "v2": "new line \n string",
+  "empty": "",
+  "array": [
+	"value 1",
+	"value \u2323",
+	{ "name": 23 }
+  ],
+  "xx": null
+}
+  
+  
