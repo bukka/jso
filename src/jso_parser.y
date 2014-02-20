@@ -65,6 +65,11 @@ int jso_yydebug = 1;
 %type <pair> pair
 %type <array> elements element
 
+%destructor { jso_value_free(&$$); } <value>
+%destructor { jso_object_free($$); } <object>
+%destructor { jso_value_free(&$$.key); jso_value_free(&$$.val); } <pair>
+%destructor { jso_array_free($$); } <array>
+
 %code {
 int jso_yylex(union YYSTYPE *value, jso_parser *parser);
 void jso_yyerror(jso_parser *parser, char const *msg);
@@ -73,7 +78,7 @@ void jso_yyerror(jso_parser *parser, char const *msg);
 %% /* Rules */
 
 start:
-		value JSO_T_EOI         { parser->result = $1; YYACCEPT; }
+		value JSO_T_EOI         { $$ = $1; parser->result = $1; (void) $2; YYACCEPT; }
 ;
 
 object:
