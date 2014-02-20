@@ -48,6 +48,9 @@ JSO_API void jso_value_free(jso_value *val)
 		case JSO_TYPE_ARRAY:
 			jso_array_free(JSO_ARRVAL_P(val));
 			break;
+		case JSO_TYPE_OBJECT:
+			jso_object_free(JSO_OBJVAL_P(val));
+			break;
 		default:
 			break;
 	}
