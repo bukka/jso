@@ -38,17 +38,24 @@ int parse_file(const char *filename)
 	/* get file size */
 	filesize = jso_io_file_size(filename);
 	if (filesize < 0) {
-		fprintf(stderr, "Getting file size for file '%s' failed", filename);
+		fprintf(stderr, "Getting file size for file '%s' failed\n", filename);
 		return -1;
 	}
 	/* open file */
 	io = jso_io_file_open(filename, "r");
 	if (!io) {
-		fprintf(stderr, "Opening the file '%s' failed", filename);
+		fprintf(stderr, "Opening the file '%s' failed\n", filename);
 		return -1;
 	}
 	/* read the whole file into the buffer */
-	JSO_IO_READ(io, filesize);
+	if (JSO_IO_READ(io, filesize) == 0) {
+		fprintf(stderr, "No data in the file '%s'\n", filename);
+		return -1;
+	}
+	if (!JSO_IO_CURSOR(io)) {
+		fprintf(stderr, "Cursor is not set\n");
+		return -1;
+	}
 	/* init scanner */
 	jso_scanner_init(&parser.scanner, io);
 

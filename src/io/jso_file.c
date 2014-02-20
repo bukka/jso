@@ -47,7 +47,8 @@ static size_t jso_io_file_read(jso_io *io, size_t size)
 		if (!JSO_IO_SIZE(io)) {
 			/* total size is equal to size (limit = cursor = 0) */
 			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_FILE_BUFF_SIZE, total_size);
-			JSO_IO_BUFFER(io) = (jso_ctype *) jso_malloc(JSO_IO_SIZE(io) * sizeof(jso_ctype));
+			/* use calloc to suppress valgrind warnings */
+			JSO_IO_BUFFER(io) = (jso_ctype *) jso_calloc(JSO_IO_SIZE(io), sizeof(jso_ctype));
 		} else {
 			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, total_size);
 			JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));

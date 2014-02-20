@@ -22,6 +22,13 @@
 - actions
 - jso_value memory management
 
+## IO
+
+### File
+- suppress valgrind errors without using calloc in jso_io_file_read
+  - data is not unitialized because fread is used
+- fix valgrind errors when JSO_IO_FILE_BUFF_SIZE is small (e.g. 8)
+
 ## Build
 - debug build
   - use option --enable-debug
