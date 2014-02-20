@@ -188,7 +188,8 @@ typedef int (*jso_array_callback)(size_t idx, jso_value *val);
 JSO_API jso_array *jso_array_alloc();
 JSO_API void jso_array_free(jso_array *arr);
 JSO_API int jso_array_append(jso_array *arr, jso_value *val);
-JSO_API int jso_array_prepend(jso_array *arr, jso_value *val);
+JSO_API int jso_array_push(jso_array *arr, jso_value *val);
+JSO_API int jso_array_pop(jso_array *arr);
 JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk);
 JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
 

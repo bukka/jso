@@ -129,8 +129,8 @@ JSO_API int jso_array_append(jso_array *arr, jso_value *val)
 	return JSO_TRUE;
 }
 
-/* prepend element to the array */
-JSO_API int jso_array_prepend(jso_array *arr, jso_value *val)
+/* push element to the array */
+JSO_API int jso_array_push(jso_array *arr, jso_value *val)
 {
 	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
 	if (!el)
@@ -141,6 +141,19 @@ JSO_API int jso_array_prepend(jso_array *arr, jso_value *val)
 	if (!arr->tail)
 		arr->tail = el;
 	return JSO_TRUE;
+}
+
+/* pop the head element from the array */
+JSO_API int jso_array_pop(jso_array *arr)
+{
+	jso_array_element *el = arr->head;
+	if (!el)
+		return JSO_FALSE;
+	if (el == arr->tail)
+		arr->head = arr->tail = NULL;
+	else
+		arr->head = arr->head->next;
+	jso_free(el);
 }
 
 /* call cbk function for each element in array */
