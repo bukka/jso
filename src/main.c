@@ -31,6 +31,7 @@
 
 int parse_file(const char *filename)
 {
+	int rc;
 	jso_io *io;
 	jso_parser parser;
 	off_t filesize;
@@ -64,12 +65,14 @@ int parse_file(const char *filename)
 		jso_value_print(&parser.result, 0);
 		jso_value_free(&parser.result);
 		puts("SUCCESS");
+		rc = 0;
 	} else {
 		puts("FAILURE");
+		rc = -1;
 	}
 
 	jso_io_file_close(io);
-	return 0;
+	return rc;
 }
 
 int main(int argc, const char *argv[])
