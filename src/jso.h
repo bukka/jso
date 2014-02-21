@@ -38,6 +38,9 @@
 #define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 #define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
+/* this macro suppresses warnings about unused variable */
+#define JSO_USE(unused_variable) ((void) (unused_variable))
+
 /* bool type */
 typedef char  jso_bool;
 

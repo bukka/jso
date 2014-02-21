@@ -42,8 +42,10 @@ JSO_API void jso_value_free(jso_value *val)
 {
 	switch (val->type) {
 		case JSO_TYPE_STRING:
-			if (JSO_SVAL_P(val) && JSO_SLEN_P(val) > 0)
+			if (JSO_SVAL_P(val) && JSO_SLEN_P(val) > 0) {
 				jso_free(JSO_SVAL_P(val));
+				JSO_SVAL_P(val) = NULL;
+			}
 			break;
 		case JSO_TYPE_ARRAY:
 			jso_array_free(JSO_ARRVAL_P(val));
@@ -154,6 +156,7 @@ JSO_API int jso_array_pop(jso_array *arr)
 	else
 		arr->head = arr->head->next;
 	jso_free(el);
+	return JSO_TRUE;
 }
 
 /* call cbk function for each element in array */
