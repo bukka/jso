@@ -162,7 +162,7 @@ std:
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
 	<JS>WS|NL                { goto std; }
-	<JS>EOI                  { JSO_TOKEN_RETURN(EOI); }
+	<JS>EOI                  { return JSO_IO_END(s->io) ? JSO_TOKEN(EOI) : JSO_TOKEN(ERROR); }
 	<JS>["]                  {
 		JSO_IO_STR_SET_START(s->io);
 		JSO_IO_STR_CLEAR_ESC(s->io);
@@ -170,6 +170,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 
+	<STR_P1>EOI              { if (JSO_IO_END(s->io)) return JSO_TOKEN(ERROR); }
 	<STR_P1>UTF1             {
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);

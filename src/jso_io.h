@@ -114,7 +114,7 @@ struct jso_io {
 /* error during the io operation  */
 #define JSO_IO_BAD(io)  (JSO_IO_ERROR(io) != 0)
 /* end of io */
-#define JSO_IO_END(io) ((io)->limit == (io)->cursor)
+#define JSO_IO_END(io) ((io)->limit < (io)->cursor)
 
 /* handle accessors - pointer */
 #define JSO_IO_HANDLE_PTR(io) ((io)->handle.ptr)
