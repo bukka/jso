@@ -121,6 +121,19 @@ std:
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
+	UTF8T   = [\x80-\xBF] ;
+	UTF8_1  = [\x00-\x7F] ;
+	UTF8_2  = [\xC2-\xDF] UTF8T ;
+	UTF8_3A = "\xE0" [\xA0-\xBF] UTF8T ;
+	UTF8_3B = [\xE1-\xEC] UTF8T{2} ;
+	UTF8_3C = "\xED" [\x80-\x9F] UTF8T ;
+	UTF8_3D = [\xEE-\xEF] UTF8T{2} ;
+	UTF8_3  = UTF8_3A | UTF8_3B | UTF8_3C | UTF8_3D ;
+	UTF8_4A = "\xF0"[\x90-\xBF] UTF8T{2} ;
+	UTF8_4B = [\xF1-\xF3] UTF8T{3} ;
+	UTF8_4C = "\xF4" [\x80-\x8F] UTF8T{2} ;
+	UTF8_4  = UTF8_4A | UTF8_4B | UTF8_4C ;
+	UTF8    = UTF8_1 | UTF8_2 | UTF8_3 | UTF8_4 ;
 	ANY     = [^] ;
 	ESCPREF = "\\" ;
 	ESCSYM  = ( "\"" | "\\" | "/" | [bfnrt] ) ;
@@ -128,10 +141,10 @@ std:
 	UTFSYM  = "u" ;
 	UTFPREF = ESCPREF UTFSYM ;
 	UCS2    = UTFPREF HEX{4} ;
-	UTF1    = UTFPREF "00" HEX7 HEX ;
-	UTF2    = UTFPREF "0" HEX7 HEX{2} ;
-	UTF3    = UTFPREF ( ( ( HEXC | [efEF] ) HEX ) | ( [dD] HEX7 ) ) HEX{2} ;
-	UTF4    = UTFPREF [dD] [89abAB] HEX{2} UTFPREF [dD] [c-fC-F] HEX{2} ;
+	UTF16_1 = UTFPREF "00" HEX7 HEX ;
+	UTF16_2 = UTFPREF "0" HEX7 HEX{2} ;
+	UTF16_3 = UTFPREF ( ( ( HEXC | [efEF] ) HEX ) | ( [dD] HEX7 ) ) HEX{2} ;
+	UTF16_4 = UTFPREF [dD] [89abAB] HEX{2} UTFPREF [dD] [c-fC-F] HEX{2} ;
 
 	<JS>"{"                  { return '{'; }
 	<JS>"}"                  { return '}'; }
@@ -171,19 +184,19 @@ std:
 	}
 
 	<STR_P1>EOI              { if (JSO_IO_END(s->io)) return JSO_TOKEN(ERROR); }
-	<STR_P1>UTF1             {
+	<STR_P1>UTF16_1             {
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
-	<STR_P1>UTF2             {
+	<STR_P1>UTF16_2          {
 		JSO_IO_STR_ADD_ESC(s->io, 4);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
-	<STR_P1>UTF3             {
+	<STR_P1>UTF16_3          {
 		JSO_IO_STR_ADD_ESC(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
-	<STR_P1>UTF4             {
+	<STR_P1>UTF16_4          {
 		JSO_IO_STR_ADD_ESC(s->io, 8);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
@@ -219,16 +232,17 @@ std:
 			JSO_TOKEN_RETURN(STRING);
 		}
 	}
-	<STR_P1>ANY              { JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>UTF8             { JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>ANY              { JSO_TOKEN_RETURN(ERROR); }
 
-	<STR_P2>UTF1             {
+	<STR_P2>UTF16_1             {
 		int utf16 = jso_ucs2_to_int(s, 2);
 		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) utf16;
 		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
-	<STR_P2>UTF2             {
+	<STR_P2>UTF16_2             {
 		int utf16 = jso_ucs2_to_int(s, 3);
 		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) (0xc0 | (utf16 >> 6));
@@ -236,7 +250,7 @@ std:
 		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
-	<STR_P2>UTF3             {
+	<STR_P2>UTF16_3             {
 		int utf16 = jso_ucs2_to_int(s, 4);
 		JSO_SCANNER_COPY_UTF();
 		*(s->pstr++) = (jso_ctype) (0xe0 | (utf16 >> 12));
