@@ -82,14 +82,19 @@ static int jso_hex_to_int(jso_ctype c)
 	}
 }
 
-static int jso_ucs2_to_int(jso_scanner *s, int size)
+static int jso_ucs2_to_int_ex(jso_scanner *s, int size, int start)
 {
 	int i, code = 0;
-	jso_ctype *pc = JSO_IO_CURSOR(s->io) - 1;
+	jso_ctype *pc = JSO_IO_CURSOR(s->io) - start;
 	for (i = 0; i < size; i++) {
 		code |= jso_hex_to_int(*(pc--)) << (i * 4);
 	}
 	return code;
+}
+
+static int jso_ucs2_to_int(jso_scanner *s, int size)
+{
+	return jso_ucs2_to_int_ex(s, size, 1);
 }
 
 void jso_scanner_init(jso_scanner *s, jso_io *io)
@@ -256,6 +261,19 @@ std:
 		*(s->pstr++) = (jso_ctype) (0xe0 | (utf16 >> 12));
 		*(s->pstr++) = (jso_ctype) (0x80 | ((utf16 >> 6) & 0x3f));
 		*(s->pstr++) = (jso_ctype) (0x80 | (utf16 & 0x3f));
+		JSO_IO_STR_SET_START(s->io);
+		JSO_CONDITION_GOTO(STR_P2);
+	}
+	<STR_P2>UTF16_4             {
+		int utf32, utf16_hi, utf16_lo;
+		utf16_hi = jso_ucs2_to_int(s, 4);
+		utf16_lo = jso_ucs2_to_int_ex(s, 4, 7);
+		utf32 = ((utf16_hi & 0x3FF) << 10) + (utf16_lo & 0x3FF) + 0x10000;
+		jso_scanner_copy_string(s, 11);
+		*(s->pstr++) = (jso_ctype) (0xf0 | (utf32 >> 18));
+		*(s->pstr++) = (jso_ctype) (0x80 | ((utf32 >> 12) & 0x3f));
+		*(s->pstr++) = (jso_ctype) (0x80 | ((utf32 >> 6) & 0x3f));
+		*(s->pstr++) = (jso_ctype) (0x80 | (utf32 & 0x3f));
 		JSO_IO_STR_SET_START(s->io);
 		JSO_CONDITION_GOTO(STR_P2);
 	}
