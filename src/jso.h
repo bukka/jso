@@ -40,6 +40,8 @@
 
 /* this macro suppresses warnings about unused variable */
 #define JSO_USE(unused_variable) ((void) (unused_variable))
+#define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
+#define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
 
 /* bool type */
 typedef char  jso_bool;

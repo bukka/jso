@@ -60,7 +60,7 @@ int jso_yydebug = 1;
 %token <value> JSO_T_EOI
 %token <value> JSO_T_ERROR
 
-%type <value> start object key value array
+%type <value> start object key value array errlex
 %type <object> members member
 %type <pair> pair
 %type <array> elements element
@@ -79,7 +79,7 @@ void jso_yyerror(jso_parser *parser, char const *msg);
 
 start:
 		value JSO_T_EOI         { $$ = $1; parser->result = $1; JSO_USE($2); YYACCEPT; }
-	|	value JSO_T_ERROR       { $$ = $2; jso_value_free(&$1); YYERROR; }
+	|	value errlex            { JSO_USE_2($$, $1, $2); }
 ;
 
 object:
@@ -94,12 +94,12 @@ members:
 member:
 		pair                    { $$ = jso_object_alloc(); jso_object_add($$, &$1.key, &$1.val); }
 	|	member ',' pair         { jso_object_add($1, &$3.key, &$3.val); $$ = $1; }
-	|	member JSO_T_ERROR      { JSO_USE($$); JSO_USE($2); jso_object_free($1); YYERROR; }
+	|	member errlex           { JSO_USE_2($$, $1, $2); }
 ;
 
 pair:
 		key ':' value           { $$.key = $1; $$.val = $3; }
-	|	key JSO_T_ERROR         { JSO_USE($$); JSO_USE($2); jso_value_free(&$1); YYERROR; }
+	|	key errlex              { JSO_USE_2($$, $1, $2); }
 ;
 
 array:
@@ -114,7 +114,7 @@ elements:
 element:
 		value                   { $$ = jso_array_alloc(); jso_array_append($$, &$1); }
 	|	element ',' value       { jso_array_append($1, &$3); $$ = $1; }
-	|	element JSO_T_ERROR     { JSO_USE($$); JSO_USE($2); jso_array_free($1); YYERROR; }
+	|	element errlex          { JSO_USE_2($$, $1, $2); }
 ;
 
 key:
@@ -132,7 +132,11 @@ value:
 	|	JSO_T_NUL
 	|	JSO_T_TRUE
 	|	JSO_T_FALSE
-	|	JSO_T_ERROR             { JSO_USE($$); JSO_USE($1); YYERROR; }
+	|	errlex
+;
+
+errlex:
+		JSO_T_ERROR             { JSO_USE_1($$, $1); YYERROR; }
 ;
 
 %%
