@@ -1,6 +1,10 @@
 {
   "v1": "string value",
   "v2": "new line \n string",
+  "v3": {
+	"in1": 23,
+	"in2": [ 1, [ 2, [ 3, [ 4 ] ] ] ]
+  },
   "empty": "",
   "array": [
 	"value 1",
