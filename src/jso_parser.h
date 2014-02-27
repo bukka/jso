@@ -30,7 +30,11 @@
 typedef struct _jso_parser {
 	jso_scanner scanner;
 	jso_value result;
+	jso_uint depth;
+	jso_uint max_depth;
 } jso_parser;
+
+void jso_parser_init(jso_parser *parser);
 
 int jso_yyparse(jso_parser *parser);
 

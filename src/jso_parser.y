@@ -23,6 +23,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "jso.h"
 #include "jso_parser.h"
@@ -73,6 +74,9 @@ int jso_yydebug = 1;
 %code {
 int jso_yylex(union YYSTYPE *value, jso_parser *parser);
 void jso_yyerror(jso_parser *parser, char const *msg);
+
+#define JSO_DEPTH_INC ++parser->depth; if (parser->max_depth && parser->depth > parser->max_depth) YYERROR
+#define JSO_DEPTH_DEC --parser->depth
 }
 
 %% /* Rules */
@@ -83,7 +87,7 @@ start:
 ;
 
 object:
-		'{' members '}'         { JSO_VALUE_SET_OBJECT($$, $2); }
+		'{' { JSO_DEPTH_INC; } members '}' { JSO_DEPTH_DEC; JSO_VALUE_SET_OBJECT($$, $3); }
 ;
 
 members:
@@ -103,7 +107,7 @@ pair:
 ;
 
 array:
-		'[' elements ']'        { JSO_VALUE_SET_ARRAY($$, $2); }
+		'[' { JSO_DEPTH_INC; } elements ']' { JSO_DEPTH_DEC; JSO_VALUE_SET_ARRAY($$, $3); }
 ;
 
 elements:
@@ -140,6 +144,11 @@ errlex:
 ;
 
 %%
+
+void jso_parser_init(jso_parser *parser)
+{
+	memset(parser, 0, sizeof(jso_parser));
+}
 
 int jso_yylex(union YYSTYPE *value, jso_parser *parser)
 {

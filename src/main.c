@@ -58,7 +58,11 @@ int parse_file(const char *filename)
 		return -1;
 	}
 	/* init scanner */
+	jso_parser_init(&parser);
 	jso_scanner_init(&parser.scanner, io);
+
+	/* set max depth (0 = unlimited) */
+	parser.max_depth = 0;
 
 	/* parse */
 	if (!jso_yyparse(&parser)) {
