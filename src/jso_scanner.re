@@ -181,7 +181,14 @@ std:
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
 	<JS>WS|NL                { goto std; }
-	<JS>EOI                  { return JSO_IO_END(s->io) ? JSO_TOKEN(EOI) : JSO_TOKEN(ERROR); }
+	<JS>EOI                  {
+		if (JSO_IO_END(s->io)) {
+			JSO_TOKEN_RETURN(EOI);
+		} else {
+			JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
+			JSO_TOKEN_RETURN(ERROR);
+		}
+	}
 	<JS>["]                  {
 		JSO_IO_STR_SET_START(s->io);
 		JSO_IO_STR_CLEAR_ESC(s->io);
@@ -189,7 +196,10 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 
-	<STR_P1>CTRL             { return JSO_TOKEN(ERROR); }
+	<STR_P1>CTRL             {
+		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_CTRL_CHAR);
+		JSO_TOKEN_RETURN(ERROR);
+	}
 	<STR_P1>UTF16_1          {
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
@@ -207,6 +217,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UCS2             {
+		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF16);
 		JSO_TOKEN_RETURN(ERROR);
 	}
 	<STR_P1>ESC              {
@@ -214,6 +225,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>ESCPREF           {
+		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
 		JSO_TOKEN_RETURN(ERROR);
 	}
 	<STR_P1>["]              {
@@ -239,7 +251,10 @@ std:
 		}
 	}
 	<STR_P1>UTF8             { JSO_CONDITION_GOTO(STR_P1); }
-	<STR_P1>ANY              { JSO_TOKEN_RETURN(ERROR); }
+	<STR_P1>ANY              {
+		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF8);
+		JSO_TOKEN_RETURN(ERROR);
+	}
 
 	<STR_P2>UTF16_1             {
 		int utf16 = jso_ucs2_to_int(s, 2);
@@ -303,6 +318,7 @@ std:
 				esc = *JSO_IO_CURSOR(s->io);
 				break;
 			default:
+				JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
 				JSO_TOKEN_RETURN(ERROR);
 		}
 		*(s->pstr++) = esc;
@@ -316,7 +332,10 @@ std:
 	}
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
 
-	<*>ANY                   { JSO_TOKEN_RETURN(ERROR); }
+	<*>ANY                   {
+		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
+		JSO_TOKEN_RETURN(ERROR);
+	}
 */
 
 }

@@ -72,6 +72,7 @@ typedef struct _jso_string {
 
 /* jso value types */
 typedef enum {
+	JSO_TYPE_ERROR,
 	JSO_TYPE_NULL,
 	JSO_TYPE_BOOL,
 	JSO_TYPE_INT,
@@ -80,6 +81,16 @@ typedef enum {
 	JSO_TYPE_ARRAY,
 	JSO_TYPE_OBJECT
 } jso_value_type;
+
+/* jso error types */
+typedef enum {
+	JSO_ERROR_SYNTAX,
+	JSO_ERROR_TOKEN,
+	JSO_ERROR_CTRL_CHAR,
+	JSO_ERROR_UTF16,
+	JSO_ERROR_UTF8,
+	JSO_ERROR_ESCAPE
+} jso_error_type;
 
 /* jso value data union */
 typedef union _jso_value_data {
@@ -124,6 +135,7 @@ struct _jso_object {
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
 #define JSO_IVAL_P(pjv) (pjv)->data.ival
+#define JSO_EVAL_P(pjv) ((jso_error_type) JSO_IVAL_P(pjv))
 #define JSO_DVAL_P(pjv) (pjv)->data.dval
 #define JSO_SVAL_P(pjv) (pjv)->data.str.val
 #define JSO_SLEN_P(pjv) (pjv)->data.str.len
@@ -133,6 +145,7 @@ struct _jso_object {
 /* accessors for jso value */
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
 #define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
+#define JSO_EVAL(jv) JSO_EVAL_P(&(jv))
 #define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
@@ -140,6 +153,11 @@ struct _jso_object {
 #define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
 
 /* jso value setters */
+#define JSO_VALUE_SET_ERROR(jv, ev) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
+		JSO_IVAL(jv) = (jso_int) ev; \
+	} while(0)
 #define JSO_VALUE_SET_NULL(jv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_NULL; \

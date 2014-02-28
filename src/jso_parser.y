@@ -140,7 +140,7 @@ value:
 ;
 
 errlex:
-		JSO_T_ERROR             { JSO_USE_1($$, $1); YYERROR; }
+		JSO_T_ERROR             { parser->result = $1; JSO_USE($$); YYERROR; }
 ;
 
 %%
