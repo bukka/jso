@@ -126,6 +126,7 @@ std:
 	WS      = [ \t]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
+	CTRL    = [\x00-\x1F] ;
 	UTF8T   = [\x80-\xBF] ;
 	UTF8_1  = [\x00-\x7F] ;
 	UTF8_2  = [\xC2-\xDF] UTF8T ;
@@ -188,8 +189,8 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 
-	<STR_P1>EOI              { if (JSO_IO_END(s->io)) return JSO_TOKEN(ERROR); }
-	<STR_P1>UTF16_1             {
+	<STR_P1>CTRL             { return JSO_TOKEN(ERROR); }
+	<STR_P1>UTF16_1          {
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
