@@ -54,7 +54,7 @@ int parse_file(const char *filename)
 		return -1;
 	}
 	if (!JSO_IO_CURSOR(io)) {
-		fprintf(stderr, "Cursor is not set\n");
+		fputs("Cursor is not set\n", stderr);
 		return -1;
 	}
 	/* init scanner */
@@ -65,24 +65,22 @@ int parse_file(const char *filename)
 	parser.max_depth = 0;
 
 	/* parse */
-	if (!jso_yyparse(&parser)) {
-		jso_value_print(&parser.result, 0);
-		jso_value_free(&parser.result);
-		puts("SUCCESS");
-		rc = 0;
-	} else {
-		puts("FAILURE");
-		rc = -1;
-	}
+	rc = jso_yyparse(&parser);
 
+	/* print result */
+	jso_value_print(&parser.result, 0);
+
+	/* free resources */
+	jso_value_free(&parser.result);
 	jso_io_file_close(io);
+
 	return rc;
 }
 
 int main(int argc, const char *argv[])
 {
 	if (argc < 2) {
-		puts("File path not specified");
+		fputs("File path not specified\n", stderr);
 		return EXIT_FAILURE;
 	}
 

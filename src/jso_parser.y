@@ -159,5 +159,5 @@ int jso_yylex(union YYSTYPE *value, jso_parser *parser)
 
 void jso_yyerror(jso_parser *parser, char const *msg)
 {
-  fprintf (stderr, "%s\n", msg);
+	JSO_VALUE_SET_ERROR(parser->result, JSO_ERROR_SYNTAX);
 }

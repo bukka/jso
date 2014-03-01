@@ -90,6 +90,35 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 			fputs("OBJECT:\n", JSO_PRINT_STREAM);
 			jso_object_print(JSO_OBJVAL_P(val), indent + 1);
 			break;
+		case JSO_TYPE_ERROR:
+			{
+				const char *etype;
+				switch (JSO_EVAL_P(val)) {
+					case JSO_ERROR_CTRL_CHAR:
+						etype = "CONTROL CHARACTER";
+						break;
+					case JSO_ERROR_ESCAPE:
+						etype = "ESCAPE";
+						break;
+					case JSO_ERROR_SYNTAX:
+						etype = "SYNTAX";
+						break;
+					case JSO_ERROR_TOKEN:
+						etype = "TOKEN";
+						break;
+					case JSO_ERROR_UTF8:
+						etype = "UTF8:";
+						break;
+					case JSO_ERROR_UTF16:
+						etype = "UTF16";
+						break;
+					default:
+						etype = "unknown";
+						break;
+				}
+				fprintf(stderr, "ERROR: %s\n", etype);
+			}
+			break;
 		default:
 			break;
 	}
