@@ -75,8 +75,13 @@ int jso_yydebug = 1;
 int jso_yylex(union YYSTYPE *value, jso_parser *parser);
 void jso_yyerror(jso_parser *parser, char const *msg);
 
-#define JSO_DEPTH_INC ++parser->depth; if (parser->max_depth && parser->depth > parser->max_depth) YYERROR
 #define JSO_DEPTH_DEC --parser->depth
+#define JSO_DEPTH_INC \
+	if (parser->max_depth && parser->depth >= parser->max_depth) { \
+		JSO_VALUE_SET_ERROR(parser->result, JSO_ERROR_DEPTH); \
+		YYERROR; \
+	} \
+	++parser->depth
 }
 
 %% /* Rules */

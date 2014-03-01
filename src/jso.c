@@ -94,17 +94,20 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 			{
 				const char *etype;
 				switch (JSO_EVAL_P(val)) {
+					case JSO_ERROR_SYNTAX:
+						etype = "SYNTAX";
+						break;
+					case JSO_ERROR_DEPTH:
+						etype = "DEPTH";
+						break;
+					case JSO_ERROR_TOKEN:
+						etype = "TOKEN";
+						break;
 					case JSO_ERROR_CTRL_CHAR:
 						etype = "CONTROL CHARACTER";
 						break;
 					case JSO_ERROR_ESCAPE:
 						etype = "ESCAPE";
-						break;
-					case JSO_ERROR_SYNTAX:
-						etype = "SYNTAX";
-						break;
-					case JSO_ERROR_TOKEN:
-						etype = "TOKEN";
 						break;
 					case JSO_ERROR_UTF8:
 						etype = "UTF8:";

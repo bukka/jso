@@ -85,6 +85,7 @@ typedef enum {
 /* jso error types */
 typedef enum {
 	JSO_ERROR_SYNTAX,
+	JSO_ERROR_DEPTH,
 	JSO_ERROR_TOKEN,
 	JSO_ERROR_CTRL_CHAR,
 	JSO_ERROR_UTF16,
