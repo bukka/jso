@@ -38,6 +38,18 @@
 #define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 #define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
+/* jso int limits */
+#if SIZEOF_LONG == 4
+#define JSO_INT_MAX_LENGTH 11
+#define JSO_INT_MAX_DIGITS "2147483648"
+#elif SIZEOF_LONG == 8
+#define JSO_INT_MAX_LENGTH 20
+#define JSO_INT_MAX_DIGITS "9223372036854775808"
+#else
+#error "Unknown SIZEOF_LONG"
+#endif
+
+
 /* this macro suppresses warnings about unused variable */
 #define JSO_USE(unused_variable) ((void) (unused_variable))
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)

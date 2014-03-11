@@ -172,8 +172,26 @@ std:
 	}
 	<JS>INT                  {
 		char *tailptr;
-		JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
-		JSO_TOKEN_RETURN(LONG);
+		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
+		int digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
+		int max_digits = JSO_INT_MAX_LENGTH - 1;
+		if (digits >= max_digits) {
+			if (digits == max_digits) {
+				int cmp = strncmp(JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, max_digits);
+				if (!(cmp < 0 || (cmp == 0 && negative))) {
+					bigint = 1;
+				}
+			} else {
+				bigint = 1;
+			}
+		}
+		if (bigint) {
+			JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
+			JSO_TOKEN_RETURN(DOUBLE);
+		} else {
+			JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
+			JSO_TOKEN_RETURN(LONG);
+		}
 	}
 	<JS>FLOAT|EXP            {
 		char *tailptr;

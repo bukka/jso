@@ -14,6 +14,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([memmove strtol])
+AC_CHECK_SIZEOF(long)
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h unistd.h])
