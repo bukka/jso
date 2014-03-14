@@ -302,7 +302,7 @@ std:
 		int utf32, utf16_hi, utf16_lo;
 		utf16_hi = jso_ucs2_to_int(s, 4);
 		utf16_lo = jso_ucs2_to_int_ex(s, 4, 7);
-		utf32 = ((utf16_hi & 0x3FF) << 10) + (utf16_lo & 0x3FF) + 0x10000;
+		utf32 = ((utf16_lo & 0x3FF) << 10) + (utf16_hi & 0x3FF) + 0x10000;
 		jso_scanner_copy_string(s, 11);
 		*(s->pstr++) = (jso_ctype) (0xf0 | (utf32 >> 18));
 		*(s->pstr++) = (jso_ctype) (0x80 | ((utf32 >> 12) & 0x3f));
