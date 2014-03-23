@@ -171,7 +171,6 @@ std:
 		JSO_TOKEN_RETURN(FALSE);
 	}
 	<JS>INT                  {
-		char *tailptr;
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
 		size_t digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
 		if (digits >= JSO_INT_MAX_LENGTH) {
@@ -185,16 +184,15 @@ std:
 			}
 		}
 		if (bigint) {
-			JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
+			JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
 			JSO_TOKEN_RETURN(DOUBLE);
 		} else {
-			JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), &tailptr, 10));
+			JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), NULL, 10));
 			JSO_TOKEN_RETURN(LONG);
 		}
 	}
 	<JS>FLOAT|EXP            {
-		char *tailptr;
-		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), &tailptr));
+		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
 		JSO_TOKEN_RETURN(DOUBLE);
 	}
 	<JS>WS|NL                { goto std; }
