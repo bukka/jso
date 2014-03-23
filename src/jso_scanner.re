@@ -175,7 +175,7 @@ std:
 		size_t digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
 		if (digits >= JSO_INT_MAX_LENGTH) {
 			if (digits == JSO_INT_MAX_LENGTH) {
-				int cmp = strncmp(JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, JSO_INT_MAX_LENGTH);
+				int cmp = strncmp((char *) JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, JSO_INT_MAX_LENGTH);
 				if (!(cmp < 0 || (cmp == 0 && negative))) {
 					bigint = 1;
 				}

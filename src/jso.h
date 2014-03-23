@@ -68,7 +68,7 @@ typedef unsigned long jso_uint;
 typedef double jso_double;
 
 /* character type for scanner */
-typedef char jso_ctype;
+typedef unsigned char jso_ctype;
 
 /* pre-definition of array type */
 typedef struct _jso_array jso_array;
