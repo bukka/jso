@@ -173,11 +173,10 @@ std:
 	<JS>INT                  {
 		char *tailptr;
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
-		int digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
-		int max_digits = JSO_INT_MAX_LENGTH - 1;
-		if (digits >= max_digits) {
-			if (digits == max_digits) {
-				int cmp = strncmp(JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, max_digits);
+		size_t digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
+		if (digits >= JSO_INT_MAX_LENGTH) {
+			if (digits == JSO_INT_MAX_LENGTH) {
+				int cmp = strncmp(JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, JSO_INT_MAX_LENGTH);
 				if (!(cmp < 0 || (cmp == 0 && negative))) {
 					bigint = 1;
 				}

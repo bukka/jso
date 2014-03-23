@@ -40,10 +40,10 @@
 
 /* jso int limits */
 #if SIZEOF_LONG == 4
-#define JSO_INT_MAX_LENGTH 11
+#define JSO_INT_MAX_LENGTH 10
 #define JSO_INT_MAX_DIGITS "2147483648"
 #elif SIZEOF_LONG == 8
-#define JSO_INT_MAX_LENGTH 20
+#define JSO_INT_MAX_LENGTH 19
 #define JSO_INT_MAX_DIGITS "9223372036854775808"
 #else
 #error "Unknown SIZEOF_LONG"
