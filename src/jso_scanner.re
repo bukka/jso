@@ -40,11 +40,9 @@
 #define YYSETCONDITION(yystate) s->state = yystate
 
 #define	YYFILL(n)   { JSO_IO_READ(s->io, n); \
-	if (JSO_IO_ERROR(s->io)) return JSO_TOKEN(ERROR); \
-	if (JSO_IO_END(s->io)) return JSO_TOKEN(EOI); }
+	if (JSO_IO_ERROR(s->io)) return JSO_T_ERROR; \
+	if (JSO_IO_END(s->io)) return JSO_T_EOI; }
 
-#define JSO_TOKEN(token)  JSO_T_##token
-#define	JSO_TOKEN_RETURN(token)  return JSO_TOKEN(token)
 #define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
 #define JSO_CONDITION_GOTO(condition) goto yyc_##condition
 
@@ -63,20 +61,13 @@ static void jso_scanner_copy_string(jso_scanner *s, size_t esc_size)
 
 static int jso_hex_to_int(jso_ctype c)
 {
-	if (c >= '0' && c <= '9')
-	{
+	if (c >= '0' && c <= '9') {
 		return c - '0';
-	}
-	else if (c >= 'A' && c <= 'F')
-	{
+	} else if (c >= 'A' && c <= 'F') {
 		return c - ('A' - 10);
-	}
-	else if (c >= 'a' && c <= 'f')
-	{
+	} else if (c >= 'a' && c <= 'f') {
 		return c - ('a' - 10);
-	}
-	else
-	{
+	} else {
 		/* this should never happened */
 		return -1;
 	}
@@ -162,15 +153,15 @@ std:
 	<JS>","                  { return ','; }
 	<JS>"null"               {
 		JSO_VALUE_SET_NULL(s->value);
-		JSO_TOKEN_RETURN(NUL);
+		return JSO_T_NUL;
 	}
 	<JS>"true"               {
 		JSO_VALUE_SET_BOOL(s->value, JSO_TRUE);
-		JSO_TOKEN_RETURN(TRUE);
+		return JSO_T_TRUE;
 	}
 	<JS>"false"              {
 		JSO_VALUE_SET_BOOL(s->value, JSO_FALSE);
-		JSO_TOKEN_RETURN(FALSE);
+		return JSO_T_FALSE;
 	}
 	<JS>INT                  {
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
@@ -187,23 +178,23 @@ std:
 		}
 		if (bigint) {
 			JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
-			JSO_TOKEN_RETURN(DOUBLE);
+			return JSO_T_DOUBLE;
 		} else {
 			JSO_VALUE_SET_INT(s->value, strtol((char *) JSO_IO_TOKEN(s->io), NULL, 10));
-			JSO_TOKEN_RETURN(LONG);
+			return JSO_T_LONG;
 		}
 	}
 	<JS>FLOAT|EXP            {
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
-		JSO_TOKEN_RETURN(DOUBLE);
+		return JSO_T_DOUBLE;
 	}
 	<JS>WS|NL                { goto std; }
 	<JS>EOI                  {
 		if (JSO_IO_END(s->io)) {
-			JSO_TOKEN_RETURN(EOI);
+			return JSO_T_EOI;
 		} else {
 			JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
-			JSO_TOKEN_RETURN(ERROR);
+			return JSO_T_ERROR;
 		}
 	}
 	<JS>["]                  {
@@ -215,7 +206,7 @@ std:
 
 	<STR_P1>CTRL             {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_CTRL_CHAR);
-		JSO_TOKEN_RETURN(ERROR);
+		return JSO_T_ERROR;
 	}
 	<STR_P1>UTF16_1          {
 		JSO_IO_STR_ADD_ESC(s->io, 5);
@@ -235,7 +226,7 @@ std:
 	}
 	<STR_P1>UCS2             {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF16);
-		JSO_TOKEN_RETURN(ERROR);
+		return JSO_T_ERROR;
 	}
 	<STR_P1>ESC              {
 		JSO_IO_STR_ADD_ESC(s->io, 1);
@@ -243,7 +234,7 @@ std:
 	}
 	<STR_P1>ESCPREF           {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
-		JSO_TOKEN_RETURN(ERROR);
+		return JSO_T_ERROR;
 	}
 	<STR_P1>["]              {
 		jso_ctype *str;
@@ -251,7 +242,7 @@ std:
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
 			JSO_VALUE_SET_EMPTY_STRING(s->value);
-			JSO_TOKEN_RETURN(ESTRING);
+			return JSO_T_ESTRING;
 		}
 		str = jso_malloc((len + 1) * sizeof(jso_ctype));
 		str[len] = 0;
@@ -264,13 +255,13 @@ std:
 		} else {
 			memcpy(JSO_SVAL(s->value), JSO_IO_STR_GET_START(s->io), len * sizeof(jso_ctype));
 			JSO_CONDITION_SET(JS);
-			JSO_TOKEN_RETURN(STRING);
+			return JSO_T_STRING;
 		}
 	}
 	<STR_P1>UTF8             { JSO_CONDITION_GOTO(STR_P1); }
 	<STR_P1>ANY              {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF8);
-		JSO_TOKEN_RETURN(ERROR);
+		return JSO_T_ERROR;
 	}
 
 	<STR_P2>UTF16_1             {
@@ -336,7 +327,7 @@ std:
 				break;
 			default:
 				JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
-				JSO_TOKEN_RETURN(ERROR);
+				return JSO_T_ERROR;
 		}
 		*(s->pstr++) = esc;
 		++YYCURSOR;
@@ -345,13 +336,13 @@ std:
 	}
 	<STR_P2>["] => JS        {
 		JSO_SCANNER_COPY_ESC();
-		JSO_TOKEN_RETURN(STRING);
+		return JSO_T_STRING;
 	}
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
 
 	<*>ANY                   {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
-		JSO_TOKEN_RETURN(ERROR);
+		return JSO_T_ERROR;
 	}
 */
 
