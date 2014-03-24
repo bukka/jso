@@ -106,6 +106,8 @@ void jso_scanner_init(jso_scanner *s, jso_io *io)
 
 int jso_scan(jso_scanner *s)
 {
+	/* init value to null to prevent double freeing when it's not used in parser */
+	JSO_VALUE_SET_NULL(s->value);
 std:
 	JSO_IO_RESET_TOKEN(s->io);
 
