@@ -33,6 +33,10 @@ typedef struct _jso_scanner {
 	jso_value value;
 	jso_ctype *pstr;
 	int state;
+	size_t first_column;
+	size_t first_line;
+	size_t last_column;
+	size_t last_line;
 } jso_scanner;
 
 

@@ -99,6 +99,10 @@ int jso_scan(jso_scanner *s)
 {
 	/* init value to null to prevent double freeing when it's not used in parser */
 	JSO_VALUE_SET_NULL(s->value);
+	/* init location values */
+	s->first_column = s->last_column;
+	s->first_line = s->last_line;
+
 std:
 	JSO_IO_RESET_TOKEN(s->io);
 
@@ -116,7 +120,7 @@ std:
 	HEXC    = DIGIT | [a-cA-C] ;
 	FLOAT   = INT "." UINT ;
 	EXP     = ( INT | FLOAT ) [eE] [+-]? DIGIT+ ;
-	WS      = [ \t]+ ;
+	WS      = [ \t\r]+ ;
 	NL      = "\r"? "\n" ;
 	EOI     = "\000";
 	CTRL    = [\x00-\x1F] ;
@@ -152,20 +156,25 @@ std:
 	<JS>":"                  { return ':'; }
 	<JS>","                  { return ','; }
 	<JS>"null"               {
+		s->last_column += 4;
 		JSO_VALUE_SET_NULL(s->value);
 		return JSO_T_NUL;
 	}
 	<JS>"true"               {
+		s->last_column += 4;
 		JSO_VALUE_SET_BOOL(s->value, JSO_TRUE);
 		return JSO_T_TRUE;
 	}
 	<JS>"false"              {
+		s->last_column += 5;
 		JSO_VALUE_SET_BOOL(s->value, JSO_FALSE);
 		return JSO_T_FALSE;
 	}
 	<JS>INT                  {
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
-		size_t digits = JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io) - negative;
+		size_t digits = (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
+		s->last_column += digits;
+		digits -= negative;
 		if (digits >= JSO_INT_MAX_LENGTH) {
 			if (digits == JSO_INT_MAX_LENGTH) {
 				int cmp = strncmp((char *) JSO_IO_TOKEN(s->io) + negative, JSO_INT_MAX_DIGITS, JSO_INT_MAX_LENGTH);
@@ -185,10 +194,19 @@ std:
 		}
 	}
 	<JS>FLOAT|EXP            {
+		s->last_column += (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
 		return JSO_T_DOUBLE;
 	}
-	<JS>WS|NL                { goto std; }
+	<JS>NL                   {
+		s->last_line++;
+		s->last_column = 0;
+		goto std;
+	}
+	<JS>WS                   {
+		s->last_column += (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
+		goto std;
+	}
 	<JS>EOI                  {
 		if (JSO_IO_END(s->io)) {
 			return JSO_T_EOI;
