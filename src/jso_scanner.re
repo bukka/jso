@@ -172,7 +172,7 @@ std:
 	}
 	<JS>INT                  {
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
-		size_t digits = (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
+		size_t digits = JSO_IO_TOKEN_LENGTH(s->io);
 		s->last_column += digits;
 		digits -= negative;
 		if (digits >= JSO_INT_MAX_LENGTH) {
@@ -194,7 +194,7 @@ std:
 		}
 	}
 	<JS>FLOAT|EXP            {
-		s->last_column += (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
+		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
 		return JSO_T_DOUBLE;
 	}
@@ -204,7 +204,7 @@ std:
 		goto std;
 	}
 	<JS>WS                   {
-		s->last_column += (size_t) (JSO_IO_CURSOR(s->io) - JSO_IO_TOKEN(s->io));
+		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
 		goto std;
 	}
 	<JS>EOI                  {
@@ -216,6 +216,7 @@ std:
 		}
 	}
 	<JS>["]                  {
+		s->last_column++;
 		JSO_IO_STR_SET_START(s->io);
 		JSO_IO_STR_CLEAR_ESC(s->io);
 		JSO_CONDITION_SET(STR_P1);
@@ -226,19 +227,28 @@ std:
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_CTRL_CHAR);
 		return JSO_T_ERROR;
 	}
+	<STR_P1>NL               {
+		s->last_line++;
+		s->last_column = 0;
+		JSO_CONDITION_GOTO(STR_P1);
+	}
 	<STR_P1>UTF16_1          {
+		s->last_column += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_2          {
+		s->last_column += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 4);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_3          {
+		s->last_column += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_4          {
+		s->last_column += 12;
 		JSO_IO_STR_ADD_ESC(s->io, 8);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
@@ -247,6 +257,7 @@ std:
 		return JSO_T_ERROR;
 	}
 	<STR_P1>ESC              {
+		s->last_column += 2;
 		JSO_IO_STR_ADD_ESC(s->io, 1);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
@@ -256,6 +267,7 @@ std:
 	}
 	<STR_P1>["]              {
 		jso_ctype *str;
+		s->last_column++;
 		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
@@ -276,7 +288,10 @@ std:
 			return JSO_T_STRING;
 		}
 	}
-	<STR_P1>UTF8             { JSO_CONDITION_GOTO(STR_P1); }
+	<STR_P1>UTF8             {
+		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
+		JSO_CONDITION_GOTO(STR_P1);
+	}
 	<STR_P1>ANY              {
 		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF8);
 		return JSO_T_ERROR;

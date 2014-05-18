@@ -70,7 +70,7 @@ struct jso_io {
 /* token accessor macro */
 #define JSO_IO_TOKEN(io) ((io)->token)
 /* token length */
-#define JSO_IO_TOKEN_LENGTH(io) ((io)->cursor - (io)->token)
+#define JSO_IO_TOKEN_LENGTH(io) ((size_t) ((io)->cursor - (io)->token))
 /* limit accessor macro */
 #define JSO_IO_LIMIT(io)  ((io)->limit)
 /* marker accessor macro */
