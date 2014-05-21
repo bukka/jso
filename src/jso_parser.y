@@ -36,6 +36,7 @@ int jso_yydebug = 1;
 
 }
 
+%locations
 %pure-parser
 %name-prefix "jso_yy"
 %lex-param  { jso_parser *parser  }
@@ -72,8 +73,8 @@ int jso_yydebug = 1;
 %destructor { jso_array_free($$); } <array>
 
 %code {
-int jso_yylex(union YYSTYPE *value, jso_parser *parser);
-void jso_yyerror(jso_parser *parser, char const *msg);
+int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser);
+void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg);
 
 #define JSO_DEPTH_DEC --parser->depth
 #define JSO_DEPTH_INC \
@@ -155,14 +156,18 @@ void jso_parser_init(jso_parser *parser)
 	memset(parser, 0, sizeof(jso_parser));
 }
 
-int jso_yylex(union YYSTYPE *value, jso_parser *parser)
+int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 {
 	int token = jso_scan(&parser->scanner);
 	value->value = parser->scanner.value;
+	location->first_column = parser->scanner.first_column;
+	location->first_line = parser->scanner.first_line;
+	location->last_column = parser->scanner.last_column;
+	location->first_column = parser->scanner.last_line;
 	return token;
 }
 
-void jso_yyerror(jso_parser *parser, char const *msg)
+void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg)
 {
 	JSO_VALUE_SET_ERROR(parser->result, JSO_ERROR_SYNTAX);
 }
