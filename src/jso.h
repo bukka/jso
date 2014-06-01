@@ -105,6 +105,20 @@ typedef enum {
 	JSO_ERROR_ESCAPE
 } jso_error_type;
 
+/* jso error location */
+typedef struct {
+	size_t first_column;
+	size_t first_line;
+	size_t last_column;
+	size_t last_line;
+} jso_error_location;
+
+/* jso error structure */
+typedef struct {
+	jso_error_type type;
+	jso_error_location loc;
+} jso_error;
+
 /* jso value data union */
 typedef union _jso_value_data {
 	jso_int ival;
@@ -112,6 +126,7 @@ typedef union _jso_value_data {
 	jso_string str;
 	jso_array *arr;
 	jso_object *obj;
+	jso_error *err;
 } jso_value_data;
 
 /* jso value structure */
@@ -148,28 +163,32 @@ struct _jso_object {
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
 #define JSO_IVAL_P(pjv) (pjv)->data.ival
-#define JSO_EVAL_P(pjv) ((jso_error_type) JSO_IVAL_P(pjv))
 #define JSO_DVAL_P(pjv) (pjv)->data.dval
 #define JSO_SVAL_P(pjv) (pjv)->data.str.val
 #define JSO_SLEN_P(pjv) (pjv)->data.str.len
 #define JSO_ARRVAL_P(pjv) (pjv)->data.arr
 #define JSO_OBJVAL_P(pjv) (pjv)->data.obj
+#define JSO_EVAL_P(pjv) (pjv)->data.err
+#define JSO_ELOC_P(pjv) (pjv)->data.err->loc
+#define JSO_ETYPE_P(pjv) (pjv)->data.err->type
 
 /* accessors for jso value */
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
 #define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
-#define JSO_EVAL(jv) JSO_EVAL_P(&(jv))
 #define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 #define JSO_ARRVAL(jv) JSO_ARRVAL_P(&(jv))
 #define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
+#define JSO_EVAL(jv) JSO_EVAL_P(&(jv))
+#define JSO_ELOC(jv) JSO_ELOC_P(&(jv))
+#define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
 
 /* jso value setters */
-#define JSO_VALUE_SET_ERROR(jv, ev) \
+#define JSO_VALUE_SET_ERROR(jv, etype) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
-		JSO_IVAL(jv) = (jso_int) ev; \
+		JSO_ETYPE(jv) = etype; \
 	} while(0)
 #define JSO_VALUE_SET_NULL(jv) \
 	do { \
@@ -219,6 +238,12 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent);
 
 /* callback function for iterating array */
 typedef int (*jso_array_callback)(size_t idx, jso_value *val);
+
+/* error functions */
+JSO_API jso_error *jso_error_new(jso_error_type type,
+		size_t first_column, size_t first_line,
+		size_t last_column, size_t last_line);
+JSO_API void jso_error_free(jso_error *err);
 
 /* array functions */
 JSO_API jso_array *jso_array_alloc();

@@ -53,6 +53,9 @@ JSO_API void jso_value_free(jso_value *val)
 		case JSO_TYPE_OBJECT:
 			jso_object_free(JSO_OBJVAL_P(val));
 			break;
+		case JSO_TYPE_ERROR:
+			jso_error_free(JSO_EVAL_P(val));
+			break;
 		default:
 			break;
 	}
@@ -93,7 +96,7 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 		case JSO_TYPE_ERROR:
 			{
 				const char *etype;
-				switch (JSO_EVAL_P(val)) {
+				switch (JSO_ETYPE_P(val)) {
 					case JSO_ERROR_SYNTAX:
 						etype = "SYNTAX";
 						break;
@@ -125,6 +128,30 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 		default:
 			break;
 	}
+}
+
+/* alloc and init error */
+JSO_API jso_error *jso_error_new(jso_error_type type,
+		size_t first_column, size_t first_line,
+		size_t last_column, size_t last_line)
+{
+	jso_error *err = jso_malloc(sizeof(jso_error));
+	if (!err)
+		return NULL;
+
+	err->type = type;
+	err->loc.first_column = first_column;
+	err->loc.first_line = first_line;
+	err->loc.last_column = last_column;
+	err->loc.last_line = last_line;
+
+	return err;
+}
+
+/* free error */
+JSO_API void jso_error_free(jso_error *err)
+{
+	jso_free(err);
 }
 
 /* alloc and init new array */
