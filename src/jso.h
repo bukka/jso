@@ -111,12 +111,12 @@ typedef struct {
 	size_t first_line;
 	size_t last_column;
 	size_t last_line;
-} jso_error_location;
+} jso_location;
 
 /* jso error structure */
 typedef struct {
 	jso_error_type type;
-	jso_error_location loc;
+	jso_location loc;
 } jso_error;
 
 /* jso value data union */

@@ -25,7 +25,6 @@
 #define JSO_SCANNER_H
 
 #include "jso.h"
-#include "jso_parser.tab.h"
 #include "jso_io.h"
 
 typedef struct _jso_scanner {
@@ -33,11 +32,10 @@ typedef struct _jso_scanner {
 	jso_value value;
 	jso_ctype *pstr;
 	int state;
-	size_t first_column;
-	size_t first_line;
-	size_t last_column;
-	size_t last_line;
+	jso_location loc;
 } jso_scanner;
+
+#define JSO_SCANNER_LOCATION(scanner, slocation) (scanner).loc.slocation
 
 
 void jso_scanner_init(jso_scanner *scanner, jso_io *io);

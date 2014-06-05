@@ -160,10 +160,10 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 {
 	int token = jso_scan(&parser->scanner);
 	value->value = parser->scanner.value;
-	location->first_column = parser->scanner.first_column;
-	location->first_line = parser->scanner.first_line;
-	location->last_column = parser->scanner.last_column;
-	location->first_column = parser->scanner.last_line;
+	location->first_column = JSO_SCANNER_LOCATION(parser->scanner, first_column);
+	location->first_line = JSO_SCANNER_LOCATION(parser->scanner, first_line);
+	location->last_column = JSO_SCANNER_LOCATION(parser->scanner, last_column);
+	location->first_column = JSO_SCANNER_LOCATION(parser->scanner, last_line);
 	return token;
 }
 

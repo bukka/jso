@@ -27,6 +27,8 @@
 #include <string.h>
 
 #include "jso_scanner.h"
+#include "jso_parser.h"
+#include "jso_parser.tab.h"
 
 #include "jso_scanner_defs.h"
 
@@ -48,6 +50,8 @@
 
 #define JSO_SCANNER_COPY_ESC() jso_scanner_copy_string(s, 0)
 #define JSO_SCANNER_COPY_UTF() jso_scanner_copy_string(s, 5)
+
+#define JSO_SCANNER_LOC(location) JSO_SCANNER_LOCATION(*s, location)
 
 
 static void jso_scanner_copy_string(jso_scanner *s, size_t esc_size)
@@ -100,8 +104,8 @@ int jso_scan(jso_scanner *s)
 	/* init value to null to prevent double freeing when it's not used in parser */
 	JSO_VALUE_SET_NULL(s->value);
 	/* init location values */
-	s->first_column = s->last_column;
-	s->first_line = s->last_line;
+	JSO_SCANNER_LOC(first_column) = JSO_SCANNER_LOC(last_column);
+	JSO_SCANNER_LOC(first_line) = JSO_SCANNER_LOC(last_line);
 
 std:
 	JSO_IO_RESET_TOKEN(s->io);
@@ -156,24 +160,24 @@ std:
 	<JS>":"                  { return ':'; }
 	<JS>","                  { return ','; }
 	<JS>"null"               {
-		s->last_column += 4;
+		JSO_SCANNER_LOC(last_column) += 4;
 		JSO_VALUE_SET_NULL(s->value);
 		return JSO_T_NUL;
 	}
 	<JS>"true"               {
-		s->last_column += 4;
+		JSO_SCANNER_LOC(last_column) += 4;
 		JSO_VALUE_SET_BOOL(s->value, JSO_TRUE);
 		return JSO_T_TRUE;
 	}
 	<JS>"false"              {
-		s->last_column += 5;
+		JSO_SCANNER_LOC(last_column) += 5;
 		JSO_VALUE_SET_BOOL(s->value, JSO_FALSE);
 		return JSO_T_FALSE;
 	}
 	<JS>INT                  {
 		jso_bool bigint = 0, negative = JSO_IO_TOKEN(s->io)[0] == '-';
 		size_t digits = JSO_IO_TOKEN_LENGTH(s->io);
-		s->last_column += digits;
+		JSO_SCANNER_LOC(last_column) += digits;
 		digits -= negative;
 		if (digits >= JSO_INT_MAX_LENGTH) {
 			if (digits == JSO_INT_MAX_LENGTH) {
@@ -194,17 +198,17 @@ std:
 		}
 	}
 	<JS>FLOAT|EXP            {
-		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
+		JSO_SCANNER_LOC(last_column) += JSO_IO_TOKEN_LENGTH(s->io);
 		JSO_VALUE_SET_DOUBLE(s->value, strtod((char *) JSO_IO_TOKEN(s->io), NULL));
 		return JSO_T_DOUBLE;
 	}
 	<JS>NL                   {
-		s->last_line++;
-		s->last_column = 0;
+		JSO_SCANNER_LOC(last_line)++;
+		JSO_SCANNER_LOC(last_column) = 0;
 		goto std;
 	}
 	<JS>WS                   {
-		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
+		JSO_SCANNER_LOC(last_column) += JSO_IO_TOKEN_LENGTH(s->io);
 		goto std;
 	}
 	<JS>EOI                  {
@@ -216,7 +220,7 @@ std:
 		}
 	}
 	<JS>["]                  {
-		s->last_column++;
+		JSO_SCANNER_LOC(last_column)++;
 		JSO_IO_STR_SET_START(s->io);
 		JSO_IO_STR_CLEAR_ESC(s->io);
 		JSO_CONDITION_SET(STR_P1);
@@ -228,27 +232,27 @@ std:
 		return JSO_T_ERROR;
 	}
 	<STR_P1>NL               {
-		s->last_line++;
-		s->last_column = 0;
+		JSO_SCANNER_LOC(last_line)++;
+		JSO_SCANNER_LOC(last_column) = 0;
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_1          {
-		s->last_column += 6;
+		JSO_SCANNER_LOC(last_column) += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 5);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_2          {
-		s->last_column += 6;
+		JSO_SCANNER_LOC(last_column) += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 4);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_3          {
-		s->last_column += 6;
+		JSO_SCANNER_LOC(last_column) += 6;
 		JSO_IO_STR_ADD_ESC(s->io, 3);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_4          {
-		s->last_column += 12;
+		JSO_SCANNER_LOC(last_column) += 12;
 		JSO_IO_STR_ADD_ESC(s->io, 8);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
@@ -257,7 +261,7 @@ std:
 		return JSO_T_ERROR;
 	}
 	<STR_P1>ESC              {
-		s->last_column += 2;
+		JSO_SCANNER_LOC(last_column) += 2;
 		JSO_IO_STR_ADD_ESC(s->io, 1);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
@@ -267,7 +271,7 @@ std:
 	}
 	<STR_P1>["]              {
 		jso_ctype *str;
-		s->last_column++;
+		JSO_SCANNER_LOC(last_column)++;
 		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
@@ -289,7 +293,7 @@ std:
 		}
 	}
 	<STR_P1>UTF8             {
-		s->last_column += JSO_IO_TOKEN_LENGTH(s->io);
+		JSO_SCANNER_LOC(last_column) += JSO_IO_TOKEN_LENGTH(s->io);
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>ANY              {
