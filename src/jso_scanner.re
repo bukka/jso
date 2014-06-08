@@ -53,6 +53,12 @@
 
 #define JSO_SCANNER_LOC(location) JSO_SCANNER_LOCATION(*s, location)
 
+#define JSO_SCANNER_ERROR(etype) \
+	do { \
+		JSO_VALUE_SET_ERROR(s->value, jso_error_new_ex(etype, &s->loc)); \
+		return JSO_T_ERROR; \
+	} while(0)
+
 
 static void jso_scanner_copy_string(jso_scanner *s, size_t esc_size)
 {
@@ -215,8 +221,7 @@ std:
 		if (JSO_IO_END(s->io)) {
 			return JSO_T_EOI;
 		} else {
-			JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
-			return JSO_T_ERROR;
+			JSO_SCANNER_ERROR(JSO_ERROR_TOKEN);
 		}
 	}
 	<JS>["]                  {
@@ -228,8 +233,7 @@ std:
 	}
 
 	<STR_P1>CTRL             {
-		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_CTRL_CHAR);
-		return JSO_T_ERROR;
+		JSO_SCANNER_ERROR(JSO_ERROR_CTRL_CHAR);
 	}
 	<STR_P1>NL               {
 		JSO_SCANNER_LOC(last_line)++;
@@ -257,8 +261,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UCS2             {
-		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF16);
-		return JSO_T_ERROR;
+		JSO_SCANNER_ERROR(JSO_ERROR_UTF16);
 	}
 	<STR_P1>ESC              {
 		JSO_SCANNER_LOC(last_column) += 2;
@@ -266,8 +269,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>ESCPREF           {
-		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
-		return JSO_T_ERROR;
+		JSO_SCANNER_ERROR(JSO_ERROR_ESCAPE);
 	}
 	<STR_P1>["]              {
 		jso_ctype *str;
@@ -297,8 +299,7 @@ std:
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>ANY              {
-		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_UTF8);
-		return JSO_T_ERROR;
+		JSO_SCANNER_ERROR(JSO_ERROR_UTF8);
 	}
 
 	<STR_P2>UTF16_1             {
@@ -363,8 +364,7 @@ std:
 				esc = *JSO_IO_CURSOR(s->io);
 				break;
 			default:
-				JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_ESCAPE);
-				return JSO_T_ERROR;
+				JSO_SCANNER_ERROR(JSO_ERROR_ESCAPE);
 		}
 		*(s->pstr++) = esc;
 		++YYCURSOR;
@@ -378,8 +378,7 @@ std:
 	<STR_P2>ANY              { JSO_CONDITION_GOTO(STR_P2); }
 
 	<*>ANY                   {
-		JSO_VALUE_SET_ERROR(s->value, JSO_ERROR_TOKEN);
-		return JSO_T_ERROR;
+		JSO_SCANNER_ERROR(JSO_ERROR_TOKEN);
 	}
 */
 

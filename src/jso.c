@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "jso.h"
 
@@ -86,43 +87,57 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 				fputs("EMPTY STRING\n", JSO_PRINT_STREAM);
 			break;
 		case JSO_TYPE_ARRAY:
-			fputs("ARRAY:\n", JSO_PRINT_STREAM);
-			jso_array_print(JSO_ARRVAL_P(val), indent + 1);
+			if (!JSO_ARRVAL_P(val)) {
+				fprintf(stderr, "ERROR: Array allocation failed\n");
+			} else {
+				fputs("ARRAY:\n", JSO_PRINT_STREAM);
+				jso_array_print(JSO_ARRVAL_P(val), indent + 1);
+			}
 			break;
 		case JSO_TYPE_OBJECT:
-			fputs("OBJECT:\n", JSO_PRINT_STREAM);
-			jso_object_print(JSO_OBJVAL_P(val), indent + 1);
+			if (!JSO_OBJVAL_P(val)) {
+				fprintf(stderr, "ERROR: Object allocation failed\n");
+			} else {
+				fputs("OBJECT:\n", JSO_PRINT_STREAM);
+				jso_object_print(JSO_OBJVAL_P(val), indent + 1);
+			}
 			break;
 		case JSO_TYPE_ERROR:
 			{
-				const char *etype;
-				switch (JSO_ETYPE_P(val)) {
-					case JSO_ERROR_SYNTAX:
-						etype = "SYNTAX";
-						break;
-					case JSO_ERROR_DEPTH:
-						etype = "DEPTH";
-						break;
-					case JSO_ERROR_TOKEN:
-						etype = "TOKEN";
-						break;
-					case JSO_ERROR_CTRL_CHAR:
-						etype = "CONTROL CHARACTER";
-						break;
-					case JSO_ERROR_ESCAPE:
-						etype = "ESCAPE";
-						break;
-					case JSO_ERROR_UTF8:
-						etype = "UTF8:";
-						break;
-					case JSO_ERROR_UTF16:
-						etype = "UTF16";
-						break;
-					default:
-						etype = "unknown";
-						break;
+				if (!JSO_EVAL_P(val)) {
+					fprintf(stderr, "ERROR: Error allocation failed\n");
+				} else {
+					const char *emsg;
+					switch (JSO_ETYPE_P(val)) {
+						case JSO_ERROR_SYNTAX:
+							emsg = "SYNTAX";
+							break;
+						case JSO_ERROR_DEPTH:
+							emsg = "DEPTH";
+							break;
+						case JSO_ERROR_TOKEN:
+							emsg = "TOKEN";
+							break;
+						case JSO_ERROR_CTRL_CHAR:
+							emsg = "CONTROL CHARACTER";
+							break;
+						case JSO_ERROR_ESCAPE:
+							emsg = "ESCAPE";
+							break;
+						case JSO_ERROR_UTF8:
+							emsg = "UTF8:";
+							break;
+						case JSO_ERROR_UTF16:
+							emsg = "UTF16";
+							break;
+						default:
+							emsg = "unknown";
+							break;
+					}
+					fprintf(stderr, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg,
+							JSO_ELOC_P(val).first_line, JSO_ELOC_P(val).first_column,
+							JSO_ELOC_P(val).last_line, JSO_ELOC_P(val).last_column);
 				}
-				fprintf(stderr, "ERROR: %s\n", etype);
 			}
 			break;
 		default:
@@ -130,28 +145,38 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 	}
 }
 
-/* alloc and init error */
-JSO_API jso_error *jso_error_new(jso_error_type type,
-		size_t first_column, size_t first_line,
-		size_t last_column, size_t last_line)
+/* alloc and init error from type and location struct */
+JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc)
 {
 	jso_error *err = jso_malloc(sizeof(jso_error));
 	if (!err)
 		return NULL;
 
 	err->type = type;
-	err->loc.first_column = first_column;
-	err->loc.first_line = first_line;
-	err->loc.last_column = last_column;
-	err->loc.last_line = last_line;
+	memcpy(&err->loc, loc, sizeof(jso_location));
 
 	return err;
+}
+
+/* alloc and init error from type and location params */
+JSO_API jso_error *jso_error_new(jso_error_type type,
+		size_t first_column, size_t first_line,
+		size_t last_column, size_t last_line)
+{
+	jso_location loc;
+	loc.first_column = first_column;
+	loc.first_line = first_line;
+	loc.last_column = last_column;
+	loc.last_line = last_line;
+
+	return jso_error_new_ex(type, &loc);
 }
 
 /* free error */
 JSO_API void jso_error_free(jso_error *err)
 {
-	jso_free(err);
+	if (err)
+		jso_free(err);
 }
 
 /* alloc and init new array */
@@ -163,6 +188,8 @@ JSO_API jso_array *jso_array_alloc()
 /* free array and its elements */
 JSO_API void jso_array_free(jso_array *arr)
 {
+	if (!arr)
+		return;
 	jso_array_element *tmp, *el = arr->head;
 	while (el) {
 		jso_value_free(&el->val);
@@ -248,6 +275,8 @@ JSO_API jso_object *jso_object_alloc()
 /* free object and its elements */
 JSO_API void jso_object_free(jso_object *obj)
 {
+	if (!obj)
+		return;
 	jso_object_member *tmp, *member = obj->head;
 	while (member) {
 		jso_value_free(&member->val);

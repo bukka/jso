@@ -77,9 +77,10 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser);
 void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg);
 
 #define JSO_DEPTH_DEC --parser->depth
-#define JSO_DEPTH_INC \
+#define JSO_DEPTH_INC(loc) \
 	if (parser->max_depth && parser->depth >= parser->max_depth) { \
-		JSO_VALUE_SET_ERROR(parser->result, JSO_ERROR_DEPTH); \
+		JSO_VALUE_SET_ERROR(parser->result, jso_error_new(JSO_ERROR_DEPTH, \
+			loc.first_column, loc.first_line, loc.last_column, loc.last_line)); \
 		YYERROR; \
 	} \
 	++parser->depth
@@ -93,7 +94,7 @@ start:
 ;
 
 object:
-		'{' { JSO_DEPTH_INC; } members '}' { JSO_DEPTH_DEC; JSO_VALUE_SET_OBJECT($$, $3); }
+		'{' { JSO_DEPTH_INC(@1); } members '}' { JSO_DEPTH_DEC; JSO_VALUE_SET_OBJECT($$, $3); }
 ;
 
 members:
@@ -113,7 +114,7 @@ pair:
 ;
 
 array:
-		'[' { JSO_DEPTH_INC; } elements ']' { JSO_DEPTH_DEC; JSO_VALUE_SET_ARRAY($$, $3); }
+		'[' { JSO_DEPTH_INC(@1); } elements ']' { JSO_DEPTH_DEC; JSO_VALUE_SET_ARRAY($$, $3); }
 ;
 
 elements:
@@ -169,5 +170,7 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 
 void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg)
 {
-	JSO_VALUE_SET_ERROR(parser->result, JSO_ERROR_SYNTAX);
+	JSO_VALUE_SET_ERROR(parser->result, jso_error_new(JSO_ERROR_SYNTAX,
+		location->first_column, location->first_line,
+		location->last_column, location->first_column));
 }

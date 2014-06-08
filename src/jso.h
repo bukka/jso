@@ -185,10 +185,10 @@ struct _jso_object {
 #define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
 
 /* jso value setters */
-#define JSO_VALUE_SET_ERROR(jv, etype) \
+#define JSO_VALUE_SET_ERROR(jv, eval) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
-		JSO_ETYPE(jv) = etype; \
+		JSO_EVAL(jv) = eval; \
 	} while(0)
 #define JSO_VALUE_SET_NULL(jv) \
 	do { \
@@ -240,6 +240,7 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent);
 typedef int (*jso_array_callback)(size_t idx, jso_value *val);
 
 /* error functions */
+JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc);
 JSO_API jso_error *jso_error_new(jso_error_type type,
 		size_t first_column, size_t first_line,
 		size_t last_column, size_t last_line);
