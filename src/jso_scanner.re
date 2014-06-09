@@ -159,12 +159,30 @@ std:
 	UTF16_3 = UTFPREF ( ( ( HEXC | [efEF] ) HEX ) | ( [dD] HEX7 ) ) HEX{2} ;
 	UTF16_4 = UTFPREF [dD] [89abAB] HEX{2} UTFPREF [dD] [c-fC-F] HEX{2} ;
 
-	<JS>"{"                  { return '{'; }
-	<JS>"}"                  { return '}'; }
-	<JS>"["                  { return '['; }
-	<JS>"]"                  { return ']'; }
-	<JS>":"                  { return ':'; }
-	<JS>","                  { return ','; }
+	<JS>"{"                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return '{';
+	}
+	<JS>"}"                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return '}';
+	}
+	<JS>"["                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return '[';
+	}
+	<JS>"]"                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return ']';
+	}
+	<JS>":"                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return ':';
+	}
+	<JS>","                  {
+		JSO_SCANNER_LOC(last_column)++;
+		return ',';
+	}
 	<JS>"null"               {
 		JSO_SCANNER_LOC(last_column) += 4;
 		JSO_VALUE_SET_NULL(s->value);
