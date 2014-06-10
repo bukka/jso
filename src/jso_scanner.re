@@ -312,8 +312,20 @@ std:
 			return JSO_T_STRING;
 		}
 	}
-	<STR_P1>UTF8             {
-		JSO_SCANNER_LOC(last_column) += JSO_IO_TOKEN_LENGTH(s->io);
+	<STR_P1>UTF8_1           {
+		JSO_SCANNER_LOC(last_column)++;
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UTF8_2           {
+		JSO_SCANNER_LOC(last_column) += 2;
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UTF8_3           {
+		JSO_SCANNER_LOC(last_column) += 3;
+		JSO_CONDITION_GOTO(STR_P1);
+	}
+	<STR_P1>UTF8_4           {
+		JSO_SCANNER_LOC(last_column) += 4;
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>ANY              {
