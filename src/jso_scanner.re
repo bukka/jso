@@ -48,6 +48,8 @@
 #define JSO_CONDITION_SET(condition) YYSETCONDITION(yyc##condition)
 #define JSO_CONDITION_GOTO(condition) goto yyc_##condition
 
+#define JSO_SCANNER_START_GOTO() goto scanner_start
+
 #define JSO_SCANNER_COPY_ESC() jso_scanner_copy_string(s, 0)
 #define JSO_SCANNER_COPY_UTF() jso_scanner_copy_string(s, 5)
 
@@ -109,11 +111,13 @@ int jso_scan(jso_scanner *s)
 {
 	/* init value to null to prevent double freeing when it's not used in parser */
 	JSO_VALUE_SET_NULL(s->value);
+
+scanner_start:
 	/* init location values */
 	JSO_SCANNER_LOC(first_column) = JSO_SCANNER_LOC(last_column);
 	JSO_SCANNER_LOC(first_line) = JSO_SCANNER_LOC(last_line);
 
-std:
+	/* set token postion to the cursor position */
 	JSO_IO_RESET_TOKEN(s->io);
 
 /*!re2c
@@ -229,11 +233,11 @@ std:
 	<JS>NL                   {
 		JSO_SCANNER_LOC(last_line)++;
 		JSO_SCANNER_LOC(last_column) = 0;
-		goto std;
+		JSO_SCANNER_START_GOTO();
 	}
 	<JS>WS                   {
 		JSO_SCANNER_LOC(last_column) += JSO_IO_TOKEN_LENGTH(s->io);
-		goto std;
+		JSO_SCANNER_START_GOTO();
 	}
 	<JS>EOI                  {
 		if (JSO_IO_END(s->io)) {
