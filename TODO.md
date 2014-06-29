@@ -6,13 +6,13 @@
 - EOI based on the input length
 
 ### String scanning
-- locations support
 - add support for YYFILL
   - streams
   - change EOI
 
 ## Parser
-- locations support
+- test locations support
+- change it to push parser (stream support)
 
 ## IO
 
@@ -20,6 +20,11 @@
 - suppress valgrind errors without using calloc in jso_io_file_read
   - data is not unitialized because fread is used
 - fix valgrind errors when JSO_IO_FILE_BUFF_SIZE is small (e.g. 8)
+
+## Executor
+- pretty printer by default
+- optianol current debugging output
+  - getopts or custom arg parsing
 
 ## Build
 - debug build
