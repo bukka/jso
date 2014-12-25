@@ -35,6 +35,7 @@ int parse_file(const char *filename)
 	jso_io *io;
 	jso_parser parser;
 	off_t filesize;
+	size_t bytes_to_read, bytes_read_once, bytes_read_total = 0;
 
 	/* get file size */
 	filesize = jso_io_file_size(filename);
@@ -42,6 +43,8 @@ int parse_file(const char *filename)
 		fprintf(stderr, "Getting file size for file '%s' failed\n", filename);
 		return -1;
 	}
+	bytes_to_read = (size_t) filesize;
+
 	/* open file */
 	io = jso_io_file_open(filename, "r");
 	if (!io) {
@@ -49,10 +52,23 @@ int parse_file(const char *filename)
 		return -1;
 	}
 	/* read the whole file into the buffer */
-	if (JSO_IO_READ(io, filesize) == 0) {
+	do {
+		bytes_read_once = JSO_IO_READ(io, bytes_to_read - bytes_read_total);
+		bytes_read_total += bytes_read_once;
+	} while (bytes_read_once);
+
+	/* check the read data */
+	if (bytes_read_total == 0) {
 		fprintf(stderr, "No data in the file '%s'\n", filename);
 		return -1;
 	}
+	/* check the read data */
+	if (bytes_read_total < bytes_to_read) {
+		fprintf(stderr, "Only %lu of %lu read from the file '%s'\n",
+				bytes_read_total, bytes_to_read, filename);
+		return -1;
+	}
+
 	if (!JSO_IO_CURSOR(io)) {
 		fputs("Cursor is not set\n", stderr);
 		return -1;
