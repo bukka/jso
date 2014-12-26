@@ -29,11 +29,34 @@
 #include "jso_scanner.h"
 #include "jso_parser.h"
 
-int parse_file(const char *filename)
+int jso_cli_parse_io(jso_io *io)
 {
 	int rc;
-	jso_io *io;
 	jso_parser parser;
+
+	/* init scanner */
+	jso_parser_init(&parser);
+	jso_scanner_init(&parser.scanner, io);
+
+	/* set max depth (0 = unlimited) */
+	parser.max_depth = 0;
+
+	/* parse */
+	rc = jso_yyparse(&parser);
+
+	/* print result */
+	jso_value_print(&parser.result, 0);
+
+	/* free resources */
+	jso_value_free(&parser.result);
+	jso_io_file_close(io);
+
+	return rc;
+}
+
+int jso_cli_parse_file(const char *filename)
+{
+	jso_io *io;
 	off_t filesize;
 	size_t bytes_to_read, bytes_read_once, bytes_read_total = 0;
 
@@ -73,24 +96,8 @@ int parse_file(const char *filename)
 		fputs("Cursor is not set\n", stderr);
 		return -1;
 	}
-	/* init scanner */
-	jso_parser_init(&parser);
-	jso_scanner_init(&parser.scanner, io);
 
-	/* set max depth (0 = unlimited) */
-	parser.max_depth = 0;
-
-	/* parse */
-	rc = jso_yyparse(&parser);
-
-	/* print result */
-	jso_value_print(&parser.result, 0);
-
-	/* free resources */
-	jso_value_free(&parser.result);
-	jso_io_file_close(io);
-
-	return rc;
+	return jso_cli_parse_io(io);
 }
 
 int main(int argc, const char *argv[])
@@ -100,7 +107,7 @@ int main(int argc, const char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (parse_file(argv[1]) < 0)
+	if (jso_cli_parse_file(argv[1]) < 0)
 		return EXIT_FAILURE;
 	else
 		return EXIT_SUCCESS;
