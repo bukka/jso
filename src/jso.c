@@ -62,8 +62,8 @@ JSO_API void jso_value_free(jso_value *val)
 	}
 }
 
-/* print jso value */
-JSO_API void jso_value_print(jso_value *val, jso_uint indent)
+/* debug print jso value */
+JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 {
 	jso_print_indent(indent);
 
@@ -143,6 +143,24 @@ JSO_API void jso_value_print(jso_value *val, jso_uint indent)
 		default:
 			break;
 	}
+}
+
+/* debug print jso value */
+JSO_API void jso_value_print_debug(jso_value *val)
+{
+	jso_value_print_debug_ex(val, 0);
+}
+
+/* pretty print jso value */
+JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent)
+{
+
+}
+
+/* pretty print jso value */
+JSO_API void jso_value_print_pretty(jso_value *val)
+{
+	jso_value_print_pretty_ex(val, 0);
 }
 
 /* alloc and init error from type and location struct */
@@ -261,7 +279,7 @@ JSO_API void jso_array_print(jso_array *arr, jso_uint indent)
 {
 	jso_array_element *el = arr->head;
 	while (el) {
-		jso_value_print(&el->val, indent);
+		jso_value_print_debug_ex(&el->val, indent);
 		el = el->next;
 	}
 }
@@ -324,7 +342,7 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
 	while (member) {
 		jso_print_indent(indent);
 		fprintf(JSO_PRINT_STREAM, " KEY: %s\n", member->key.val);
-		jso_value_print(&member->val, indent + 1);
+		jso_value_print_debug_ex(&member->val, indent + 1);
 		member = member->next;
 	}
 }

@@ -232,9 +232,13 @@ struct _jso_object {
 		JSO_OBJVAL(jv) = (ov); \
 	} while(0)
 
-/* jso value functions */
+/* jso value free function */
 JSO_API void jso_value_free(jso_value *val);
-JSO_API void jso_value_print(jso_value *val, jso_uint indent);
+/* jso value print function */
+JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent);
+JSO_API void jso_value_print_debug(jso_value *val);
+JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent);
+JSO_API void jso_value_print_pretty(jso_value *val);
 
 /* callback function for iterating array */
 typedef int (*jso_array_callback)(size_t idx, jso_value *val);
