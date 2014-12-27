@@ -41,6 +41,5 @@
   - autoconf check
   - try to replace Makefile AM rule with AC
 - bison
-  - autoconf check and automake rule
   - remove Makefile AM rule (use AC)
   - jso_parser.tab.h - prerequisite (build error when it's not created)

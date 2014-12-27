@@ -7,4 +7,4 @@ jso_scanner.c: jso_scanner.re
 	re2c -t jso_scanner_defs.h -bci jso_scanner.re > jso_scanner.c
 
 jso_parser.tab.c: jso_parser.y
-	bison -d jso_parser.y
+	$(YACC) -d jso_parser.y
