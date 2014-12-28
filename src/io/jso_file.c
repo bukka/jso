@@ -21,11 +21,13 @@
  *
  */
 
-#include "jso_file.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "jso_file.h"
+#include "jso.h"
+
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {

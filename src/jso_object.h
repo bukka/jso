@@ -21,13 +21,19 @@
  *
  */
 
-#include <stdlib.h>
-#include "jso_cli.h"
+#ifndef JSO_OBJECT_H
+#define JSO_OBJECT_H
 
-int main(int argc, const char *argv[])
-{
-	if (jso_cli_parse_args(argc, argv) < 0)
-		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
-}
+#include "jso_types.h"
+
+/* callback function for iterating object */
+typedef int (*jso_object_callback)(jso_string *key, jso_value *val);
+
+/* object functions */
+JSO_API jso_object *jso_object_alloc();
+JSO_API void jso_object_free(jso_object *obj);
+JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
+JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk);
+JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
+
+#endif /* JSO_OBJECT_H */

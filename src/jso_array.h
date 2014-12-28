@@ -21,13 +21,21 @@
  *
  */
 
-#include <stdlib.h>
-#include "jso_cli.h"
+#ifndef JSO_ARRAY_H
+#define JSO_ARRAY_H
 
-int main(int argc, const char *argv[])
-{
-	if (jso_cli_parse_args(argc, argv) < 0)
-		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
-}
+#include "jso_types.h"
+
+/* callback function for iterating array */
+typedef int (*jso_array_callback)(size_t idx, jso_value *val);
+
+/* array functions */
+JSO_API jso_array *jso_array_alloc();
+JSO_API void jso_array_free(jso_array *arr);
+JSO_API int jso_array_append(jso_array *arr, jso_value *val);
+JSO_API int jso_array_push(jso_array *arr, jso_value *val);
+JSO_API int jso_array_pop(jso_array *arr);
+JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk);
+JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
+
+#endif /* JSO_ARRAY_H */

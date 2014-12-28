@@ -21,13 +21,25 @@
  *
  */
 
-#include <stdlib.h>
-#include "jso_cli.h"
+#ifndef JSO_CLI_H
+#define JSO_CLI_H
 
-int main(int argc, const char *argv[])
-{
-	if (jso_cli_parse_args(argc, argv) < 0)
-		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
-}
+#include "jso_types.h"
+#include "jso_io.h"
+
+/* jso output format */
+typedef enum {
+	JSO_OUTPUT_PRETTY,
+	JSO_OUTPUT_DEBUG
+} jso_cli_output;
+
+typedef struct _jso_cli_options {
+	jso_uint max_depth;
+	jso_cli_output output;
+} jso_cli_options;
+
+JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options);
+JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options);
+JSO_API int jso_cli_parse_args(int argc, const char *argv[]);
+
+#endif /* JSO_CLI_H */

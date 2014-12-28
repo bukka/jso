@@ -21,13 +21,10 @@
  *
  */
 
-#include <stdlib.h>
-#include "jso_cli.h"
+#ifndef JSO_VALUE_H
+#define JSO_VALUE_H
 
-int main(int argc, const char *argv[])
-{
-	if (jso_cli_parse_args(argc, argv) < 0)
-		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
-}
+/* pre-definition of array type */
+typedef struct _jso_array jso_array;
+
+#endif /* JSO_ARRAY_H */

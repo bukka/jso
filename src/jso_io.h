@@ -24,7 +24,7 @@
 #ifndef JSO_IO_H
 #define JSO_IO_H
 
-#include "jso.h"
+#include "jso_types.h"
 
 typedef struct jso_io jso_io;
 

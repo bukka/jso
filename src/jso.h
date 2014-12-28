@@ -25,10 +25,9 @@
 #define JSO_H
 
 #include <config.h>
-#include <sys/types.h>
-
-/* exported library functions */
-#define JSO_API
+#include "jso_types.h"
+#include "jso_array.h"
+#include "jso_object.h"
 
 /* bool values */
 #define JSO_TRUE  1
@@ -54,45 +53,6 @@
 #define JSO_USE(unused_variable) ((void) (unused_variable))
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
-
-/* bool type */
-typedef char  jso_bool;
-
-/* int type */
-typedef long  jso_int;
-
-/* unsigned int type */
-typedef unsigned long jso_uint;
-
-/* double type */
-typedef double jso_double;
-
-/* character type for scanner */
-typedef unsigned char jso_ctype;
-
-/* pre-definition of array type */
-typedef struct _jso_array jso_array;
-
-/* pre-definition of object type */
-typedef struct _jso_object jso_object;
-
-/* string type */
-typedef struct _jso_string {
-	jso_ctype *val;
-	size_t len;
-} jso_string;
-
-/* jso value types */
-typedef enum {
-	JSO_TYPE_ERROR,
-	JSO_TYPE_NULL,
-	JSO_TYPE_BOOL,
-	JSO_TYPE_INT,
-	JSO_TYPE_DOUBLE,
-	JSO_TYPE_STRING,
-	JSO_TYPE_ARRAY,
-	JSO_TYPE_OBJECT
-} jso_value_type;
 
 /* jso error types */
 typedef enum {
@@ -134,31 +94,6 @@ typedef struct _jso_value {
 	jso_value_data data;
 	jso_value_type type;
 } jso_value;
-
-/* jso array element */
-typedef struct _jso_array_element {
-	jso_value val;
-	struct _jso_array_element *next;
-} jso_array_element;
-
-/* jso array structure */
-struct _jso_array {
-	jso_array_element *head;
-	jso_array_element *tail;
-};
-
-/* jso object member */
-typedef struct _jso_object_member {
-	jso_string key;
-	jso_value val;
-	struct _jso_object_member *next;
-} jso_object_member;
-
-/* jso object structure */
-struct _jso_object {
-	jso_object_member *head;
-	jso_object_member *tail;
-};
 
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
@@ -239,9 +174,7 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent);
 JSO_API void jso_value_print_debug(jso_value *val);
 JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent);
 JSO_API void jso_value_print_pretty(jso_value *val);
-
-/* callback function for iterating array */
-typedef int (*jso_array_callback)(size_t idx, jso_value *val);
+JSO_API void jso_print_indent(jso_uint indent);
 
 /* error functions */
 JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc);
@@ -250,30 +183,14 @@ JSO_API jso_error *jso_error_new(jso_error_type type,
 		size_t last_column, size_t last_line);
 JSO_API void jso_error_free(jso_error *err);
 
-/* array functions */
-JSO_API jso_array *jso_array_alloc();
-JSO_API void jso_array_free(jso_array *arr);
-JSO_API int jso_array_append(jso_array *arr, jso_value *val);
-JSO_API int jso_array_push(jso_array *arr, jso_value *val);
-JSO_API int jso_array_pop(jso_array *arr);
-JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk);
-JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
-
-/* callback function for iterating object */
-typedef int (*jso_object_callback)(jso_string *key, jso_value *val);
-
-/* object functions */
-JSO_API jso_object *jso_object_alloc();
-JSO_API void jso_object_free(jso_object *obj);
-JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
-JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk);
-JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
-
 /* memeroy functions - just redefinitions for future extending (checking) */
 #define jso_malloc malloc
 #define jso_realloc realloc
 #define jso_calloc calloc
 #define jso_strdup strdup
 #define jso_free free
+
+/* print stream */
+#define JSO_PRINT_STREAM stderr
 
 #endif /* JSO_H */
