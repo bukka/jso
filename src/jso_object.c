@@ -89,6 +89,16 @@ JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk)
 	}
 }
 
+/* call cbk function with arg for each element in object */
+JSO_API void jso_object_foreach_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg)
+{
+	jso_object_member *member = obj->head;
+	while (member) {
+		cbk(&member->key, &member->val, arg);
+		member = member->next;
+	}
+}
+
 /* print object elements */
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
 {
