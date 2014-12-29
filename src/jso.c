@@ -27,14 +27,43 @@
 
 #include "jso.h"
 
-/* print indentation */
-JSO_API void jso_print_indent(jso_uint indent)
+/* ERROR */
+
+/* alloc and init error from type and location struct */
+JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc)
 {
-	jso_uint i;
-	for (i = 0; i < indent; i++) {
-		fprintf(JSO_PRINT_STREAM, " ");
-	}
+	jso_error *err = jso_malloc(sizeof(jso_error));
+	if (!err)
+		return NULL;
+
+	err->type = type;
+	memcpy(&err->loc, loc, sizeof(jso_location));
+
+	return err;
 }
+
+/* alloc and init error from type and location params */
+JSO_API jso_error *jso_error_new(jso_error_type type,
+		size_t first_column, size_t first_line,
+		size_t last_column, size_t last_line)
+{
+	jso_location loc;
+	loc.first_column = first_column;
+	loc.first_line = first_line;
+	loc.last_column = last_column;
+	loc.last_line = last_line;
+
+	return jso_error_new_ex(type, &loc);
+}
+
+/* free error */
+JSO_API void jso_error_free(jso_error *err)
+{
+	if (err)
+		jso_free(err);
+}
+
+/* FREEING */
 
 /* free jso value */
 JSO_API void jso_value_free(jso_value *val)
@@ -57,6 +86,18 @@ JSO_API void jso_value_free(jso_value *val)
 			break;
 		default:
 			break;
+	}
+}
+
+/* PRINTING */
+
+
+/* print indentation */
+JSO_API void jso_print_indent(jso_uint indent)
+{
+	jso_uint i;
+	for (i = 0; i < indent; i++) {
+		fprintf(JSO_PRINT_STREAM, " ");
 	}
 }
 
@@ -159,38 +200,4 @@ JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent)
 JSO_API void jso_value_print_pretty(jso_value *val)
 {
 	jso_value_print_pretty_ex(val, 0);
-}
-
-/* alloc and init error from type and location struct */
-JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc)
-{
-	jso_error *err = jso_malloc(sizeof(jso_error));
-	if (!err)
-		return NULL;
-
-	err->type = type;
-	memcpy(&err->loc, loc, sizeof(jso_location));
-
-	return err;
-}
-
-/* alloc and init error from type and location params */
-JSO_API jso_error *jso_error_new(jso_error_type type,
-		size_t first_column, size_t first_line,
-		size_t last_column, size_t last_line)
-{
-	jso_location loc;
-	loc.first_column = first_column;
-	loc.first_line = first_line;
-	loc.last_column = last_column;
-	loc.last_line = last_line;
-
-	return jso_error_new_ex(type, &loc);
-}
-
-/* free error */
-JSO_API void jso_error_free(jso_error *err)
-{
-	if (err)
-		jso_free(err);
 }
