@@ -114,6 +114,17 @@ JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk)
 	}
 }
 
+/* call cbk function with arg for each element in array */
+JSO_API void jso_array_foreach_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg)
+{
+	size_t pos = 0;
+	jso_array_element *el = arr->head;
+	while (el) {
+		cbk(pos++, &el->val, arg);
+		el = el->next;
+	}
+}
+
 /* print array elements */
 JSO_API void jso_array_print(jso_array *arr, jso_uint indent)
 {
