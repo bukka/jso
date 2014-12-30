@@ -21,7 +21,6 @@
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "jso.h"
 
@@ -121,16 +120,6 @@ JSO_API void jso_array_foreach_with_arg(jso_array *arr, jso_array_with_arg_callb
 	jso_array_element *el = arr->head;
 	while (el) {
 		cbk(pos++, &el->val, arg);
-		el = el->next;
-	}
-}
-
-/* print array elements */
-JSO_API void jso_array_print(jso_array *arr, jso_uint indent)
-{
-	jso_array_element *el = arr->head;
-	while (el) {
-		jso_value_print_debug_ex(&el->val, indent);
 		el = el->next;
 	}
 }

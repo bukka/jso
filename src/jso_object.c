@@ -21,7 +21,6 @@
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "jso.h"
 
@@ -95,18 +94,6 @@ JSO_API void jso_object_foreach_with_arg(jso_object *obj, jso_object_with_arg_ca
 	jso_object_member *member = obj->head;
 	while (member) {
 		cbk(&member->key, &member->val, arg);
-		member = member->next;
-	}
-}
-
-/* print object elements */
-JSO_API void jso_object_print(jso_object *obj, jso_uint indent)
-{
-	jso_object_member *member = obj->head;
-	while (member) {
-		jso_print_indent(indent);
-		fprintf(JSO_PRINT_STREAM, " KEY: %s\n", member->key.val);
-		jso_value_print_debug_ex(&member->val, indent + 1);
 		member = member->next;
 	}
 }

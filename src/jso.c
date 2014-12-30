@@ -91,9 +91,8 @@ JSO_API void jso_value_free(jso_value *val)
 
 /* PRINTING */
 
-
 /* print indentation */
-JSO_API void jso_print_indent(jso_uint indent)
+static void jso_value_print_indent(jso_uint indent)
 {
 	jso_uint i;
 	for (i = 0; i < indent; i++) {
@@ -101,10 +100,30 @@ JSO_API void jso_print_indent(jso_uint indent)
 	}
 }
 
+/* debug print array callback */
+static int jso_value_print_debug_array_callback(size_t idx, jso_value *val, void *arg)
+{
+	jso_value_print_debug_ex(val, (jso_uint) arg);
+
+	return 0;
+}
+
+/* debug print object callback */
+static int jso_value_print_debug_object_callback(jso_string *key, jso_value *val, void *arg)
+{
+	jso_uint indent = (jso_uint) arg;
+
+	jso_value_print_indent(indent);
+	fprintf(JSO_PRINT_STREAM, " KEY: %s\n", key->val);
+	jso_value_print_debug_ex(val, indent + 1);
+
+	return 0;
+}
+
 /* debug print jso value */
 JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 {
-	jso_print_indent(indent);
+	jso_value_print_indent(indent);
 
 	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_NULL:
@@ -121,7 +140,8 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 			break;
 		case JSO_TYPE_STRING:
 			if (JSO_SVAL_P(val))
-				fprintf(JSO_PRINT_STREAM, "STRING: \"%s\" ; LENGTH: %zu\n", JSO_SVAL_P(val), JSO_SLEN_P(val));
+				fprintf(JSO_PRINT_STREAM, "STRING: \"%s\" ; LENGTH: %zu\n",
+						JSO_SVAL_P(val), JSO_SLEN_P(val));
 			else
 				fputs("EMPTY STRING\n", JSO_PRINT_STREAM);
 			break;
@@ -130,7 +150,8 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 				fprintf(stderr, "ERROR: Array allocation failed\n");
 			} else {
 				fputs("ARRAY:\n", JSO_PRINT_STREAM);
-				jso_array_print(JSO_ARRVAL_P(val), indent + 1);
+				jso_array_foreach_with_arg(JSO_ARRVAL_P(val),
+						jso_value_print_debug_array_callback, (void *) (indent + 1));
 			}
 			break;
 		case JSO_TYPE_OBJECT:
@@ -138,7 +159,8 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 				fprintf(stderr, "ERROR: Object allocation failed\n");
 			} else {
 				fputs("OBJECT:\n", JSO_PRINT_STREAM);
-				jso_object_print(JSO_OBJVAL_P(val), indent + 1);
+				jso_object_foreach_with_arg(JSO_OBJVAL_P(val),
+						jso_value_print_debug_object_callback, (void *) (indent + 1));
 			}
 			break;
 		case JSO_TYPE_ERROR:

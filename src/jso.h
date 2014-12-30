@@ -174,7 +174,6 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent);
 JSO_API void jso_value_print_debug(jso_value *val);
 JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent);
 JSO_API void jso_value_print_pretty(jso_value *val);
-JSO_API void jso_print_indent(jso_uint indent);
 
 /* error functions */
 JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc);
