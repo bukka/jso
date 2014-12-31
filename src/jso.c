@@ -100,6 +100,45 @@ static void jso_value_print_indent(jso_uint indent)
 	}
 }
 
+/* print error */
+static void jso_value_print_error(jso_value *val)
+{
+	if (!JSO_EVAL_P(val)) {
+		fprintf(stderr, "ERROR: Error allocation failed\n");
+	} else {
+		const char *emsg;
+		switch (JSO_ETYPE_P(val)) {
+			case JSO_ERROR_SYNTAX:
+				emsg = "SYNTAX";
+				break;
+			case JSO_ERROR_DEPTH:
+				emsg = "DEPTH";
+				break;
+			case JSO_ERROR_TOKEN:
+				emsg = "TOKEN";
+				break;
+			case JSO_ERROR_CTRL_CHAR:
+				emsg = "CONTROL CHARACTER";
+				break;
+			case JSO_ERROR_ESCAPE:
+				emsg = "ESCAPE";
+				break;
+			case JSO_ERROR_UTF8:
+				emsg = "UTF8:";
+				break;
+			case JSO_ERROR_UTF16:
+				emsg = "UTF16";
+				break;
+			default:
+				emsg = "unknown";
+				break;
+		}
+		fprintf(stderr, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg,
+				JSO_ELOC_P(val).first_line, JSO_ELOC_P(val).first_column,
+				JSO_ELOC_P(val).last_line, JSO_ELOC_P(val).last_column);
+	}
+}
+
 /* debug print array callback */
 static int jso_value_print_debug_array_callback(size_t idx, jso_value *val, void *arg)
 {
@@ -164,42 +203,7 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 			}
 			break;
 		case JSO_TYPE_ERROR:
-			{
-				if (!JSO_EVAL_P(val)) {
-					fprintf(stderr, "ERROR: Error allocation failed\n");
-				} else {
-					const char *emsg;
-					switch (JSO_ETYPE_P(val)) {
-						case JSO_ERROR_SYNTAX:
-							emsg = "SYNTAX";
-							break;
-						case JSO_ERROR_DEPTH:
-							emsg = "DEPTH";
-							break;
-						case JSO_ERROR_TOKEN:
-							emsg = "TOKEN";
-							break;
-						case JSO_ERROR_CTRL_CHAR:
-							emsg = "CONTROL CHARACTER";
-							break;
-						case JSO_ERROR_ESCAPE:
-							emsg = "ESCAPE";
-							break;
-						case JSO_ERROR_UTF8:
-							emsg = "UTF8:";
-							break;
-						case JSO_ERROR_UTF16:
-							emsg = "UTF16";
-							break;
-						default:
-							emsg = "unknown";
-							break;
-					}
-					fprintf(stderr, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg,
-							JSO_ELOC_P(val).first_line, JSO_ELOC_P(val).first_column,
-							JSO_ELOC_P(val).last_line, JSO_ELOC_P(val).last_column);
-				}
-			}
+			jso_value_print_error(val);
 			break;
 		default:
 			break;
