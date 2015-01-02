@@ -34,6 +34,9 @@ typedef size_t (*jso_io_read_t)(jso_io *io, size_t size);
 /* output operation */
 typedef size_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t size);
 
+/* flush operation */
+typedef int (*jso_io_flush_t)(jso_io *io);
+
 /* error operation */
 typedef int (*jso_io_error_t)(jso_io *io);
 
@@ -56,6 +59,7 @@ struct jso_io {
 	struct {
 		jso_io_read_t read;
 		jso_io_write_t write;
+		jso_io_flush_t flush;
 		jso_io_error_t error;
 	} ops;                      /* io operations */
 };
@@ -106,9 +110,11 @@ struct jso_io {
 #define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))
 /* write operation */
 #define JSO_IO_WRITE(io, iow_buffer, iow_size) (JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
+/* flush operation */
+#define JSO_IO_FLUSH(io) (JSO_IO_OP((io), flush)(io))
 
 /* error code or 0 if no error */
-#define JSO_IO_ERROR(io) (JSO_IO_OP(io, error)(io))
+#define JSO_IO_ERROR(io) (JSO_IO_OP((io), error)(io))
 /* io is without any error */
 #define JSO_IO_GOOD(io) (JSO_IO_ERROR(io) == 0)
 /* error during the io operation  */
