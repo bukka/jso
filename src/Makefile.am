@@ -6,7 +6,7 @@ include_HEADERS = jso.h jso_types.h jso_cli.h jso_array.h jso_object.h jso_parse
 	jso_io.h io/jso_io_file.h
 
 jso_scanner.c: jso_scanner.re
-	re2c -t jso_scanner_defs.h -bci jso_scanner.re > jso_scanner.c
+	$(RE2C) -t jso_scanner_defs.h -bci jso_scanner.re > jso_scanner.c
 
 jso_parser.tab.c: jso_parser.y
 	$(YACC) -d jso_parser.y
