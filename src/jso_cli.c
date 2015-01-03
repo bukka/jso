@@ -29,7 +29,7 @@
 #include "jso_cli.h"
 #include "jso_scanner.h"
 #include "jso_parser.h"
-#include "io/jso_file.h"
+#include "io/jso_io_file.h"
 
 JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 {

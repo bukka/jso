@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "jso_file.h"
+#include "jso_io_file.h"
 #include "jso.h"
 
 
