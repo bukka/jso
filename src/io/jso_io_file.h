@@ -37,4 +37,4 @@ JSO_API int jso_io_file_close(jso_io *io);
 
 JSO_API off_t jso_io_file_size(const char *filename);
 
-#endif /* PHP_JSO_IO_FILE_H */
+#endif /* JSO_IO_FILE_H */
