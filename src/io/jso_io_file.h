@@ -31,6 +31,8 @@
 #define JSO_IO_FILE_HANDLE_GET(io) ((FILE *) JSO_IO_HANDLE_PTR(io))
 #define JSO_IO_FILE_HANDLE_SET(io, file_ptr) (JSO_IO_HANDLE_PTR(io) = (void *) (file_ptr))
 
+JSO_API jso_io *jso_io_file_open_stream(FILE *handle);
+
 JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype);
 
 JSO_API int jso_io_file_close(jso_io *io);

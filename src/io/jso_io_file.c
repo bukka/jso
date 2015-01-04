@@ -91,14 +91,13 @@ static int jso_io_file_error(jso_io *io)
 	return JSO_IO_ERRNO(io) ? JSO_IO_ERRNO(io) : 0;
 }
 
-
-JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype)
+JSO_API jso_io *jso_io_file_open_stream(FILE *fp)
 {
 	jso_io *io;
-	FILE *fp = fopen(filename, opentype);
+
 	if (!fp)
 		return NULL;
-	
+
 	io = JSO_IO_ALLOC();
 	JSO_IO_FILE_HANDLE_SET(io, fp);
 	JSO_IO_OP(io, read) = jso_io_file_read;
@@ -106,6 +105,13 @@ JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype)
 	JSO_IO_OP(io, flush) = jso_io_file_flush;
 	JSO_IO_OP(io, error) = jso_io_file_error;
 	return io;
+}
+
+JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype)
+{
+	FILE *fp = fopen(filename, opentype);
+
+	return jso_io_file_open_stream(fp);
 }
 
 JSO_API int jso_io_file_close(jso_io *io)
