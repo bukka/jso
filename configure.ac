@@ -33,7 +33,6 @@ AC_PROG_YACC
 
 # Check for re2c
 AC_CHECK_PROG(RE2C, re2c, re2c)
-AC_SUBST(RE2C)
 
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
