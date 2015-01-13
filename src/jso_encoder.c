@@ -34,4 +34,15 @@ JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_
 	memcpy(&encoder->options, options, sizeof(jso_encoder_options));
 }
 
-JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val);
+JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val)
+{
+	return 1;
+}
+
+JSO_API int jso_encode(jso_value *val, jso_io *output, jso_encoder_options *options)
+{
+	jso_encoder encoder;
+
+	jso_encoder_init(&encoder, output, options);
+	return jso_encoder_encode(&encoder, val);
+}

@@ -39,5 +39,6 @@ typedef struct _jso_encoder {
 
 JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_options *options);
 JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val);
+JSO_API int jso_encode(jso_value *val, jso_io *output, jso_encoder_options *options);
 
 #endif /* JSO_ENCODER_H */
