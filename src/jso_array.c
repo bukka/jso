@@ -103,7 +103,7 @@ JSO_API int jso_array_pop(jso_array *arr)
 }
 
 /* call cbk function for each element in array */
-JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk)
+JSO_API void jso_array_apply(jso_array *arr, jso_array_callback cbk)
 {
 	size_t pos = 0;
 	jso_array_element *el = arr->head;
@@ -114,7 +114,7 @@ JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk)
 }
 
 /* call cbk function with arg for each element in array */
-JSO_API void jso_array_foreach_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg)
+JSO_API void jso_array_apply_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg)
 {
 	size_t pos = 0;
 	jso_array_element *el = arr->head;

@@ -36,8 +36,8 @@ JSO_API void jso_array_free(jso_array *arr);
 JSO_API int jso_array_append(jso_array *arr, jso_value *val);
 JSO_API int jso_array_push(jso_array *arr, jso_value *val);
 JSO_API int jso_array_pop(jso_array *arr);
-JSO_API void jso_array_foreach(jso_array *arr, jso_array_callback cbk);
-JSO_API void jso_array_foreach_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg);
+JSO_API void jso_array_apply(jso_array *arr, jso_array_callback cbk);
+JSO_API void jso_array_apply_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg);
 JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
 
 #endif /* JSO_ARRAY_H */

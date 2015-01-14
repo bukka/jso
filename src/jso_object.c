@@ -79,7 +79,7 @@ JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val)
 }
 
 /* call cbk function for each element in object */
-JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk)
+JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
 {
 	jso_object_member *member = obj->head;
 	while (member) {
@@ -89,7 +89,7 @@ JSO_API void jso_object_foreach(jso_object *obj, jso_object_callback cbk)
 }
 
 /* call cbk function with arg for each element in object */
-JSO_API void jso_object_foreach_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg)
+JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg)
 {
 	jso_object_member *member = obj->head;
 	while (member) {

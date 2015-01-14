@@ -189,7 +189,7 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 				fprintf(stderr, "ERROR: Array allocation failed\n");
 			} else {
 				fputs("ARRAY:\n", JSO_PRINT_STREAM);
-				jso_array_foreach_with_arg(JSO_ARRVAL_P(val),
+				jso_array_apply_with_arg(JSO_ARRVAL_P(val),
 						jso_value_print_debug_array_callback, (void *) (indent + 1));
 			}
 			break;
@@ -198,7 +198,7 @@ JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent)
 				fprintf(stderr, "ERROR: Object allocation failed\n");
 			} else {
 				fputs("OBJECT:\n", JSO_PRINT_STREAM);
-				jso_object_foreach_with_arg(JSO_OBJVAL_P(val),
+				jso_object_apply_with_arg(JSO_OBJVAL_P(val),
 						jso_value_print_debug_object_callback, (void *) (indent + 1));
 			}
 			break;
