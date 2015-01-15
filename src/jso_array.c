@@ -24,18 +24,6 @@
 #include <stdlib.h>
 #include "jso.h"
 
-/* jso array element */
-typedef struct _jso_array_element {
-	jso_value val;
-	struct _jso_array_element *next;
-} jso_array_element;
-
-/* jso array structure */
-struct _jso_array {
-	jso_array_element *head;
-	jso_array_element *tail;
-};
-
 /* alloc and init new array */
 JSO_API jso_array *jso_array_alloc()
 {
