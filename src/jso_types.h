@@ -71,4 +71,45 @@ typedef enum {
 	JSO_TYPE_OBJECT
 } jso_value_type;
 
+/* jso error types */
+typedef enum {
+	JSO_ERROR_SYNTAX,
+	JSO_ERROR_DEPTH,
+	JSO_ERROR_TOKEN,
+	JSO_ERROR_CTRL_CHAR,
+	JSO_ERROR_UTF16,
+	JSO_ERROR_UTF8,
+	JSO_ERROR_ESCAPE
+} jso_error_type;
+
+/* jso error location */
+typedef struct {
+	size_t first_column;
+	size_t first_line;
+	size_t last_column;
+	size_t last_line;
+} jso_location;
+
+/* jso error structure */
+typedef struct {
+	jso_error_type type;
+	jso_location loc;
+} jso_error;
+
+/* jso value data union */
+typedef union _jso_value_data {
+	jso_int ival;
+	jso_double dval;
+	jso_string str;
+	jso_array *arr;
+	jso_object *obj;
+	jso_error *err;
+} jso_value_data;
+
+/* jso value structure */
+typedef struct _jso_value {
+	jso_value_data data;
+	jso_value_type type;
+} jso_value;
+
 #endif /* JSO_TYPES_H */

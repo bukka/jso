@@ -54,47 +54,6 @@
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
 
-/* jso error types */
-typedef enum {
-	JSO_ERROR_SYNTAX,
-	JSO_ERROR_DEPTH,
-	JSO_ERROR_TOKEN,
-	JSO_ERROR_CTRL_CHAR,
-	JSO_ERROR_UTF16,
-	JSO_ERROR_UTF8,
-	JSO_ERROR_ESCAPE
-} jso_error_type;
-
-/* jso error location */
-typedef struct {
-	size_t first_column;
-	size_t first_line;
-	size_t last_column;
-	size_t last_line;
-} jso_location;
-
-/* jso error structure */
-typedef struct {
-	jso_error_type type;
-	jso_location loc;
-} jso_error;
-
-/* jso value data union */
-typedef union _jso_value_data {
-	jso_int ival;
-	jso_double dval;
-	jso_string str;
-	jso_array *arr;
-	jso_object *obj;
-	jso_error *err;
-} jso_value_data;
-
-/* jso value structure */
-typedef struct _jso_value {
-	jso_value_data data;
-	jso_value_type type;
-} jso_value;
-
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
 #define JSO_IVAL_P(pjv) (pjv)->data.ival
