@@ -24,19 +24,6 @@
 #include <stdlib.h>
 #include "jso.h"
 
-/* jso object member */
-typedef struct _jso_object_member {
-	jso_string key;
-	jso_value val;
-	struct _jso_object_member *next;
-} jso_object_member;
-
-/* jso object structure */
-struct _jso_object {
-	jso_object_member *head;
-	jso_object_member *tail;
-};
-
 /* allocate and init object */
 JSO_API jso_object *jso_object_alloc()
 {
