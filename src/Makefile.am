@@ -1,4 +1,4 @@
-AM_CFLAGS = -ansi -Wall
+AM_CFLAGS = -ansi -Wall -std=c99
 
 bin_PROGRAMS = jso
 jso_SOURCES =  main.c jso.c jso_cli.c jso_array.c jso_object.c \
