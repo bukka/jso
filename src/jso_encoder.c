@@ -51,11 +51,38 @@ static int jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
 
 static int jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 {
+	jso_value *val;
+	jso_bool is_first = JSO_TRUE;
+
+	JSO_ARRAY_FOREACH(arr, val) {
+		if (is_first) {
+			is_first = JSO_FALSE;
+		} else {
+			jso_encoder_output(encoder, ",", 1);
+		}
+		jso_encoder_encode(encoder, val);
+	} JSO_ARRAY_FOREACH_END;
+
 	return 0;
 }
 
 static int jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 {
+	jso_string *key;
+	jso_value *val;
+	jso_bool is_first = JSO_TRUE;
+
+	JSO_OBJECT_FOREACH(obj, key, val) {
+		if (is_first) {
+			is_first = JSO_FALSE;
+		} else {
+			jso_encoder_output(encoder, ",", 1);
+		}
+		jso_encoder_encode_string(encoder, key);
+		jso_encoder_output(encoder, ":", 1);
+		jso_encoder_encode(encoder, val);
+	} JSO_OBJECT_FOREACH_END;
+
 	return 0;
 }
 

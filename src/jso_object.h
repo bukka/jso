@@ -58,6 +58,6 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 			_key = &_object_member->key; \
 			_val = &_object_member->val;
 
-#define JSO_ARRAY_FOREACH_END } } while(0)
+#define JSO_OBJECT_FOREACH_END } } while(0)
 
 #endif /* JSO_OBJECT_H */
