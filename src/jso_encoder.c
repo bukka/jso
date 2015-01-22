@@ -29,14 +29,41 @@
 #include "jso_io.h"
 #include "jso_encoder.h"
 
-static int jso_encoder_output(jso_encoder *encoder, const char *str, size_t len)
+#define JSO_INT_BUFFER_SIZE 32
+
+static int jso_encoder_output_cstr(jso_encoder *encoder, const char *str, size_t len)
 {
 	return JSO_IO_WRITE(encoder->output, (jso_ctype *) str, len);
 }
 
+static int jso_encoder_output_jstr(jso_encoder *encoder, jso_ctype *str, size_t len)
+{
+	return JSO_IO_WRITE(encoder->output, str, len);
+}
+
 static int jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 {
-	return 0;
+	jso_ctype str[JSO_INT_BUFFER_SIZE];
+	jso_ctype *p = &str[JSO_INT_BUFFER_SIZE];
+	jso_bool negative;
+
+	if (val < 0) {
+		negative = JSO_TRUE;
+		val = -val;
+	} else {
+		negative = JSO_FALSE;
+	}
+
+	do {
+		*--p = (jso_ctype) (val % 10) + '0';
+		val /= 10;
+	} while (val > 0);
+
+	if (negative) {
+		*--p = '-';
+	}
+
+	return jso_encoder_output_jstr(encoder, p, (size_t) (&str[JSO_INT_BUFFER_SIZE] - p));
 }
 
 static int jso_encoder_encode_double(jso_encoder *encoder, jso_double val)
@@ -58,7 +85,7 @@ static int jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		if (is_first) {
 			is_first = JSO_FALSE;
 		} else {
-			jso_encoder_output(encoder, ",", 1);
+			jso_encoder_output_cstr(encoder, ",", 1);
 		}
 		jso_encoder_encode(encoder, val);
 	} JSO_ARRAY_FOREACH_END;
@@ -76,10 +103,10 @@ static int jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		if (is_first) {
 			is_first = JSO_FALSE;
 		} else {
-			jso_encoder_output(encoder, ",", 1);
+			jso_encoder_output_cstr(encoder, ",", 1);
 		}
 		jso_encoder_encode_string(encoder, key);
-		jso_encoder_output(encoder, ":", 1);
+		jso_encoder_output_cstr(encoder, ":", 1);
 		jso_encoder_encode(encoder, val);
 	} JSO_OBJECT_FOREACH_END;
 
@@ -97,12 +124,12 @@ JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val)
 {
 	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_NULL:
-			return jso_encoder_output(encoder, "null", sizeof("null") - 1);
+			return jso_encoder_output_cstr(encoder, "null", sizeof("null") - 1);
 		case JSO_TYPE_BOOL:
 			if (JSO_IVAL_P(val)) {
-				return jso_encoder_output(encoder, "true", sizeof("true") - 1);
+				return jso_encoder_output_cstr(encoder, "true", sizeof("true") - 1);
 			}
-			return jso_encoder_output(encoder, "false", sizeof("false") - 1);
+			return jso_encoder_output_cstr(encoder, "false", sizeof("false") - 1);
 		case JSO_TYPE_INT:
 			return jso_encoder_encode_int(encoder, JSO_IVAL_P(val));
 		case JSO_TYPE_DOUBLE:
