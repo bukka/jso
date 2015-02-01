@@ -40,13 +40,13 @@ struct _jso_object {
 };
 
 /* callback function for iterating object */
-typedef int (*jso_object_callback)(jso_string *key, jso_value *val);
-typedef int (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, void *arg);
+typedef jso_rc (*jso_object_callback)(jso_string *key, jso_value *val);
+typedef jso_rc (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, void *arg);
 
 /* object functions */
 JSO_API jso_object *jso_object_alloc();
 JSO_API void jso_object_free(jso_object *obj);
-JSO_API int jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
+JSO_API jso_rc jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
 JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk);
 JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg);
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);

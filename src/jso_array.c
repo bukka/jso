@@ -46,11 +46,11 @@ JSO_API void jso_array_free(jso_array *arr)
 }
 
 /* append element to the array */
-JSO_API int jso_array_append(jso_array *arr, jso_value *val)
+JSO_API jso_rc jso_array_append(jso_array *arr, jso_value *val)
 {
 	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
 	if (!el)
-		return JSO_FALSE;
+		return JSO_FAILURE;
 	el->val = *val;
 	el->next = NULL;
 	if (!arr->head) {
@@ -59,35 +59,35 @@ JSO_API int jso_array_append(jso_array *arr, jso_value *val)
 		arr->tail->next = el;
 		arr->tail = el;
 	}
-	return JSO_TRUE;
+	return JSO_SUCCESS;
 }
 
 /* push element to the array */
-JSO_API int jso_array_push(jso_array *arr, jso_value *val)
+JSO_API jso_rc jso_array_push(jso_array *arr, jso_value *val)
 {
 	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
 	if (!el)
-		return JSO_FALSE;
+		return JSO_FAILURE;
 	el->val = *val;
 	el->next = arr->head;
 	arr->head = el;
 	if (!arr->tail)
 		arr->tail = el;
-	return JSO_TRUE;
+	return JSO_SUCCESS;
 }
 
 /* pop the head element from the array */
-JSO_API int jso_array_pop(jso_array *arr)
+JSO_API jso_rc jso_array_pop(jso_array *arr)
 {
 	jso_array_element *el = arr->head;
 	if (!el)
-		return JSO_FALSE;
+		return JSO_FAILURE;
 	if (el == arr->tail)
 		arr->head = arr->tail = NULL;
 	else
 		arr->head = arr->head->next;
 	jso_free(el);
-	return JSO_TRUE;
+	return JSO_SUCCESS;
 }
 
 /* call cbk function for each element in array */

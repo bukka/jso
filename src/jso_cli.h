@@ -38,8 +38,8 @@ typedef struct _jso_cli_options {
 	jso_cli_output output;
 } jso_cli_options;
 
-JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options);
-JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options);
-JSO_API int jso_cli_parse_args(int argc, const char *argv[]);
+JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options);
+JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options);
+JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[]);
 
 #endif /* JSO_CLI_H */

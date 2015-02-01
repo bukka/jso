@@ -25,27 +25,29 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "jso.h"
 #include "jso_io.h"
 #include "jso_encoder.h"
 
 #define JSO_INT_BUFFER_SIZE 32
 
-static int jso_encoder_output_cstr(jso_encoder *encoder, const char *str, size_t len)
+static inline jso_rc jso_encoder_output_jstr(jso_encoder *encoder, jso_ctype *str, size_t len)
 {
-	return JSO_IO_WRITE(encoder->output, (jso_ctype *) str, len);
+	return JSO_IO_WRITE(encoder->output, str, len) == len ? JSO_SUCCESS : JSO_FAILURE;
 }
 
-static int jso_encoder_output_jstr(jso_encoder *encoder, jso_ctype *str, size_t len)
+static inline jso_rc jso_encoder_output_cstr(jso_encoder *encoder, const char *str, size_t len)
 {
-	return JSO_IO_WRITE(encoder->output, str, len);
+	return jso_encoder_output_jstr(encoder, (jso_ctype *) str, len);
 }
 
-static int jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
+static jso_rc jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 {
 	jso_ctype str[JSO_INT_BUFFER_SIZE];
 	jso_ctype *p = &str[JSO_INT_BUFFER_SIZE];
 	jso_bool negative;
+	size_t len;
 
 	if (val < 0) {
 		negative = JSO_TRUE;
@@ -63,20 +65,29 @@ static int jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 		*--p = '-';
 	}
 
-	return jso_encoder_output_jstr(encoder, p, (size_t) (&str[JSO_INT_BUFFER_SIZE] - p));
+	len = (size_t) (&str[JSO_INT_BUFFER_SIZE] - p);
+	return jso_encoder_output_jstr(encoder, p, len);
 }
 
-static int jso_encoder_encode_double(jso_encoder *encoder, jso_double val)
+static jso_rc jso_encoder_encode_double(jso_encoder *encoder, jso_double val)
 {
-	return 0;
+	/* this is noop as jso_double is always double */
+	double dv = (double) val;
+
+	if (isnan(dv) || isinf(dv)) {
+		return JSO_FAILURE;
+	}
+
+
+	return JSO_SUCCESS;
 }
 
-static int jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
+static jso_rc jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
 {
-	return 0;
+	return JSO_SUCCESS;
 }
 
-static int jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
+static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 {
 	jso_value *val;
 	jso_bool is_first = JSO_TRUE;
@@ -90,10 +101,10 @@ static int jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		jso_encoder_encode(encoder, val);
 	} JSO_ARRAY_FOREACH_END;
 
-	return 0;
+	return JSO_SUCCESS;
 }
 
-static int jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
+static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 {
 	jso_string *key;
 	jso_value *val;
@@ -110,7 +121,7 @@ static int jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		jso_encoder_encode(encoder, val);
 	} JSO_OBJECT_FOREACH_END;
 
-	return 0;
+	return JSO_SUCCESS;
 }
 
 
@@ -120,7 +131,7 @@ JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_
 	memcpy(&encoder->options, options, sizeof(jso_encoder_options));
 }
 
-JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val)
+JSO_API jso_rc jso_encoder_encode(jso_encoder *encoder, jso_value *val)
 {
 	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_NULL:
@@ -142,11 +153,11 @@ JSO_API int jso_encoder_encode(jso_encoder *encoder, jso_value *val)
 			return jso_encoder_encode_object(encoder, JSO_OBJVAL_P(val));
 		default:
 			/* error */
-			return -1;
+			return JSO_FAILURE;
 	}
 }
 
-JSO_API int jso_encode(jso_value *val, jso_io *output, jso_encoder_options *options)
+JSO_API jso_rc jso_encode(jso_value *val, jso_io *output, jso_encoder_options *options)
 {
 	jso_encoder encoder;
 

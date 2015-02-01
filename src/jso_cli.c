@@ -31,9 +31,9 @@
 #include "jso_parser.h"
 #include "io/jso_io_file.h"
 
-JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options)
+JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 {
-	int rc;
+	jso_rc rc;
 	jso_parser parser;
 
 	/* init scanner */
@@ -44,13 +44,18 @@ JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 	parser.max_depth = options->max_depth;
 
 	/* parse */
-	rc = jso_yyparse(&parser);
+	if (jso_yyparse(&parser) == 0) {
 
-	/* print result */
-	if (options->output == JSO_OUTPUT_PRETTY) {
-		jso_value_print_pretty(&parser.result);
-	} else if (options->output == JSO_OUTPUT_DEBUG) {
-		jso_value_print_debug(&parser.result);
+		/* print result */
+		if (options->output == JSO_OUTPUT_PRETTY) {
+			jso_value_print_pretty(&parser.result);
+		} else if (options->output == JSO_OUTPUT_DEBUG) {
+			jso_value_print_debug(&parser.result);
+		}
+
+		rc = JSO_SUCCESS;
+	} else {
+		rc = JSO_FAILURE;
 	}
 
 	/* free resources */
@@ -60,7 +65,7 @@ JSO_API int jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 	return rc;
 }
 
-JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options)
+JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options)
 {
 	jso_io *io;
 	off_t filesize;
@@ -70,7 +75,7 @@ JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options)
 	filesize = jso_io_file_size(file_path);
 	if (filesize < 0) {
 		fprintf(stderr, "Getting file size for file '%s' failed\n", file_path);
-		return -1;
+		return JSO_FAILURE;
 	}
 	bytes_to_read = (size_t) filesize;
 
@@ -78,7 +83,7 @@ JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options)
 	io = jso_io_file_open(file_path, "r");
 	if (!io) {
 		fprintf(stderr, "Opening the file '%s' failed\n", file_path);
-		return -1;
+		return JSO_FAILURE;
 	}
 	/* read the whole file into the buffer */
 	do {
@@ -89,36 +94,36 @@ JSO_API int jso_cli_parse_file(const char *file_path, jso_cli_options *options)
 	/* check the read data */
 	if (bytes_read_total == 0) {
 		fprintf(stderr, "No data in the file '%s'\n", file_path);
-		return -1;
+		return JSO_FAILURE;
 	}
 	/* check the read data */
 	if (bytes_read_total < bytes_to_read) {
 		fprintf(stderr, "Only %lu of %lu read from the file '%s'\n",
 				bytes_read_total, bytes_to_read, file_path);
-		return -1;
+		return JSO_FAILURE;
 	}
 
 	if (!JSO_IO_CURSOR(io)) {
 		fputs("Cursor is not set\n", stderr);
-		return -1;
+		return JSO_FAILURE;
 	}
 
 	return jso_cli_parse_io(io, options);
 }
 
-static int jso_cli_parse_arg_depth(const char *name, const char *value, jso_cli_options *options)
+static jso_rc jso_cli_parse_arg_depth(const char *name, const char *value, jso_cli_options *options)
 {
 	if (!value) {
 		fputs("Option depth requires value\n", stderr);
-		return -1;
+		return JSO_FAILURE;
 	}
 
 	options->max_depth = atoi(value);
 
-	return 0;
+	return JSO_SUCCESS;
 }
 
-static int jso_cli_parse_arg_output(const char *name, const char *value, jso_cli_options *options)
+static jso_rc jso_cli_parse_arg_output(const char *name, const char *value, jso_cli_options *options)
 {
 	if (!value) {
 		fputs("Option output requires value\n", stderr);
@@ -131,13 +136,13 @@ static int jso_cli_parse_arg_output(const char *name, const char *value, jso_cli
 		options->output = JSO_OUTPUT_DEBUG;
 	} else {
 		fprintf(stderr, "Unknown output value %s\n", value);
-		return -1;
+		return JSO_FAILURE;
 	}
 
-	return 0;
+	return JSO_SUCCESS;
 }
 
-JSO_API int jso_cli_parse_args(int argc, const char *argv[])
+JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 {
 	int i;
 	int rc;
@@ -165,9 +170,9 @@ JSO_API int jso_cli_parse_args(int argc, const char *argv[])
 				rc = jso_cli_parse_arg_output(name, value, &options);
 			} else {
 				fprintf(stderr, "Unknown option %s\n", name);
-				return -1;
+				return JSO_FAILURE;
 			}
-			if (rc < 0) {
+			if (rc == JSO_FAILURE) {
 				return rc;
 			}
 		} else {
@@ -177,7 +182,7 @@ JSO_API int jso_cli_parse_args(int argc, const char *argv[])
 
 	if (!file_path) {
 		fputs("File path not specified\n", stderr);
-		return -1;
+		return JSO_FAILURE;
 	}
 
 	return jso_cli_parse_file(file_path, &options);

@@ -112,4 +112,10 @@ typedef struct _jso_value {
 	jso_value_type type;
 } jso_value;
 
+/* jso return code */
+typedef enum _jso_rc {
+	JSO_SUCCESS = 0,
+	JSO_FAILURE = -1
+} jso_rc;
+
 #endif /* JSO_TYPES_H */

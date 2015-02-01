@@ -26,7 +26,7 @@
 
 int main(int argc, const char *argv[])
 {
-	if (jso_cli_parse_args(argc, argv) < 0)
+	if (jso_cli_parse_args(argc, argv) == JSO_FAILURE)
 		return EXIT_FAILURE;
 	else
 		return EXIT_SUCCESS;
