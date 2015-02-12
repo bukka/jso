@@ -21,10 +21,23 @@
   - data is not unitialized because fread is used
 - fix valgrind errors when JSO_IO_FILE_BUFF_SIZE is small (e.g. 8)
 
+## Encoder
+
+### Double encoding
+- use custom dtoa function for double serialization
+  - allows selection of custom precision and it's faster
+
+### String encoding
+- flag for escaping slashes
+- utf8 validation
+- unicode escaping
+- marked buffering
+
+
 ## Executor
-- pretty printer by default
-- optianol current debugging output
-  - getopts or custom arg parsing
+- pretty printed encoder by default
+- optional current debugging output
+- add support for short arguments
 
 ## Build
 - debug build

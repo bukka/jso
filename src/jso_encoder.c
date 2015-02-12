@@ -42,6 +42,16 @@ static inline jso_rc jso_encoder_output_cstr(jso_encoder *encoder, const char *s
 	return jso_encoder_output_jstr(encoder, (jso_ctype *) str, len);
 }
 
+static inline jso_rc jso_encoder_output_jchar(jso_encoder *encoder, jso_ctype c)
+{
+	return jso_encoder_output_jstr(encoder, &c, 1);
+}
+
+static inline jso_rc jso_encoder_output_cchar(jso_encoder *encoder, char c)
+{
+	return jso_encoder_output_cstr(encoder, &c, 1);
+}
+
 static jso_rc jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 {
 	jso_ctype str[JSO_INT_BUFFER_SIZE];
@@ -71,6 +81,8 @@ static jso_rc jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 
 static jso_rc jso_encoder_encode_double(jso_encoder *encoder, jso_double val)
 {
+	char buf[128], *p;
+	int len;
 	/* this is noop as jso_double is always double */
 	double dv = (double) val;
 
@@ -78,19 +90,72 @@ static jso_rc jso_encoder_encode_double(jso_encoder *encoder, jso_double val)
 		return JSO_FAILURE;
 	}
 
+	len = snprintf(buf, sizeof(buf), "%.17g", dv);
 
-	return JSO_SUCCESS;
+	p = strchr(buf, ',');
+	if (p) {
+		*p = '.';
+	}
+
+	return jso_encoder_output_cstr(encoder, buf, len);
 }
 
 static jso_rc jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
 {
-	return JSO_SUCCESS;
+	size_t pos;
+	char c;
+
+	jso_encoder_output_cchar(encoder, '"');
+	for (pos = 0; pos < JSO_STRING_LEN_P(str); pos++) {
+		c = (char) JSO_STRING_VAL_P(str)[pos];
+
+		switch (c) {
+			case '"':
+				jso_encoder_output_cstr(encoder, "\\\"", 2);
+				break;
+
+			case '\\':
+				jso_encoder_output_cstr(encoder, "\\\\", 2);
+				break;
+
+			case '/':
+				jso_encoder_output_cstr(encoder, "\\/", 2);
+				break;
+
+			case '\b':
+				jso_encoder_output_cstr(encoder, "\\b", 2);
+				break;
+
+			case '\f':
+				jso_encoder_output_cstr(encoder, "\\f", 2);
+				break;
+
+			case '\n':
+				jso_encoder_output_cstr(encoder, "\\n", 2);
+				break;
+
+			case '\r':
+				jso_encoder_output_cstr(encoder, "\\r", 2);
+				break;
+
+			case '\t':
+				jso_encoder_output_cstr(encoder, "\\t", 2);
+				break;
+
+			default:
+				jso_encoder_output_cchar(encoder, c);
+		}
+	}
+
+	return jso_encoder_output_cchar(encoder, '"');
 }
 
 static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 {
 	jso_value *val;
 	jso_bool is_first = JSO_TRUE;
+
+	jso_encoder_output_cchar(encoder, '[');
 
 	JSO_ARRAY_FOREACH(arr, val) {
 		if (is_first) {
@@ -101,6 +166,8 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		jso_encoder_encode(encoder, val);
 	} JSO_ARRAY_FOREACH_END;
 
+	jso_encoder_output_cchar(encoder, ']');
+
 	return JSO_SUCCESS;
 }
 
@@ -109,6 +176,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 	jso_string *key;
 	jso_value *val;
 	jso_bool is_first = JSO_TRUE;
+
+	jso_encoder_output_cchar(encoder, '{');
 
 	JSO_OBJECT_FOREACH(obj, key, val) {
 		if (is_first) {
@@ -120,6 +189,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		jso_encoder_output_cstr(encoder, ":", 1);
 		jso_encoder_encode(encoder, val);
 	} JSO_OBJECT_FOREACH_END;
+
+	jso_encoder_output_cchar(encoder, '}');
 
 	return JSO_SUCCESS;
 }
@@ -146,7 +217,7 @@ JSO_API jso_rc jso_encoder_encode(jso_encoder *encoder, jso_value *val)
 		case JSO_TYPE_DOUBLE:
 			return jso_encoder_encode_double(encoder, JSO_DVAL_P(val));
 		case JSO_TYPE_STRING:
-			return jso_encoder_encode_string(encoder, &val->data.str);
+			return jso_encoder_encode_string(encoder, &JSO_STR_P(val));
 		case JSO_TYPE_ARRAY:
 			return jso_encoder_encode_array(encoder, JSO_ARRVAL_P(val));
 		case JSO_TYPE_OBJECT:

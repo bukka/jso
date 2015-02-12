@@ -215,15 +215,3 @@ JSO_API void jso_value_print_debug(jso_value *val)
 {
 	jso_value_print_debug_ex(val, 0);
 }
-
-/* pretty print jso value */
-JSO_API void jso_value_print_pretty_ex(jso_value *val, jso_uint indent)
-{
-
-}
-
-/* pretty print jso value */
-JSO_API void jso_value_print_pretty(jso_value *val)
-{
-	jso_value_print_pretty_ex(val, 0);
-}

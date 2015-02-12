@@ -29,6 +29,7 @@
 
 /* jso output format */
 typedef enum {
+	JSO_OUTPUT_MINIMAL,
 	JSO_OUTPUT_PRETTY,
 	JSO_OUTPUT_DEBUG
 } jso_cli_output;

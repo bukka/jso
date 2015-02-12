@@ -54,12 +54,19 @@
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
 
+/* accessors for string */
+#define JSO_STRING_LEN_P(_str) (_str)->len
+#define JSO_STRING_VAL_P(_str) (_str)->val
+#define JSO_STRING_LEN(_str)   (_str).len
+#define JSO_STRING_VAL(_str)   (_str).val
+
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
 #define JSO_IVAL_P(pjv) (pjv)->data.ival
 #define JSO_DVAL_P(pjv) (pjv)->data.dval
-#define JSO_SVAL_P(pjv) (pjv)->data.str.val
-#define JSO_SLEN_P(pjv) (pjv)->data.str.len
+#define JSO_STR_P(pjv)  (pjv)->data.str
+#define JSO_SVAL_P(pjv) JSO_STR_P(pjv).val
+#define JSO_SLEN_P(pjv) JSO_STR_P(pjv).len
 #define JSO_ARRVAL_P(pjv) (pjv)->data.arr
 #define JSO_OBJVAL_P(pjv) (pjv)->data.obj
 #define JSO_EVAL_P(pjv) (pjv)->data.err
@@ -70,6 +77,7 @@
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
 #define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
 #define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
+#define JSO_STR(jv)  JSO_STR_P(&(jv))
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
 #define JSO_ARRVAL(jv) JSO_ARRVAL_P(&(jv))

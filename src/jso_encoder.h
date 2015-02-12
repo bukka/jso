@@ -27,8 +27,10 @@
 #include "jso_types.h"
 #include "jso_io.h"
 
+#define JSO_ENCODER_DEPTH_UNLIMITED -1
+
 typedef struct _jso_encoder_options {
-	jso_uint max_depth;
+	jso_int max_depth;
 	jso_bool pretty;
 } jso_encoder_options;
 

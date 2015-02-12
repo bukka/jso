@@ -29,6 +29,7 @@
 #include "jso_cli.h"
 #include "jso_scanner.h"
 #include "jso_parser.h"
+#include "jso_encoder.h"
 #include "io/jso_io_file.h"
 
 JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
@@ -47,10 +48,14 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 	if (jso_yyparse(&parser) == 0) {
 
 		/* print result */
-		if (options->output == JSO_OUTPUT_PRETTY) {
-			jso_value_print_pretty(&parser.result);
-		} else if (options->output == JSO_OUTPUT_DEBUG) {
+		if (options->output == JSO_OUTPUT_DEBUG) {
 			jso_value_print_debug(&parser.result);
+		} else {
+			jso_io *os = jso_io_file_open_stream(stdout);
+			jso_encoder_options enc_options;
+			enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED; /* unlimited */
+			enc_options.pretty    = options->output == JSO_OUTPUT_PRETTY;
+			jso_encode(&parser.result, os, &enc_options);
 		}
 
 		rc = JSO_SUCCESS;
@@ -130,7 +135,9 @@ static jso_rc jso_cli_parse_arg_output(const char *name, const char *value, jso_
 		return -1;
 	}
 
-	if (!strncmp(value, "pretty", JSO_MAX(strlen(value), sizeof("pretty") - 1))) {
+	if (!strncmp(value, "minimal", JSO_MAX(strlen(value), sizeof("minimal") - 1))) {
+		options->output = JSO_OUTPUT_MINIMAL;
+	} else if (!strncmp(value, "pretty", JSO_MAX(strlen(value), sizeof("pretty") - 1))) {
 		options->output = JSO_OUTPUT_PRETTY;
 	} else if (!strncmp(value, "debug", JSO_MAX(strlen(value), sizeof("debug") - 1))) {
 		options->output = JSO_OUTPUT_DEBUG;
@@ -149,7 +156,7 @@ JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 	const char *file_path = NULL;
 	jso_cli_options options = {
 		.max_depth = 0,
-		.output = JSO_OUTPUT_DEBUG
+		.output = JSO_OUTPUT_PRETTY
 	};
 
 	for (i = 1; i < argc; i++) {
