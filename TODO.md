@@ -28,11 +28,11 @@
   - allows selection of custom precision and it's faster
 
 ### String encoding
+- pretty printing
 - flag for escaping slashes
 - utf8 validation
 - unicode escaping
 - marked buffering
-
 
 ## Executor
 - pretty printed encoder by default
@@ -56,3 +56,10 @@
 - bison
   - remove Makefile AM rule (use AC)
   - jso_parser.tab.h - prerequisite (build error when it's not created)
+
+## Documentation
+- document source using doxygent comments
+- MarkDown documentation (Github)
+  - document jso executable
+  - document exported API
+  - add some examples
