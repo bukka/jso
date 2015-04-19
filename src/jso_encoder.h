@@ -29,6 +29,10 @@
 
 #define JSO_ENCODER_DEPTH_UNLIMITED -1
 
+#define JSO_ENCODER_PRETTY_INDENT "    "
+#define JSO_ENCODER_PRETTY_ELSEP  " "
+#define JSO_ENCODER_PRETTY_KVSEP  " "
+
 typedef struct _jso_encoder_options {
 	jso_int max_depth;
 	jso_bool pretty;

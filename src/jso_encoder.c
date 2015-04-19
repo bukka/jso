@@ -52,6 +52,38 @@ static inline jso_rc jso_encoder_output_cchar(jso_encoder *encoder, char c)
 	return jso_encoder_output_cstr(encoder, &c, 1);
 }
 
+static inline jso_rc jso_encoder_pretty_print_cstr(jso_encoder *encoder, const char *str, size_t len)
+{
+	if (encoder->options.pretty) {
+		return jso_encoder_output_cstr(encoder, str, len);
+	}
+	return JSO_SUCCESS;
+}
+
+static inline jso_rc jso_encoder_pretty_print_indent(jso_encoder *encoder)
+{
+	return jso_encoder_pretty_print_cstr(
+				encoder,
+				JSO_ENCODER_PRETTY_INDENT,
+				sizeof(JSO_ENCODER_PRETTY_INDENT) - 1);
+}
+
+static inline jso_rc jso_encoder_pretty_print_elsep(jso_encoder *encoder)
+{
+	return jso_encoder_pretty_print_cstr(
+				encoder,
+				JSO_ENCODER_PRETTY_ELSEP,
+				sizeof(JSO_ENCODER_PRETTY_ELSEP) - 1);
+}
+
+static inline jso_rc jso_encoder_pretty_print_kvsep(jso_encoder *encoder)
+{
+	return jso_encoder_pretty_print_cstr(
+				encoder,
+				JSO_ENCODER_PRETTY_KVSEP,
+				sizeof(JSO_ENCODER_PRETTY_KVSEP) - 1);
+}
+
 static jso_rc jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
 {
 	jso_ctype str[JSO_INT_BUFFER_SIZE];
