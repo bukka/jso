@@ -30,7 +30,7 @@
 #define JSO_ENCODER_DEPTH_UNLIMITED -1
 
 #define JSO_ENCODER_PRETTY_INDENT "    "
-#define JSO_ENCODER_PRETTY_ELSEP  " "
+#define JSO_ENCODER_PRETTY_ELSEP  "\n"
 #define JSO_ENCODER_PRETTY_KVSEP  " "
 
 typedef struct _jso_encoder_options {
@@ -41,6 +41,7 @@ typedef struct _jso_encoder_options {
 typedef struct _jso_encoder {
 	jso_io *output;
 	jso_encoder_options options;
+	jso_int depth;
 } jso_encoder;
 
 JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_options *options);

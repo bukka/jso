@@ -52,33 +52,52 @@ static inline jso_rc jso_encoder_output_cchar(jso_encoder *encoder, char c)
 	return jso_encoder_output_cstr(encoder, &c, 1);
 }
 
-static inline jso_rc jso_encoder_pretty_print_cstr(jso_encoder *encoder, const char *str, size_t len)
-{
-	if (encoder->options.pretty) {
-		return jso_encoder_output_cstr(encoder, str, len);
-	}
-	return JSO_SUCCESS;
-}
-
 static inline jso_rc jso_encoder_pretty_print_indent(jso_encoder *encoder)
 {
-	return jso_encoder_pretty_print_cstr(
+	jso_int i;
+
+	if (!encoder->options.pretty) {
+		return JSO_SUCCESS;
+	}
+
+	for (i = 0; i < encoder->depth; i++) {
+		if (jso_encoder_output_cstr(
 				encoder,
 				JSO_ENCODER_PRETTY_INDENT,
-				sizeof(JSO_ENCODER_PRETTY_INDENT) - 1);
+				sizeof(JSO_ENCODER_PRETTY_INDENT) - 1) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+	}
+
+	return JSO_SUCCESS;
 }
 
 static inline jso_rc jso_encoder_pretty_print_elsep(jso_encoder *encoder)
 {
-	return jso_encoder_pretty_print_cstr(
+	jso_rc rc;
+
+	if (!encoder->options.pretty) {
+		return JSO_SUCCESS;
+	}
+
+	rc = jso_encoder_output_cstr(
 				encoder,
 				JSO_ENCODER_PRETTY_ELSEP,
 				sizeof(JSO_ENCODER_PRETTY_ELSEP) - 1);
+
+	if (rc == JSO_SUCCESS && JSO_ENCODER_PRETTY_ELSEP[0] == '\n') {
+		return jso_encoder_pretty_print_indent(encoder);
+	}
+	return rc;
 }
 
 static inline jso_rc jso_encoder_pretty_print_kvsep(jso_encoder *encoder)
 {
-	return jso_encoder_pretty_print_cstr(
+	if (!encoder->options.pretty) {
+		return JSO_SUCCESS;
+	}
+
+	return jso_encoder_output_cstr(
 				encoder,
 				JSO_ENCODER_PRETTY_KVSEP,
 				sizeof(JSO_ENCODER_PRETTY_KVSEP) - 1);
@@ -189,6 +208,8 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 
 	jso_encoder_output_cchar(encoder, '[');
 
+	encoder->depth++;
+
 	JSO_ARRAY_FOREACH(arr, val) {
 		if (is_first) {
 			is_first = JSO_FALSE;
@@ -197,6 +218,8 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		}
 		jso_encoder_encode(encoder, val);
 	} JSO_ARRAY_FOREACH_END;
+
+	encoder->depth--;
 
 	jso_encoder_output_cchar(encoder, ']');
 
@@ -211,6 +234,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 
 	jso_encoder_output_cchar(encoder, '{');
 
+	encoder->depth++;
+
 	JSO_OBJECT_FOREACH(obj, key, val) {
 		if (is_first) {
 			is_first = JSO_FALSE;
@@ -222,6 +247,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		jso_encoder_encode(encoder, val);
 	} JSO_OBJECT_FOREACH_END;
 
+	encoder->depth--;
+
 	jso_encoder_output_cchar(encoder, '}');
 
 	return JSO_SUCCESS;
@@ -232,6 +259,7 @@ JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_
 {
 	encoder->output = output;
 	memcpy(&encoder->options, options, sizeof(jso_encoder_options));
+	encoder->depth = 0;
 }
 
 JSO_API jso_rc jso_encoder_encode(jso_encoder *encoder, jso_value *val)
