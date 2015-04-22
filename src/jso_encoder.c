@@ -216,10 +216,15 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		} else {
 			jso_encoder_output_cstr(encoder, ",", 1);
 		}
+		jso_encoder_pretty_print_elsep(encoder);
 		jso_encoder_encode(encoder, val);
 	} JSO_ARRAY_FOREACH_END;
 
 	encoder->depth--;
+
+	if (!is_first) {
+		jso_encoder_pretty_print_elsep(encoder);
+	}
 
 	jso_encoder_output_cchar(encoder, ']');
 
@@ -242,12 +247,18 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		} else {
 			jso_encoder_output_cstr(encoder, ",", 1);
 		}
+		jso_encoder_pretty_print_elsep(encoder);
 		jso_encoder_encode_string(encoder, key);
 		jso_encoder_output_cstr(encoder, ":", 1);
+		jso_encoder_pretty_print_kvsep(encoder);
 		jso_encoder_encode(encoder, val);
 	} JSO_OBJECT_FOREACH_END;
 
 	encoder->depth--;
+
+	if (!is_first) {
+		jso_encoder_pretty_print_elsep(encoder);
+	}
 
 	jso_encoder_output_cchar(encoder, '}');
 

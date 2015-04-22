@@ -28,14 +28,12 @@
   - allows selection of custom precision and it's faster
 
 ### String encoding
-- pretty printing
 - flag for escaping slashes
 - utf8 validation
 - unicode escaping
 - marked buffering
 
 ## Executor
-- pretty printed encoder by default
 - optional current debugging output
 - add support for short arguments
 
