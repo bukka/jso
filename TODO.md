@@ -38,8 +38,6 @@
 - add support for short arguments
 
 ## Build
-- debug build
-  - remove debug-configure.sh
 - parser debug
   - use option --enable-parser-debug
   - set YYDEBUG macro to 1 if enabled, otherwise 0
