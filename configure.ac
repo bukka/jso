@@ -34,5 +34,18 @@ AC_PROG_YACC
 # Check for re2c
 AC_CHECK_PROG(RE2C, re2c, re2c)
 
+AC_ARG_ENABLE(debug,
+  [AS_HELP_STRING([--enable-debug],
+				  [Enable debugging])],
+  [jso_debug=yes],
+  [jso_debug=no])
+
+if test "x$jso_debug" = "xyes"; then
+  changequote({,})
+  CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
+  changequote([,])
+  CFLAGS="$CFLAGS -O0 -gdwarf-2 -g3"
+fi
+
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

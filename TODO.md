@@ -39,7 +39,6 @@
 
 ## Build
 - debug build
-  - use option --enable-debug
   - remove debug-configure.sh
 - parser debug
   - use option --enable-parser-debug
