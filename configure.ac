@@ -2,7 +2,7 @@
 
 AC_PREREQ([2.59])
 AC_INIT([jso], [1.0], [jakub.php@gmail.com])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/jso.h])
 AC_CONFIG_HEADERS([config.h])
 
