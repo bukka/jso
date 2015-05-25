@@ -30,9 +30,11 @@ AC_CHECK_FUNCS([memset])
 
 # Check for Bison
 AC_PROG_YACC
+AS_IF([test "x$YACC" = x], [AC_MSG_ERROR([bison not found])])
 
 # Check for re2c
 AC_CHECK_PROG(RE2C, re2c, re2c)
+AS_IF([test "x$RE2C" = x], [AC_MSG_ERROR([re2c not found])])
 
 AC_ARG_ENABLE(debug,
   [AS_HELP_STRING([--enable-debug],
