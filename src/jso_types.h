@@ -56,9 +56,6 @@ typedef struct _jso_array jso_array;
 /* type definition of the object type */
 typedef struct _jso_object jso_object;
 
-/* type definition of the jso value */
-typedef struct _jso_value jso_value;
-
 /* jso value types */
 typedef enum {
 	JSO_TYPE_ERROR,
