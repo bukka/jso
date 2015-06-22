@@ -21,9 +21,12 @@ config.status
 configure.scan
 configure
 depcomp
+compile
 install-sh
 missing
 src/.deps/
+src/io/.deps/
+src/io/.dirstamp
 stamp-h1
 # QtCreator files
 jso.config
