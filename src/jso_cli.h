@@ -21,26 +21,126 @@
  *
  */
 
+/**
+ * @file jso_cli.h
+ * @brief Command line interface
+ */
+
 #ifndef JSO_CLI_H
 #define JSO_CLI_H
 
 #include "jso_types.h"
 #include "jso_io.h"
 
-/* jso output format */
+/**
+ * @brief CLI output type.
+ */
 typedef enum {
 	JSO_OUTPUT_MINIMAL,
 	JSO_OUTPUT_PRETTY,
 	JSO_OUTPUT_DEBUG
 } jso_cli_output;
 
+/**
+ * @brief CLI options.
+ */
 typedef struct _jso_cli_options {
+	/** maximal depth of the parsed json */
 	jso_uint max_depth;
+	/** the output type */
 	jso_cli_output output;
 } jso_cli_options;
 
+/**
+ * Callback function for parameter with value.
+ * @param value value if any
+ * @param options CLI options
+ */
+typedef jso_rc (*jso_cli_param_value_callback)
+	(const char *value, jso_cli_options *options);
+
+/**
+ * Callback function for parameter without value.
+ * @param options CLI options
+ */
+typedef jso_rc (*jso_cli_param_flag_callback)(jso_cli_options *options);
+
+/**
+ * @brief Specification of the parameters.
+ */
+typedef struct _jso_cli_param {
+	/** the long param name */
+	const char *long_name;
+	/** the short param name */
+	char short_name;
+	/** whether the param requires value */
+	jso_bool has_value;
+	/** the callback called when the param is processed */
+	union {
+		jso_cli_param_value_callback callback_value;
+		jso_cli_param_flag_callback callback_flag;
+	} callback;
+} jso_cli_param;
+
+/**
+ * Parameter with value entry setter.
+ * @param long_name long name
+ * @param short_name short name
+ * @param callback_fce callback function of type @ref jso_cli_param_flag_callback
+ */
+#define JSO_CLI_PARAM_ENTRY_VALUE(long_name, short_name, callback_fce) \
+	{ long_name, short_name, JSO_TRUE, callback_fce },
+
+/**
+ * Parameter without value entry setter.
+ * @param long_name long name
+ * @param short_name short name
+ * @param callback_fce callback function of type @ref jso_cli_param_value_callback
+ */
+#define JSO_CLI_PARAM_ENTRY_FLAG(long_name, short_name, callback_fce) \
+	{ long_name, short_name, JSO_FALSE, callback_fce },
+
+/**
+ * End of parameter entry array
+ */
+#define JSO_CLI_PARAM_ENTRY_END { NULL, 0, JSO_FALSE, NULL }
+
+/**
+ * Parse IO input with supplied options.
+ * @param io stream that is parsed
+ * @param options CLI options
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ */
 JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options);
+
+/**
+ * Parse file input with supplied options.
+ * @param file_path the file that is parsed
+ * @param options CLI options
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ */
 JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options);
+
+/**
+ * Parse arguments from the `main` function.
+ * @param argc number of arguments
+ * @param argv arguments array
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ */
 JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[]);
+
+/**
+ * Register params.
+ * @param params number of arguments for registration
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @note If there is already a parameter registered, then it is replaced.
+ */
+JSO_API jso_rc jso_cli_register_params(const jso_cli_param *params);
+
+/**
+ * Register default params.
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ */
+JSO_API jso_rc jso_cli_register_default_params();
 
 #endif /* JSO_CLI_H */

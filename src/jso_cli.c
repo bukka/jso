@@ -32,6 +32,27 @@
 #include "jso_encoder.h"
 #include "io/jso_io_file.h"
 
+static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options);
+static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *options);
+static jso_rc jso_cli_param_callback_help(jso_cli_options *options);
+
+const jso_cli_param jso_cli_default_params[] = {
+	JSO_CLI_PARAM_ENTRY_VALUE("depth",    'd', jso_cli_parse_arg_depth)
+	JSO_CLI_PARAM_ENTRY_VALUE("output",   'o', jso_cli_parse_arg_output)
+	JSO_CLI_PARAM_ENTRY_FLAG( "help",     'h', jso_cli_parse_arg_output)
+	JSO_CLI_PARAM_ENTRY_END
+};
+
+JSO_API jso_rc jso_cli_register_params(const jso_cli_param *params)
+{
+
+}
+
+JSO_API jso_rc jso_cli_register_default_params()
+{
+
+}
+
 JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 {
 	jso_rc rc;
@@ -116,7 +137,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 	return jso_cli_parse_io(io, options);
 }
 
-static jso_rc jso_cli_parse_arg_depth(const char *name, const char *value, jso_cli_options *options)
+static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options)
 {
 	if (!value) {
 		fputs("Option depth requires value\n", stderr);
@@ -128,7 +149,7 @@ static jso_rc jso_cli_parse_arg_depth(const char *name, const char *value, jso_c
 	return JSO_SUCCESS;
 }
 
-static jso_rc jso_cli_parse_arg_output(const char *name, const char *value, jso_cli_options *options)
+static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *options)
 {
 	if (!value) {
 		fputs("Option output requires value\n", stderr);
@@ -149,15 +170,21 @@ static jso_rc jso_cli_parse_arg_output(const char *name, const char *value, jso_
 	return JSO_SUCCESS;
 }
 
+static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
+{
+
+}
+
 JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 {
 	int i;
 	int rc;
 	const char *file_path = NULL;
-	jso_cli_options options = {
-		.max_depth = 0,
-		.output = JSO_OUTPUT_PRETTY
-	};
+	jso_cli_options options;
+
+	/* default options */
+	options.max_depth = 0;
+	options.output = JSO_OUTPUT_PRETTY;
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-' && argv[i][1] == '-') { /* long option */
@@ -172,9 +199,9 @@ JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 			}
 
 			if (!strncmp("depth", name, JSO_MAX(name_len, sizeof("depth") - 1))) {
-				rc = jso_cli_parse_arg_depth(name, value, &options);
+				rc = jso_cli_param_callback_depth(value, &options);
 			} else if (!strncmp("output", name, JSO_MAX(name_len, sizeof("output") - 1))) {
-				rc = jso_cli_parse_arg_output(name, value, &options);
+				rc = jso_cli_param_callback_output(value, &options);
 			} else {
 				fprintf(stderr, "Unknown option %s\n", name);
 				return JSO_FAILURE;
