@@ -43,14 +43,14 @@ const jso_cli_param jso_cli_default_params[] = {
 	JSO_CLI_PARAM_ENTRY_END
 };
 
-JSO_API jso_rc jso_cli_register_params(const jso_cli_param *params)
+JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param **params)
 {
-
+	ctx->params = params;
 }
 
-JSO_API jso_rc jso_cli_register_default_params()
+JSO_API void jso_cli_register_default_params(jso_cli_ctx *ctx)
 {
-
+	jso_cli_register_params(ctx, jso_cli_default_params);
 }
 
 JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
@@ -175,7 +175,7 @@ static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
 
 }
 
-JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
+JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx)
 {
 	int i;
 	int rc;
@@ -220,4 +220,13 @@ JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 	}
 
 	return jso_cli_parse_file(file_path, &options);
+}
+
+JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[])
+{
+	jso_cli_ctx ctx;
+
+	jso_cli_register_default_params(&ctx);
+
+	return jso_cli_parse_args_ex(argc, argv, ctx);
 }

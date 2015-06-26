@@ -83,6 +83,14 @@ typedef struct _jso_cli_param {
 } jso_cli_param;
 
 /**
+ * @brief CLI context.
+ */
+typedef struct _jso_cli_ctx {
+	/** array of parsed parameters */
+	jso_cli_param **params;
+} jso_cli_ctx;
+
+/**
  * Parameter with value entry setter.
  * @param long_name long name
  * @param short_name short name
@@ -122,6 +130,15 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options);
 JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options);
 
 /**
+ * Parse arguments from the `main` function for supplied @ref ctx.
+ * @param argc number of arguments
+ * @param argv arguments array
+ * @param ctx CLI context
+ * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ */
+JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx);
+
+/**
  * Parse arguments from the `main` function.
  * @param argc number of arguments
  * @param argv arguments array
@@ -132,15 +149,15 @@ JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[]);
 /**
  * Register params.
  * @param params number of arguments for registration
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @param ctx CLI context
  * @note If there is already a parameter registered, then it is replaced.
  */
-JSO_API jso_rc jso_cli_register_params(const jso_cli_param *params);
+JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param **params);
 
 /**
  * Register default params.
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @param ctx CLI context
  */
-JSO_API jso_rc jso_cli_register_default_params();
+JSO_API void jso_cli_register_default_params(jso_cli_ctx *ctx);
 
 #endif /* JSO_CLI_H */
