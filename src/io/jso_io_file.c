@@ -114,16 +114,22 @@ JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype)
 	return jso_io_file_open_stream(fp);
 }
 
-JSO_API int jso_io_file_close(jso_io *io)
+JSO_API jso_rc jso_io_file_close_ex(jso_io *io, jso_bool close_std)
 {
 	int rc = 0;
 	FILE *fp = JSO_IO_FILE_HANDLE_GET(io);
-	if (fp)
+	if (fp && (close_std || (fp != stdout && fp != stdin && fp != stderr)))
 		rc = fclose(fp);
 	if (JSO_IO_BUFFER(io))
 		jso_free(JSO_IO_BUFFER(io));
 	jso_free(io);
-	return rc;
+
+	return rc == 0 ? JSO_SUCCESS : JSO_FAILURE;
+}
+
+JSO_API jso_rc jso_io_file_close(jso_io *io)
+{
+	return jso_io_file_close_ex(io, JSO_FALSE);
 }
 
 JSO_API off_t jso_io_file_size(const char *filename)

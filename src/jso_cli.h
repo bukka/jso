@@ -36,10 +36,11 @@
  * @brief CLI output type.
  */
 typedef enum {
+	JSO_OUTPUT_HELP,
 	JSO_OUTPUT_MINIMAL,
 	JSO_OUTPUT_PRETTY,
 	JSO_OUTPUT_DEBUG
-} jso_cli_output;
+} jso_cli_output_type;
 
 /**
  * @brief CLI options.
@@ -48,7 +49,13 @@ typedef struct _jso_cli_options {
 	/** maximal depth of the parsed json */
 	jso_uint max_depth;
 	/** the output type */
-	jso_cli_output output;
+	jso_cli_output_type output_type;
+	/** input stream */
+	jso_io *is;
+	/** output stream */
+	jso_io *os;
+	/** error stream */
+	jso_io *es;
 } jso_cli_options;
 
 /**
@@ -87,7 +94,7 @@ typedef struct _jso_cli_param {
  */
 typedef struct _jso_cli_ctx {
 	/** array of parsed parameters */
-	jso_cli_param **params;
+	const jso_cli_param *params;
 } jso_cli_ctx;
 
 /**
@@ -97,7 +104,7 @@ typedef struct _jso_cli_ctx {
  * @param callback_fce callback function of type @ref jso_cli_param_flag_callback
  */
 #define JSO_CLI_PARAM_ENTRY_VALUE(long_name, short_name, callback_fce) \
-	{ long_name, short_name, JSO_TRUE, callback_fce },
+	{ long_name, short_name, JSO_TRUE, { (void *) callback_fce } },
 
 /**
  * Parameter without value entry setter.
@@ -106,12 +113,30 @@ typedef struct _jso_cli_ctx {
  * @param callback_fce callback function of type @ref jso_cli_param_value_callback
  */
 #define JSO_CLI_PARAM_ENTRY_FLAG(long_name, short_name, callback_fce) \
-	{ long_name, short_name, JSO_FALSE, callback_fce },
+	{ long_name, short_name, JSO_FALSE, { (void *) callback_fce } },
 
 /**
  * End of parameter entry array
  */
-#define JSO_CLI_PARAM_ENTRY_END { NULL, 0, JSO_FALSE, NULL }
+#define JSO_CLI_PARAM_ENTRY_END { NULL, 0, JSO_FALSE, {NULL} }
+
+/**
+ * Pre-initialize CLI options
+ * @param options CLI options
+ */
+JSO_API void jso_cli_options_init_pre(jso_cli_options *options);
+
+/**
+ * Post-initialize CLI options
+ * @param options CLI options
+ */
+JSO_API void jso_cli_options_init_post(jso_cli_options *options);
+
+/**
+ * Destroy CLI options
+ * @param options CLI options
+ */
+JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options);
 
 /**
  * Parse IO input with supplied options.
@@ -152,7 +177,7 @@ JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[]);
  * @param ctx CLI context
  * @note If there is already a parameter registered, then it is replaced.
  */
-JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param **params);
+JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param *params);
 
 /**
  * Register default params.

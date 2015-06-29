@@ -36,14 +36,15 @@ static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *o
 static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *options);
 static jso_rc jso_cli_param_callback_help(jso_cli_options *options);
 
+
 const jso_cli_param jso_cli_default_params[] = {
-	JSO_CLI_PARAM_ENTRY_VALUE("depth",    'd', jso_cli_parse_arg_depth)
-	JSO_CLI_PARAM_ENTRY_VALUE("output",   'o', jso_cli_parse_arg_output)
-	JSO_CLI_PARAM_ENTRY_FLAG( "help",     'h', jso_cli_parse_arg_output)
+	JSO_CLI_PARAM_ENTRY_VALUE("depth",         'd',    jso_cli_param_callback_depth)
+	JSO_CLI_PARAM_ENTRY_VALUE("output-type",   'o',    jso_cli_param_callback_output)
+	JSO_CLI_PARAM_ENTRY_FLAG( "help",          'h',    jso_cli_param_callback_help)
 	JSO_CLI_PARAM_ENTRY_END
 };
 
-JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param **params)
+JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param *params)
 {
 	ctx->params = params;
 }
@@ -69,13 +70,13 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 	if (jso_yyparse(&parser) == 0) {
 
 		/* print result */
-		if (options->output == JSO_OUTPUT_DEBUG) {
+		if (options->output_type == JSO_OUTPUT_DEBUG) {
 			jso_value_print_debug(&parser.result);
 		} else {
 			jso_io *os = jso_io_file_open_stream(stdout);
 			jso_encoder_options enc_options;
 			enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED; /* unlimited */
-			enc_options.pretty    = options->output == JSO_OUTPUT_PRETTY;
+			enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
 			jso_encode(&parser.result, os, &enc_options);
 		}
 
@@ -153,15 +154,19 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 {
 	if (!value) {
 		fputs("Option output requires value\n", stderr);
-		return -1;
+		return JSO_FAILURE;
+	}
+
+	if (options->output_type == JSO_OUTPUT_HELP) {
+		return JSO_FAILURE;
 	}
 
 	if (!strncmp(value, "minimal", JSO_MAX(strlen(value), sizeof("minimal") - 1))) {
-		options->output = JSO_OUTPUT_MINIMAL;
+		options->output_type = JSO_OUTPUT_MINIMAL;
 	} else if (!strncmp(value, "pretty", JSO_MAX(strlen(value), sizeof("pretty") - 1))) {
-		options->output = JSO_OUTPUT_PRETTY;
+		options->output_type = JSO_OUTPUT_PRETTY;
 	} else if (!strncmp(value, "debug", JSO_MAX(strlen(value), sizeof("debug") - 1))) {
-		options->output = JSO_OUTPUT_DEBUG;
+		options->output_type = JSO_OUTPUT_DEBUG;
 	} else {
 		fprintf(stderr, "Unknown output value %s\n", value);
 		return JSO_FAILURE;
@@ -172,19 +177,57 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 
 static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
 {
+	options->output_type = JSO_OUTPUT_HELP;
 
+	return JSO_SUCCESS;
+}
+
+JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
+{
+	options->max_depth = 0;
+	options->output_type = JSO_OUTPUT_PRETTY;
+	options->is = NULL;
+	options->os = NULL;
+	options->es = NULL;
+}
+
+JSO_API void jso_cli_options_init_post(jso_cli_options *options)
+{
+	if (!options->is)
+		options->is = jso_io_file_open_stream(stdin);
+	if (!options->os)
+		options->os = jso_io_file_open_stream(stdout);
+	if (!options->es)
+		options->es = jso_io_file_open_stream(stderr);
+}
+
+JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
+{
+	jso_rc rc = JSO_SUCCESS;
+
+	if (options->is)
+		rc = jso_io_file_close(options->is);
+	if (options->os) {
+		rc = jso_io_file_close(options->os) == JSO_FAILURE || rc == JSO_FAILURE ?
+				JSO_FAILURE : JSO_SUCCESS;
+	}
+	if (options->es) {
+		rc = jso_io_file_close(options->es) == JSO_FAILURE || rc == JSO_FAILURE ?
+				JSO_FAILURE : JSO_SUCCESS;
+	}
+
+	return rc;
 }
 
 JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx)
 {
 	int i;
-	int rc;
+	jso_rc rc;
 	const char *file_path = NULL;
 	jso_cli_options options;
 
-	/* default options */
-	options.max_depth = 0;
-	options.output = JSO_OUTPUT_PRETTY;
+	/* pre-initialize options */
+	jso_cli_options_init_pre(&options);
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-' && argv[i][1] == '-') { /* long option */
@@ -219,14 +262,23 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 		return JSO_FAILURE;
 	}
 
-	return jso_cli_parse_file(file_path, &options);
+	/* post-initialize options */
+	jso_cli_options_init_post(&options);
+
+	/* parse file */
+	rc = jso_cli_parse_file(file_path, &options);
+
+	/* destroy options */
+	jso_cli_options_destroy(&options);
+
+	return rc;
 }
 
-JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[])
+JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[])
 {
 	jso_cli_ctx ctx;
 
 	jso_cli_register_default_params(&ctx);
 
-	return jso_cli_parse_args_ex(argc, argv, ctx);
+	return jso_cli_parse_args_ex(argc, argv, &ctx);
 }

@@ -35,7 +35,9 @@ JSO_API jso_io *jso_io_file_open_stream(FILE *handle);
 
 JSO_API jso_io *jso_io_file_open(const char *filename, const char *opentype);
 
-JSO_API int jso_io_file_close(jso_io *io);
+JSO_API jso_rc jso_io_file_close_ex(jso_io *io, jso_bool close_std);
+
+JSO_API jso_rc jso_io_file_close(jso_io *io);
 
 JSO_API off_t jso_io_file_size(const char *filename);
 
