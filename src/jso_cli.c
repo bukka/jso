@@ -157,7 +157,7 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 		return JSO_FAILURE;
 	}
 
-	if (options->output_type == JSO_OUTPUT_HELP) {
+	if (options->output_type != JSO_OUTPUT_NONE) {
 		return JSO_FAILURE;
 	}
 
@@ -185,7 +185,7 @@ static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
 JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
 {
 	options->max_depth = 0;
-	options->output_type = JSO_OUTPUT_PRETTY;
+	options->output_type = JSO_OUTPUT_NONE;
 	options->is = NULL;
 	options->os = NULL;
 	options->es = NULL;
@@ -193,6 +193,8 @@ JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
 
 JSO_API void jso_cli_options_init_post(jso_cli_options *options)
 {
+	if (options->output_type == JSO_OUTPUT_NONE)
+		options->output_type = JSO_OUTPUT_PRETTY;
 	if (!options->is)
 		options->is = jso_io_file_open_stream(stdin);
 	if (!options->os)

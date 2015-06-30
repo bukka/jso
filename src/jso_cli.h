@@ -36,6 +36,7 @@
  * @brief CLI output type.
  */
 typedef enum {
+	JSO_OUTPUT_NONE,
 	JSO_OUTPUT_HELP,
 	JSO_OUTPUT_MINIMAL,
 	JSO_OUTPUT_PRETTY,
