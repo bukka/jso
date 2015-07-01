@@ -15,6 +15,10 @@
 - change it to push parser (stream support)
 
 ## IO
+- add generic close/destroy hook
+
+### String
+- implement new stream as a string buffer
 
 ### File
 - suppress valgrind errors without using calloc in jso_io_file_read
@@ -33,9 +37,12 @@
 - unicode escaping
 - marked buffering
 
-## Executor
-- optional current debugging output
-- add support for short arguments
+## CLI
+- add support for grouping of short arguments
+- allow setting of output stream (stdout and stderr)
+- allow stream input (stdin - using jso in pipe)
+  - it requires parser stream support
+
 
 ## Build
 - parser debug
