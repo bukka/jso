@@ -221,39 +221,126 @@ JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
 	return rc;
 }
 
+static const jso_cli_param *jso_cli_find_param(jso_cli_ctx *ctx,
+		const char *long_name, size_t long_name_len, char short_name)
+{
+	int i;
+	const jso_cli_param *param = &ctx->params[0];
+
+	for (i = 1; param->long_name; i++) {
+		if (long_name) {
+			if (!strncmp(param->long_name, long_name, long_name_len)) {
+				return param;
+			}
+		} else if (param->short_name && param->short_name == short_name) {
+			return param;
+		}
+
+		param = &ctx->params[i];
+	}
+
+	return NULL;
+}
+
+static inline const jso_cli_param *jso_cli_find_param_by_long_name(
+		jso_cli_ctx *ctx, const char *long_name, size_t long_name_len)
+{
+	return jso_cli_find_param(ctx, long_name, long_name_len, 0);
+}
+
+static inline const jso_cli_param *jso_cli_find_param_by_short_name(
+		jso_cli_ctx *ctx, char short_name)
+{
+	return jso_cli_find_param(ctx, NULL, 0, short_name);
+}
+
 JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx)
 {
 	int i;
 	jso_rc rc;
-	const char *file_path = NULL;
+	char short_name;
+	const char *file_path = NULL, *long_name, *value;
+	size_t long_name_len, arg_len;
+	const jso_cli_param *param;
 	jso_cli_options options;
 
 	/* pre-initialize options */
 	jso_cli_options_init_pre(&options);
 
 	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-' && argv[i][1] == '-') { /* long option */
-			const char *name = &argv[i][2];
-			const char *value = strchr(name, '=');
-			size_t name_len;
-			if (value) {
-				name_len = (size_t) (value - name);
-				value++;
-			} else {
-				name_len = strlen(name);
-			}
+		if (argv[i][0] == '-') {
+			arg_len = strlen(argv[i]);
 
-			if (!strncmp("depth", name, JSO_MAX(name_len, sizeof("depth") - 1))) {
-				rc = jso_cli_param_callback_depth(value, &options);
-			} else if (!strncmp("output", name, JSO_MAX(name_len, sizeof("output") - 1))) {
-				rc = jso_cli_param_callback_output(value, &options);
-			} else {
-				fprintf(stderr, "Unknown option %s\n", name);
+			if (arg_len == 1) {
+				fputs("Input stdin is not supported yet\n", stderr);
 				return JSO_FAILURE;
 			}
-			if (rc == JSO_FAILURE) {
-				return rc;
+
+			if (argv[i][1] == '-') { /* long option */
+				if (arg_len == 2) {
+					fputs("The long option must have name\n", stderr);
+					return JSO_FAILURE;
+				}
+
+				long_name = &argv[i][2];
+				value =  strchr(long_name, '=');
+				if (value) {
+					long_name_len = (size_t) (value - long_name);
+					value++;
+				} else {
+					long_name_len = strlen(long_name);
+				}
+
+				param = jso_cli_find_param_by_long_name(ctx, long_name, long_name_len);
+				if (!param) {
+					char* long_name_dup = jso_malloc(long_name_len + 1);
+					strncpy(long_name_dup, long_name, long_name_len);
+					long_name_dup[long_name_len] = '\0';
+					fprintf(stderr, "Unknown option: %s\n", long_name_dup);
+					jso_free(long_name_dup);
+					return JSO_FAILURE;
+				}
+
+			} else { /* short option */
+				if (arg_len > 2) {
+					fputs("The grouping of short parameters is not allowed yet\n", stderr);
+					return JSO_FAILURE;
+				}
+
+				short_name = argv[i][1];
+				value = NULL;
+
+				param = jso_cli_find_param_by_short_name(ctx, short_name);
+				if (!param) {
+					fprintf(stderr, "Unknown option: %c\n", short_name);
+					return JSO_FAILURE;
+				}
 			}
+
+			if (param->has_value) {
+				if (!value) {
+					if (i + 1 == argc || argv[i + 1][0] == '-') {
+						fprintf(stderr, "No value for option: %s\n", param->long_name);
+						return JSO_FAILURE;
+					}
+					value = &argv[i + 1][0];
+				}
+
+				if (param->callback.callback_value(value, &options) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+			} else {
+				if (value) {
+					fprintf(stderr, "No value should be added to option: %s\n", param->long_name);
+					return JSO_FAILURE;
+				}
+
+				if (param->callback.callback_flag(&options) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+			}
+
+
 		} else {
 			file_path = &argv[i][0];
 		}
