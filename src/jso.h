@@ -29,10 +29,6 @@
 #include "jso_array.h"
 #include "jso_object.h"
 
-/* bool values */
-#define JSO_TRUE  1
-#define JSO_FALSE 0
-
 /* min max value funcs */
 #define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 #define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))

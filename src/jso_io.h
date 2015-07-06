@@ -21,110 +21,302 @@
  *
  */
 
+/**
+ * @file jso_io.h
+ * @brief IO general header
+ */
+
+
 #ifndef JSO_IO_H
 #define JSO_IO_H
 
 #include "jso_types.h"
 
-typedef struct jso_io jso_io;
+/**
+ * @brief IO handle structure.
+ */
+typedef struct _jso_io jso_io;
 
-/* input operation */
+/**
+ * @brief Read operation function type.
+ * @param io IO handle
+ * @param size requested number of bytes to read
+ * @return Number of characters read to the buffer.
+ * @note It is useful only for read streams.
+ */
 typedef size_t (*jso_io_read_t)(jso_io *io, size_t size);
 
-/* output operation */
+/**
+ * @brief Write operation function type.
+ * @param io IO handle
+ * @param buffer character buffer to be written
+ * @param size the supplied buffer size
+ * @return Number of characters written from the buffer.
+ * @note It is useful only for write streams.
+ */
 typedef size_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t size);
 
-/* flush operation */
+/**
+ * @brief Flush operation function type.
+ * @param io IO handle
+ * @note It is useful only for write streams.
+ * @todo Use @ref jso_rc for return
+ */
 typedef int (*jso_io_flush_t)(jso_io *io);
 
-/* error operation */
+/**
+ * @brief Error operation function type.
+ * @param io IO handle
+ * @todo Use @ref jso_rc for return
+ */
 typedef int (*jso_io_error_t)(jso_io *io);
 
-/* io structure */
-struct jso_io {
-	jso_ctype *buffer;          /* the position of  first character in the buffer */
-	jso_ctype *cursor;          /* cursor position */
-	jso_ctype *token;           /* token position */
-	jso_ctype *limit;           /* the last read character + 1 position */
-	jso_ctype *marker;          /* marker position for backtracking */
-	jso_ctype *ctxmarker;       /* marker position for context backtracking */
-	jso_ctype *str_start;       /* start position of the string */
-	size_t str_esc;             /* number of extra characters for escaping */
-	size_t size;                /* size of the buffer */
-	int errno;                  /* the last error number */
+/**
+ * @brief IO structure.
+ *
+ * This data structure contains all IO informations for the scanner and other parts
+ * using the IO. The members should never be accessed directly but instead the
+ * accesor macros should be used.
+ */
+struct _jso_io {
+	/** the position of  first character in the buffer */
+	jso_ctype *buffer;
+	/** cursor position */
+	jso_ctype *cursor;
+	/** token position */
+	jso_ctype *token;
+	/** the last read character + 1 position */
+	jso_ctype *limit;
+	/** marker position for backtracking */
+	jso_ctype *marker;
+	/** marker position for context backtracking */
+	jso_ctype *ctxmarker;
+	/** start position of the string */
+	jso_ctype *str_start;
+	/** number of extra characters for escaping */
+	size_t str_esc;
+	/** size of the buffer */
+	size_t size;
+	/** the last error number */
+	int errno;
+	/** io handle */
 	union {
-		void *ptr;              /* pointer (e.g. FILE *) */
-		int dsc;                /* dsc (e.g. file descriptor) */
-	} handle;                   /* io handle */
+		/** pointer (e.g. FILE *) */
+		void *ptr;
+		/** descriptor (e.g. file descriptor) */
+		int dsc;
+	} handle;
+	/** io operations */
 	struct {
+		/** read operation */
 		jso_io_read_t read;
+		/** write operation */
 		jso_io_write_t write;
+		/** flush operation */
 		jso_io_flush_t flush;
+		/** error operation */
 		jso_io_error_t error;
-	} ops;                      /* io operations */
+	} ops;
 };
 
-/* allocate io structure */
+/**
+ * Allocate IO structure.
+ * @param io IO handle
+ * @return New IO handle.
+ */
 #define JSO_IO_ALLOC(io) ((jso_io *) jso_calloc(1, sizeof(jso_io)));
 
-/* buffer accessor macro */
+/**
+ * Buffer accessor.
+ * @param io IO handle
+ * @return Pointer to the beginning of buffer.
+ */
 #define JSO_IO_BUFFER(io) ((io)->buffer)
-/* cursor accessor macro */
+
+/**
+ * Cursor accessor.
+ * @param io IO handle
+ * @return Currently scanned character.
+ */
 #define JSO_IO_CURSOR(io) ((io)->cursor)
-/* token accessor macro */
+
+/**
+ * Token accessor.
+ * @param io IO handle
+ * @return Pointer to the beggining of the scanned token.
+ */
 #define JSO_IO_TOKEN(io) ((io)->token)
-/* token length */
+
+/**
+ * Token length.
+ * @param io IO handle
+ * @return Difference of the cursor and token.
+ */
 #define JSO_IO_TOKEN_LENGTH(io) ((size_t) ((io)->cursor - (io)->token))
-/* limit accessor macro */
+
+/**
+ * Limit accessor.
+ * @param io IO handle
+ * @return Pointer to the last character in the buffer.
+ */
 #define JSO_IO_LIMIT(io)  ((io)->limit)
-/* marker accessor macro */
+
+/**
+ * Marker accessor.
+ * @param io IO handle
+ * @return Pointer to the marker.
+ */
 #define JSO_IO_MARKER(io) ((io)->marker)
-/* context marker accessor macro */
+
+/**
+ * Context marker accessor.
+ * @param io IO handle
+ * @return Pointer to the context marker.
+ */
 #define JSO_IO_CTXMARKER(io) ((io)->ctxmarker)
-/* buffer size accessor macro */
+
+/**
+ * Buffer size accessor.
+ * @param io IO handle
+ * @return Allocated buffer size.
+ */
 #define JSO_IO_SIZE(io) ((io)->size)
-/* saved error code */
+
+/**
+ * Last error code accessor.
+ * @param io IO handle
+ * @return Saved error code.
+ */
 #define JSO_IO_ERRNO(io) ((io)->errno)
-/* operation accessor macro */
-#define JSO_IO_OP(io, op) ((io)->ops.op)
 
-/* reset token (token = cursor) */
-#define JSO_IO_RESET_TOKEN(io) ((io)->token = (io)->cursor)
+/**
+ * Handle accessors for pointer.
+ * @param io IO handle
+ */
+#define JSO_IO_HANDLE_PTR(io) ((io)->handle.ptr)
 
-/* save start position of the string */
+/**
+ * Handle accessors for descriptor.
+ * @param io IO handle
+ */
+#define JSO_IO_HANDLE_DSC(io) ((io)->handle.dsc)
+
+
+/**
+ * Save start position of the string.
+ * @param io IO handle
+ */
 #define JSO_IO_STR_SET_START(io) ((io)->str_start = (io)->cursor)
-/* save start position of the string after n characters */
-#define JSO_IO_STR_SET_START_AFTER(io, n) ((io)->str_start = (io)->cursor + 1)
-/* save start position of the string */
+
+/**
+ * Save start position of the string after `n` characters.
+ * @param io IO handle
+ * @param n number of characters to set position after
+ */
+#define JSO_IO_STR_SET_START_AFTER(io, n) ((io)->str_start = (io)->cursor + n)
+
+/**
+ * Rave start position of the string.
+ * @param io IO handle
+ */
 #define JSO_IO_STR_GET_START(io) ((io)->str_start)
-/* reset escape counter */
+
+/**
+ * Increase escape counter.
+ * @param io IO handle
+ * @param n number of characters to increase the counter
+ */
 #define JSO_IO_STR_ADD_ESC(io, n) ((io)->str_esc += n)
-/* reset escape counter */
+
+/**
+ * Reset escape counter.
+ * @param io IO handle
+ */
 #define JSO_IO_STR_CLEAR_ESC(io) ((io)->str_esc = 0)
-/* reset escape counter */
+
+/**
+ * Reset escape counter.
+ * @param io IO handle
+ */
 #define JSO_IO_STR_GET_ESC(io) ((io)->str_esc)
-/* save end position of the string */
+
+/**
+ * Save end position of the string.
+ * @param io IO handle
+ */
 #define JSO_IO_STR_LENGTH(io) ((size_t) ((io)->cursor - (io)->str_start - 1))
 
-/* read operation */
-#define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))
-/* write operation */
-#define JSO_IO_WRITE(io, iow_buffer, iow_size) (JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
-/* flush operation */
-#define JSO_IO_FLUSH(io) (JSO_IO_OP((io), flush)(io))
+/**
+ * Reset token (token = cursor).
+ * @param io IO handle
+ */
+#define JSO_IO_RESET_TOKEN(io) ((io)->token = (io)->cursor)
 
-/* error code or 0 if no error */
-#define JSO_IO_ERROR(io) (JSO_IO_OP((io), error)(io))
-/* io is without any error */
+
+/**
+ * Operation accessor.
+ * @param io IO handle
+ * @param op operation name
+ * @note This should not be called directly.
+ */
+#define JSO_IO_OP(io, op) ((io)->ops.op)
+
+/**
+ * Read operation.
+ * @param io IO handle
+ * @param ior_size number of bytes to read
+ * @return Number of characters read to the buffer.
+ */
+#define JSO_IO_READ(io, ior_size) \
+	(JSO_IO_OP((io), read)((io), (ior_size)))
+
+/**
+ * Write operation.
+ * @param io IO handle
+ * @param iow_buffer buffer that will be written
+ * @param iow_size number of bytes to write from the buffer
+ * @return Number of characters written.
+ */
+#define JSO_IO_WRITE(io, iow_buffer, iow_size) \
+	(JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
+
+/**
+ * Flush operation.
+ * @param io IO handle
+ * @todo Use @ref jso_rc for return
+ */
+#define JSO_IO_FLUSH(io) \
+	(JSO_IO_OP((io), flush)(io))
+
+/**
+ * Error code or 0 if no error.
+ * @param io IO handle
+ * @todo Use @ref jso_rc for return
+ */
+#define JSO_IO_ERROR(io) \
+	(JSO_IO_OP((io), error)(io))
+
+
+/**
+ * Find out whether the IO is without any error.
+ * @param io IO handle
+ * @return @ref JSO_TRUE if not IO error otherwise @ref JSO_FALSE.
+ */
 #define JSO_IO_GOOD(io) (JSO_IO_ERROR(io) == 0)
-/* error during the io operation  */
+
+/**
+ * Find out whether there was an error during the IO operation.
+ * @param io IO handle
+ * @return @ref JSO_TRUE if IO error otherwise @ref JSO_FALSE.
+ */
 #define JSO_IO_BAD(io)  (JSO_IO_ERROR(io) != 0)
-/* end of io */
+
+/**
+ * Find out whether the end of IO was reached.
+ * @param io IO handle
+ * @return @ref JSO_TRUE if IO ended otherwise @ref JSO_FALSE.
+ */
 #define JSO_IO_END(io) ((io)->limit < (io)->cursor)
 
-/* handle accessors - pointer */
-#define JSO_IO_HANDLE_PTR(io) ((io)->handle.ptr)
-/* handle accessors - descriptor */
-#define JSO_IO_HANDLE_DSC(io) ((io)->handle.dsc)
 
 #endif /* PHP_JSO_IO_H */

@@ -143,7 +143,7 @@ JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options);
  * Parse IO input with supplied options.
  * @param io stream that is parsed
  * @param options CLI options
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options);
 
@@ -151,16 +151,16 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options);
  * Parse file input with supplied options.
  * @param file_path the file that is parsed
  * @param options CLI options
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options);
 
 /**
- * Parse arguments from the `main` function for supplied @ref ctx.
+ * Parse arguments from the `main` function for supplied `ctx`.
  * @param argc number of arguments
  * @param argv arguments array
  * @param ctx CLI context
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx);
 
@@ -168,7 +168,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
  * Parse arguments from the `main` function.
  * @param argc number of arguments
  * @param argv arguments array
- * @return `JSO_SUCCESS` on success, otherwise `JSO_FAILURE`
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_cli_parse_args(int argc, const char *argv[]);
 
