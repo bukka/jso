@@ -80,15 +80,26 @@ static size_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size
 	return fwrite(buffer, sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
 }
 
-static int jso_io_file_flush(jso_io *io)
+static jso_rc jso_io_file_flush(jso_io *io)
 {
-	return fflush(JSO_IO_FILE_HANDLE_GET(io));
+	return fflush(JSO_IO_FILE_HANDLE_GET(io)) == 0 ? JSO_SUCCESS : JSO_FAILURE;
 }
 
 static int jso_io_file_error(jso_io *io)
 {
 	JSO_IO_ERRNO(io) = ferror(JSO_IO_FILE_HANDLE_GET(io));
 	return JSO_IO_ERRNO(io) ? JSO_IO_ERRNO(io) : 0;
+}
+
+static jso_rc jso_io_file_free(jso_io *io)
+{
+	jso_rc rc = jso_io_file_close(io);
+
+	if (JSO_IO_BUFFER(io))
+		jso_free(JSO_IO_BUFFER(io));
+	jso_free(io);
+
+	return rc;
 }
 
 JSO_API jso_io *jso_io_file_open_stream(FILE *fp)
@@ -104,6 +115,7 @@ JSO_API jso_io *jso_io_file_open_stream(FILE *fp)
 	JSO_IO_OP(io, write) = jso_io_file_write;
 	JSO_IO_OP(io, flush) = jso_io_file_flush;
 	JSO_IO_OP(io, error) = jso_io_file_error;
+	JSO_IO_OP(io, free) = jso_io_file_free;
 	return io;
 }
 
@@ -118,11 +130,9 @@ JSO_API jso_rc jso_io_file_close_ex(jso_io *io, jso_bool close_std)
 {
 	int rc = 0;
 	FILE *fp = JSO_IO_FILE_HANDLE_GET(io);
+
 	if (fp && (close_std || (fp != stdout && fp != stdin && fp != stderr)))
 		rc = fclose(fp);
-	if (JSO_IO_BUFFER(io))
-		jso_free(JSO_IO_BUFFER(io));
-	jso_free(io);
 
 	return rc == 0 ? JSO_SUCCESS : JSO_FAILURE;
 }

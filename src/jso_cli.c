@@ -87,7 +87,7 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 
 	/* free resources */
 	jso_value_free(&parser.result);
-	jso_io_file_close(io);
+	JSO_IO_FREE(io);
 
 	return rc;
 }

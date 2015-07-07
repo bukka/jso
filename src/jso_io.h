@@ -60,16 +60,23 @@ typedef size_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t siz
  * @brief Flush operation function type.
  * @param io IO handle
  * @note It is useful only for write streams.
- * @todo Use @ref jso_rc for return
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-typedef int (*jso_io_flush_t)(jso_io *io);
+typedef jso_rc (*jso_io_flush_t)(jso_io *io);
 
 /**
  * @brief Error operation function type.
  * @param io IO handle
- * @todo Use @ref jso_rc for return
+ * @return Error number if error, otherwise 0.
  */
 typedef int (*jso_io_error_t)(jso_io *io);
+
+/**
+ * @brief Free operation function type.
+ * @param io IO handle
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+typedef int (*jso_io_free_t)(jso_io *io);
 
 /**
  * @brief IO structure.
@@ -116,6 +123,8 @@ struct _jso_io {
 		jso_io_flush_t flush;
 		/** error operation */
 		jso_io_error_t error;
+		/** free operation */
+		jso_io_free_t free;
 	} ops;
 };
 
@@ -296,6 +305,13 @@ struct _jso_io {
 #define JSO_IO_ERROR(io) \
 	(JSO_IO_OP((io), error)(io))
 
+/**
+ * Free operation.
+ * @param io IO handle
+ * @todo Use @ref jso_rc for return
+ */
+#define JSO_IO_FREE(io) \
+	(JSO_IO_OP((io), free)(io))
 
 /**
  * Find out whether the IO is without any error.
