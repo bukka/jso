@@ -15,7 +15,7 @@
 - change it to push parser (stream support)
 
 ## IO
-- add generic close/destroy hook
+- add format hook for printf like output
 
 ### String
 - implement new stream as a string buffer
