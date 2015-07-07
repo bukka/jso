@@ -29,9 +29,23 @@
 #include "jso_array.h"
 #include "jso_object.h"
 
-/* min max value funcs */
-#define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
-#define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
+/**
+ * Get max of two values
+ * @param value_1 first value
+ * @param value_2 second value
+ * @return `value_1` if `value_1` > `value_2`, otherwise `value_2`
+ */
+#define JSO_MAX(value_1, value_2) \
+	((value_1) > (value_2) ? (value_1) : (value_2))
+
+/**
+ * Get max of two values
+ * @param value_1 first value
+ * @param value_2 second value
+ * @return `value_1` if `value_1` < `value_2`, otherwise `value_2`
+ */
+#define JSO_MIN(value_1, value_2) \
+	((value_1) < (value_2) ? (value_1) : (value_2))
 
 /* jso int limits */
 #if SIZEOF_LONG == 4
