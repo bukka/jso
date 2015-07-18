@@ -15,10 +15,9 @@
 - change it to push parser (stream support)
 
 ## IO
+- find out if the markers should be kept when reallocating
+- abstract buffer handling (allocation reallocation)
 - add format hook for printf like output
-
-### String
-- implement new stream as a string buffer
 
 ### File
 - suppress valgrind errors without using calloc in jso_io_file_read
