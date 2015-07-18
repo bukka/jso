@@ -47,10 +47,8 @@
 - parser debug
   - use option --enable-parser-debug
   - set YYDEBUG macro to 1 if enabled, otherwise 0
-- buildconf.sh
+- autogen.sh
   - check for autoconf, automake, libtool (libtoolize)
-  - automake --add-missing (install-sh, missing, depcomp)
-  - autoreconf
 - re2c
   - autoconf check
   - try to replace Makefile AM rule with AC
