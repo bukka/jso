@@ -69,7 +69,7 @@ static size_t jso_io_file_read(jso_io *io, size_t size)
 	/* read data from file */
 	count = fread(read_pos, sizeof(jso_ctype), read_size, JSO_IO_FILE_HANDLE_GET(io));
 	if (count > 0) {
-		JSO_IO_CURSOR(io) = JSO_IO_TOKEN(io) = JSO_IO_MARKER(io) = JSO_IO_BUFFER(io);
+		JSO_IO_CURSOR(io) = JSO_IO_TOKEN(io) = JSO_IO_MARKER(io) = JSO_IO_CTXMARKER(io) = JSO_IO_BUFFER(io);
 		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count + buffered;
 	}
 	return count;
