@@ -21,6 +21,11 @@
  *
  */
 
+/**
+ * @file jso.h
+ * @brief Main API header
+ */
+
 #ifndef JSO_H
 #define JSO_H
 
@@ -159,11 +164,32 @@ JSO_API jso_error *jso_error_new(jso_error_type type,
 		size_t last_column, size_t last_line);
 JSO_API void jso_error_free(jso_error *err);
 
+
 /* memeroy functions - just redefinitions for future extending (checking) */
+
+/**
+ * @brief Memory allocation
+ */
 #define jso_malloc malloc
+
+/**
+ * @brief Memory reallocation
+ */
 #define jso_realloc realloc
+
+/**
+ * @brief Memory allocation with zeroing all bytes
+ */
 #define jso_calloc calloc
+
+/**
+ * @brief String duplication
+ */
 #define jso_strdup strdup
+
+/**
+ * @brief Memory freeing
+ */
 #define jso_free free
 
 /* print stream */

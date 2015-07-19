@@ -335,4 +335,57 @@ struct _jso_io {
 #define JSO_IO_END(io) ((io)->limit < (io)->cursor)
 
 
+/* BUFFER */
+
+/**
+ * @brief Automatically select the best allocating strategy
+ */
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO   0
+
+/**
+ * @brief Used for new buffer
+ *
+ * The buffer is allocated using @ref jso_malloc function
+ */
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_NEW    1
+
+/**
+ * @brief Use buffer extending strategy
+ *
+ * The buffer is extended using @ref jso_realloc function
+ */
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_EXTEND 2
+
+/**
+ * @brief Use buffer rotating strategy
+ *
+ * The already read part of the buffer is stripped
+ * and the it's copied to the beginning
+ */
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_ROTATE 3
+
+/**
+ * @brief Mask for the strategy flags
+ * @note It is bigger than needed for future strategies
+ */
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_MASK   7
+
+
+/**
+ * Alloc memory space for buffer with supplied flags.
+ * @param io IO handle
+ * @param size new buffer size
+ * @param flags extra flags for selecting strategy
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags);
+
+/**
+ * Alloc memory space for buffer.
+ * @param io IO handle
+ * @param size new buffer size
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size);
+
 #endif /* PHP_JSO_IO_H */
