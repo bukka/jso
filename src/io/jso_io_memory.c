@@ -35,8 +35,9 @@ static size_t jso_io_memory_read(jso_io *io, size_t size)
 	buffered = (size_t) (JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io));
 
 	/* already in the buffer */
-	if (buffered >= size)
+	if (buffered >= size) {
 		return size;
+	}
 
 	return buffered;
 }
@@ -45,11 +46,8 @@ static size_t jso_io_memory_write(jso_io *io, const jso_ctype *buffer, size_t si
 {
 	size_t unused = JSO_IO_SIZE(io) - (size_t) (JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io));
 
-	if (size > unused) {
-		/* realloc memory buffer */
-		JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size - unused);
-		JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
-		/*TODO: it should also handle markers ptr setting */
+	if (size > unused && jso_io_buffer_alloc(io, size) == JSO_FAILURE) {
+		return 0;
 	}
 
 	memcpy(JSO_IO_LIMIT(io), buffer, size * sizeof(jso_ctype));

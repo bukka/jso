@@ -80,6 +80,7 @@ static jso_rc jso_io_buffer_alloc_new(jso_io *io, size_t size)
 	JSO_IO_BUFFER(io)    = buf;
 	JSO_IO_CURSOR(io)    = buf;
 	JSO_IO_TOKEN(io)     = buf;
+	JSO_IO_LIMIT(io)     = buf;
 	JSO_IO_MARKER(io)    = buf;
 	JSO_IO_CTXMARKER(io) = buf;
 	JSO_IO_STR_SET_START(io);
@@ -110,6 +111,7 @@ static jso_rc jso_io_buffer_alloc_rotate(jso_io *io, size_t size)
 
 	if (JSO_IO_SIZE(io) - buffered < size &&
 			jso_io_buffer_alloc_extend(io, size + buffered) == JSO_FAILURE) {
+		JSO_IO_ERRNO(io) = -1;
 		return JSO_FAILURE;
 	}
 	memmove(JSO_IO_BUFFER(io), JSO_IO_CURSOR(io), buffered * sizeof(jso_ctype));

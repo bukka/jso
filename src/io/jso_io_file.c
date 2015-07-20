@@ -31,48 +31,31 @@
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {
-	size_t count, buffered, total_size, read_size;
-	jso_ctype *read_pos;
+	size_t count, buffered;
 
 	/* number of characters in the buffer that have not been processed yet */
-    buffered = JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io);
+	buffered = (size_t) (JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io));
 
 	/* already in the buffer */
-	if (buffered >= size)
+	if (buffered >= size) {
 		return size;
+	}
 
-	/* total size that needs to be allocated */
-	total_size = size - buffered;
-	
-	/* check if there is enough space in the buffer */
-	if (total_size > JSO_IO_SIZE(io)) {
-		if (!JSO_IO_SIZE(io)) {
-			/* total size is equal to size (limit = cursor = 0) */
-			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_FILE_BUFF_SIZE, total_size);
-			/* use calloc to suppress valgrind warnings */
-			JSO_IO_BUFFER(io) = (jso_ctype *) jso_calloc(JSO_IO_SIZE(io), sizeof(jso_ctype));
-		} else {
-			JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, total_size);
-			JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
-		}
+	/* make sure that we have enough space in the buffer */
+	if (jso_io_buffer_alloc(io, size) == JSO_FAILURE) {
+		return 0;
 	}
-	/* check if there are any characters that have not been processed yet */
-	if (buffered > 0) {
-		/* copy character that have not been processed to the beginning of the buffer  */
-		memmove(JSO_IO_BUFFER(io), JSO_IO_CURSOR(io), buffered * sizeof(jso_ctype));
-		read_pos = JSO_IO_BUFFER(io) + buffered;
-		read_size = JSO_IO_SIZE(io) - buffered;
-	} else {
-		read_pos = JSO_IO_BUFFER(io);
-		read_size = JSO_IO_SIZE(io);
-	}
+
 	/* read data from file */
-	count = fread(read_pos, sizeof(jso_ctype), read_size, JSO_IO_FILE_HANDLE_GET(io));
+	count = fread(JSO_IO_LIMIT(io), sizeof(jso_ctype),
+			JSO_IO_SIZE(io) - buffered, JSO_IO_FILE_HANDLE_GET(io));
 	if (count > 0) {
-		JSO_IO_CURSOR(io) = JSO_IO_TOKEN(io) = JSO_IO_MARKER(io) = JSO_IO_CTXMARKER(io) = JSO_IO_BUFFER(io);
-		JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + count + buffered;
+		JSO_IO_LIMIT(io) += count;
 	}
-	return count;
+	count += buffered;
+
+	/* return count if it is smaller than size, otherwise size */
+	return count < size ? count : size;
 }
 
 static size_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size)
@@ -88,7 +71,7 @@ static jso_rc jso_io_file_flush(jso_io *io)
 static int jso_io_file_error(jso_io *io)
 {
 	JSO_IO_ERRNO(io) = ferror(JSO_IO_FILE_HANDLE_GET(io));
-	return JSO_IO_ERRNO(io) ? JSO_IO_ERRNO(io) : 0;
+	return JSO_IO_ERRNO(io);
 }
 
 static jso_rc jso_io_file_free(jso_io *io)
