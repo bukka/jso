@@ -99,6 +99,7 @@ JSO_API jso_io *jso_io_file_open_stream(FILE *fp)
 	JSO_IO_OP(io, flush) = jso_io_file_flush;
 	JSO_IO_OP(io, error) = jso_io_file_error;
 	JSO_IO_OP(io, free) = jso_io_file_free;
+
 	return io;
 }
 

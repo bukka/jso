@@ -78,6 +78,7 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 			enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED; /* unlimited */
 			enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
 			jso_encode(&parser.result, os, &enc_options);
+			JSO_IO_FREE(os);
 		}
 
 		rc = JSO_SUCCESS;
@@ -208,13 +209,13 @@ JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
 	jso_rc rc = JSO_SUCCESS;
 
 	if (options->is)
-		rc = jso_io_file_close(options->is);
+		rc = JSO_IO_FREE(options->is);
 	if (options->os) {
-		rc = jso_io_file_close(options->os) == JSO_FAILURE || rc == JSO_FAILURE ?
+		rc = JSO_IO_FREE(options->os) == JSO_FAILURE || rc == JSO_FAILURE ?
 				JSO_FAILURE : JSO_SUCCESS;
 	}
 	if (options->es) {
-		rc = jso_io_file_close(options->es) == JSO_FAILURE || rc == JSO_FAILURE ?
+		rc = JSO_IO_FREE(options->es) == JSO_FAILURE || rc == JSO_FAILURE ?
 				JSO_FAILURE : JSO_SUCCESS;
 	}
 

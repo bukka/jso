@@ -70,7 +70,7 @@ static jso_rc jso_io_buffer_alloc_new(jso_io *io, size_t size)
 	jso_ctype *buf;
 
 	/* use calloc to suppress valgrind warnings */
-	buf = (jso_ctype *) jso_calloc(size, sizeof(jso_ctype));
+	buf = (jso_ctype *) jso_calloc(size + 1, sizeof(jso_ctype));
 
 	if (!buf) {
 		return JSO_FAILURE;
@@ -93,7 +93,7 @@ static jso_rc jso_io_buffer_alloc_extend(jso_io *io, size_t size)
 	jso_io_buffer_diffs diffs;
 
 	jso_io_buffer_diffs_save(io, &diffs);
-	JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size);
+	JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size + 1);
 	JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(
 			JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
 	if (!JSO_IO_BUFFER(io)) {
