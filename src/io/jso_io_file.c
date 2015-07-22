@@ -21,6 +21,8 @@
  *
  */
 
+
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,6 +65,13 @@ static size_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size
 	return fwrite(buffer, sizeof(jso_ctype), size, JSO_IO_FILE_HANDLE_GET(io));
 }
 
+static int jso_io_file_printf(jso_io *io, const char *format, ...)
+{
+	va_list args;
+
+	return vfprintf(JSO_IO_FILE_HANDLE_GET(io), format, args);
+}
+
 static jso_rc jso_io_file_flush(jso_io *io)
 {
 	return fflush(JSO_IO_FILE_HANDLE_GET(io)) == 0 ? JSO_SUCCESS : JSO_FAILURE;
@@ -96,6 +105,7 @@ JSO_API jso_io *jso_io_file_open_stream(FILE *fp)
 	JSO_IO_FILE_HANDLE_SET(io, fp);
 	JSO_IO_OP(io, read) = jso_io_file_read;
 	JSO_IO_OP(io, write) = jso_io_file_write;
+	JSO_IO_OP(io, printf) = jso_io_file_printf;
 	JSO_IO_OP(io, flush) = jso_io_file_flush;
 	JSO_IO_OP(io, error) = jso_io_file_error;
 	JSO_IO_OP(io, free) = jso_io_file_free;

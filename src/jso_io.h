@@ -57,6 +57,17 @@ typedef size_t (*jso_io_read_t)(jso_io *io, size_t size);
 typedef size_t (*jso_io_write_t)(jso_io *io, const jso_ctype *buffer, size_t size);
 
 /**
+ * @brief Formatted print operation function type.
+ * @param io IO handle
+ * @param format format string
+ * @param ... values to substitute in the format string
+ * @return Number of characters written from the buffer
+ *         or negative value if encoding error
+ * @note It is useful only for write streams.
+ */
+typedef int (*jso_io_printf_t)(jso_io *io, const char *format, ...);
+
+/**
  * @brief Flush operation function type.
  * @param io IO handle
  * @note It is useful only for write streams.
@@ -119,6 +130,8 @@ struct _jso_io {
 		jso_io_read_t read;
 		/** write operation */
 		jso_io_write_t write;
+		/** printf operation */
+		jso_io_printf_t printf;
 		/** flush operation */
 		jso_io_flush_t flush;
 		/** error operation */
@@ -288,6 +301,16 @@ struct _jso_io {
  */
 #define JSO_IO_WRITE(io, iow_buffer, iow_size) \
 	(JSO_IO_OP((io), write)((io), (iow_buffer), (iow_size)))
+
+/**
+ * Printf operation.
+ * @param io IO handle
+ * @param format format string
+ * @param ... values to substitute in the format string
+ * @return Number of characters written.
+ */
+#define JSO_IO_PRINTF(io, iow_format, ...) \
+	(JSO_IO_OP((io), printf)((io), (iow_format), __VA_ARGS__))
 
 /**
  * Flush operation.

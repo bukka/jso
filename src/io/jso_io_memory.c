@@ -21,6 +21,8 @@
  *
  */
 
+#include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "jso_io_memory.h"
@@ -44,15 +46,31 @@ static size_t jso_io_memory_read(jso_io *io, size_t size)
 
 static size_t jso_io_memory_write(jso_io *io, const jso_ctype *buffer, size_t size)
 {
-	size_t unused = JSO_IO_SIZE(io) - (size_t) (JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io));
+	size_t not_used = JSO_IO_SIZE(io) - (size_t) (JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io));
 
-	if (size > unused && jso_io_buffer_alloc(io, size) == JSO_FAILURE) {
+	if (size > not_used && jso_io_buffer_alloc(io, size) == JSO_FAILURE) {
 		return 0;
 	}
 
 	memcpy(JSO_IO_LIMIT(io), buffer, size * sizeof(jso_ctype));
 
 	return size;
+}
+
+static int jso_io_memory_printf(jso_io *io, const char *format, ...)
+{
+	va_list args;
+	int rsize;
+	size_t not_used = JSO_IO_SIZE(io) - (size_t) (JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io));
+
+	rsize = vsnprintf((char *) JSO_IO_LIMIT(io), not_used, format, args);
+	if (rsize > not_used) {
+		jso_io_buffer_alloc(io, rsize + 1);
+		return vsnprintf((char *) JSO_IO_LIMIT(io), rsize, format, args);
+	}
+	JSO_IO_LIMIT(io) += rsize;
+
+	return rsize;
 }
 
 static jso_rc jso_io_memory_flush(jso_io *io)
@@ -81,15 +99,13 @@ JSO_API jso_io *jso_io_memory_open_ex(size_t size, int flags)
 	io = JSO_IO_ALLOC();
 	JSO_IO_OP(io, read) = jso_io_memory_read;
 	JSO_IO_OP(io, write) = jso_io_memory_write;
+	JSO_IO_OP(io, printf) = jso_io_memory_printf;
 	JSO_IO_OP(io, flush) = jso_io_memory_flush;
 	JSO_IO_OP(io, error) = jso_io_memory_error;
 	JSO_IO_OP(io, free) = jso_io_memory_free;
 
 	/* pre-allocate buffer */
-	JSO_IO_SIZE(io) = size;
-	JSO_IO_BUFFER(io) = (jso_ctype *) jso_calloc(JSO_IO_SIZE(io), sizeof(jso_ctype));
-	JSO_IO_CURSOR(io) = JSO_IO_TOKEN(io) = JSO_IO_MARKER(io) = JSO_IO_CTXMARKER(io) = JSO_IO_BUFFER(io);
-	JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + size;
+	jso_io_buffer_alloc(io, size);
 
 	return io;
 }
