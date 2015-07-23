@@ -411,4 +411,22 @@ JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags);
  */
 JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size);
 
+
+/**
+ * @brief The number of bytes read to the src buffer when piping
+ */
+#define JSO_IO_PIPE_BUFFER 1024
+
+/**
+ * Pipe two IO's and transfer all data from src to dst.
+ *
+ * This function pulls all the data out of a source readable IO and
+ * writes it to the supplied writtable `dst_io`.
+ * @param src_io source IO handle
+ * @param dst_io destination IO handle
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io);
+
+
 #endif /* PHP_JSO_IO_H */

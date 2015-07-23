@@ -31,17 +31,7 @@
 
 static size_t jso_io_memory_read(jso_io *io, size_t size)
 {
-	size_t buffered;
-
-	/* number of characters in the buffer */
-	buffered = (size_t) (JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io));
-
-	/* already in the buffer */
-	if (buffered >= size) {
-		return size;
-	}
-
-	return buffered;
+	return 0;
 }
 
 static size_t jso_io_memory_write(jso_io *io, const jso_ctype *buffer, size_t size)

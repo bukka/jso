@@ -45,6 +45,15 @@ typedef struct _jso_io_buffer_diffs {
 	ptrdiff_t str_start;
 } jso_io_buffer_diffs;
 
+static void jso_io_pointers_set(jso_io *io, jso_ctype *pos)
+{
+	JSO_IO_CURSOR(io)    = pos;
+	JSO_IO_TOKEN(io)     = pos;
+	JSO_IO_MARKER(io)    = pos;
+	JSO_IO_CTXMARKER(io) = pos;
+	JSO_IO_STR_SET_START(io);
+}
+
 static void jso_io_buffer_diffs_save(jso_io *io, jso_io_buffer_diffs *diffs)
 {
 	diffs->token     = JSO_IO_TOKEN(io)         - JSO_IO_BUFFER(io);
@@ -78,12 +87,8 @@ static jso_rc jso_io_buffer_alloc_new(jso_io *io, size_t size)
 
 	JSO_IO_SIZE(io)      = size;
 	JSO_IO_BUFFER(io)    = buf;
-	JSO_IO_CURSOR(io)    = buf;
-	JSO_IO_TOKEN(io)     = buf;
 	JSO_IO_LIMIT(io)     = buf;
-	JSO_IO_MARKER(io)    = buf;
-	JSO_IO_CTXMARKER(io) = buf;
-	JSO_IO_STR_SET_START(io);
+	jso_io_pointers_set(io, buf);
 
 	return JSO_SUCCESS;
 }
@@ -161,9 +166,23 @@ JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags)
 	}
 }
 
-
 JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size)
 {
 	return jso_io_buffer_alloc_ex(
 			io, size, JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO);
+}
+
+JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io)
+{
+	size_t read = (size_t) (JSO_IO_LIMIT(src_io) - JSO_IO_CURSOR(src_io));
+
+	do {
+		jso_io_buffer_alloc(dst_io, read);
+		memcpy(JSO_IO_LIMIT(dst_io), JSO_IO_CURSOR(src_io),
+				read * sizeof(jso_ctype));
+		JSO_IO_SIZE(src_io) = 0;
+		jso_io_pointers_set(src_io, JSO_IO_LIMIT(src_io));
+	} while ((read = JSO_IO_READ(src_io, JSO_IO_PIPE_BUFFER)) > 0);
+
+	return JSO_IO_ERROR(src_io) || JSO_IO_ERROR(dst_io) ? JSO_FAILURE : JSO_SUCCESS;
 }
