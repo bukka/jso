@@ -102,7 +102,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 	/* get file size */
 	filesize = jso_io_file_size(file_path);
 	if (filesize < 0) {
-		fprintf(stderr, "Getting file size for file '%s' failed\n", file_path);
+		JSO_IO_PRINTF(options->es, "Getting file size for file '%s' failed\n", file_path);
 		return JSO_FAILURE;
 	}
 	bytes_to_read = (size_t) filesize;
@@ -110,7 +110,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 	/* open file */
 	io = jso_io_file_open(file_path, "r");
 	if (!io) {
-		fprintf(stderr, "Opening the file '%s' failed\n", file_path);
+		JSO_IO_PRINTF(options->es, "Opening the file '%s' failed\n", file_path);
 		return JSO_FAILURE;
 	}
 	/* read the whole file into the buffer */
@@ -121,18 +121,18 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 
 	/* check the read data */
 	if (bytes_read_total == 0) {
-		fprintf(stderr, "No data in the file '%s'\n", file_path);
+		JSO_IO_PRINTF(options->es, "No data in the file '%s'\n", file_path);
 		return JSO_FAILURE;
 	}
 	/* check the read data */
 	if (bytes_read_total < bytes_to_read) {
-		fprintf(stderr, "Only %lu of %lu read from the file '%s'\n",
+		JSO_IO_PRINTF(options->es, "Only %lu of %lu read from the file '%s'\n",
 				bytes_read_total, bytes_to_read, file_path);
 		return JSO_FAILURE;
 	}
 
 	if (!JSO_IO_CURSOR(io)) {
-		fputs("Cursor is not set\n", stderr);
+		JSO_IO_PRINTF(options->es, "Cursor is not set\n");
 		return JSO_FAILURE;
 	}
 
@@ -142,7 +142,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options)
 {
 	if (!value) {
-		fputs("Option depth requires value\n", stderr);
+		JSO_IO_PRINTF(options->es, "Option depth requires value\n");
 		return JSO_FAILURE;
 	}
 
@@ -154,7 +154,7 @@ static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *o
 static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *options)
 {
 	if (!value) {
-		fputs("Option output requires value\n", stderr);
+		JSO_IO_PRINTF(options->es, "Option output requires value\n");
 		return JSO_FAILURE;
 	}
 
@@ -169,7 +169,7 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 	} else if (!strncmp(value, "debug", JSO_MAX(strlen(value), sizeof("debug") - 1))) {
 		options->output_type = JSO_OUTPUT_DEBUG;
 	} else {
-		fprintf(stderr, "Unknown output value %s\n", value);
+		JSO_IO_PRINTF(options->es, "Unknown output value %s\n", value);
 		return JSO_FAILURE;
 	}
 
@@ -188,8 +188,8 @@ JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
 	options->max_depth = 0;
 	options->output_type = JSO_OUTPUT_NONE;
 	options->is = NULL;
-	options->os = NULL;
-	options->es = NULL;
+	options->os = jso_io_file_open_stream(stdout);
+	options->es = jso_io_file_open_stream(stderr);
 }
 
 JSO_API void jso_cli_options_init_post(jso_cli_options *options)
@@ -198,10 +198,6 @@ JSO_API void jso_cli_options_init_post(jso_cli_options *options)
 		options->output_type = JSO_OUTPUT_PRETTY;
 	if (!options->is)
 		options->is = jso_io_file_open_stream(stdin);
-	if (!options->os)
-		options->os = jso_io_file_open_stream(stdout);
-	if (!options->es)
-		options->es = jso_io_file_open_stream(stderr);
 }
 
 JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
@@ -273,13 +269,13 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 			arg_len = strlen(argv[i]);
 
 			if (arg_len == 1) {
-				fputs("Input stdin is not supported yet\n", stderr);
+				JSO_IO_PRINTF(options.es, "Input stdin is not supported yet\n");
 				return JSO_FAILURE;
 			}
 
 			if (argv[i][1] == '-') { /* long option */
 				if (arg_len == 2) {
-					fputs("The long option must have name\n", stderr);
+					JSO_IO_PRINTF(options.es, "The long option must have name\n");
 					return JSO_FAILURE;
 				}
 
@@ -297,14 +293,14 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 					char* long_name_dup = jso_malloc(long_name_len + 1);
 					strncpy(long_name_dup, long_name, long_name_len);
 					long_name_dup[long_name_len] = '\0';
-					fprintf(stderr, "Unknown option: %s\n", long_name_dup);
+					JSO_IO_PRINTF(options.es, "Unknown option: %s\n", long_name_dup);
 					jso_free(long_name_dup);
 					return JSO_FAILURE;
 				}
 
 			} else { /* short option */
 				if (arg_len > 2) {
-					fputs("The grouping of short parameters is not allowed yet\n", stderr);
+					JSO_IO_PRINTF(options.es, "The grouping of short parameters is not allowed yet\n");
 					return JSO_FAILURE;
 				}
 
@@ -313,7 +309,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 
 				param = jso_cli_find_param_by_short_name(ctx, short_name);
 				if (!param) {
-					fprintf(stderr, "Unknown option: %c\n", short_name);
+					JSO_IO_PRINTF(options.es, "Unknown option: %c\n", short_name);
 					return JSO_FAILURE;
 				}
 			}
@@ -321,7 +317,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 			if (param->has_value) {
 				if (!value) {
 					if (i + 1 == argc || argv[i + 1][0] == '-') {
-						fprintf(stderr, "No value for option: %s\n", param->long_name);
+						JSO_IO_PRINTF(options.es, "No value for option: %s\n", param->long_name);
 						return JSO_FAILURE;
 					}
 					value = &argv[i + 1][0];
@@ -332,7 +328,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 				}
 			} else {
 				if (value) {
-					fprintf(stderr, "No value should be added to option: %s\n", param->long_name);
+					JSO_IO_PRINTF(options.es, "No value should be added to option: %s\n", param->long_name);
 					return JSO_FAILURE;
 				}
 
@@ -348,7 +344,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 	}
 
 	if (!file_path) {
-		fputs("File path not specified\n", stderr);
+		JSO_IO_PRINTF(options.es, "File path not specified\n");
 		return JSO_FAILURE;
 	}
 

@@ -305,12 +305,11 @@ struct _jso_io {
 /**
  * Printf operation.
  * @param io IO handle
- * @param format format string
- * @param ... values to substitute in the format string
+ * @param ... format and values to substitute in the format string
  * @return Number of characters written.
  */
-#define JSO_IO_PRINTF(io, iow_format, ...) \
-	(JSO_IO_OP((io), printf)((io), (iow_format), __VA_ARGS__))
+#define JSO_IO_PRINTF(io, ...) \
+	(JSO_IO_OP((io), printf)((io), __VA_ARGS__))
 
 /**
  * Flush operation.

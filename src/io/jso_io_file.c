@@ -68,8 +68,13 @@ static size_t jso_io_file_write(jso_io *io, const jso_ctype *buffer, size_t size
 static int jso_io_file_printf(jso_io *io, const char *format, ...)
 {
 	va_list args;
+	int written;
 
-	return vfprintf(JSO_IO_FILE_HANDLE_GET(io), format, args);
+	va_start(args, format);
+	written = vfprintf(JSO_IO_FILE_HANDLE_GET(io), format, args);
+	va_end(args);
+
+	return written;
 }
 
 static jso_rc jso_io_file_flush(jso_io *io)
