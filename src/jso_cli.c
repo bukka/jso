@@ -251,13 +251,75 @@ static inline const jso_cli_param *jso_cli_find_param_by_short_name(
 	return jso_cli_find_param(ctx, NULL, 0, short_name);
 }
 
+static const jso_cli_param *jso_cli_parse_long_option(
+		jso_cli_ctx *ctx, jso_cli_options *options,
+		const char *arg, size_t arg_len, const char **pvalue)
+{
+	const jso_cli_param *param;
+	const char *long_name, *value;
+	char *long_name_dup;
+	size_t long_name_len;
+
+	if (arg_len == 2) {
+		JSO_IO_PRINTF(options->es, "The long option must have name\n");
+		return NULL;
+	}
+
+	long_name = &arg[2];
+	value = strchr(long_name, '=');
+	if (value) {
+		long_name_len = (size_t) (value - long_name);
+		*pvalue = value + 1;
+	} else {
+		long_name_len = strlen(long_name);
+		*pvalue = NULL;
+	}
+
+	param = jso_cli_find_param_by_long_name(ctx, long_name, long_name_len);
+	if (param) {
+		return param;
+	}
+
+	long_name_dup = jso_malloc(long_name_len + 1);
+	strncpy(long_name_dup, long_name, long_name_len);
+	long_name_dup[long_name_len] = '\0';
+	JSO_IO_PRINTF(options->es, "Unknown option: %s\n", long_name_dup);
+	jso_free(long_name_dup);
+
+	return NULL;
+}
+
+static const jso_cli_param *jso_cli_parse_short_option(
+		jso_cli_ctx *ctx, jso_cli_options *options,
+		const char *arg, size_t arg_len, const char **pvalue)
+{
+	const jso_cli_param *param;
+	char short_name;
+
+	if (arg_len > 2) {
+		JSO_IO_PRINTF(options->es, "The grouping of short parameters is not allowed yet\n");
+		return NULL;
+	}
+
+	*pvalue = NULL;
+	short_name = arg[1];
+
+	param = jso_cli_find_param_by_short_name(ctx, short_name);
+	if (param) {
+		return param;
+	}
+
+	JSO_IO_PRINTF(options->es, "Unknown option: %c\n", short_name);
+
+	return NULL;
+}
+
 JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx)
 {
 	int i;
 	jso_rc rc;
-	char short_name;
-	const char *file_path = NULL, *long_name, *value;
-	size_t long_name_len, arg_len;
+	const char *file_path = NULL, *value;
+	size_t arg_len;
 	const jso_cli_param *param;
 	jso_cli_options options;
 
@@ -273,45 +335,12 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 				return JSO_FAILURE;
 			}
 
-			if (argv[i][1] == '-') { /* long option */
-				if (arg_len == 2) {
-					JSO_IO_PRINTF(options.es, "The long option must have name\n");
-					return JSO_FAILURE;
-				}
+			param = (argv[i][1] == '-') ?
+				jso_cli_parse_long_option(ctx, &options, &argv[i][0], arg_len, &value) :
+				jso_cli_parse_short_option(ctx, &options, &argv[i][0], arg_len, &value);
 
-				long_name = &argv[i][2];
-				value =  strchr(long_name, '=');
-				if (value) {
-					long_name_len = (size_t) (value - long_name);
-					value++;
-				} else {
-					long_name_len = strlen(long_name);
-				}
-
-				param = jso_cli_find_param_by_long_name(ctx, long_name, long_name_len);
-				if (!param) {
-					char* long_name_dup = jso_malloc(long_name_len + 1);
-					strncpy(long_name_dup, long_name, long_name_len);
-					long_name_dup[long_name_len] = '\0';
-					JSO_IO_PRINTF(options.es, "Unknown option: %s\n", long_name_dup);
-					jso_free(long_name_dup);
-					return JSO_FAILURE;
-				}
-
-			} else { /* short option */
-				if (arg_len > 2) {
-					JSO_IO_PRINTF(options.es, "The grouping of short parameters is not allowed yet\n");
-					return JSO_FAILURE;
-				}
-
-				short_name = argv[i][1];
-				value = NULL;
-
-				param = jso_cli_find_param_by_short_name(ctx, short_name);
-				if (!param) {
-					JSO_IO_PRINTF(options.es, "Unknown option: %c\n", short_name);
-					return JSO_FAILURE;
-				}
+			if (!param) {
+				return JSO_FAILURE;
 			}
 
 			if (param->has_value) {
