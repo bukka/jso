@@ -64,10 +64,27 @@
 #endif
 
 
-/* this macro suppresses warnings about unused variable */
+/**
+ * Suppresses warnings about unused variable
+ * @param unused_variable the variable that is not used
+ */
 #define JSO_USE(unused_variable) ((void) (unused_variable))
+
+/**
+ * Suppresses warnings about unused variable and 1 extra parameter
+ * @param uv0 the variable that is not used
+ * @param uv1 the parameter that is not used
+ */
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
+
+/**
+ * Suppresses warnings about unused variable and 2 extra parameters
+ * @param uv0 the variable that is not used
+ * @param uv1 the first parameter that is not used
+ * @param uv1 the second parameter that is not used
+ */
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
+
 
 /* accessors for string */
 #define JSO_STRING_LEN_P(_str) (_str)->len
