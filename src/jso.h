@@ -86,11 +86,34 @@
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
 
 
-/* accessors for string */
+/**
+ * Get string length for string pointer
+ * @param _str pointer to string
+ * @return The string length
+ */
 #define JSO_STRING_LEN_P(_str) (_str)->len
+
+/**
+ * Get string value for string pointer
+ * @param _str pointer to string
+ * @return The string value (char array)
+ */
 #define JSO_STRING_VAL_P(_str) (_str)->val
+
+/**
+ * Get string length
+ * @param _str string
+ * @return The string length
+ */
 #define JSO_STRING_LEN(_str)   (_str).len
+
+/**
+ * Get string value
+ * @param _str string
+ * @return The string value (char array)
+ */
 #define JSO_STRING_VAL(_str)   (_str).val
+
 
 /* accessors for pointer to jso value */
 #define JSO_TYPE_P(pjv) (pjv)->type
