@@ -252,8 +252,8 @@ static inline const jso_cli_param *jso_cli_find_param_by_short_name(
 }
 
 static const jso_cli_param *jso_cli_parse_long_option(
-		jso_cli_ctx *ctx, jso_cli_options *options,
-		const char *arg, size_t arg_len, const char **pvalue)
+		const char *arg, size_t arg_len, const char **pvalue,
+		jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	const jso_cli_param *param;
 	const char *long_name, *value;
@@ -290,8 +290,8 @@ static const jso_cli_param *jso_cli_parse_long_option(
 }
 
 static const jso_cli_param *jso_cli_parse_short_option(
-		jso_cli_ctx *ctx, jso_cli_options *options,
-		const char *arg, size_t arg_len, const char **pvalue)
+		const char *arg, size_t arg_len, const char **pvalue,
+		jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	const jso_cli_param *param;
 	char short_name;
@@ -314,13 +314,60 @@ static const jso_cli_param *jso_cli_parse_short_option(
 	return NULL;
 }
 
+static jso_rc jso_cli_parse_option(
+		int *ip, int argc, const char *argv[],
+		jso_cli_options *options, jso_cli_ctx *ctx)
+{
+	const jso_cli_param *param;
+	int i = *ip;
+	const char *arg = &argv[i][0], *value;
+	size_t arg_len = strlen(arg);
+
+	if (arg_len == 1) {
+		JSO_IO_PRINTF(options->es, "Input stdin is not supported yet\n");
+		return JSO_FAILURE;
+	}
+
+	param = (argv[i][1] == '-') ?
+		jso_cli_parse_long_option(arg, arg_len, &value, options, ctx) :
+		jso_cli_parse_short_option(arg, arg_len, &value, options, ctx);
+
+	if (!param) {
+		return JSO_FAILURE;
+	}
+
+	if (param->has_value) {
+		if (!value) {
+			if (i + 1 == argc || argv[i + 1][0] == '-') {
+				JSO_IO_PRINTF(options->es, "No value for option: %s\n", param->long_name);
+				return JSO_FAILURE;
+			}
+			value = &argv[i + 1][0];
+			(*ip)++;
+		}
+
+		if (param->callback.callback_value(value, options) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+	} else {
+		if (value) {
+			JSO_IO_PRINTF(options->es, "No value should be added to option: %s\n", param->long_name);
+			return JSO_FAILURE;
+		}
+
+		if (param->callback.callback_flag(options) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+	}
+
+	return JSO_SUCCESS;
+}
+
 JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *ctx)
 {
 	int i;
 	jso_rc rc;
-	const char *file_path = NULL, *value;
-	size_t arg_len;
-	const jso_cli_param *param;
+	const char *file_path = NULL;
 	jso_cli_options options;
 
 	/* pre-initialize options */
@@ -328,45 +375,13 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
-			arg_len = strlen(argv[i]);
-
-			if (arg_len == 1) {
-				JSO_IO_PRINTF(options.es, "Input stdin is not supported yet\n");
+			/* it is an options, so parse it */
+			if (jso_cli_parse_option(&i, argc, argv, &options, ctx) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-
-			param = (argv[i][1] == '-') ?
-				jso_cli_parse_long_option(ctx, &options, &argv[i][0], arg_len, &value) :
-				jso_cli_parse_short_option(ctx, &options, &argv[i][0], arg_len, &value);
-
-			if (!param) {
-				return JSO_FAILURE;
-			}
-
-			if (param->has_value) {
-				if (!value) {
-					if (i + 1 == argc || argv[i + 1][0] == '-') {
-						JSO_IO_PRINTF(options.es, "No value for option: %s\n", param->long_name);
-						return JSO_FAILURE;
-					}
-					value = &argv[i + 1][0];
-				}
-
-				if (param->callback.callback_value(value, &options) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-			} else {
-				if (value) {
-					JSO_IO_PRINTF(options.es, "No value should be added to option: %s\n", param->long_name);
-					return JSO_FAILURE;
-				}
-
-				if (param->callback.callback_flag(&options) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-			}
-
-
+		} else if (file_path) {
+			JSO_IO_PRINTF(options.es, "File path is already is set as %s\n", file_path);
+			return JSO_FAILURE;
 		} else {
 			file_path = &argv[i][0];
 		}
