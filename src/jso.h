@@ -35,7 +35,7 @@
 #include "jso_object.h"
 
 /**
- * Get max of two values
+ * Get a max of two values.
  * @param value_1 first value
  * @param value_2 second value
  * @return `value_1` if `value_1` > `value_2`, otherwise `value_2`
@@ -44,7 +44,7 @@
 	((value_1) > (value_2) ? (value_1) : (value_2))
 
 /**
- * Get max of two values
+ * Get a min of two values.
  * @param value_1 first value
  * @param value_2 second value
  * @return `value_1` if `value_1` < `value_2`, otherwise `value_2`
@@ -65,20 +65,20 @@
 
 
 /**
- * Suppresses warnings about unused variable
+ * Suppress warnings about unused variable.
  * @param unused_variable the variable that is not used
  */
 #define JSO_USE(unused_variable) ((void) (unused_variable))
 
 /**
- * Suppresses warnings about unused variable and 1 extra parameter
+ * Suppress warnings about unused variable and 1 extra parameter.
  * @param uv0 the variable that is not used
  * @param uv1 the parameter that is not used
  */
 #define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
 
 /**
- * Suppresses warnings about unused variable and 2 extra parameters
+ * Suppress warnings about unused variable and 2 extra parameters.
  * @param uv0 the variable that is not used
  * @param uv1 the first parameter that is not used
  * @param uv1 the second parameter that is not used
@@ -87,45 +87,111 @@
 
 
 /**
- * Get string length for string pointer
+ * Get string length for string pointer.
  * @param _str pointer to string
  * @return The string length
  */
 #define JSO_STRING_LEN_P(_str) (_str)->len
 
 /**
- * Get string value for string pointer
+ * Get string value for string pointer.
  * @param _str pointer to string
  * @return The string value (char array)
  */
 #define JSO_STRING_VAL_P(_str) (_str)->val
 
 /**
- * Get string length
+ * Get string length.
  * @param _str string
  * @return The string length
  */
 #define JSO_STRING_LEN(_str)   (_str).len
 
 /**
- * Get string value
+ * Get string value.
  * @param _str string
  * @return The string value (char array)
  */
 #define JSO_STRING_VAL(_str)   (_str).val
 
 
-/* accessors for pointer to jso value */
+/**
+ * Get a type of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Type @ref jso_value_type.
+ */
 #define JSO_TYPE_P(pjv) (pjv)->type
+
+/**
+ * Get an integer value of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Integer value.
+ */
 #define JSO_IVAL_P(pjv) (pjv)->data.ival
+
+/**
+ * Get a double value of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Double precision value.
+ */
 #define JSO_DVAL_P(pjv) (pjv)->data.dval
+
+/**
+ * Get a string of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_string.
+ */
 #define JSO_STR_P(pjv)  (pjv)->data.str
+
+/**
+ * Get a string value of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return String value (characters buffer).
+ */
 #define JSO_SVAL_P(pjv) JSO_STR_P(pjv).val
+
+/**
+ * Get a string length of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return String length.
+ */
 #define JSO_SLEN_P(pjv) JSO_STR_P(pjv).len
+
+/**
+ * Get an array of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_array.
+ */
 #define JSO_ARRVAL_P(pjv) (pjv)->data.arr
+
+/**
+ * Get an object of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_object.
+ */
 #define JSO_OBJVAL_P(pjv) (pjv)->data.obj
+
+/**
+ * Get an error of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_error or `NULL` if no error.
+ */
 #define JSO_EVAL_P(pjv) (pjv)->data.err
+
+/**
+ * Get an error location of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_error_location.
+ * @note This must be called only if the error is set.
+ */
 #define JSO_ELOC_P(pjv) (pjv)->data.err->loc
+
+/**
+ * Get an error type of the supplied pointer to value.
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_error_type.
+ * @note This must be called only if the error is set.
+ */
 #define JSO_ETYPE_P(pjv) (pjv)->data.err->type
 
 /* accessors for jso value */
