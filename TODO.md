@@ -10,25 +10,24 @@
   - streams
   - change EOI
 
+
 ## Parser
 - test locations support
 - change it to push parser (stream support)
 
-## IO
-- find out if the markers should be kept when reallocating
-- abstract buffer handling (allocation reallocation)
-- add format hook for printf like output
 
-### File
-- suppress valgrind errors without using calloc in jso_io_file_read
-  - data is not unitialized because fread is used
-- fix valgrind errors when JSO_IO_FILE_BUFF_SIZE is small (e.g. 8)
+## IO
+- rename read hook to fill
+- create a new hook read that will copy data to the buffer
+- suppress valgrind errors without using calloc for new buffer
+- test various allocation using valgrind
+
 
 ## Encoder
 
 ### Double encoding
 - use custom dtoa function for double serialization
-  - allows selection of custom precision and it's faster
+  - allows selection of custom precision and mode
 
 ### String encoding
 - flag for escaping slashes
@@ -36,7 +35,10 @@
 - unicode escaping
 - marked buffering
 
+
 ## CLI
+- generate help message
+  - extend `jso_cli_param` with description
 - add support for grouping of short arguments
 - allow setting of output stream (stdout and stderr)
 - allow stream input (stdin - using jso in pipe)
@@ -49,12 +51,16 @@
   - set YYDEBUG macro to 1 if enabled, otherwise 0
 - autogen.sh
   - check for autoconf, automake, libtool (libtoolize)
+- optional generating of files (re2c and bison)
+  - included generated files that will be used if not checked
 - re2c
-  - autoconf check
+  - autoconf version check
   - try to replace Makefile AM rule with AC
 - bison
+  - autoconf version check
   - remove Makefile AM rule (use AC)
   - jso_parser.tab.h - prerequisite (build error when it's not created)
+
 
 ## Documentation
 - document source using doxygent comments
