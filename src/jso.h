@@ -194,18 +194,85 @@
  */
 #define JSO_ETYPE_P(pjv) (pjv)->data.err->type
 
-/* accessors for jso value */
+/**
+ * Get a type of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Type @ref jso_value_type.
+ */
 #define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
+
+/**
+ * Get an integer value of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Integer value.
+ */
 #define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
+
+/**
+ * Get a double value of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Double precision value.
+ */
 #define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
+
+/**
+ * Get a string of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_string.
+ */
 #define JSO_STR(jv)  JSO_STR_P(&(jv))
+
+/**
+ * Get a string value of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return String value (characters buffer).
+ */
 #define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
+
+/**
+ * Get a string length of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return String length.
+ */
 #define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
+
+/**
+ * Get an array of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_array.
+ */
 #define JSO_ARRVAL(jv) JSO_ARRVAL_P(&(jv))
+
+/**
+ * Get an object of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_object.
+ */
 #define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
+
+/**
+ * Get an error of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_error or `NULL` if no error.
+ */
 #define JSO_EVAL(jv) JSO_EVAL_P(&(jv))
+
+/**
+ * Get an error location of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_error_location.
+ * @note This must be called only if the error is set.
+ */
 #define JSO_ELOC(jv) JSO_ELOC_P(&(jv))
+
+/**
+ * Get an error type of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_error_type.
+ * @note This must be called only if the error is set.
+ */
 #define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
+
 
 /* jso value setters */
 #define JSO_VALUE_SET_ERROR(jv, eval) \
