@@ -274,53 +274,105 @@
 #define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
 
 
-/* jso value setters */
+/**
+ * Set error to value
+ * @param jv variable of @ref jso_value type
+ * @param eval error value
+ */
 #define JSO_VALUE_SET_ERROR(jv, eval) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
 		JSO_EVAL(jv) = eval; \
 	} while(0)
+
+/**
+ * Set null to value
+ * @param jv variable of @ref jso_value type
+ */
 #define JSO_VALUE_SET_NULL(jv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_NULL; \
 	} while(0)
+
+/**
+ * Set boolean to value
+ * @param jv variable of @ref jso_value type
+ * @param bv boolean value
+ */
 #define JSO_VALUE_SET_BOOL(jv, bv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_BOOL; \
 		JSO_IVAL(jv) = bv; \
 	} while(0)
+
+/**
+ * Set integer to value
+ * @param jv variable of @ref jso_value type
+ * @param lv integer value
+ */
 #define JSO_VALUE_SET_INT(jv, lv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_INT; \
 		JSO_IVAL(jv) = lv; \
 	} while(0)
+
+/**
+ * Set double floating point to value
+ * @param jv variable of @ref jso_value type
+ * @param dv double floating point value
+ */
 #define JSO_VALUE_SET_DOUBLE(jv, dv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_DOUBLE; \
 		JSO_DVAL(jv) = (dv); \
 	} while(0)
+
+/**
+ * Set string to value
+ * @param jv variable of @ref jso_value type
+ * @param sv string value (character buffer)
+ * @param sl string length
+ */
 #define JSO_VALUE_SET_STRING(jv, sv, sl) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
 		JSO_SVAL(jv) = (sv); \
 		JSO_SLEN(jv) = (sl); \
 	} while(0)
+
+/**
+ * Set empty string to value
+ * @param jv variable of @ref jso_value type
+ */
 #define JSO_VALUE_SET_EMPTY_STRING(jv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
 		JSO_SVAL(jv) = NULL; \
 		JSO_SLEN(jv) = 0; \
 	} while(0)
+
+/**
+ * Set array to value
+ * @param jv variable of @ref jso_value type
+ * @param av array
+ */
 #define JSO_VALUE_SET_ARRAY(jv, av) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ARRAY; \
 		JSO_ARRVAL(jv) = (av); \
 	} while(0)
+
+/**
+ * Set object to value
+ * @param jv variable of @ref jso_value type
+ * @param ov object
+ */
 #define JSO_VALUE_SET_OBJECT(jv, ov) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_OBJECT; \
 		JSO_OBJVAL(jv) = (ov); \
 	} while(0)
+
 
 /* jso value free function */
 JSO_API void jso_value_free(jso_value *val);
