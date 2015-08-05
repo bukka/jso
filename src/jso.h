@@ -374,8 +374,12 @@
 	} while(0)
 
 
-/* jso value free function */
+/**
+ * Free @ref jso_value instance
+ * @param val instance of @ref jso_value
+ */
 JSO_API void jso_value_free(jso_value *val);
+
 /* jso value print function */
 JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent);
 JSO_API void jso_value_print_debug(jso_value *val);
