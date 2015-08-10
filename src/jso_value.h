@@ -27,6 +27,7 @@
  */
 
 #include "jso_types.h"
+#include "jso_io.h"
 
 /**
  * Get string length for string pointer.
@@ -321,6 +322,17 @@
  */
 JSO_API void jso_value_free(jso_value *val);
 
-/* jso value print function */
-JSO_API void jso_value_print_debug_ex(jso_value *val, jso_uint indent);
-JSO_API void jso_value_print_debug(jso_value *val);
+/**
+ * Print indented debug output of the supplied value
+ * @param val instance of @ref jso_value
+ * @param io output IO handler
+ * @param indent number of spaces for initial indention
+ */
+JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent);
+
+/**
+ * Print debug output of the supplied value
+ * @param val instance of @ref jso_value
+ * @param io output IO handler
+ */
+JSO_API void jso_value_dump(jso_value *val, jso_io *io);

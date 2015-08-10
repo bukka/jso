@@ -70,20 +70,20 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 	if (jso_yyparse(&parser) == 0) {
 
 		/* print result */
-		if (options->output_type == JSO_OUTPUT_DEBUG) {
-			jso_value_print_debug(&parser.result);
-		} else {
-			jso_io *os = jso_io_file_open_stream(stdout);
+		if (options->output_type != JSO_OUTPUT_DEBUG) {
 			jso_encoder_options enc_options;
 			enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED; /* unlimited */
 			enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
-			jso_encode(&parser.result, os, &enc_options);
-			JSO_IO_FREE(os);
+			jso_encode(&parser.result, options->os, &enc_options);
 		}
 
 		rc = JSO_SUCCESS;
 	} else {
 		rc = JSO_FAILURE;
+	}
+
+	if (options->output_type == JSO_OUTPUT_DEBUG) {
+		jso_value_dump(&parser.result, options->os);
 	}
 
 	/* free resources */
