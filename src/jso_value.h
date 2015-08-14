@@ -203,7 +203,7 @@
 /**
  * Get an error location of the supplied value.
  * @param jv variable of @ref jso_value type
- * @return Pointer to @ref jso_error_location.
+ * @return Pointer to @ref jso_error_location .
  * @note This must be called only if the error is set.
  */
 #define JSO_ELOC(jv) JSO_ELOC_P(&(jv))

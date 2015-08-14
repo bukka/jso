@@ -32,6 +32,7 @@
 #include <config.h>
 #include "jso_types.h"
 #include "jso_value.h"
+#include "jso_error.h"
 #include "jso_array.h"
 #include "jso_object.h"
 
@@ -82,17 +83,9 @@
  * Suppress warnings about unused variable and 2 extra parameters.
  * @param uv0 the variable that is not used
  * @param uv1 the first parameter that is not used
- * @param uv1 the second parameter that is not used
+ * @param uv2 the second parameter that is not used
  */
 #define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
-
-
-/* error functions */
-JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc);
-JSO_API jso_error *jso_error_new(jso_error_type type,
-		size_t first_column, size_t first_line,
-		size_t last_column, size_t last_line);
-JSO_API void jso_error_free(jso_error *err);
 
 
 /* memeroy functions - just redefinitions for future extending (checking) */
@@ -121,8 +114,5 @@ JSO_API void jso_error_free(jso_error *err);
  * @brief Memory freeing
  */
 #define jso_free free
-
-/* print stream */
-#define JSO_PRINT_STREAM stderr
 
 #endif /* JSO_H */

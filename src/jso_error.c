@@ -30,14 +30,14 @@
 /* ERROR */
 
 /* alloc and init error from type and location struct */
-JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_location *loc)
+JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc)
 {
 	jso_error *err = jso_malloc(sizeof(jso_error));
 	if (!err)
 		return NULL;
 
 	err->type = type;
-	memcpy(&err->loc, loc, sizeof(jso_location));
+	memcpy(&err->loc, loc, sizeof(jso_error_location));
 
 	return err;
 }
@@ -47,7 +47,7 @@ JSO_API jso_error *jso_error_new(jso_error_type type,
 		size_t first_column, size_t first_line,
 		size_t last_column, size_t last_line)
 {
-	jso_location loc;
+	jso_error_location loc;
 	loc.first_column = first_column;
 	loc.first_line = first_line;
 	loc.last_column = last_column;

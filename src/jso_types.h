@@ -129,7 +129,7 @@ typedef enum {
  * It identifies a place where the error was found. The structure
  * is designed for Bison parser.
  */
-typedef struct _jso_location {
+typedef struct _jso_error_location {
 	/** first column of the error */
 	size_t first_column;
 	/** first line of the error */
@@ -138,7 +138,7 @@ typedef struct _jso_location {
 	size_t last_column;
 	/** last line of the error */
 	size_t last_line;
-} jso_location;
+} jso_error_location;
 
 /**
  * @brief Error information structure
@@ -147,7 +147,7 @@ typedef struct _jso_error {
 	/** error type */
 	jso_error_type type;
 	/** error location */
-	jso_location loc;
+	jso_error_location loc;
 } jso_error;
 
 /**

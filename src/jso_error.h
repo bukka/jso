@@ -21,24 +21,42 @@
  *
  */
 
-#ifndef JSO_SCANNER_H
-#define JSO_SCANNER_H
+/**
+ * @file jso_error.h
+ * @brief Error API
+ */
 
-#include "jso.h"
-#include "jso_io.h"
+#ifndef JSO_ERROR_H
+#define JSO_ERROR_H
 
-typedef struct _jso_scanner {
-	jso_io *io;
-	jso_value value;
-	jso_ctype *pstr;
-	int state;
-	jso_error_location loc;
-} jso_scanner;
+#include "jso_types.h"
 
-#define JSO_SCANNER_LOCATION(scanner, slocation) (scanner).loc.slocation
+/**
+ * Create a new error from supplied type and location
+ * @param type error type
+ * @param loc error location
+ * @return A new error instance.
+ */
+JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc);
+
+/**
+ * Craete a new error from supplied type and positions
+ * @param type error type
+ * @param first_column first column position where the error was found
+ * @param first_line first line position where the error was found
+ * @param last_column last column position where the error was found
+ * @param last_line last line position where the error was found
+ * @return A new error instance.
+ */
+JSO_API jso_error *jso_error_new(jso_error_type type,
+		size_t first_column, size_t first_line,
+		size_t last_column, size_t last_line);
+
+/**
+ * Free error
+ * @param err error instance
+ */
+JSO_API void jso_error_free(jso_error *err);
 
 
-void jso_scanner_init(jso_scanner *scanner, jso_io *io);
-int jso_scan(jso_scanner *s);
-
-#endif /* JSO_SCANNER_H */
+#endif /* JSO_ERROR_H */
