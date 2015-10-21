@@ -198,6 +198,7 @@ typedef unsigned Long ULong;
 #define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
 #endif
 
+#include "jso_dg_dtoa.h"
 #include "stdlib.h"
 #include "string.h"
 
@@ -300,7 +301,7 @@ extern "C" {
 #endif
 
 #if defined(IEEE_8087) + defined(IEEE_MC68k) + defined(VAX) + defined(IBM) != 1
-Exactly one of IEEE_8087, IEEE_MC68k, VAX, or IBM should be defined.
+#error "Exactly one of IEEE_8087, IEEE_MC68k, VAX, or IBM should be defined."
 #endif
 
 typedef union { double d; ULong L[2]; } U;
@@ -524,8 +525,8 @@ BCinfo { int dp0, dp1, dplen, dsign, e0, inexact, nd, nd0, rounding, scale, uflc
 #define Kmax 7
 
 #ifdef __cplusplus
-extern "C" double strtod(const char *s00, char **se);
-extern "C" char *dtoa(double d, int mode, int ndigits,
+extern "C" double jso_dg_strtod(const char *s00, char **se);
+extern "C" char *jso_dg_dtoa(double d, int mode, int ndigits,
 			int *decpt, int *sign, char **rve);
 #endif
 
@@ -2486,7 +2487,7 @@ retlow1:
 #endif /* NO_STRTOD_BIGCOMP */
 
  double
-strtod
+jso_dg_strtod
 #ifdef KR_headers
 	(s00, se) CONST char *s00; char **se;
 #else
@@ -3657,7 +3658,7 @@ freedtoa(char *s)
  */
 
  char *
-dtoa
+jso_dtoa
 #ifdef KR_headers
 	(dd, mode, ndigits, decpt, sign, rve)
 	double dd; int mode, ndigits, *decpt, *sign; char **rve;
