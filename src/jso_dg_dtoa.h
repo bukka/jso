@@ -22,7 +22,7 @@
  */
 
 /**
- * @file jso_number.h
+ * @file jso_dg_dtoa.h
  * @brief Header for dtoa from David M. Gray
  */
 
