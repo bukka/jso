@@ -21,12 +21,22 @@
  *
  */
 
+/**
+ * @file jso_scanner.h
+ * @brief Lexical scanner.
+ */
+
 #ifndef JSO_SCANNER_H
 #define JSO_SCANNER_H
 
 #include "jso.h"
 #include "jso_io.h"
 
+/**
+ * @brief Scanner data and state.
+ *
+ * This is the main state and data structure used in scanner.
+ */
 typedef struct _jso_scanner {
 	jso_io *io;
 	jso_value value;
@@ -35,10 +45,25 @@ typedef struct _jso_scanner {
 	jso_error_location loc;
 } jso_scanner;
 
+/**
+ * @brief Current scanning location.
+ */
 #define JSO_SCANNER_LOCATION(scanner, slocation) (scanner).loc.slocation
 
-
+/**
+ * @brief Initialize scanner.
+ *
+ * @param scanner Scanner instance.
+ * @param io IO structure.
+ */
 void jso_scanner_init(jso_scanner *scanner, jso_io *io);
+
+/**
+ * @brief Run scanner.
+ *
+ * @param s Scanner instance.
+ * @return int Token ID.
+ */
 int jso_scan(jso_scanner *s);
 
 #endif /* JSO_SCANNER_H */

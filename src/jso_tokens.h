@@ -21,17 +21,57 @@
  *
  */
 
+/**
+ * @file jso_tokens.h
+ * @brief Tokens returned from scanning.
+ */
+
 #ifndef JSO_TOKENS_H
 #define JSO_TOKENS_H
 
+/**
+ * @brief JSON null value.
+ */
 #define JSO_T_NUL         1
+
+/**
+ * @brief JSON true value.
+ */
 #define JSO_T_TRUE        2
+
+/**
+ * @brief JSON false value.
+ */
 #define JSO_T_FALSE       3
+
+/**
+ * @brief JSON long number value.
+ */
 #define JSO_T_LONG        4
+
+/**
+ * @brief JSON double number value.
+ */
 #define JSO_T_DOUBLE      5
+
+/**
+ * @brief JSON string value.
+ */
 #define JSO_T_STRING      6
+
+/**
+ * @brief Error in string.
+ */
 #define JSO_T_ESTRING     7
+
+/**
+ * @brief IO error.
+ */
 #define JSO_T_EOI       126
+
+/**
+ * @brief Other error.
+ */
 #define JSO_T_ERROR     127
 
 #endif /* JSO_TOKENS_H */

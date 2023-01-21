@@ -39,3 +39,5 @@ jso.files
 jso.includes
 # NetBeans
 nbproject/
+# VS Code
+.vscode/

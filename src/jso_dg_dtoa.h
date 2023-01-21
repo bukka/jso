@@ -46,7 +46,7 @@
 #endif
 
 /**
- * Convert string to double
+ * Convert string to double.
  * @param s00 string to convert
  * @param se pointer to the last converted byte
  *        of the supplied string `s00` will be saved there
@@ -56,7 +56,7 @@
 double jso_dg_strtod(const char *s00, char **se);
 
 /**
- * Double to string conversion function
+ * Double to string conversion function.
  * @param d double precision number to convert
  * @param mode conversion mode
  * @param ndigits number of digits to use (not applied for mode 0)

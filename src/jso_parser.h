@@ -27,6 +27,9 @@
 #include "jso.h"
 #include "jso_scanner.h"
 
+/**
+ * @brief Parser state.
+ */
 typedef struct _jso_parser {
 	jso_scanner scanner;
 	jso_value result;
@@ -34,8 +37,19 @@ typedef struct _jso_parser {
 	jso_uint max_depth;
 } jso_parser;
 
+/**
+ * @brief Initialize parser.
+ *
+ * @param parser Parser instance.
+ */
 void jso_parser_init(jso_parser *parser);
 
+/**
+ * @brief Initialize parser.
+ *
+ * @param parser Parser instance.
+ * @return int Parsing result.
+ */
 int jso_yyparse(jso_parser *parser);
 
 #endif /* JSO_SCANNER_H */

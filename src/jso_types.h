@@ -32,37 +32,37 @@
 #include <sys/types.h>
 
 /**
- * @brief Exported library functions
+ * @brief Exported library functions.
  */
 #define JSO_API
 
 /**
- * @brief Boolean type
+ * @brief Boolean type.
  */
-typedef char  jso_bool;
+typedef char jso_bool;
 
 /**
- * @brief Integer type
+ * @brief Integer type.
  */
-typedef long  jso_int;
+typedef long jso_int;
 
 /**
- * @brief Unsigned integer type
+ * @brief Unsigned integer type.
  */
 typedef unsigned long jso_uint;
 
 /**
- * @brief Double type
+ * @brief Double type.
  */
 typedef double jso_double;
 
 /**
- * @brief Character type for scanner
+ * @brief Character type for scanner.
  */
 typedef unsigned char jso_ctype;
 
 /**
- * String type
+ * @brief String type.
  */
 typedef struct _jso_string {
 	/** string characters */
@@ -72,17 +72,17 @@ typedef struct _jso_string {
 } jso_string;
 
 /**
- * @brief Array type
+ * @brief Array type.
  */
 typedef struct _jso_array jso_array;
 
 /**
- * @brief Object type
+ * @brief Object type.
  */
 typedef struct _jso_object jso_object;
 
 /**
- * @brief Value type
+ * @brief Value type.
  */
 typedef enum {
 	/** error value type */
@@ -104,7 +104,7 @@ typedef enum {
 } jso_value_type;
 
 /**
- * @brief Error type
+ * @brief Error type.
  */
 typedef enum {
 	/** syntax error */
@@ -124,7 +124,7 @@ typedef enum {
 } jso_error_type;
 
 /**
- * @brief Error location
+ * @brief Error location.
  *
  * It identifies a place where the error was found. The structure
  * is designed for Bison parser.
@@ -141,7 +141,7 @@ typedef struct _jso_error_location {
 } jso_error_location;
 
 /**
- * @brief Error information structure
+ * @brief Error information structure.
  */
 typedef struct _jso_error {
 	/** error type */
@@ -151,7 +151,7 @@ typedef struct _jso_error {
 } jso_error;
 
 /**
- * @brief Value data
+ * @brief Value data.
  *
  * The current size of the value data is equal to the largest
  * element which is @ref jso_string with size 128 bits on 64bit
@@ -173,7 +173,7 @@ typedef union _jso_value_data {
 } jso_value_data;
 
 /**
- * @brief Value data and type
+ * @brief Value data and type.
  */
 typedef struct _jso_value {
 	/** value data */
@@ -183,7 +183,7 @@ typedef struct _jso_value {
 } jso_value;
 
 /**
- * @brief Return code
+ * @brief Return code.
  */
 typedef enum _jso_rc {
 	/** success return code */
@@ -194,12 +194,12 @@ typedef enum _jso_rc {
 
 
 /**
- * Boolean TRUE value
+ * @brief TRUE value.
  */
 #define JSO_TRUE  1
 
 /**
- * Boolean FALSE value
+ * @brief Boolean FALSE value.
  */
 #define JSO_FALSE 0
 

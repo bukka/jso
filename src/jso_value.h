@@ -26,18 +26,21 @@
  * @brief JSO value
  */
 
+#ifndef JSO_VALUE_H
+#define JSO_VALUE_H
+
 #include "jso_types.h"
 #include "jso_io.h"
 
 /**
- * Get string length for string pointer.
+ * Get string length for the supplied string pointer.
  * @param _str pointer to string
  * @return The string length
  */
 #define JSO_STRING_LEN_P(_str) (_str)->len
 
 /**
- * Get string value for string pointer.
+ * Get string value for the supplied string pointer.
  * @param _str pointer to string
  * @return The string value (char array)
  */
@@ -56,7 +59,6 @@
  * @return The string value (char array)
  */
 #define JSO_STRING_VAL(_str)   (_str).val
-
 
 /**
  * Get a type of the supplied pointer to value.
@@ -218,7 +220,7 @@
 
 
 /**
- * Set error to value
+ * Set error to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param eval error value
  */
@@ -229,7 +231,7 @@
 	} while(0)
 
 /**
- * Set null to value
+ * Set null to the supplied value.
  * @param jv variable of @ref jso_value type
  */
 #define JSO_VALUE_SET_NULL(jv) \
@@ -238,7 +240,7 @@
 	} while(0)
 
 /**
- * Set boolean to value
+ * Set boolean to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param bv boolean value
  */
@@ -249,7 +251,7 @@
 	} while(0)
 
 /**
- * Set integer to value
+ * Set an integer value to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param lv integer value
  */
@@ -260,7 +262,7 @@
 	} while(0)
 
 /**
- * Set double floating point to value
+ * Set a double floating point number to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param dv double floating point value
  */
@@ -271,7 +273,7 @@
 	} while(0)
 
 /**
- * Set string to value
+ * Set a string to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param sv string value (character buffer)
  * @param sl string length
@@ -284,7 +286,7 @@
 	} while(0)
 
 /**
- * Set empty string to value
+ * Set an empty string to the supplied value.
  * @param jv variable of @ref jso_value type
  */
 #define JSO_VALUE_SET_EMPTY_STRING(jv) \
@@ -295,7 +297,7 @@
 	} while(0)
 
 /**
- * Set array to value
+ * Set an array to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param av array
  */
@@ -306,7 +308,7 @@
 	} while(0)
 
 /**
- * Set object to value
+ * Set an object to the supplied value.
  * @param jv variable of @ref jso_value type
  * @param ov object
  */
@@ -317,13 +319,13 @@
 	} while(0)
 
 /**
- * Free @ref jso_value instance
+ * Free @ref jso_value instance.
  * @param val instance of @ref jso_value
  */
 JSO_API void jso_value_free(jso_value *val);
 
 /**
- * Print indented debug output of the supplied value
+ * Print indented debug output of the supplied value.
  * @param val instance of @ref jso_value
  * @param io output IO handler
  * @param indent number of spaces for initial indention
@@ -331,8 +333,10 @@ JSO_API void jso_value_free(jso_value *val);
 JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent);
 
 /**
- * Print debug output of the supplied value
+ * Print debug output of the supplied value.
  * @param val instance of @ref jso_value
  * @param io output IO handler
  */
 JSO_API void jso_value_dump(jso_value *val, jso_io *io);
+
+#endif /* JSO_VALUE_H */

@@ -48,14 +48,14 @@ typedef struct _jso_number_string {
 } jso_number_string;
 
 /**
- * Number string value getter
+ * Number string value getter.
  * @param nstr number string
  * @return Number string value
  */
 #define JSO_NUMBER_STRING_VAL(nstr)          (nstr).result
 
 /**
- * Number string length getter
+ * Number string length getter.
  * @param nstr number string
  * @return Number string length
  */
@@ -63,28 +63,28 @@ typedef struct _jso_number_string {
 
 
 /**
- * Check whether number string is not a number
+ * Check whether the number string is not a number.
  * @param nstr number string
  * @return @ref JSO_TRUE if number string is not a number, otherwise @ref JSO_FALSE
  */
 #define JSO_NUMBER_STRING_IS_NAN(nstr)       (nstr).nan
 
 /**
- * Check whether number string overflows
+ * Check whether the number string overflows.
  * @param nstr number string
  * @return @ref JSO_TRUE if number string overflows, otherwise @ref JSO_FALSE
  */
 #define JSO_NUMBER_STRING_IS_UNDERFLOW(nstr) (nstr).underflow
 
 /**
- * Check whether number string underflows
+ * Check whether the number string underflows.
  * @param nstr number string
  * @return @ref JSO_TRUE if number string underflows, otherwise @ref JSO_FALSE
  */
 #define JSO_NUMBER_STRING_IS_OVERFLOW(nstr)  (nstr).overflow
 
 /**
- * Check whether number string is ok
+ * Check whether the number string is ok.
  * @param nstr number string
  * @return @ref JSO_TRUE if number string is ok, otherwise @ref JSO_FALSE
  */
@@ -94,7 +94,7 @@ typedef struct _jso_number_string {
         JSO_NUMBER_STRING_IS_OVERFLOW(nstr))
 
 /**
- * Create number string from double
+ * Create a number string from double.
  * @param nstr number string
  * @param val value which is the string converted from
  * @return Size of the final string.
@@ -102,7 +102,7 @@ typedef struct _jso_number_string {
 JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val);
 
 /**
- * Convert string to double
+ * Convert a string to double.
  * @param str string to convert
  * @return Converted double value.
  */
