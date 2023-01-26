@@ -33,54 +33,34 @@ JSO_API jso_object *jso_object_alloc()
 /* free object and its elements */
 JSO_API void jso_object_free(jso_object *obj)
 {
-	if (!obj)
-		return;
-	jso_object_member *tmp, *member = obj->head;
-	while (member) {
-		jso_value_free(&member->val);
-		jso_free(member->key.val);
-		tmp = member->next;
-		jso_free(member);
-		member = tmp;
-	}
+	jso_ht_clear(&obj->ht);
 	jso_free(obj);
 }
 
 /* add new element to the object obj */
 JSO_API jso_rc jso_object_add(jso_object *obj, jso_value *key, jso_value *val)
 {
-	jso_object_member *member;
-	member = jso_malloc(sizeof (jso_object_member));
-	if (!member)
-		return JSO_FALSE;
-	member->key = key->data.str;
-	member->val = *val;
-	member->next = NULL;
-	if (!obj->head) {
-		obj->head = obj->tail = member;
-	} else {
-		obj->tail->next = member;
-		obj->tail = member;
-	}
-	return JSO_SUCCESS;
+	return jso_ht_set(&obj->ht, &JSO_STR_P(key), val, true);
 }
 
 /* call cbk function for each element in object */
 JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
 {
-	jso_object_member *member = obj->head;
-	while (member) {
-		cbk(&member->key, &member->val);
-		member = member->next;
-	}
+	jso_string *key;
+	jso_value *val;
+
+	JSO_OBJECT_FOREACH(obj, key, val) {
+		cbk(key, val);
+	} JSO_OBJECT_FOREACH_END;
 }
 
 /* call cbk function with arg for each element in object */
 JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg)
 {
-	jso_object_member *member = obj->head;
-	while (member) {
-		cbk(&member->key, &member->val, arg);
-		member = member->next;
-	}
+	jso_string *key;
+	jso_value *val;
+
+	JSO_OBJECT_FOREACH(obj, key, val) {
+		cbk(key, val, arg);
+	} JSO_OBJECT_FOREACH_END;
 }

@@ -46,7 +46,7 @@ static jso_ht_entry *jso_ht_find_entry_with_hash(
     jso_uint32 index = hash % capacity;
     while (1) {
         jso_ht_entry *entry = &entries[index];
-        if (entry->key == key || entry->key == NULL) {
+        if (JSO_STRING_VAL(entry->key) == JSO_STRING_VAL_P(key) || JSO_STRING_VAL(entry->key) == NULL) {
             return entry;
         }
 
@@ -69,9 +69,9 @@ static jso_rc jso_ht_adjust_capacity(jso_ht *ht, size_t capacity)
 
     for (size_t i = 0; i < ht->capacity; i++) {
         jso_ht_entry *src_entry = &ht->entries[i];
-        if (src_entry->key != NULL) {
+        if (JSO_STRING_VAL(src_entry->key) != NULL) {
             jso_ht_entry *dest_entry = jso_ht_find_entry_with_hash(
-                    entries, capacity, src_entry->key, src_entry->hash);
+                    entries, capacity, &src_entry->key, src_entry->hash);
             memcpy(dest_entry, src_entry, sizeof(jso_ht_entry));
         }
     }
@@ -83,32 +83,31 @@ static jso_rc jso_ht_adjust_capacity(jso_ht *ht, size_t capacity)
     return JSO_SUCCESS;
 }
 
-jso_rc jso_ht_set_with_hash(jso_ht *ht, jso_string *key, jso_uint32 hash, jso_value *value, jso_bool *is_new)
+jso_rc jso_ht_set_with_hash(jso_ht *ht, jso_string *key, jso_uint32 hash, jso_value *value, jso_bool free_old)
 {
     if (ht->count + 1 > ht->capacity * JSO_HT_MAX_LOAD) {
-        size_t capacity = ht->capacity * 2;
+        size_t capacity = (ht->capacity + 1) * 2;
         if (jso_ht_adjust_capacity(ht, capacity) == JSO_FAILURE) {
             return JSO_FAILURE;
         } 
     }
 
     jso_ht_entry *entry = jso_ht_find_entry_with_hash(ht->entries, ht->capacity, key, hash);
-    jso_bool is_new_key = entry->key == NULL;
+    jso_bool is_new_key = JSO_STRING_VAL(entry->key) == NULL;
     if (is_new_key) {
         ++ht->count;
-    }
-    if (is_new) {
-        *is_new = is_new_key;
+    } else if (free_old) {
+        JSO_STRING_CLEAR(entry->key);
     }
 
-    entry->key = key;
+    entry->key = *key;
     entry->value = *value;
 
     return JSO_SUCCESS;
 }
 
 
-JSO_API jso_ht *jso_ht_alloc(jso_ht *ht)
+JSO_API jso_ht *jso_ht_alloc()
 {
     return jso_calloc(1, sizeof(jso_ht));
 }
@@ -130,9 +129,9 @@ JSO_API void jso_ht_clear(jso_ht *ht)
     jso_ht_init(ht);
 }
 
-JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool *is_new)
+JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool free_old)
 {
-    return jso_ht_set_with_hash(ht, key, jso_ht_hash(key), value, is_new);
+    return jso_ht_set_with_hash(ht, key, jso_ht_hash(key), value, free_old);
 }
 
 JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value)
@@ -142,7 +141,7 @@ JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value)
     }
 
     jso_ht_entry *entry = jso_ht_find_entry(ht->entries, ht->capacity, key);
-    if (entry->key == 0) {
+    if (JSO_STRING_VAL(entry->key) == NULL) {
         return JSO_FAILURE;
     }
 
@@ -154,8 +153,9 @@ JSO_API jso_rc jso_ht_copy(jso_ht *from, jso_ht *to)
 {
     for (size_t i = 0; i < from->capacity; i++) {
         jso_ht_entry *entry = &from->entries[i];
-        if (entry->key != NULL) {
-            if (jso_ht_set_with_hash(to, entry->key, entry->hash, &entry->value, NULL) == JSO_FAILURE) {
+        jso_string *key = JSO_STRING_VAL(entry->key);
+        if (key != NULL) {
+            if (jso_ht_set_with_hash(to, key, entry->hash, &entry->value, true) == JSO_FAILURE) {
                 return JSO_FAILURE;
             }
         }

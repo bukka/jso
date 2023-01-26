@@ -25,18 +25,11 @@
 #define JSO_OBJECT_H
 
 #include "jso_types.h"
-
-/* jso object member */
-typedef struct _jso_object_member {
-	jso_string key;
-	jso_value val;
-	struct _jso_object_member *next;
-} jso_object_member;
+#include "jso_ht.h"
 
 /* jso object structure */
 struct _jso_object {
-	jso_object_member *head;
-	jso_object_member *tail;
+	jso_ht ht;
 };
 
 /* callback function for iterating object */
@@ -52,12 +45,9 @@ JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_call
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
-	do { \
-		struct _jso_object_member *_object_member; \
-		for (_object_member = _obj->head; _object_member; _object_member = _object_member->next) { \
-			_key = &_object_member->key; \
-			_val = &_object_member->val;
+	jso_ht *_ht = &_obj->ht; \
+	JSO_HT_FOREACH(_ht, _key, _val)
 
-#define JSO_OBJECT_FOREACH_END } } while(0)
+#define JSO_OBJECT_FOREACH_END JSO_HT_FOREACH_END
 
 #endif /* JSO_OBJECT_H */

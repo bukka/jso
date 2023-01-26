@@ -30,6 +30,7 @@
 #define JSO_TYPES_H
 
 #include <sys/types.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 /**
@@ -40,7 +41,7 @@
 /**
  * @brief Boolean type.
  */
-typedef char jso_bool;
+typedef bool jso_bool;
 
 /**
  * @brief Integer type.

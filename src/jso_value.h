@@ -30,35 +30,8 @@
 #define JSO_VALUE_H
 
 #include "jso_types.h"
+#include "jso_string.h"
 #include "jso_io.h"
-
-/**
- * Get string length for the supplied string pointer.
- * @param _str pointer to string
- * @return The string length
- */
-#define JSO_STRING_LEN_P(_str) (_str)->len
-
-/**
- * Get string value for the supplied string pointer.
- * @param _str pointer to string
- * @return The string value (char array)
- */
-#define JSO_STRING_VAL_P(_str) (_str)->val
-
-/**
- * Get string length.
- * @param _str string
- * @return The string length
- */
-#define JSO_STRING_LEN(_str)   (_str).len
-
-/**
- * Get string value.
- * @param _str string
- * @return The string value (char array)
- */
-#define JSO_STRING_VAL(_str)   (_str).val
 
 /**
  * Get a type of the supplied pointer to value.

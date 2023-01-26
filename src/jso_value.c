@@ -26,6 +26,7 @@
 #include <string.h>
 
 #include "jso.h"
+#include "jso_string.h"
 
 /* FREEING */
 
@@ -34,10 +35,7 @@ JSO_API void jso_value_free(jso_value *val)
 {
 	switch (val->type) {
 		case JSO_TYPE_STRING:
-			if (JSO_SVAL_P(val) && JSO_SLEN_P(val) > 0) {
-				jso_free(JSO_SVAL_P(val));
-				JSO_SVAL_P(val) = NULL;
-			}
+			JSO_STRING_CLEAR(JSO_STR_P(val));
 			break;
 		case JSO_TYPE_ARRAY:
 			jso_array_free(JSO_ARRVAL_P(val));

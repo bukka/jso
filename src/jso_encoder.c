@@ -28,6 +28,7 @@
 #include <math.h>
 #include "jso.h"
 #include "jso_io.h"
+#include "jso_object.h"
 #include "jso_encoder.h"
 
 #define JSO_INT_BUFFER_SIZE 32

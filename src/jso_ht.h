@@ -38,7 +38,7 @@
  * @brief Hash table entry.
  */
 typedef struct _jso_ht_entry {
-    jso_string *key;
+    jso_string key;
     jso_uint32 hash;
     jso_value value;
 } jso_ht_entry;
@@ -64,26 +64,25 @@ typedef struct _jso_ht {
 		jso_ht_entry *_entries = _ht->entries; \
         jso_ht_entry *_entry; \
         size_t _found = 0; \
-		for (size_t _i = 0; _i < _ht.capacity && _found < _ht.count; _i++) { \
-            _entry = &_entries[i]; \
-			_key = _entry->key; \
-            if (_key == NULL) continue; \
+		for (size_t _i = 0; _i < _ht->capacity && _found < _ht->count; _i++) { \
+            _entry = &_entries[_i]; \
+			_key = &_entry->key; \
+            if (JSO_STRING_VAL_P(_key) == NULL) continue; \
             ++_found; \
-			_val = &_entry->val;
+			_val = &_entry->value;
 
 /**
  * @brief Macro to end iteration of the hash table.
  */
-#define JSO_OBJECT_FOREACH_END } } while(0)
+#define JSO_HT_FOREACH_END } } while(0)
 
 
 /**
  * Allocate new hash table.
  *
- * @param ht hash table
  * @return New initialized hash table.
  */
-JSO_API jso_ht *jso_ht_alloc(jso_ht *ht);
+JSO_API jso_ht *jso_ht_alloc();
 
 /**
  * Initialize hash table.
@@ -111,10 +110,10 @@ JSO_API void jso_ht_clear(jso_ht *ht);
  * 
  * @param ht hash table
  * @param key key of the value
- * @param value value to save
+ * @param free_old whether to free old value if update is executed
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE. 
  */
-JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool *is_new);
+JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool free_old);
 
 /**
  * Get value from the hash table.

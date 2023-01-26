@@ -8,7 +8,7 @@ jso_SOURCES =  main.c jso_value.c jso_array.c jso_object.c \
 include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h \
 	jso_object.h jso_dg_dtoa.h jso_number.h jso_error.h \
 	jso_encoder.h jso_ht.h jso_parser.h jso_parser.tab.h \
-	jso_scanner.h jso_tokens.h jso_cli.h jso_io.h \
+	jso_scanner.h jso_string.h jso_tokens.h jso_cli.h jso_io.h \
 	io/jso_io_file.h io/jso_io_memory.h
 
 jso_scanner.c: jso_scanner.re
