@@ -30,6 +30,7 @@
 #define JSO_TYPES_H
 
 #include <sys/types.h>
+#include <stdint.h>
 
 /**
  * @brief Exported library functions.
@@ -50,6 +51,11 @@ typedef long jso_int;
  * @brief Unsigned integer type.
  */
 typedef unsigned long jso_uint;
+
+/**
+ * @brief Unsigned integer type.
+ */
+typedef uint32_t jso_uint32;
 
 /**
  * @brief Double type.

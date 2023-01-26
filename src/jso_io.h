@@ -428,4 +428,4 @@ JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size);
 JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io);
 
 
-#endif /* PHP_JSO_IO_H */
+#endif /* JSO_IO_H */
