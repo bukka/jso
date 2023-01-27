@@ -36,6 +36,9 @@ AS_IF([test "x$YACC" = x], [AC_MSG_ERROR([bison not found])])
 AC_CHECK_PROG(RE2C, re2c, re2c)
 AS_IF([test "x$RE2C" = x], [AC_MSG_ERROR([re2c not found])])
 
+# Check sed
+AC_PROG_SED
+
 AC_ARG_ENABLE(debug,
   [AS_HELP_STRING([--enable-debug],
 				  [Enable debugging])],
