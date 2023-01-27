@@ -21,7 +21,6 @@
  *
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,12 +34,33 @@
 static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options);
 static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *options);
 static jso_rc jso_cli_param_callback_help(jso_cli_options *options);
-
+static jso_rc jso_cli_param_callback_schema(const char *value, jso_cli_options *options);
 
 const jso_cli_param jso_cli_default_params[] = {
-	JSO_CLI_PARAM_ENTRY_VALUE("depth",         'd',    jso_cli_param_callback_depth)
-	JSO_CLI_PARAM_ENTRY_VALUE("output-type",   'o',    jso_cli_param_callback_output)
-	JSO_CLI_PARAM_ENTRY_FLAG( "help",          'h',    jso_cli_param_callback_help)
+	JSO_CLI_PARAM_ENTRY_VALUE(
+		"depth",
+		'd',
+		"Maximum allowed object nesting depth",
+		jso_cli_param_callback_depth
+	)
+	JSO_CLI_PARAM_ENTRY_FLAG(
+		"help",
+		'h',
+		"This help text",
+		jso_cli_param_callback_help
+	)
+	JSO_CLI_PARAM_ENTRY_VALUE(
+		"output-type",
+		'o',
+		"Resulted JSON output type - minimal or pretty",
+		jso_cli_param_callback_output
+	)
+	JSO_CLI_PARAM_ENTRY_VALUE(
+		"schema",
+		's',
+		"JsonSchema file used for validation",
+		jso_cli_param_callback_schema
+	)
 	JSO_CLI_PARAM_ENTRY_END
 };
 
@@ -54,7 +74,7 @@ JSO_API void jso_cli_register_default_params(jso_cli_ctx *ctx)
 	jso_cli_register_params(ctx, jso_cli_default_params);
 }
 
-JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
+JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options, jso_value *result)
 {
 	jso_rc rc;
 	jso_parser parser;
@@ -68,32 +88,18 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options)
 
 	/* parse */
 	if (jso_yyparse(&parser) == 0) {
-
-		/* print result */
-		if (options->output_type != JSO_OUTPUT_DEBUG) {
-			jso_encoder_options enc_options;
-			enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED; /* unlimited */
-			enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
-			jso_encode(&parser.result, options->os, &enc_options);
-		}
-
 		rc = JSO_SUCCESS;
 	} else {
 		rc = JSO_FAILURE;
 	}
 
-	if (options->output_type == JSO_OUTPUT_DEBUG) {
-		jso_value_dump(&parser.result, options->os);
-	}
-
-	/* free resources */
-	jso_value_free(&parser.result);
-	JSO_IO_FREE(io);
+	*result = parser.result;
 
 	return rc;
 }
 
-JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options)
+static jso_rc jso_cli_parse_file_ex(
+		const char *file_path, jso_cli_options *options, jso_value *result, const char *file_type)
 {
 	jso_io *io;
 	off_t filesize;
@@ -102,7 +108,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 	/* get file size */
 	filesize = jso_io_file_size(file_path);
 	if (filesize < 0) {
-		JSO_IO_PRINTF(options->es, "Getting file size for file '%s' failed\n", file_path);
+		JSO_IO_PRINTF(options->es, "Getting file size for %s '%s' failed\n", file_type, file_path);
 		return JSO_FAILURE;
 	}
 	bytes_to_read = (size_t) filesize;
@@ -110,7 +116,7 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 	/* open file */
 	io = jso_io_file_open(file_path, "r");
 	if (!io) {
-		JSO_IO_PRINTF(options->es, "Opening the file '%s' failed\n", file_path);
+		JSO_IO_PRINTF(options->es, "Opening the %s '%s' failed\n", file_type, file_path);
 		return JSO_FAILURE;
 	}
 	/* read the whole file into the buffer */
@@ -121,22 +127,51 @@ JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *option
 
 	/* check the read data */
 	if (bytes_read_total == 0) {
-		JSO_IO_PRINTF(options->es, "No data in the file '%s'\n", file_path);
+		JSO_IO_PRINTF(options->es, "No data in the %s '%s'\n", file_type, file_path);
 		return JSO_FAILURE;
 	}
 	/* check the read data */
 	if (bytes_read_total < bytes_to_read) {
-		JSO_IO_PRINTF(options->es, "Only %lu of %lu read from the file '%s'\n",
-				bytes_read_total, bytes_to_read, file_path);
+		JSO_IO_PRINTF(options->es, "Only %lu of %lu read from the %s '%s'\n",
+				bytes_read_total, bytes_to_read, file_type, file_path);
 		return JSO_FAILURE;
 	}
 
 	if (!JSO_IO_CURSOR(io)) {
-		JSO_IO_PRINTF(options->es, "Cursor is not set\n");
+		JSO_IO_PRINTF(options->es, "Cursor of the %s is not set\n", file_type);
 		return JSO_FAILURE;
 	}
 
-	return jso_cli_parse_io(io, options);
+	jso_rc rc = jso_cli_parse_io(io, options, result);
+
+	/* free IO */
+	JSO_IO_FREE(io);
+
+	return rc;
+}
+
+JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options, jso_value *result)
+{
+	return jso_cli_parse_file_ex(file_path, options, result, "file");
+}
+
+static jso_rc jso_cli_process_file(const char *file_path, jso_cli_options *options)
+{
+	jso_value result;
+	jso_rc rc = jso_cli_parse_file(file_path, options, &result);
+
+	if (options->output_type == JSO_OUTPUT_DEBUG) {
+		jso_value_dump(&result, options->os);
+	} else if (rc == JSO_SUCCESS) {
+		jso_encoder_options enc_options;
+		enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED;
+		enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
+		jso_encode(&result, options->os, &enc_options);
+	}
+
+	jso_value_free(&result);
+
+	return rc;
 }
 
 static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options)
@@ -147,6 +182,13 @@ static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *o
 	}
 
 	options->max_depth = atoi(value);
+
+	return JSO_SUCCESS;
+}
+
+static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
+{
+	options->output_type = JSO_OUTPUT_HELP;
 
 	return JSO_SUCCESS;
 }
@@ -176,11 +218,26 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 	return JSO_SUCCESS;
 }
 
-static jso_rc jso_cli_param_callback_help(jso_cli_options *options)
+static jso_rc jso_cli_param_callback_schema(const char *value, jso_cli_options *options)
 {
-	options->output_type = JSO_OUTPUT_HELP;
+	if (!value) {
+		JSO_IO_PRINTF(options->es, "Option schema requires value\n");
+		return JSO_FAILURE;
+	}
 
-	return JSO_SUCCESS;
+	jso_value result;
+	jso_rc rc = jso_cli_parse_file_ex(value, options, &result, "schema file");
+
+	if (options->output_type == JSO_OUTPUT_DEBUG) {
+		jso_value_dump(&result, options->os);
+	}
+	if (rc == JSO_SUCCESS) {
+		/** TODO: create schema */
+	}
+
+	jso_value_free(&result);
+
+	return rc;
 }
 
 JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
@@ -328,7 +385,7 @@ static jso_rc jso_cli_parse_option(
 		return JSO_FAILURE;
 	}
 
-	param = (argv[i][1] == '-') ?
+	param = (arg[1] == '-') ?
 		jso_cli_parse_long_option(arg, arg_len, &value, options, ctx) :
 		jso_cli_parse_short_option(arg, arg_len, &value, options, ctx);
 
@@ -396,7 +453,7 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 	jso_cli_options_init_post(&options);
 
 	/* parse file */
-	rc = jso_cli_parse_file(file_path, &options);
+	rc = jso_cli_process_file(file_path, &options);
 
 	/* destroy options */
 	jso_cli_options_destroy(&options);
