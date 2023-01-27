@@ -28,7 +28,6 @@
 #include "jso_io_memory.h"
 #include "jso.h"
 
-
 static size_t jso_io_memory_read(jso_io *io, size_t size)
 {
 	return 0;

@@ -199,11 +199,10 @@ typedef enum _jso_rc {
 	JSO_FAILURE = -1
 } jso_rc;
 
-
 /**
  * @brief TRUE value.
  */
-#define JSO_TRUE  1
+#define JSO_TRUE 1
 
 /**
  * @brief Boolean FALSE value.

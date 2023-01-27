@@ -52,4 +52,3 @@ JSO_API jso_io *jso_io_momory_open_ex(size_t size, int flags);
 JSO_API jso_io *jso_io_momory_open();
 
 #endif // JSO_IO_MEMORY_H
-

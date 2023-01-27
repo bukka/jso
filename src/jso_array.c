@@ -48,7 +48,7 @@ JSO_API void jso_array_free(jso_array *arr)
 /* append element to the array */
 JSO_API jso_rc jso_array_append(jso_array *arr, jso_value *val)
 {
-	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
+	jso_array_element *el = jso_malloc(sizeof(jso_array_element));
 	if (!el)
 		return JSO_FAILURE;
 	el->val = *val;
@@ -65,7 +65,7 @@ JSO_API jso_rc jso_array_append(jso_array *arr, jso_value *val)
 /* push element to the array */
 JSO_API jso_rc jso_array_push(jso_array *arr, jso_value *val)
 {
-	jso_array_element *el = jso_malloc(sizeof (jso_array_element));
+	jso_array_element *el = jso_malloc(sizeof(jso_array_element));
 	if (!el)
 		return JSO_FAILURE;
 	el->val = *val;

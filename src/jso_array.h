@@ -58,6 +58,9 @@ JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
 		for (_array_el = _arr->head; _array_el; _array_el = _array_el->next) { \
 			_val = &_array_el->val;
 
-#define JSO_ARRAY_FOREACH_END } } while(0)
+#define JSO_ARRAY_FOREACH_END \
+	} \
+	} \
+	while (0)
 
 #endif /* JSO_ARRAY_H */

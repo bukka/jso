@@ -36,6 +36,7 @@ static jso_rc jso_cli_param_callback_output(const char *value, jso_cli_options *
 static jso_rc jso_cli_param_callback_help(jso_cli_options *options);
 static jso_rc jso_cli_param_callback_schema(const char *value, jso_cli_options *options);
 
+// clang-format off
 const jso_cli_param jso_cli_default_params[] = {
 	JSO_CLI_PARAM_ENTRY_VALUE(
 		"depth",
@@ -63,12 +64,14 @@ const jso_cli_param jso_cli_default_params[] = {
 	)
 	JSO_CLI_PARAM_ENTRY_END
 };
+// clang-format on
 
 static void jso_cli_print_help(jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	JSO_IO_PRINTF(options->os, "Usage: jso [options...] <file>\n");
 	for (const jso_cli_param *param = ctx->params; param->long_name != NULL; ++param) {
-		JSO_IO_PRINTF(options->os, " -%c, --%-14s %s\n", param->short_name, param->long_name, param->description);
+		JSO_IO_PRINTF(options->os, " -%c, --%-14s %s\n", param->short_name, param->long_name,
+				param->description);
 	}
 }
 
@@ -140,8 +143,8 @@ static jso_rc jso_cli_parse_file_ex(
 	}
 	/* check the read data */
 	if (bytes_read_total < bytes_to_read) {
-		JSO_IO_PRINTF(options->es, "Only %lu of %lu read from the %s '%s'\n",
-				bytes_read_total, bytes_to_read, file_type, file_path);
+		JSO_IO_PRINTF(options->es, "Only %lu of %lu read from the %s '%s'\n", bytes_read_total,
+				bytes_to_read, file_type, file_path);
 		return JSO_FAILURE;
 	}
 
@@ -158,7 +161,8 @@ static jso_rc jso_cli_parse_file_ex(
 	return rc;
 }
 
-JSO_API jso_rc jso_cli_parse_file(const char *file_path, jso_cli_options *options, jso_value *result)
+JSO_API jso_rc jso_cli_parse_file(
+		const char *file_path, jso_cli_options *options, jso_value *result)
 {
 	return jso_cli_parse_file_ex(file_path, options, result, "file");
 }
@@ -173,7 +177,7 @@ static jso_rc jso_cli_process_file(const char *file_path, jso_cli_options *optio
 	} else if (rc == JSO_SUCCESS) {
 		jso_encoder_options enc_options;
 		enc_options.max_depth = JSO_ENCODER_DEPTH_UNLIMITED;
-		enc_options.pretty    = options->output_type == JSO_OUTPUT_PRETTY;
+		enc_options.pretty = options->output_type == JSO_OUTPUT_PRETTY;
 		jso_encode(&result, options->os, &enc_options);
 	}
 
@@ -272,19 +276,19 @@ JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
 	if (options->is)
 		rc = JSO_IO_FREE(options->is);
 	if (options->os) {
-		rc = JSO_IO_FREE(options->os) == JSO_FAILURE || rc == JSO_FAILURE ?
-				JSO_FAILURE : JSO_SUCCESS;
+		rc = JSO_IO_FREE(options->os) == JSO_FAILURE || rc == JSO_FAILURE ? JSO_FAILURE
+																		  : JSO_SUCCESS;
 	}
 	if (options->es) {
-		rc = JSO_IO_FREE(options->es) == JSO_FAILURE || rc == JSO_FAILURE ?
-				JSO_FAILURE : JSO_SUCCESS;
+		rc = JSO_IO_FREE(options->es) == JSO_FAILURE || rc == JSO_FAILURE ? JSO_FAILURE
+																		  : JSO_SUCCESS;
 	}
 
 	return rc;
 }
 
-static const jso_cli_param *jso_cli_find_param(jso_cli_ctx *ctx,
-		const char *long_name, size_t long_name_len, char short_name)
+static const jso_cli_param *jso_cli_find_param(
+		jso_cli_ctx *ctx, const char *long_name, size_t long_name_len, char short_name)
 {
 	int i;
 	const jso_cli_param *param = &ctx->params[0];
@@ -316,9 +320,8 @@ static inline const jso_cli_param *jso_cli_find_param_by_short_name(
 	return jso_cli_find_param(ctx, NULL, 0, short_name);
 }
 
-static const jso_cli_param *jso_cli_parse_long_option(
-		const char *arg, size_t arg_len, const char **pvalue,
-		jso_cli_options *options, jso_cli_ctx *ctx)
+static const jso_cli_param *jso_cli_parse_long_option(const char *arg, size_t arg_len,
+		const char **pvalue, jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	const jso_cli_param *param;
 	const char *long_name, *value;
@@ -354,9 +357,8 @@ static const jso_cli_param *jso_cli_parse_long_option(
 	return NULL;
 }
 
-static const jso_cli_param *jso_cli_parse_short_option(
-		const char *arg, size_t arg_len, const char **pvalue,
-		jso_cli_options *options, jso_cli_ctx *ctx)
+static const jso_cli_param *jso_cli_parse_short_option(const char *arg, size_t arg_len,
+		const char **pvalue, jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	const jso_cli_param *param;
 	char short_name;
@@ -380,8 +382,7 @@ static const jso_cli_param *jso_cli_parse_short_option(
 }
 
 static jso_rc jso_cli_parse_option(
-		int *ip, int argc, const char *argv[],
-		jso_cli_options *options, jso_cli_ctx *ctx)
+		int *ip, int argc, const char *argv[], jso_cli_options *options, jso_cli_ctx *ctx)
 {
 	const jso_cli_param *param;
 	int i = *ip;
@@ -393,9 +394,8 @@ static jso_rc jso_cli_parse_option(
 		return JSO_FAILURE;
 	}
 
-	param = (arg[1] == '-') ?
-		jso_cli_parse_long_option(arg, arg_len, &value, options, ctx) :
-		jso_cli_parse_short_option(arg, arg_len, &value, options, ctx);
+	param = (arg[1] == '-') ? jso_cli_parse_long_option(arg, arg_len, &value, options, ctx)
+							: jso_cli_parse_short_option(arg, arg_len, &value, options, ctx);
 
 	if (!param) {
 		return JSO_FAILURE;

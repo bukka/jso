@@ -26,7 +26,6 @@
  * @brief IO general header
  */
 
-
 #ifndef JSO_IO_H
 #define JSO_IO_H
 
@@ -181,7 +180,7 @@ struct _jso_io {
  * @param io IO handle
  * @return Pointer to the last character in the buffer.
  */
-#define JSO_IO_LIMIT(io)  ((io)->limit)
+#define JSO_IO_LIMIT(io) ((io)->limit)
 
 /**
  * Marker accessor.
@@ -222,7 +221,6 @@ struct _jso_io {
  * @param io IO handle
  */
 #define JSO_IO_HANDLE_DSC(io) ((io)->handle.dsc)
-
 
 /**
  * Save start position of the string.
@@ -274,7 +272,6 @@ struct _jso_io {
  */
 #define JSO_IO_RESET_TOKEN(io) ((io)->token = (io)->cursor)
 
-
 /**
  * Operation accessor.
  * @param io IO handle
@@ -289,8 +286,7 @@ struct _jso_io {
  * @param ior_size number of bytes to read
  * @return Number of characters read to the buffer.
  */
-#define JSO_IO_READ(io, ior_size) \
-	(JSO_IO_OP((io), read)((io), (ior_size)))
+#define JSO_IO_READ(io, ior_size) (JSO_IO_OP((io), read)((io), (ior_size)))
 
 /**
  * Write operation.
@@ -308,32 +304,28 @@ struct _jso_io {
  * @param ... format and values to substitute in the format string
  * @return Number of characters written.
  */
-#define JSO_IO_PRINTF(io, ...) \
-	(JSO_IO_OP((io), printf)((io), __VA_ARGS__))
+#define JSO_IO_PRINTF(io, ...) (JSO_IO_OP((io), printf)((io), __VA_ARGS__))
 
 /**
  * Flush operation.
  * @param io IO handle
  * @todo Use @ref jso_rc for return
  */
-#define JSO_IO_FLUSH(io) \
-	(JSO_IO_OP((io), flush)(io))
+#define JSO_IO_FLUSH(io) (JSO_IO_OP((io), flush)(io))
 
 /**
  * Error code or 0 if no error.
  * @param io IO handle
  * @todo Use @ref jso_rc for return
  */
-#define JSO_IO_ERROR(io) \
-	(JSO_IO_OP((io), error)(io))
+#define JSO_IO_ERROR(io) (JSO_IO_OP((io), error)(io))
 
 /**
  * Free operation.
  * @param io IO handle
  * @todo Use @ref jso_rc for return
  */
-#define JSO_IO_FREE(io) \
-	(JSO_IO_OP((io), free)(io))
+#define JSO_IO_FREE(io) (JSO_IO_OP((io), free)(io))
 
 /**
  * Find out whether the IO is without any error.
@@ -347,7 +339,7 @@ struct _jso_io {
  * @param io IO handle
  * @return @ref JSO_TRUE if IO error otherwise @ref JSO_FALSE.
  */
-#define JSO_IO_BAD(io)  (JSO_IO_ERROR(io) != 0)
+#define JSO_IO_BAD(io) (JSO_IO_ERROR(io) != 0)
 
 /**
  * Find out whether the end of IO was reached.
@@ -356,20 +348,19 @@ struct _jso_io {
  */
 #define JSO_IO_END(io) ((io)->limit < (io)->cursor)
 
-
 /* BUFFER */
 
 /**
  * @brief Automatically select the best allocating strategy
  */
-#define JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO   0
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO 0
 
 /**
  * @brief Used for new buffer
  *
  * The buffer is allocated using @ref jso_malloc function
  */
-#define JSO_IO_BUFFER_ALLOC_STRATEGY_NEW    1
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_NEW 1
 
 /**
  * @brief Use buffer extending strategy
@@ -390,8 +381,7 @@ struct _jso_io {
  * @brief Mask for the strategy flags
  * @note It is bigger than needed for future strategies
  */
-#define JSO_IO_BUFFER_ALLOC_STRATEGY_MASK   7
-
+#define JSO_IO_BUFFER_ALLOC_STRATEGY_MASK 7
 
 /**
  * Alloc memory space for buffer with supplied flags.
@@ -410,7 +400,6 @@ JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags);
  */
 JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size);
 
-
 /**
  * @brief The number of bytes read to the src buffer when piping
  */
@@ -426,6 +415,5 @@ JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size);
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io);
-
 
 #endif /* JSO_IO_H */

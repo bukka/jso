@@ -27,7 +27,7 @@
  */
 
 #ifndef JSO_DG_DTOA_H
-#define	JSO_DG_DTOA_H
+#define JSO_DG_DTOA_H
 
 #ifdef Long
 #undef Long
@@ -66,8 +66,6 @@ double jso_dg_strtod(const char *s00, char **se);
  * @return Resulted string.
  * @note This is an internal function that is not exported.
  */
-char *jso_dg_dtoa(double d, int mode, int ndigits, 
-        int *decpt, int *sign, char **rve);
+char *jso_dg_dtoa(double d, int mode, int ndigits, int *decpt, int *sign, char **rve);
 
-#endif	/* JSO_DG_DTOA_H */
-
+#endif /* JSO_DG_DTOA_H */

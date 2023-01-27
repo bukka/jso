@@ -64,8 +64,7 @@ typedef struct _jso_cli_options {
  * @param value value if any
  * @param options CLI options
  */
-typedef jso_rc (*jso_cli_param_value_callback)
-	(const char *value, jso_cli_options *options);
+typedef jso_rc (*jso_cli_param_value_callback)(const char *value, jso_cli_options *options);
 
 /**
  * Callback function for parameter without value.
@@ -123,7 +122,13 @@ typedef struct _jso_cli_ctx {
 /**
  * End of parameter entry array
  */
-#define JSO_CLI_PARAM_ENTRY_END { NULL, 0, NULL, JSO_FALSE, {NULL} }
+#define JSO_CLI_PARAM_ENTRY_END \
+	{ \
+		NULL, 0, NULL, JSO_FALSE, \
+		{ \
+			NULL \
+		} \
+	}
 
 /**
  * Pre-initialize CLI options

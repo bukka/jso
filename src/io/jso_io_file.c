@@ -21,7 +21,6 @@
  *
  */
 
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +28,6 @@
 #include <sys/stat.h>
 #include "jso_io_file.h"
 #include "jso.h"
-
 
 static size_t jso_io_file_read(jso_io *io, size_t size)
 {
@@ -49,8 +47,8 @@ static size_t jso_io_file_read(jso_io *io, size_t size)
 	}
 
 	/* read data from file */
-	count = fread(JSO_IO_LIMIT(io), sizeof(jso_ctype),
-			JSO_IO_SIZE(io) - buffered, JSO_IO_FILE_HANDLE_GET(io));
+	count = fread(JSO_IO_LIMIT(io), sizeof(jso_ctype), JSO_IO_SIZE(io) - buffered,
+			JSO_IO_FILE_HANDLE_GET(io));
 	if (count > 0) {
 		JSO_IO_LIMIT(io) += count;
 	}

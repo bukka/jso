@@ -43,8 +43,7 @@ JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc
 }
 
 /* alloc and init error from type and location params */
-JSO_API jso_error *jso_error_new(jso_error_type type,
-		size_t first_column, size_t first_line,
+JSO_API jso_error *jso_error_new(jso_error_type type, size_t first_column, size_t first_line,
 		size_t last_column, size_t last_line)
 {
 	jso_error_location loc;

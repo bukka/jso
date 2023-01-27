@@ -42,8 +42,7 @@
  * @param value_2 second value
  * @return `value_1` if `value_1` > `value_2`, otherwise `value_2`
  */
-#define JSO_MAX(value_1, value_2) \
-	((value_1) > (value_2) ? (value_1) : (value_2))
+#define JSO_MAX(value_1, value_2) ((value_1) > (value_2) ? (value_1) : (value_2))
 
 /**
  * Get a min of two values.
@@ -51,8 +50,7 @@
  * @param value_2 second value
  * @return `value_1` if `value_1` < `value_2`, otherwise `value_2`
  */
-#define JSO_MIN(value_1, value_2) \
-	((value_1) < (value_2) ? (value_1) : (value_2))
+#define JSO_MIN(value_1, value_2) ((value_1) < (value_2) ? (value_1) : (value_2))
 
 /* jso int limits */
 #if SIZEOF_LONG == 4
@@ -65,7 +63,6 @@
 #error "Unknown SIZEOF_LONG"
 #endif
 
-
 /**
  * Suppress warnings about unused variable.
  * @param unused_variable the variable that is not used
@@ -77,7 +74,9 @@
  * @param uv0 the variable that is not used
  * @param uv1 the parameter that is not used
  */
-#define JSO_USE_1(uv0, uv1) JSO_USE(uv0); JSO_USE(uv1)
+#define JSO_USE_1(uv0, uv1) \
+	JSO_USE(uv0); \
+	JSO_USE(uv1)
 
 /**
  * Suppress warnings about unused variable and 2 extra parameters.
@@ -85,8 +84,10 @@
  * @param uv1 the first parameter that is not used
  * @param uv2 the second parameter that is not used
  */
-#define JSO_USE_2(uv0, uv1, uv2) JSO_USE(uv0); JSO_USE(uv1); JSO_USE(uv2)
-
+#define JSO_USE_2(uv0, uv1, uv2) \
+	JSO_USE(uv0); \
+	JSO_USE(uv1); \
+	JSO_USE(uv2)
 
 /* memeroy functions - just redefinitions for future extending (checking) */
 

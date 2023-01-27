@@ -47,30 +47,30 @@ typedef struct _jso_io_buffer_diffs {
 
 static void jso_io_pointers_set(jso_io *io, jso_ctype *pos)
 {
-	JSO_IO_CURSOR(io)    = pos;
-	JSO_IO_TOKEN(io)     = pos;
-	JSO_IO_MARKER(io)    = pos;
+	JSO_IO_CURSOR(io) = pos;
+	JSO_IO_TOKEN(io) = pos;
+	JSO_IO_MARKER(io) = pos;
 	JSO_IO_CTXMARKER(io) = pos;
 	JSO_IO_STR_SET_START(io);
 }
 
 static void jso_io_buffer_diffs_save(jso_io *io, jso_io_buffer_diffs *diffs)
 {
-	diffs->token     = JSO_IO_TOKEN(io)         - JSO_IO_BUFFER(io);
-	diffs->cursor    = JSO_IO_CURSOR(io)        - JSO_IO_BUFFER(io);
-	diffs->limit     = JSO_IO_LIMIT(io)         - JSO_IO_BUFFER(io);
-	diffs->marker    = JSO_IO_MARKER(io)        - JSO_IO_BUFFER(io);
-	diffs->ctxmarker = JSO_IO_CTXMARKER(io)     - JSO_IO_BUFFER(io);
+	diffs->token = JSO_IO_TOKEN(io) - JSO_IO_BUFFER(io);
+	diffs->cursor = JSO_IO_CURSOR(io) - JSO_IO_BUFFER(io);
+	diffs->limit = JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io);
+	diffs->marker = JSO_IO_MARKER(io) - JSO_IO_BUFFER(io);
+	diffs->ctxmarker = JSO_IO_CTXMARKER(io) - JSO_IO_BUFFER(io);
 	diffs->str_start = JSO_IO_STR_GET_START(io) - JSO_IO_BUFFER(io);
 }
 
 static void jso_io_buffer_diffs_load(jso_io *io, jso_io_buffer_diffs *diffs)
 {
-	JSO_IO_TOKEN(io)         = JSO_IO_BUFFER(io) + diffs->token;
-	JSO_IO_CURSOR(io)        = JSO_IO_BUFFER(io) + diffs->cursor;
-	JSO_IO_LIMIT(io)         = JSO_IO_BUFFER(io) + diffs->limit;
-	JSO_IO_MARKER(io)        = JSO_IO_BUFFER(io) + diffs->marker;
-	JSO_IO_CTXMARKER(io)     = JSO_IO_BUFFER(io) + diffs->ctxmarker;
+	JSO_IO_TOKEN(io) = JSO_IO_BUFFER(io) + diffs->token;
+	JSO_IO_CURSOR(io) = JSO_IO_BUFFER(io) + diffs->cursor;
+	JSO_IO_LIMIT(io) = JSO_IO_BUFFER(io) + diffs->limit;
+	JSO_IO_MARKER(io) = JSO_IO_BUFFER(io) + diffs->marker;
+	JSO_IO_CTXMARKER(io) = JSO_IO_BUFFER(io) + diffs->ctxmarker;
 	JSO_IO_STR_GET_START(io) = JSO_IO_BUFFER(io) + diffs->str_start;
 }
 
@@ -85,9 +85,9 @@ static jso_rc jso_io_buffer_alloc_new(jso_io *io, size_t size)
 		return JSO_FAILURE;
 	}
 
-	JSO_IO_SIZE(io)      = size;
-	JSO_IO_BUFFER(io)    = buf;
-	JSO_IO_LIMIT(io)     = buf;
+	JSO_IO_SIZE(io) = size;
+	JSO_IO_BUFFER(io) = buf;
+	JSO_IO_LIMIT(io) = buf;
 	jso_io_pointers_set(io, buf);
 
 	return JSO_SUCCESS;
@@ -99,8 +99,8 @@ static jso_rc jso_io_buffer_alloc_extend(jso_io *io, size_t size)
 
 	jso_io_buffer_diffs_save(io, &diffs);
 	JSO_IO_SIZE(io) = JSO_MAX(JSO_IO_SIZE(io) * 2, size + 1);
-	JSO_IO_BUFFER(io) = (jso_ctype *) jso_realloc(
-			JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
+	JSO_IO_BUFFER(io)
+			= (jso_ctype *) jso_realloc(JSO_IO_BUFFER(io), JSO_IO_SIZE(io) * sizeof(jso_ctype));
 	if (!JSO_IO_BUFFER(io)) {
 		return JSO_FAILURE;
 	}
@@ -114,18 +114,18 @@ static jso_rc jso_io_buffer_alloc_rotate(jso_io *io, size_t size)
 	ptrdiff_t buffered = JSO_IO_LIMIT(io) - JSO_IO_CURSOR(io);
 	ptrdiff_t processed = JSO_IO_CURSOR(io) - JSO_IO_BUFFER(io);
 
-	if (JSO_IO_SIZE(io) - buffered < size &&
-			jso_io_buffer_alloc_extend(io, size + buffered) == JSO_FAILURE) {
+	if (JSO_IO_SIZE(io) - buffered < size
+			&& jso_io_buffer_alloc_extend(io, size + buffered) == JSO_FAILURE) {
 		JSO_IO_ERRNO(io) = -1;
 		return JSO_FAILURE;
 	}
 	memmove(JSO_IO_BUFFER(io), JSO_IO_CURSOR(io), buffered * sizeof(jso_ctype));
 
-	JSO_IO_TOKEN(io)         -= processed;
-	JSO_IO_CURSOR(io)        -= processed;
-	JSO_IO_LIMIT(io)         -= processed;
-	JSO_IO_MARKER(io)        -= processed;
-	JSO_IO_CTXMARKER(io)     -= processed;
+	JSO_IO_TOKEN(io) -= processed;
+	JSO_IO_CURSOR(io) -= processed;
+	JSO_IO_LIMIT(io) -= processed;
+	JSO_IO_MARKER(io) -= processed;
+	JSO_IO_CTXMARKER(io) -= processed;
 	JSO_IO_STR_GET_START(io) -= processed;
 
 	return JSO_SUCCESS;
@@ -151,9 +151,9 @@ JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags)
 	if (strategy == JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO) {
 		/* Use ROTATE strategy if more than half buffer
 		 * has been read, otherwise use EXTEND strategy. */
-		strategy = (JSO_IO_CURSOR(io) - JSO_IO_BUFFER(io) > JSO_IO_SIZE(io) / 2) ?
-				JSO_IO_BUFFER_ALLOC_STRATEGY_ROTATE :
-				JSO_IO_BUFFER_ALLOC_STRATEGY_EXTEND;
+		strategy = (JSO_IO_CURSOR(io) - JSO_IO_BUFFER(io) > JSO_IO_SIZE(io) / 2)
+				? JSO_IO_BUFFER_ALLOC_STRATEGY_ROTATE
+				: JSO_IO_BUFFER_ALLOC_STRATEGY_EXTEND;
 	}
 
 	switch (strategy) {
@@ -168,8 +168,7 @@ JSO_API jso_rc jso_io_buffer_alloc_ex(jso_io *io, size_t size, int flags)
 
 JSO_API jso_rc jso_io_buffer_alloc(jso_io *io, size_t size)
 {
-	return jso_io_buffer_alloc_ex(
-			io, size, JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO);
+	return jso_io_buffer_alloc_ex(io, size, JSO_IO_BUFFER_ALLOC_STRATEGY_AUTO);
 }
 
 JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io)
@@ -178,8 +177,7 @@ JSO_API jso_rc jso_io_pipe(jso_io *src_io, jso_io *dst_io)
 
 	do {
 		jso_io_buffer_alloc(dst_io, read);
-		memcpy(JSO_IO_LIMIT(dst_io), JSO_IO_CURSOR(src_io),
-				read * sizeof(jso_ctype));
+		memcpy(JSO_IO_LIMIT(dst_io), JSO_IO_CURSOR(src_io), read * sizeof(jso_ctype));
 		JSO_IO_SIZE(src_io) = 0;
 		jso_io_pointers_set(src_io, JSO_IO_LIMIT(src_io));
 	} while ((read = JSO_IO_READ(src_io, JSO_IO_PIPE_BUFFER)) > 0);

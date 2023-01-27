@@ -49,9 +49,11 @@ JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
 	jso_string *key;
 	jso_value *val;
 
-	JSO_OBJECT_FOREACH(obj, key, val) {
+	JSO_OBJECT_FOREACH(obj, key, val)
+	{
 		cbk(key, val);
-	} JSO_OBJECT_FOREACH_END;
+	}
+	JSO_OBJECT_FOREACH_END;
 }
 
 /* call cbk function with arg for each element in object */
@@ -60,7 +62,9 @@ JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_call
 	jso_string *key;
 	jso_value *val;
 
-	JSO_OBJECT_FOREACH(obj, key, val) {
+	JSO_OBJECT_FOREACH(obj, key, val)
+	{
 		cbk(key, val, arg);
-	} JSO_OBJECT_FOREACH_END;
+	}
+	JSO_OBJECT_FOREACH_END;
 }

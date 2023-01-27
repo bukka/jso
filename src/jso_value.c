@@ -51,7 +51,6 @@ JSO_API void jso_value_free(jso_value *val)
 	}
 }
 
-
 /* PRINTING */
 
 /* print indentation */
@@ -96,9 +95,9 @@ static void jso_value_print_error(jso_value *val, jso_io *io)
 				emsg = "unknown";
 				break;
 		}
-		JSO_IO_PRINTF(io, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg,
-				JSO_ELOC_P(val).first_line, JSO_ELOC_P(val).first_column,
-				JSO_ELOC_P(val).last_line, JSO_ELOC_P(val).last_column);
+		JSO_IO_PRINTF(io, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg, JSO_ELOC_P(val).first_line,
+				JSO_ELOC_P(val).first_column, JSO_ELOC_P(val).last_line,
+				JSO_ELOC_P(val).last_column);
 	}
 }
 
@@ -154,8 +153,8 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 			break;
 		case JSO_TYPE_STRING:
 			if (JSO_SVAL_P(val))
-				JSO_IO_PRINTF(io, "STRING: \"%s\" ; LENGTH: %zu\n",
-						JSO_SVAL_P(val), JSO_SLEN_P(val));
+				JSO_IO_PRINTF(
+						io, "STRING: \"%s\" ; LENGTH: %zu\n", JSO_SVAL_P(val), JSO_SLEN_P(val));
 			else
 				JSO_IO_PRINTF(io, "EMPTY STRING\n");
 			break;
@@ -166,8 +165,7 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 				jso_value_dump_callback_arg arg = { io, indent };
 
 				JSO_IO_PRINTF(io, "ARRAY:\n");
-				jso_array_apply_with_arg(JSO_ARRVAL_P(val),
-						jso_value_dump_array_callback, &arg);
+				jso_array_apply_with_arg(JSO_ARRVAL_P(val), jso_value_dump_array_callback, &arg);
 			}
 			break;
 		case JSO_TYPE_OBJECT:
@@ -177,8 +175,7 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 				jso_value_dump_callback_arg arg = { io, indent };
 
 				JSO_IO_PRINTF(io, "OBJECT:\n");
-				jso_object_apply_with_arg(JSO_OBJVAL_P(val),
-						jso_value_dump_object_callback, &arg);
+				jso_object_apply_with_arg(JSO_OBJVAL_P(val), jso_value_dump_object_callback, &arg);
 			}
 			break;
 		case JSO_TYPE_ERROR:

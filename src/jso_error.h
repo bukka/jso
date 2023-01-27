@@ -48,8 +48,7 @@ JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc
  * @param last_line last line position where the error was found
  * @return A new error instance.
  */
-JSO_API jso_error *jso_error_new(jso_error_type type,
-		size_t first_column, size_t first_line,
+JSO_API jso_error *jso_error_new(jso_error_type type, size_t first_column, size_t first_line,
 		size_t last_column, size_t last_line);
 
 /**
@@ -57,6 +56,5 @@ JSO_API jso_error *jso_error_new(jso_error_type type,
  * @param err error instance
  */
 JSO_API void jso_error_free(jso_error *err);
-
 
 #endif /* JSO_ERROR_H */

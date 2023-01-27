@@ -21,7 +21,6 @@
  *
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -63,9 +62,8 @@ static inline jso_rc jso_encoder_pretty_print_indent(jso_encoder *encoder)
 
 	for (i = 0; i < encoder->depth; i++) {
 		if (jso_encoder_output_cstr(
-				encoder,
-				JSO_ENCODER_PRETTY_INDENT,
-				sizeof(JSO_ENCODER_PRETTY_INDENT) - 1) == JSO_FAILURE) {
+					encoder, JSO_ENCODER_PRETTY_INDENT, sizeof(JSO_ENCODER_PRETTY_INDENT) - 1)
+				== JSO_FAILURE) {
 			return JSO_FAILURE;
 		}
 	}
@@ -82,9 +80,7 @@ static inline jso_rc jso_encoder_pretty_print_elsep(jso_encoder *encoder)
 	}
 
 	rc = jso_encoder_output_cstr(
-				encoder,
-				JSO_ENCODER_PRETTY_ELSEP,
-				sizeof(JSO_ENCODER_PRETTY_ELSEP) - 1);
+			encoder, JSO_ENCODER_PRETTY_ELSEP, sizeof(JSO_ENCODER_PRETTY_ELSEP) - 1);
 
 	if (rc == JSO_SUCCESS && JSO_ENCODER_PRETTY_ELSEP[0] == '\n') {
 		return jso_encoder_pretty_print_indent(encoder);
@@ -99,9 +95,7 @@ static inline jso_rc jso_encoder_pretty_print_kvsep(jso_encoder *encoder)
 	}
 
 	return jso_encoder_output_cstr(
-				encoder,
-				JSO_ENCODER_PRETTY_KVSEP,
-				sizeof(JSO_ENCODER_PRETTY_KVSEP) - 1);
+			encoder, JSO_ENCODER_PRETTY_KVSEP, sizeof(JSO_ENCODER_PRETTY_KVSEP) - 1);
 }
 
 static jso_rc jso_encoder_encode_int(jso_encoder *encoder, jso_int val)
@@ -211,7 +205,8 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 
 	encoder->depth++;
 
-	JSO_ARRAY_FOREACH(arr, val) {
+	JSO_ARRAY_FOREACH(arr, val)
+	{
 		if (is_first) {
 			is_first = JSO_FALSE;
 		} else {
@@ -219,7 +214,8 @@ static jso_rc jso_encoder_encode_array(jso_encoder *encoder, jso_array *arr)
 		}
 		jso_encoder_pretty_print_elsep(encoder);
 		jso_encoder_encode(encoder, val);
-	} JSO_ARRAY_FOREACH_END;
+	}
+	JSO_ARRAY_FOREACH_END;
 
 	encoder->depth--;
 
@@ -242,7 +238,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 
 	encoder->depth++;
 
-	JSO_OBJECT_FOREACH(obj, key, val) {
+	JSO_OBJECT_FOREACH(obj, key, val)
+	{
 		if (is_first) {
 			is_first = JSO_FALSE;
 		} else {
@@ -253,7 +250,8 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 		jso_encoder_output_cstr(encoder, ":", 1);
 		jso_encoder_pretty_print_kvsep(encoder);
 		jso_encoder_encode(encoder, val);
-	} JSO_OBJECT_FOREACH_END;
+	}
+	JSO_OBJECT_FOREACH_END;
 
 	encoder->depth--;
 
@@ -265,7 +263,6 @@ static jso_rc jso_encoder_encode_object(jso_encoder *encoder, jso_object *obj)
 
 	return JSO_SUCCESS;
 }
-
 
 JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_options *options)
 {

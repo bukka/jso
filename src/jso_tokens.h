@@ -32,46 +32,46 @@
 /**
  * @brief JSON null value.
  */
-#define JSO_T_NUL         1
+#define JSO_T_NUL 1
 
 /**
  * @brief JSON true value.
  */
-#define JSO_T_TRUE        2
+#define JSO_T_TRUE 2
 
 /**
  * @brief JSON false value.
  */
-#define JSO_T_FALSE       3
+#define JSO_T_FALSE 3
 
 /**
  * @brief JSON long number value.
  */
-#define JSO_T_LONG        4
+#define JSO_T_LONG 4
 
 /**
  * @brief JSON double number value.
  */
-#define JSO_T_DOUBLE      5
+#define JSO_T_DOUBLE 5
 
 /**
  * @brief JSON string value.
  */
-#define JSO_T_STRING      6
+#define JSO_T_STRING 6
 
 /**
  * @brief Error in string.
  */
-#define JSO_T_ESTRING     7
+#define JSO_T_ESTRING 7
 
 /**
  * @brief IO error.
  */
-#define JSO_T_EOI       126
+#define JSO_T_EOI 126
 
 /**
  * @brief Other error.
  */
-#define JSO_T_ERROR     127
+#define JSO_T_ERROR 127
 
 #endif /* JSO_TOKENS_H */

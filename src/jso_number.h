@@ -27,24 +27,24 @@
  */
 
 #ifndef JSO_NUMBER_H
-#define	JSO_NUMBER_H
+#define JSO_NUMBER_H
 
 #include "jso_types.h"
 
 /**
  * @brief Number string structure
- * 
+ *
  * @todo 128 might be too much for mode 0
  */
 typedef struct _jso_number_string {
-    /** result buffer */
-    char result[128];
-    /** length of the result */
-    size_t len;
-    jso_bool overflow;
-    jso_bool underflow;
-    jso_bool nan;
-    jso_bool exp_notation;
+	/** result buffer */
+	char result[128];
+	/** length of the result */
+	size_t len;
+	jso_bool overflow;
+	jso_bool underflow;
+	jso_bool nan;
+	jso_bool exp_notation;
 } jso_number_string;
 
 /**
@@ -52,22 +52,21 @@ typedef struct _jso_number_string {
  * @param nstr number string
  * @return Number string value
  */
-#define JSO_NUMBER_STRING_VAL(nstr)          (nstr).result
+#define JSO_NUMBER_STRING_VAL(nstr) (nstr).result
 
 /**
  * Number string length getter.
  * @param nstr number string
  * @return Number string length
  */
-#define JSO_NUMBER_STRING_LEN(nstr)          (nstr).len
-
+#define JSO_NUMBER_STRING_LEN(nstr) (nstr).len
 
 /**
  * Check whether the number string is not a number.
  * @param nstr number string
  * @return @ref JSO_TRUE if number string is not a number, otherwise @ref JSO_FALSE
  */
-#define JSO_NUMBER_STRING_IS_NAN(nstr)       (nstr).nan
+#define JSO_NUMBER_STRING_IS_NAN(nstr) (nstr).nan
 
 /**
  * Check whether the number string overflows.
@@ -81,7 +80,7 @@ typedef struct _jso_number_string {
  * @param nstr number string
  * @return @ref JSO_TRUE if number string underflows, otherwise @ref JSO_FALSE
  */
-#define JSO_NUMBER_STRING_IS_OVERFLOW(nstr)  (nstr).overflow
+#define JSO_NUMBER_STRING_IS_OVERFLOW(nstr) (nstr).overflow
 
 /**
  * Check whether the number string is ok.
@@ -89,9 +88,8 @@ typedef struct _jso_number_string {
  * @return @ref JSO_TRUE if number string is ok, otherwise @ref JSO_FALSE
  */
 #define JSO_NUMBER_STRING_IS_OK(nstr) \
-    !(JSO_NUMBER_STRING_IS_OVERFLOW(nstr) && \
-        JSO_NUMBER_STRING_IS_UNDERFLOW(nstr) && \
-        JSO_NUMBER_STRING_IS_OVERFLOW(nstr))
+	!(JSO_NUMBER_STRING_IS_OVERFLOW(nstr) && JSO_NUMBER_STRING_IS_UNDERFLOW(nstr) \
+			&& JSO_NUMBER_STRING_IS_OVERFLOW(nstr))
 
 /**
  * Create a number string from double.
@@ -108,5 +106,4 @@ JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val
  */
 JSO_API double jso_number_cstr_to_double(char *str);
 
-#endif	/* JSO_NUMBER_H */
-
+#endif /* JSO_NUMBER_H */

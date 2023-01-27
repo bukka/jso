@@ -45,12 +45,12 @@
 /**
  * Elements separator string for pretty printing.
  */
-#define JSO_ENCODER_PRETTY_ELSEP  "\n"
+#define JSO_ENCODER_PRETTY_ELSEP "\n"
 
 /**
  * Key-value separator for pretty printing.
  */
-#define JSO_ENCODER_PRETTY_KVSEP  " "
+#define JSO_ENCODER_PRETTY_KVSEP " "
 
 /**
  * @brief Options for encoder.
@@ -81,8 +81,7 @@ typedef struct _jso_encoder {
  * @param output output IO
  * @param options options
  */
-JSO_API void jso_encoder_init(jso_encoder *encoder,
-        jso_io *output, jso_encoder_options *options);
+JSO_API void jso_encoder_init(jso_encoder *encoder, jso_io *output, jso_encoder_options *options);
 
 /**
  * Encode value using the encoder.
@@ -101,7 +100,6 @@ JSO_API jso_rc jso_encoder_encode(jso_encoder *encoder, jso_value *val);
  * @param options options
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_encode(jso_value *val,
-        jso_io *output, jso_encoder_options *options);
+JSO_API jso_rc jso_encode(jso_value *val, jso_io *output, jso_encoder_options *options);
 
 #endif /* JSO_ENCODER_H */

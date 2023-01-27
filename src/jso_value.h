@@ -59,7 +59,7 @@
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_string.
  */
-#define JSO_STR_P(pjv)  (pjv)->data.str
+#define JSO_STR_P(pjv) (pjv)->data.str
 
 /**
  * Get a string value of the supplied pointer to value.
@@ -138,7 +138,7 @@
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_string.
  */
-#define JSO_STR(jv)  JSO_STR_P(&(jv))
+#define JSO_STR(jv) JSO_STR_P(&(jv))
 
 /**
  * Get a string value of the supplied value.
@@ -191,7 +191,6 @@
  */
 #define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
 
-
 /**
  * Set error to the supplied value.
  * @param jv variable of @ref jso_value type
@@ -201,7 +200,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
 		JSO_EVAL(jv) = eval; \
-	} while(0)
+	} while (0)
 
 /**
  * Set null to the supplied value.
@@ -210,7 +209,7 @@
 #define JSO_VALUE_SET_NULL(jv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_NULL; \
-	} while(0)
+	} while (0)
 
 /**
  * Set boolean to the supplied value.
@@ -221,7 +220,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_BOOL; \
 		JSO_IVAL(jv) = bv; \
-	} while(0)
+	} while (0)
 
 /**
  * Set an integer value to the supplied value.
@@ -232,7 +231,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_INT; \
 		JSO_IVAL(jv) = lv; \
-	} while(0)
+	} while (0)
 
 /**
  * Set a double floating point number to the supplied value.
@@ -243,7 +242,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_DOUBLE; \
 		JSO_DVAL(jv) = (dv); \
-	} while(0)
+	} while (0)
 
 /**
  * Set a string to the supplied value.
@@ -256,7 +255,7 @@
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
 		JSO_SVAL(jv) = (sv); \
 		JSO_SLEN(jv) = (sl); \
-	} while(0)
+	} while (0)
 
 /**
  * Set an empty string to the supplied value.
@@ -267,7 +266,7 @@
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
 		JSO_SVAL(jv) = NULL; \
 		JSO_SLEN(jv) = 0; \
-	} while(0)
+	} while (0)
 
 /**
  * Set an array to the supplied value.
@@ -278,7 +277,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_ARRAY; \
 		JSO_ARRVAL(jv) = (av); \
-	} while(0)
+	} while (0)
 
 /**
  * Set an object to the supplied value.
@@ -289,7 +288,7 @@
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_OBJECT; \
 		JSO_OBJVAL(jv) = (ov); \
-	} while(0)
+	} while (0)
 
 /**
  * Free @ref jso_value instance.

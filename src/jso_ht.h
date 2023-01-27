@@ -26,7 +26,6 @@
  * @brief Hash table header
  */
 
-
 #ifndef JSO_HT_H
 #define JSO_HT_H
 
@@ -38,20 +37,19 @@
  * @brief Hash table entry.
  */
 typedef struct _jso_ht_entry {
-    jso_string key;
-    jso_uint32 hash;
-    jso_value value;
+	jso_string key;
+	jso_uint32 hash;
+	jso_value value;
 } jso_ht_entry;
 
 /**
  * @brief Hash table.
  */
 typedef struct _jso_ht {
-    size_t count;
-    size_t capacity;
-    jso_ht_entry *entries;
+	size_t count;
+	size_t capacity;
+	jso_ht_entry *entries;
 } jso_ht;
-
 
 /**
  * @brief Macro to start iteration of the hash table.
@@ -62,20 +60,23 @@ typedef struct _jso_ht {
 #define JSO_HT_FOREACH(_ht, _key, _val) \
 	do { \
 		jso_ht_entry *_entries = _ht->entries; \
-        jso_ht_entry *_entry; \
-        size_t _found = 0; \
+		jso_ht_entry *_entry; \
+		size_t _found = 0; \
 		for (size_t _i = 0; _i < _ht->capacity && _found < _ht->count; _i++) { \
-            _entry = &_entries[_i]; \
+			_entry = &_entries[_i]; \
 			_key = &_entry->key; \
-            if (JSO_STRING_VAL_P(_key) == NULL) continue; \
-            ++_found; \
+			if (JSO_STRING_VAL_P(_key) == NULL) \
+				continue; \
+			++_found; \
 			_val = &_entry->value;
 
 /**
  * @brief Macro to end iteration of the hash table.
  */
-#define JSO_HT_FOREACH_END } } while(0)
-
+#define JSO_HT_FOREACH_END \
+	} \
+	} \
+	while (0)
 
 /**
  * Allocate new hash table.
@@ -107,30 +108,30 @@ JSO_API void jso_ht_clear(jso_ht *ht);
 
 /**
  * Set value to the hash table.
- * 
+ *
  * @param ht hash table
  * @param key key of the value
  * @param free_old whether to free old value if update is executed
- * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE. 
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool free_old);
 
 /**
  * Get value from the hash table.
- * 
+ *
  * @param ht hash table
  * @param key key of the value to find
  * @param value returned value
- * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE. 
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value);
 
 /**
  * Copy entries from one table to another.
- * 
+ *
  * @param from source hash table
  * @param to destination hash table
- * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE. 
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_ht_copy(jso_ht *from, jso_ht *to);
 

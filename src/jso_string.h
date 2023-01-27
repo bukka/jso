@@ -50,37 +50,39 @@
  * @param _str string
  * @return The string length
  */
-#define JSO_STRING_LEN(_str)   (_str).len
+#define JSO_STRING_LEN(_str) (_str).len
 
 /**
  * Get string value.
  * @param _str string
  * @return The string value (char array)
  */
-#define JSO_STRING_VAL(_str)   (_str).val
+#define JSO_STRING_VAL(_str) (_str).val
 
 /**
  * Clear string.
  * @param _str string
  */
-#define JSO_STRING_CLEAR(_str) do { \
-        if (JSO_STRING_VAL(_str) && JSO_STRING_LEN(_str) > 0) { \
-            jso_free(JSO_STRING_VAL(_str)); \
-            JSO_STRING_VAL(_str) = NULL; \
-            JSO_STRING_LEN(_str) = 0; \
-        } \
-    } while(0)
+#define JSO_STRING_CLEAR(_str) \
+	do { \
+		if (JSO_STRING_VAL(_str) && JSO_STRING_LEN(_str) > 0) { \
+			jso_free(JSO_STRING_VAL(_str)); \
+			JSO_STRING_VAL(_str) = NULL; \
+			JSO_STRING_LEN(_str) = 0; \
+		} \
+	} while (0)
 
 /**
  * Clear string pointer.
  * @param _str string pointer
  */
-#define JSO_STRING_CLEAR_P(_str) do { \
-        if (JSO_STRING_VAL_P(_str) && JSO_STRING_LEN_P(_str) > 0) { \
-            jso_free(JSO_STRING_VAL_P(_str)); \
-            JSO_STRING_VAL_P(_str) = NULL; \
-            JSO_STRING_LEN_P(_str) = 0; \
-        } \
-    } while(0)
+#define JSO_STRING_CLEAR_P(_str) \
+	do { \
+		if (JSO_STRING_VAL_P(_str) && JSO_STRING_LEN_P(_str) > 0) { \
+			jso_free(JSO_STRING_VAL_P(_str)); \
+			JSO_STRING_VAL_P(_str) = NULL; \
+			JSO_STRING_LEN_P(_str) = 0; \
+		} \
+	} while (0)
 
 #endif /* JSO_STRING_H */

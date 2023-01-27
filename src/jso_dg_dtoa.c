@@ -186,6 +186,8 @@
  *	used for input more than STRTOD_DIGLIM digits long (default 40).
  */
 
+// clang-format off
+
 #ifndef Long
 #define Long long
 #endif
@@ -4375,3 +4377,5 @@ jso_dtoa
 #ifdef __cplusplus
 }
 #endif
+
+// clang-format on
