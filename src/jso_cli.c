@@ -52,7 +52,7 @@ const jso_cli_param jso_cli_default_params[] = {
 	JSO_CLI_PARAM_ENTRY_VALUE(
 		"output-type",
 		'o',
-		"Resulted JSON output type - minimal or pretty",
+		"Resulted JSON output type - either minimal, pretty or debug",
 		jso_cli_param_callback_output
 	)
 	JSO_CLI_PARAM_ENTRY_VALUE(
@@ -63,6 +63,14 @@ const jso_cli_param jso_cli_default_params[] = {
 	)
 	JSO_CLI_PARAM_ENTRY_END
 };
+
+static void jso_cli_print_help(jso_cli_options *options, jso_cli_ctx *ctx)
+{
+	JSO_IO_PRINTF(options->os, "Usage: jso [options...] <file>\n");
+	for (const jso_cli_param *param = ctx->params; param->long_name != NULL; ++param) {
+		JSO_IO_PRINTF(options->os, " -%c, --%-14s %s\n", param->short_name, param->long_name, param->description);
+	}
+}
 
 JSO_API void jso_cli_register_params(jso_cli_ctx *ctx, const jso_cli_param *params)
 {
@@ -408,7 +416,7 @@ static jso_rc jso_cli_parse_option(
 		}
 	} else {
 		if (value) {
-			JSO_IO_PRINTF(options->es, "No value should be added to option: %s\n", param->long_name);
+			JSO_IO_PRINTF(options->es, "No value expected for option: %s\n", param->long_name);
 			return JSO_FAILURE;
 		}
 
@@ -444,8 +452,12 @@ JSO_API jso_rc jso_cli_parse_args_ex(int argc, const char *argv[], jso_cli_ctx *
 		}
 	}
 
+	if (options.output_type == JSO_OUTPUT_HELP) {
+		jso_cli_print_help(&options, ctx);
+		return JSO_SUCCESS;
+	}
 	if (!file_path) {
-		JSO_IO_PRINTF(options.es, "File path not specified\n");
+		JSO_IO_PRINTF(options.es, "No file specified - use --help option for more information\n");
 		return JSO_FAILURE;
 	}
 
