@@ -53,7 +53,7 @@ typedef struct _jso_ht {
 
 /**
  * @brief Macro to start iteration of the hash table.
- * @param _ht hash tabled
+ * @param _ht hash table
  * @param _key entry key
  * @param _val entry value pointer
  */
@@ -111,6 +111,7 @@ JSO_API void jso_ht_clear(jso_ht *ht);
  *
  * @param ht hash table
  * @param key key of the value
+ * @param value value to set
  * @param free_old whether to free old value if update is executed
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */

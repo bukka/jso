@@ -21,34 +21,98 @@
  *
  */
 
+/**
+ * @file jso_object.h
+ * @brief Object header
+ */
+
 #ifndef JSO_OBJECT_H
 #define JSO_OBJECT_H
 
 #include "jso_types.h"
 #include "jso_ht.h"
 
-/* jso object structure */
+/**
+ * @brief Object structure.
+ */
 struct _jso_object {
+	/** embedded hash table */
 	jso_ht ht;
 };
 
-/* callback function for iterating object */
+/**
+ * @brief Object iteration function callback.
+ */
 typedef jso_rc (*jso_object_callback)(jso_string *key, jso_value *val);
+
+/**
+ * @brief Object iteration function callback with argument.
+ */
 typedef jso_rc (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, void *arg);
 
-/* object functions */
+/**
+ * Allocate object.
+ *
+ * @return New initialized object.
+ */
 JSO_API jso_object *jso_object_alloc();
+
+/**
+ * Free object.
+ *
+ * @param obj object
+ */
 JSO_API void jso_object_free(jso_object *obj);
+
+/**
+ * Add value with a key to the object.
+ *
+ * @param obj object
+ * @param key key of the value
+ * @param value value to add
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
 JSO_API jso_rc jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
+
+/**
+ * Call callback for each value in the object.
+ *
+ * @param obj object
+ * @param cbk callback function
+ */
 JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk);
+
+/**
+ * Call callback with extra argument for each value in the object.
+ *
+ * @param obj object
+ * @param cbk callback function
+ * @param arg callback argument
+ */
 JSO_API void jso_object_apply_with_arg(
 		jso_object *obj, jso_object_with_arg_callback cbk, void *arg);
+
+/**
+ * Print object with supplied indent.
+ *
+ * @param obj object
+ * @param indent indent for each printed value
+ */
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
+/**
+ * @brief Macro to start iteration of the object.
+ * @param _obj object
+ * @param _key entry key
+ * @param _val entry value pointer
+ */
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
 	jso_ht *_ht = &_obj->ht; \
 	JSO_HT_FOREACH(_ht, _key, _val)
 
+/**
+ * @brief Macro to end iteration of the object.
+ */
 #define JSO_OBJECT_FOREACH_END JSO_HT_FOREACH_END
 
 #endif /* JSO_OBJECT_H */
