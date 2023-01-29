@@ -164,7 +164,7 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 	location->first_column = JSO_SCANNER_LOCATION(parser->scanner, first_column);
 	location->first_line = JSO_SCANNER_LOCATION(parser->scanner, first_line);
 	location->last_column = JSO_SCANNER_LOCATION(parser->scanner, last_column);
-	location->first_column = JSO_SCANNER_LOCATION(parser->scanner, last_line);
+	location->last_line = JSO_SCANNER_LOCATION(parser->scanner, last_line);
 	return token;
 }
 
@@ -172,5 +172,5 @@ void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg)
 {
 	JSO_VALUE_SET_ERROR(parser->result, jso_error_new(JSO_ERROR_SYNTAX,
 		location->first_column, location->first_line,
-		location->last_column, location->first_column));
+		location->last_column, location->last_line));
 }

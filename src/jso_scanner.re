@@ -104,6 +104,8 @@ void jso_scanner_init(jso_scanner *s, jso_io *io)
 {
 	memset(s, 0, sizeof (jso_scanner));
 	s->io = io;
+	JSO_SCANNER_LOC(last_column) = 1;
+	JSO_SCANNER_LOC(last_line) = 1;
 	JSO_CONDITION_SET(JS);
 }
 
@@ -232,7 +234,7 @@ scanner_start:
 	}
 	<JS>NL                   {
 		JSO_SCANNER_LOC(last_line)++;
-		JSO_SCANNER_LOC(last_column) = 0;
+		JSO_SCANNER_LOC(last_column) = 1;
 		JSO_SCANNER_START_GOTO();
 	}
 	<JS>WS                   {
@@ -259,7 +261,7 @@ scanner_start:
 	}
 	<STR_P1>NL               {
 		JSO_SCANNER_LOC(last_line)++;
-		JSO_SCANNER_LOC(last_column) = 0;
+		JSO_SCANNER_LOC(last_column) = 1;
 		JSO_CONDITION_GOTO(STR_P1);
 	}
 	<STR_P1>UTF16_1          {

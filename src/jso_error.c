@@ -55,6 +55,29 @@ JSO_API jso_error *jso_error_new(jso_error_type type, size_t first_column, size_
 	return jso_error_new_ex(type, &loc);
 }
 
+/* get type description */
+JSO_API const char *jso_error_type_description(jso_error_type type)
+{
+	switch (type) {
+		case JSO_ERROR_SYNTAX:
+			return "syntax";
+		case JSO_ERROR_DEPTH:
+			return "maximal depth exceeded";
+		case JSO_ERROR_TOKEN:
+			return "invalid token";
+		case JSO_ERROR_CTRL_CHAR:
+			return "control character";
+		case JSO_ERROR_ESCAPE:
+			return "invalid escape";
+		case JSO_ERROR_UTF8:
+			return "UTF-8 encoding";
+		case JSO_ERROR_UTF16:
+			return "invalid unicode escape";
+		default:
+			return "unknown";
+	}
+}
+
 /* free error */
 JSO_API void jso_error_free(jso_error *err)
 {

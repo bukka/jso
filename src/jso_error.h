@@ -32,7 +32,7 @@
 #include "jso_types.h"
 
 /**
- * Create a new error from supplied type and location
+ * Create a new error from supplied type and location.
  * @param type error type
  * @param loc error location
  * @return A new error instance.
@@ -40,7 +40,7 @@
 JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc);
 
 /**
- * Craete a new error from supplied type and positions
+ * Craete a new error from supplied type and positions.
  * @param type error type
  * @param first_column first column position where the error was found
  * @param first_line first line position where the error was found
@@ -52,7 +52,14 @@ JSO_API jso_error *jso_error_new(jso_error_type type, size_t first_column, size_
 		size_t last_column, size_t last_line);
 
 /**
- * Free error
+ * Get description for the supplied error type.
+ * @param type error type
+ * @return error type description
+ */
+JSO_API const char *jso_error_type_description(jso_error_type type);
+
+/**
+ * Free error.
  * @param err error instance
  */
 JSO_API void jso_error_free(jso_error *err);

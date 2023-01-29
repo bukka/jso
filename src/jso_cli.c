@@ -109,6 +109,19 @@ JSO_API jso_rc jso_cli_parse_io(jso_io *io, jso_cli_options *options, jso_value 
 	return rc;
 }
 
+static void jso_cli_print_parsing_error(
+		const char *file_path, jso_cli_options *options, jso_value *error)
+{
+	const char *err_desc = jso_value_get_error_description(error);
+	if (err_desc == NULL) {
+		JSO_IO_PRINTF(options->es, "Error value setting failed\n");
+		return;
+	}
+
+	JSO_IO_PRINTF(options->es, "Parsing %s error in %s:%zu:%zu\n", err_desc, file_path,
+			JSO_ELOC_P(error).first_line, JSO_ELOC_P(error).first_column);
+}
+
 static jso_rc jso_cli_parse_file_ex(
 		const char *file_path, jso_cli_options *options, jso_value *result, const char *file_type)
 {
@@ -154,6 +167,9 @@ static jso_rc jso_cli_parse_file_ex(
 	}
 
 	jso_rc rc = jso_cli_parse_io(io, options, result);
+	if (rc == JSO_FAILURE) {
+		jso_cli_print_parsing_error(file_path, options, result);
+	}
 
 	/* free IO */
 	JSO_IO_FREE(io);

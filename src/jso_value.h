@@ -297,6 +297,13 @@
 JSO_API void jso_value_free(jso_value *val);
 
 /**
+ * Return error type for the provided value.
+ * @param val value
+ * @return Error description or NULL if val is not an error
+ */
+JSO_API const char *jso_value_get_error_description(jso_value *val);
+
+/**
  * Print indented debug output of the supplied value.
  * @param val instance of @ref jso_value
  * @param io output IO handler

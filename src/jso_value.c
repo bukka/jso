@@ -51,6 +51,18 @@ JSO_API void jso_value_free(jso_value *val)
 	}
 }
 
+/* ERROR */
+
+/* return error description if val is error */
+JSO_API const char *jso_value_get_error_description(jso_value *val)
+{
+	if (JSO_TYPE_P(val) != JSO_TYPE_ERROR) {
+		return NULL;
+	}
+
+	return jso_error_type_description(JSO_ETYPE_P(val));
+}
+
 /* PRINTING */
 
 /* print indentation */
@@ -68,33 +80,7 @@ static void jso_value_print_error(jso_value *val, jso_io *io)
 	if (!JSO_EVAL_P(val)) {
 		JSO_IO_PRINTF(io, "ERROR: Error allocation failed\n");
 	} else {
-		const char *emsg;
-		switch (JSO_ETYPE_P(val)) {
-			case JSO_ERROR_SYNTAX:
-				emsg = "SYNTAX";
-				break;
-			case JSO_ERROR_DEPTH:
-				emsg = "DEPTH";
-				break;
-			case JSO_ERROR_TOKEN:
-				emsg = "TOKEN";
-				break;
-			case JSO_ERROR_CTRL_CHAR:
-				emsg = "CONTROL CHARACTER";
-				break;
-			case JSO_ERROR_ESCAPE:
-				emsg = "ESCAPE";
-				break;
-			case JSO_ERROR_UTF8:
-				emsg = "UTF8:";
-				break;
-			case JSO_ERROR_UTF16:
-				emsg = "UTF16";
-				break;
-			default:
-				emsg = "unknown";
-				break;
-		}
+		const char *emsg = jso_error_type_description(JSO_ETYPE_P(val));
 		JSO_IO_PRINTF(io, "ERROR: %s: %zu:%zu-%zu:%zu\n", emsg, JSO_ELOC_P(val).first_line,
 				JSO_ELOC_P(val).first_column, JSO_ELOC_P(val).last_line,
 				JSO_ELOC_P(val).last_column);
