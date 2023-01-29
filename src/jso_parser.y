@@ -1,6 +1,6 @@
 %code top {
 /*
- * Copyright (c) 2012-2015 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
