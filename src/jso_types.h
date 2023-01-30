@@ -114,6 +114,10 @@ typedef enum {
  * @brief Error type.
  */
 typedef enum {
+	/** no error */
+	JSO_ERROR_NONE,
+	/** allocation error */
+	JSO_ERROR_ALLOC,
 	/** syntax error */
 	JSO_ERROR_SYNTAX,
 	/** maximal depth exceeded error */

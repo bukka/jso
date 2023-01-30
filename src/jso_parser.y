@@ -22,11 +22,13 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "jso.h"
 #include "jso_parser.h"
+#include "jso_parser_hooks.h"
+
+#include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 #define YYDEBUG 0
 
@@ -76,61 +78,165 @@ int jso_yydebug = 1;
 int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser);
 void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg);
 
-#define JSO_DEPTH_DEC --parser->depth
-#define JSO_DEPTH_INC(loc) \
-	if (parser->max_depth && parser->depth >= parser->max_depth) { \
-		JSO_VALUE_SET_ERROR(parser->result, jso_error_new(JSO_ERROR_DEPTH, \
-			loc.first_column, loc.first_line, loc.last_column, loc.last_line)); \
-		YYERROR; \
-	} \
-	++parser->depth
+#define JSO_PARSER_SET_LOC(_loc) \
+	assert(sizeof(YYLTYPE) == sizeof(jso_parser_location)); \
+	parser->location = (jso_parser_location *) &_loc
+
+#define JSO_PARSER_SET_ERROR(_etype, _loc) \
+	JSO_VALUE_SET_ERROR(parser->result, jso_error_new(_etype, \
+			_loc->first_column, _loc->first_line, _loc->last_column, _loc->last_line)); \
+
+#define JSO_PARSER_ERROR(_etype) \
+	YYLTYPE *_loc = (YYLTYPE *) parser->location; \
+	JSO_PARSER_SET_ERROR(_etype, _loc); \
+	YYERROR
+
+#define JSO_PARSER_HOOK_CHECK(_name, _loc, _etype_exp) \
+	do { \
+		if (parser->hooks._name != NULL) { \
+			jso_error_type _etype = _etype_exp; \
+			if (_etype != JSO_ERROR_NONE) { \
+				JSO_PARSER_SET_LOC(_loc); \
+				JSO_PARSER_ERROR(_etype); \
+			} \
+		} \
+	} while(0)
+
+#define JSO_PARSER_DEPTH_DEC() jso_parser_depth_decrease(parser)
+#define JSO_PARSER_DEPTH_INC(_loc) \
+	jso_error_type _etype = jso_parser_depth_increase(parser); \
+	do { \
+		if (_etype != JSO_ERROR_NONE) { \
+			JSO_PARSER_SET_LOC(_loc); \
+			JSO_PARSER_ERROR(_etype); \
+		} \
+	} while(0)
+
+#define JSO_PARSER_HOOK(_name, _loc, ...) \
+		JSO_PARSER_HOOK_CHECK(_name, _loc, parser->hooks._name(parser, __VA_ARGS__))
+
+#define JSO_PARSER_HOOK_0(_name, _loc) \
+	JSO_PARSER_HOOK_CHECK(_name, _loc, parser->hooks._name(parser))
+
 }
 
 %% /* Rules */
 
 start:
-		value JSO_T_EOI         { $$ = $1; parser->result = $1; JSO_USE($2); YYACCEPT; }
-	|	value errlex            { JSO_USE_2($$, $1, $2); }
+		value JSO_T_EOI
+			{
+				$$ = $1;
+				parser->result = $1;
+				JSO_USE($2);
+				YYACCEPT;
+			}
+	|	value errlex
+			{
+				JSO_USE_2($$, $1, $2);
+			}
 ;
 
 object:
-		'{' { JSO_DEPTH_INC(@1); } members '}' { JSO_DEPTH_DEC; JSO_VALUE_SET_OBJECT($$, $3); }
+		'{'
+			{
+				JSO_PARSER_DEPTH_INC(@1);
+				JSO_PARSER_HOOK_0(object_start, @1);
+			}
+		members
+			{
+				JSO_PARSER_DEPTH_DEC();
+				JSO_PARSER_HOOK_0(object_end, @3);
+				JSO_VALUE_SET_OBJECT($$, $3);
+			}
 ;
 
 members:
-		/* empty */             { $$ = jso_object_alloc(); }
-	|	member
+		'}'
+			{
+				JSO_PARSER_HOOK(object_create, @1, &$$);
+			}
+	|	member '}'
 ;
 
 member:
-		pair                    { $$ = jso_object_alloc(); jso_object_add($$, &$1.key, &$1.val); }
-	|	member ',' pair         { jso_object_add($1, &$3.key, &$3.val); $$ = $1; }
-	|	member errlex           { JSO_USE_2($$, $1, $2); }
+		pair
+			{
+				JSO_PARSER_HOOK(object_create, @1, &$$);
+				JSO_PARSER_HOOK(object_update, @1, $$, &JSO_STR($1.key), &$1.val);
+			}
+	|	member ',' pair
+			{
+				JSO_PARSER_HOOK(object_update, @3, $1, &JSO_STR($3.key), &$3.val);
+				$$ = $1;
+			}
+	|	member errlex
+			{
+				JSO_USE_2($$, $1, $2);
+			}
 ;
 
 pair:
-		key ':' value           { $$.key = $1; $$.val = $3; }
-	|	key errlex              { JSO_USE_2($$, $1, $2); }
+		key ':' value
+			{
+				$$.key = $1;
+				$$.val = $3;
+			}
+	|	key errlex
+			{
+				JSO_USE_2($$, $1, $2);
+			}
 ;
 
 array:
-		'[' { JSO_DEPTH_INC(@1); } elements ']' { JSO_DEPTH_DEC; JSO_VALUE_SET_ARRAY($$, $3); }
+		'['
+			{
+				JSO_PARSER_DEPTH_INC(@1);
+				JSO_PARSER_HOOK_0(array_start, @1);
+			}
+		elements
+			{
+				JSO_PARSER_DEPTH_DEC();
+				JSO_PARSER_HOOK_0(array_end, @3);
+				JSO_VALUE_SET_ARRAY($$, $3);
+			}
 ;
 
 elements:
-		/* empty */             { $$ = jso_array_alloc(); }
-	|	element
+		']'
+			{
+				JSO_PARSER_HOOK(array_create, @1, &$$);
+			}
+	|	element ']'
 ;
 
 element:
-		value                   { $$ = jso_array_alloc(); jso_array_append($$, &$1); }
-	|	element ',' value       { jso_array_append($1, &$3); $$ = $1; }
-	|	element errlex          { JSO_USE_2($$, $1, $2); }
+		value
+			{
+				JSO_PARSER_HOOK(array_create, @1, &$$);
+				JSO_PARSER_HOOK(array_append, @1, $$, &$1);
+			}
+	|	element ',' value
+			{
+				JSO_PARSER_HOOK(array_append, @3, $1, &$3);
+				$$ = $1;
+			}
+	|	element errlex
+			{
+				JSO_USE_2($$, $1, $2);
+			}
 ;
 
 key:
 		JSO_T_STRING
+			{
+				JSO_PARSER_HOOK(object_key, @1, &JSO_STR($1));
+				$$ = $1;
+			}
 	|	JSO_T_ESTRING
+			{
+				JSO_PARSER_HOOK(object_key, @1, &JSO_STR($1));
+				$$ = $1;
+			}
 ;
 
 value:
@@ -144,20 +250,32 @@ value:
 	|	JSO_T_TRUE
 	|	JSO_T_FALSE
 	|	errlex
+
 ;
 
 errlex:
-		JSO_T_ERROR             { parser->result = $1; JSO_USE($$); YYERROR; }
+		JSO_T_ERROR
+			{
+				parser->result = $1;
+				JSO_USE($$);
+				YYERROR;
+			}
 ;
 
 %%
 
-void jso_parser_init(jso_parser *parser)
+JSO_API void jso_parser_init_ex(jso_parser *parser, const jso_parser_hooks *hooks)
 {
 	memset(parser, 0, sizeof(jso_parser));
+	memcpy(&parser->hooks, hooks, sizeof(jso_parser_hooks));
 }
 
-int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
+JSO_API void jso_parser_init(jso_parser *parser)
+{
+	jso_parser_init_ex(parser, jso_parser_hooks_decode());
+}
+
+JSO_API int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 {
 	int token = jso_scan(&parser->scanner);
 	value->value = parser->scanner.value;
@@ -170,7 +288,5 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 
 void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg)
 {
-	JSO_VALUE_SET_ERROR(parser->result, jso_error_new(JSO_ERROR_SYNTAX,
-		location->first_column, location->first_line,
-		location->last_column, location->last_line));
+	JSO_PARSER_SET_ERROR(JSO_ERROR_SYNTAX, location);
 }

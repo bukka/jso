@@ -72,7 +72,7 @@ JSO_API void jso_object_free(jso_object *obj);
  * @param value value to add
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_object_add(jso_object *obj, jso_value *key, jso_value *val);
+JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
 
 /**
  * Call callback for each value in the object.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,50 +21,21 @@
  *
  */
 
-#include <stdlib.h>
-#include "jso.h"
+/**
+ * @file jso_parser_hooks_decode.h
+ * @brief Parser hooks for decoding
+ */
 
-/* allocate and init object */
-JSO_API jso_object *jso_object_alloc()
-{
-	return jso_calloc(1, sizeof(jso_object));
-}
+#ifndef JSO_PARSER_HOOKS_DECODE_H
+#define JSO_PARSER_HOOKS_DECODE_H
 
-/* free object and its elements */
-JSO_API void jso_object_free(jso_object *obj)
-{
-	jso_ht_clear(&obj->ht);
-	jso_free(obj);
-}
+#include "jso_parser_hooks.h"
 
-/* add new element to the object obj */
-JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
-{
-	return jso_ht_set(&obj->ht, key, val, true);
-}
+jso_error_type jso_parser_decode_array_create(jso_parser *parser, jso_array **array);
+jso_error_type jso_parser_decode_array_append(
+		jso_parser *parser, jso_array *array, jso_value *value);
+jso_error_type jso_parser_decode_object_create(jso_parser *parser, jso_object **object);
+jso_error_type jso_parser_decode_object_update(
+		jso_parser *parser, jso_object *object, jso_string *key, jso_value *value);
 
-/* call cbk function for each element in object */
-JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
-{
-	jso_string *key;
-	jso_value *val;
-
-	JSO_OBJECT_FOREACH(obj, key, val)
-	{
-		cbk(key, val);
-	}
-	JSO_OBJECT_FOREACH_END;
-}
-
-/* call cbk function with arg for each element in object */
-JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_callback cbk, void *arg)
-{
-	jso_string *key;
-	jso_value *val;
-
-	JSO_OBJECT_FOREACH(obj, key, val)
-	{
-		cbk(key, val, arg);
-	}
-	JSO_OBJECT_FOREACH_END;
-}
+#endif /* JSO_PARSER_HOOKS_DECODE_H */

@@ -11,6 +11,8 @@ jso_scanner_defs.h
 jso_parser.tab.*
 y.tab.*
 # automake and autoconf generated files
+.dirstamp
+.deps/
 Makefile
 Makefile.in
 aclocal.m4

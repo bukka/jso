@@ -24,32 +24,111 @@
 #ifndef JSO_PARSER_H
 #define JSO_PARSER_H
 
-#include "jso.h"
+#include "jso_types.h"
 #include "jso_scanner.h"
+
+typedef struct _jso_parser jso_parser;
+
+typedef jso_error_type (*jso_parser_hook_array_create_t)(jso_parser *parser, jso_array **array);
+typedef jso_error_type (*jso_parser_hook_array_append_t)(
+		jso_parser *parser, jso_array *array, jso_value *value);
+typedef jso_error_type (*jso_parser_hook_array_start_t)(jso_parser *parser);
+typedef jso_error_type (*jso_parser_hook_array_end_t)(jso_parser *parser);
+typedef jso_error_type (*jso_parser_hook_object_create_t)(jso_parser *parser, jso_object **object);
+typedef jso_error_type (*jso_parser_hook_object_update_t)(
+		jso_parser *parser, jso_object *object, jso_string *key, jso_value *value);
+typedef jso_error_type (*jso_parser_hook_object_start_t)(jso_parser *parser);
+typedef jso_error_type (*jso_parser_hook_object_end_t)(jso_parser *parser);
+
+typedef jso_error_type (*jso_parser_hook_object_key_t)(jso_parser *parser, jso_string *key);
+
+typedef jso_error_type (*jso_parser_hook_value_t)(jso_parser *parser, jso_value *value);
+
+/**
+ * @brief Parser hooks
+ */
+typedef struct _jso_parser_hooks {
+	jso_parser_hook_array_create_t array_create;
+	jso_parser_hook_array_append_t array_append;
+	jso_parser_hook_array_start_t array_start;
+	jso_parser_hook_array_end_t array_end;
+	jso_parser_hook_object_create_t object_create;
+	jso_parser_hook_object_update_t object_update;
+	jso_parser_hook_object_start_t object_start;
+	jso_parser_hook_object_end_t object_end;
+	jso_parser_hook_object_key_t object_key;
+	jso_parser_hook_value_t value;
+} jso_parser_hooks;
+
+/**
+ * @brief Parser location type.
+ */
+typedef struct _jso_parser_location {
+	int first_line;
+	int first_column;
+	int last_line;
+	int last_column;
+} jso_parser_location;
 
 /**
  * @brief Parser state.
  */
-typedef struct _jso_parser {
+struct _jso_parser {
 	jso_scanner scanner;
+	jso_parser_hooks hooks;
+	jso_parser_location *location;
 	jso_value result;
 	jso_uint depth;
 	jso_uint max_depth;
-} jso_parser;
+};
 
 /**
- * @brief Initialize parser.
+ * Increase parsing depth.
  *
- * @param parser Parser instance.
+ * @param parser parser instance
+ * @return jso_error_type
  */
-void jso_parser_init(jso_parser *parser);
+static inline jso_error_type jso_parser_depth_increase(jso_parser *parser)
+{
+	if (parser->max_depth && parser->depth >= parser->max_depth) {
+		return JSO_ERROR_DEPTH;
+	}
+	++parser->depth;
+	return JSO_ERROR_NONE;
+}
 
 /**
- * @brief Initialize parser.
+ * Decrease parsing depth.
  *
- * @param parser Parser instance.
- * @return int Parsing result.
+ * @param parser parser instance
+ * @return jso_error_type
  */
-int jso_yyparse(jso_parser *parser);
+static inline jso_error_type jso_parser_depth_decrease(jso_parser *parser)
+{
+	--parser->depth;
+	return JSO_ERROR_NONE;
+}
+
+/**
+ * Initialize parser with hooks.
+ *
+ * @param parser parser instance
+ */
+JSO_API void jso_parser_init_ex(jso_parser *parser, const jso_parser_hooks *hooks);
+
+/**
+ * Initialize parser.
+ *
+ * @param parser parser instance
+ */
+JSO_API void jso_parser_init(jso_parser *parser);
+
+/**
+ * Start parsing.
+ *
+ * @param parser parser instance
+ * @return int Parsing result - 0 on success otherwise non zero value is returned.
+ */
+JSO_API int jso_yyparse(jso_parser *parser);
 
 #endif /* JSO_SCANNER_H */
