@@ -53,7 +53,7 @@ typedef jso_rc (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, 
 /**
  * Allocate object.
  *
- * @return New initialized object.
+ * @return New initialized object or NULL on error.
  */
 JSO_API jso_object *jso_object_alloc();
 

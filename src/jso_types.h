@@ -76,7 +76,7 @@ typedef struct _jso_number {
 	union {
 		jso_double d;
 		jso_int i;
-	}
+	};
 } jso_number;
 
 /**

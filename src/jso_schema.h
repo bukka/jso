@@ -33,6 +33,8 @@
 #include "jso_ht.h"
 #include "jso_bitset.h"
 
+typedef struct _jso_schema_value jso_schema_value;
+
 /**
  * @brief Common keyword default bit set ID.
  */
@@ -245,11 +247,11 @@ typedef enum {
 	/** numeric value type */
 	JSO_SCHEMA_TYPE_NUMBER,
 	/** string value type */
-	JSO_TYPE_STRING,
+	JSO_SCHEMA_TYPE_STRING,
 	/** array value type */
-	JSO_TYPE_ARRAY,
+	JSO_SCHEMA_TYPE_ARRAY,
 	/** object value type */
-	JSO_TYPE_OBJECT
+	JSO_SCHEMA_TYPE_OBJECT
 } jso_schema_value_type;
 
 /**
@@ -289,6 +291,25 @@ typedef struct _jso_schema_value {
 typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_version;
 
 /**
+ * @brief Schema error type.
+ */
+typedef enum _jso_schema_error_type {
+	JSO_SCHEMA_ERROR_NONE = 0,
+	JSO_SCHEMA_ERROR_VERSION,
+	JSO_SCHEMA_ERROR_ID,
+} jso_schema_error_type;
+
+/**
+ * @brief JsonSchema error.
+ */
+typedef struct _jso_schema_error {
+	/** error message */
+	jso_string *message;
+	/** error type */
+	jso_schema_error_type type;
+} jso_schema_error;
+
+/**
  * @brief JsonSchema main structure.
  */
 typedef struct _jso_schema {
@@ -296,8 +317,48 @@ typedef struct _jso_schema {
 	jso_schema_value *root;
 	/** schema ID */
 	jso_string id;
-	/** schem version */
+	/** schema version */
 	jso_schema_version version;
+	/** schema error */
+	jso_schema_error error;
 } jso_schema;
+
+/**
+ * Allocate new schema.
+ *
+ * @param data json source data
+ * @return New schema instance or NULL on error.
+ */
+JSO_API jso_schema *jso_schema_alloc();
+
+/**
+ * Initialize schema.
+ *
+ * @param schema schema to initialize
+ */
+JSO_API void jso_schema_init(jso_schema *schema);
+
+/**
+ * Parse data to set up the schema.
+ *
+ * @param schema schema to parse data to
+ * @param data source data
+ * @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data);
+
+/**
+ * Clear schema.
+ *
+ * @param schema schema to clear
+ */
+JSO_API void jso_schema_clear(jso_schema *schema);
+
+/**
+ * Free schema.
+ *
+ * @param schema schema to free
+ */
+JSO_API void jso_schema_free(jso_schema *schema);
 
 #endif /* JSO_SCHEMA_H */

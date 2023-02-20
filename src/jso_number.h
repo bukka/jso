@@ -95,7 +95,7 @@ typedef struct _jso_number_string {
  * Create a number string from double.
  * @param nstr number string
  * @param val value which is the string converted from
- * @return Size of the final string.
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val);
 
