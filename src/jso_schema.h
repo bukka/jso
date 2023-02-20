@@ -49,9 +49,11 @@
 #define JSO_SCHEMA_KEYWORD_COMMON_TITLE 3
 
 /**
- * @brief Common keywords without default value.
+ * @brief Common schema feilds without default value.
  */
-#define JSO_SCHEMA_VALUE_COMMON_KEYWORDS_NO_VALUE() \
+#define JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE() \
+	/** parent pointer */ \
+	jso_schema_value *parent; \
 	/** keywords mask to see what has been set */ \
 	jso_bitset keywords; \
 	/** title keyword */ \
@@ -60,11 +62,11 @@
 	jso_string description;
 
 /**
- * @brief Common keywords with default value.
+ * @brief Common schema feilds with default value.
  * @param _value_type type of default value
  */
-#define JSO_SCHEMA_VALUE_COMMON_KEYWORDS(_value_type) \
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS_NO_VALUE(); \
+#define JSO_SCHEMA_VALUE_COMMON_FIELDS(_value_type) \
+	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE(); \
 	/** default keyword */ \
 	_value_type default_value
 
@@ -72,14 +74,14 @@
  * @brief JsonSchema null validation keywords.
  */
 typedef struct _jso_schema_value_null {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS_NO_VALUE();
+	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE();
 } jso_schema_value_null;
 
 /**
  * @brief JsonSchema boolean validation keywords.
  */
 typedef struct _jso_schema_value_boolean {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_bool);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_bool);
 } jso_schema_value_boolean;
 
 /**
@@ -111,7 +113,7 @@ typedef struct _jso_schema_value_boolean {
  * @brief JsonSchema number validation keywords.
  */
 typedef struct _jso_schema_value_number {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_number);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_number);
 	/** multipleOf keyword */
 	jso_uint multiple_of;
 	/** minimum keyword */
@@ -139,7 +141,7 @@ typedef struct _jso_schema_value_number {
  * @todo support pattern
  */
 typedef struct _jso_schema_value_string {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_bool);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_bool);
 	/** maxLength keyword */
 	jso_uint max_length;
 	/** minLength keyword */
@@ -176,7 +178,7 @@ typedef struct _jso_schema_value_string {
  * @todo support object type alternative for additional_items and items
  */
 typedef struct _jso_schema_value_array {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_array *);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_array *);
 	/** additionalItems keyword */
 	jso_bool additional_items;
 	/** uniqueItems keyword */
@@ -219,7 +221,7 @@ typedef struct _jso_schema_value_array {
  * @todo support pattern_properties and dependencies
  */
 typedef struct _jso_schema_value_object {
-	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_object *);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_object *);
 	/** additionalProperties keyword */
 	jso_bool additional_properties;
 	/** maxProperties keyword */
@@ -282,11 +284,20 @@ typedef struct _jso_schema_value {
 } jso_schema_value;
 
 /**
+ * @brief Schema version.
+ */
+typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_version;
+
+/**
  * @brief JsonSchema main structure.
  */
 typedef struct _jso_schema {
+	/** root value */
 	jso_schema_value *root;
+	/** schema ID */
 	jso_string id;
+	/** schem version */
+	jso_schema_version version;
 } jso_schema;
 
 #endif /* JSO_SCHEMA_H */
