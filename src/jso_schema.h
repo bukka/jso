@@ -52,11 +52,11 @@
  * @brief Common keywords without default value.
  */
 #define JSO_SCHEMA_VALUE_COMMON_KEYWORDS_NO_VALUE() \
-    /** keywords mask to see what has been set */ \
+	/** keywords mask to see what has been set */ \
 	jso_bitset keywords; \
-    /** title keyword */ \
+	/** title keyword */ \
 	jso_string title; \
-    /** description keyword */ \
+	/** description keyword */ \
 	jso_string description;
 
 /**
@@ -65,7 +65,7 @@
  */
 #define JSO_SCHEMA_VALUE_COMMON_KEYWORDS(_value_type) \
 	JSO_SCHEMA_VALUE_COMMON_KEYWORDS_NO_VALUE(); \
-    /** default keyword */ \
+	/** default keyword */ \
 	_value_type default_value
 
 /**
@@ -112,15 +112,15 @@ typedef struct _jso_schema_value_boolean {
  */
 typedef struct _jso_schema_value_number {
 	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_number);
-    /** multipleOf keyword */
+	/** multipleOf keyword */
 	jso_uint multiple_of;
-    /** minimum keyword */
+	/** minimum keyword */
 	jso_int minimum;
-    /** maximum keyword */
+	/** maximum keyword */
 	jso_int maximum;
-    /** exclusiveMinimum keyword */
+	/** exclusiveMinimum keyword */
 	jso_bool exclusive_minimum;
-    /** exclusiveMaximum keyword */
+	/** exclusiveMaximum keyword */
 	jso_bool exclusive_maximum;
 } jso_schema_value_number;
 
@@ -140,9 +140,9 @@ typedef struct _jso_schema_value_number {
  */
 typedef struct _jso_schema_value_string {
 	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_bool);
-    /** maxLength keyword */
+	/** maxLength keyword */
 	jso_uint max_length;
-    /** minLength keyword */
+	/** minLength keyword */
 	jso_uint min_length;
 } jso_schema_value_string;
 
@@ -177,15 +177,15 @@ typedef struct _jso_schema_value_string {
  */
 typedef struct _jso_schema_value_array {
 	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_array *);
-    /** additionalItems keyword */
+	/** additionalItems keyword */
 	jso_bool additional_items;
-    /** uniqueItems keyword */
+	/** uniqueItems keyword */
 	jso_bool unique_items;
-    /** items keyword */
+	/** items keyword */
 	jso_array *items;
-    /** maxItems keyword */
+	/** maxItems keyword */
 	jso_uint max_items;
-    /** minItems keyword */
+	/** minItems keyword */
 	jso_uint min_items;
 } jso_schema_value_array;
 
@@ -220,15 +220,15 @@ typedef struct _jso_schema_value_array {
  */
 typedef struct _jso_schema_value_object {
 	JSO_SCHEMA_VALUE_COMMON_KEYWORDS(jso_object *);
-    /** additionalProperties keyword */
+	/** additionalProperties keyword */
 	jso_bool additional_properties;
-    /** maxProperties keyword */
+	/** maxProperties keyword */
 	jso_uint max_properties;
-    /** minProperties keyword */
+	/** minProperties keyword */
 	jso_uint min_properties;
-    /** requiredProperties keyword */
+	/** requiredProperties keyword */
 	jso_array *required;
-    /** properties keyword */
+	/** properties keyword */
 	jso_ht *properties;
 } jso_schema_value_object;
 
