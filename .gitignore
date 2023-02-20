@@ -18,10 +18,12 @@ Makefile.in
 aclocal.m4
 autoscan.log
 autom4te.cache/
+config.guess
 config.h
 config.h.in*
 config.log
 config.status
+config.sub
 configure.scan
 configure
 configure-mac

@@ -309,7 +309,9 @@ extern "C" {
 typedef union { double d; ULong L[2]; } U;
 
 #pragma GCC diagnostic push
+#ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #ifdef IEEE_8087
 #define word0(x) (x)->L[1]
 #define word1(x) (x)->L[0]
@@ -2878,7 +2880,9 @@ jso_dg_strtod
 				if (e1 & 1)
 					dval(&rv) *= bigtens[j];
 #pragma GCC diagnostic push
+#ifndef __clang__
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 		/* The last multiplication could overflow. */
 			word0(&rv) -= P*Exp_msk1;
 			dval(&rv) *= bigtens[j];

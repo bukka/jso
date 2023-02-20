@@ -42,11 +42,6 @@ static inline jso_rc jso_encoder_output_cstr(jso_encoder *encoder, const char *s
 	return jso_encoder_output_jstr(encoder, (jso_ctype *) str, len);
 }
 
-static inline jso_rc jso_encoder_output_jchar(jso_encoder *encoder, jso_ctype c)
-{
-	return jso_encoder_output_jstr(encoder, &c, 1);
-}
-
 static inline jso_rc jso_encoder_output_cchar(jso_encoder *encoder, char c)
 {
 	return jso_encoder_output_cstr(encoder, &c, 1);

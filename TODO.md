@@ -46,21 +46,21 @@
 
 
 ## Build
-- parser debug
-  - use option --enable-parser-debug
-  - set YYDEBUG macro to 1 if enabled, otherwise 0
-- autogen.sh
-  - check for autoconf, automake, libtool (libtoolize)
-- optional generating of files (re2c and bison)
-  - included generated files that will be used if not checked
-- re2c
-  - autoconf version check
-  - try to replace Makefile AM rule with AC
 - bison
   - autoconf version check
   - remove Makefile AM rule (use AC)
   - jso_parser.tab.h - prerequisite (build error when it's not created)
-
+  - do not emulate POSIX Yacc (do not use -y option added by default)
+- parser debug
+  - use option --enable-parser-debug
+  - set YYDEBUG macro to 1 if enabled, otherwise 0
+- re2c
+  - autoconf version check
+  - try to replace Makefile AM rule with AC
+- optional generating of files (re2c and bison)
+  - included generated files that will be used if not checked
+- autogen.sh
+  - check for autoconf, automake, libtool (libtoolize)
 
 ## Documentation
 - document source using doxygent comments

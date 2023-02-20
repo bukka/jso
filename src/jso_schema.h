@@ -278,12 +278,12 @@ typedef union _jso_schema_value_data {
 /**
  * @brief JsonSchema value data and type.
  */
-typedef struct _jso_schema_value {
+struct _jso_schema_value {
 	/** value data */
 	jso_schema_value_data data;
 	/** value type */
 	jso_schema_value_type type;
-} jso_schema_value;
+};
 
 /**
  * @brief Schema version.
