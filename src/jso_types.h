@@ -54,14 +54,30 @@ typedef long jso_int;
 typedef unsigned long jso_uint;
 
 /**
- * @brief Unsigned integer type.
+ * @brief Unsigned integer 32bit type.
  */
 typedef uint32_t jso_uint32;
+
+/**
+ * @brief Unsigned integer 64bit type.
+ */
+typedef uint64_t jso_uint64;
 
 /**
  * @brief Double type.
  */
 typedef double jso_double;
+
+/**
+ * @brief Double or int typetype.
+ */
+typedef struct _jso_number {
+	jso_bool is_int;
+	union {
+		jso_double d;
+		jso_int i;
+	}
+} jso_number;
 
 /**
  * @brief Character type for scanner.
