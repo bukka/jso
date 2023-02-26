@@ -37,9 +37,26 @@ JSO_API void jso_schema_init(jso_schema *schema)
 	memset(schema, 0, sizeof(jso_schema));
 }
 
-JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
+static jso_rc jso_schema_set_error(jso_schema *schema, jso_schema_error_type type, const char *message)
+{
+	schema->error.type = type;
+	schema->error.message = message;
+
+	return JSO_FAILURE;
+}
+
+static jso_rc jso_schema_parse_value(jso_schema *schema, jso_value *data, jso_value *parent)
 {
     return JSO_SUCCESS;
+}
+
+JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
+{
+	if (JSO_TYPE_P(data) != JSO_TYPE_OBJECT) {
+		return jso_schema_set_error(schema, JSO_SCHEMA_ERROR_ROOT_DATA_TYPE, "Invalid root data type");
+	}
+
+    return jso_schema_parse_value(schema, data, NULL);
 }
 
 JSO_API void jso_schema_clear(jso_schema *schema)

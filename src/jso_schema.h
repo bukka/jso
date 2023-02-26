@@ -295,6 +295,8 @@ typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_vers
  */
 typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_NONE = 0,
+	JSO_SCHEMA_ERROR_ROOT_DATA_TYPE,
+	JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
 	JSO_SCHEMA_ERROR_VERSION,
 	JSO_SCHEMA_ERROR_ID,
 } jso_schema_error_type;
@@ -304,7 +306,7 @@ typedef enum _jso_schema_error_type {
  */
 typedef struct _jso_schema_error {
 	/** error message */
-	jso_string *message;
+	const char *message;
 	/** error type */
 	jso_schema_error_type type;
 } jso_schema_error;
