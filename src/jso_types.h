@@ -79,8 +79,8 @@ typedef double jso_double;
 typedef struct _jso_number {
 	jso_bool is_int;
 	union {
-		jso_double d;
-		jso_int i;
+		jso_double dval;
+		jso_int ival;
 	};
 } jso_number;
 

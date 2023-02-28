@@ -73,11 +73,16 @@ typedef struct _jso_schema_value jso_schema_value;
 	_value_type default_value
 
 /**
+ * @brief JsonSchema common validation keywords.
+ */
+typedef struct _jso_schema_value_common {
+	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE();
+} jso_schema_value_common;
+
+/**
  * @brief JsonSchema null validation keywords.
  */
-typedef struct _jso_schema_value_null {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE();
-} jso_schema_value_null;
+typedef jso_schema_value_common jso_schema_value_null;
 
 /**
  * @brief JsonSchema boolean validation keywords.
@@ -143,7 +148,7 @@ typedef struct _jso_schema_value_number {
  * @todo support pattern
  */
 typedef struct _jso_schema_value_string {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_bool);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_string);
 	/** maxLength keyword */
 	jso_uint max_length;
 	/** minLength keyword */
@@ -243,7 +248,7 @@ typedef enum {
 	/** null value type */
 	JSO_SCHEMA_TYPE_NULL,
 	/** boolean value type */
-	JSO_SCHEMA_TYPE_BOOL,
+	JSO_SCHEMA_TYPE_BOOLEAN,
 	/** numeric value type */
 	JSO_SCHEMA_TYPE_NUMBER,
 	/** string value type */
@@ -295,10 +300,14 @@ typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_vers
  */
 typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_NONE = 0,
+	JSO_SCHEMA_ERROR_ID,
+	JSO_SCHEMA_ERROR_KEYWORD_REQUIRED,
 	JSO_SCHEMA_ERROR_ROOT_DATA_TYPE,
+	JSO_SCHEMA_ERROR_TYPE_UNKNOWN,
+	JSO_SCHEMA_ERROR_VALUE_ALLOC,
+	JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
 	JSO_SCHEMA_ERROR_VERSION,
-	JSO_SCHEMA_ERROR_ID,
 } jso_schema_error_type;
 
 /**

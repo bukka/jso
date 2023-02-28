@@ -122,7 +122,7 @@
 #define JSO_STRING_COPY_P(_src_str, _dest_str) \
 	do { \
 		++JSO_STRING_REFCOUNT_P(_src_str); \
-		_dest_str = _src_str; \
+		*_dest_str = *_src_str; \
 	} while (0)
 
 /**
