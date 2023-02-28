@@ -69,10 +69,20 @@ JSO_API void jso_object_free(jso_object *obj);
  *
  * @param obj object
  * @param key key of the value
- * @param value value to add
+ * @param val value to add
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
+
+/**
+ * Get value with the supplied key in the object.
+ *
+ * @param obj object
+ * @param key key of the value
+ * @param val pointer to set with the returned value
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_object_get(jso_object *obj, jso_string *key, jso_value **val);
 
 /**
  * Call callback for each value in the object.

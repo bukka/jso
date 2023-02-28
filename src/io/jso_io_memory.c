@@ -51,7 +51,7 @@ static int jso_io_memory_printf(jso_io *io, const char *format, ...)
 	va_list args;
 	int rsize;
 	size_t not_used = JSO_IO_SIZE(io) - (size_t) (JSO_IO_LIMIT(io) - JSO_IO_BUFFER(io));
-	
+
 	va_start(args, format);
 	rsize = vsnprintf((char *) JSO_IO_LIMIT(io), not_used, format, args);
 	va_end(args);

@@ -54,6 +54,11 @@ typedef long jso_int;
 typedef unsigned long jso_uint;
 
 /**
+ * @brief Unsigned integer 16bit type.
+ */
+typedef uint16_t jso_uint16;
+
+/**
  * @brief Unsigned integer 32bit type.
  */
 typedef uint32_t jso_uint32;
@@ -88,10 +93,14 @@ typedef unsigned char jso_ctype;
  * @brief String type.
  */
 typedef struct _jso_string {
-	/** string characters */
-	jso_ctype *val;
+	/* reference count */
+	jso_uint16 refcount;
+	/* value flags - currently not used*/
+	jso_uint16 flags;
 	/** string length */
 	size_t len;
+	/** string characters */
+	jso_ctype *val;
 } jso_string;
 
 /**
@@ -153,8 +162,7 @@ typedef enum {
 /**
  * @brief Error location.
  *
- * It identifies a place where the error was found. The structure
- * is designed for Bison parser.
+ * It identifies a place where the error was found. The structure is designed for Bison parser.
  */
 typedef struct _jso_error_location {
 	/** first column of the error */
@@ -180,9 +188,8 @@ typedef struct _jso_error {
 /**
  * @brief Value data.
  *
- * The current size of the value data is equal to the largest
- * element which is @ref jso_string with size 128 bits on 64bit
- * platform.
+ * The current size of the value data is equal to the largest element which is @ref jso_string with
+ * size 128 bits on 64bit platform.
  */
 typedef union _jso_value_data {
 	/** integer value */
@@ -201,6 +208,9 @@ typedef union _jso_value_data {
 
 /**
  * @brief Value data and type.
+ *
+ * The size of the structure on 64bit platforms is 192 bits as it is sum of data (128 bits), type
+ * (32 bits), refs (16 bits) and flags (16 bits).
  */
 typedef struct _jso_value {
 	/** value data */

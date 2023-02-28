@@ -122,10 +122,10 @@ JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_boo
  *
  * @param ht hash table
  * @param key key of the value to find
- * @param value returned value
+ * @param value pointer that gets the returned value pointer
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value);
+JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value);
 
 /**
  * Copy entries from one table to another.

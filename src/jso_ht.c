@@ -152,7 +152,7 @@ JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_boo
 	return jso_ht_set_with_hash(ht, key, jso_ht_hash(key), value, free_old);
 }
 
-JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value)
+JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value)
 {
 	if (ht->count == 0) {
 		return JSO_FAILURE;
@@ -163,7 +163,7 @@ JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value *value)
 		return JSO_FAILURE;
 	}
 
-	*value = entry->value;
+	*value = &entry->value;
 	return JSO_SUCCESS;
 }
 

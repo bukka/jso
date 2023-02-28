@@ -90,6 +90,13 @@
 #define JSO_OBJVAL_P(pjv) (pjv)->data.obj
 
 /**
+ * Get an object hash table of the supplied pointer to value.
+ * @param pjv variable of @ref jso_value type
+ * @return Pointer to @ref jso_ht.
+ */
+#define JSO_OBJHVAL_P(pjv) &(pjv)->data.obj->ht
+
+/**
  * Get an error of the supplied pointer to value.
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error or `NULL` if no error.
@@ -167,6 +174,13 @@
  * @return Pointer to @ref jso_object.
  */
 #define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
+
+/**
+ * Get an object hash table of the supplied value.
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_ht.
+ */
+#define JSO_OBJHVAL(jv) JSO_OBJHVAL_P(&(jv))
 
 /**
  * Get an error of the supplied value.

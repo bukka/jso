@@ -1,3 +1,3 @@
 #!/bin/sh
 
-find src -name '*.c' -or -name '*.h' -exec clang-format -i \{\} \;
+find src -name '*.c' -or -name '*.h' | xargs clang-format -i

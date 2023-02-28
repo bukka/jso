@@ -43,6 +43,12 @@ JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
 	return jso_ht_set(&obj->ht, key, val, true);
 }
 
+/* get element of the object obj */
+JSO_API jso_rc jso_object_get(jso_object *obj, jso_string *key, jso_value **val)
+{
+	return jso_ht_get(&obj->ht, key, val);
+}
+
 /* call cbk function for each element in object */
 JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
 {

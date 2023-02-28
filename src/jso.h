@@ -107,11 +107,6 @@
 #define jso_calloc calloc
 
 /**
- * @brief String duplication
- */
-#define jso_strdup strdup
-
-/**
  * @brief Memory freeing
  */
 #define jso_free free
