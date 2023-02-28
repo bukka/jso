@@ -235,6 +235,7 @@ static jso_rc jso_schema_keyword_set_number(jso_schema *schema, jso_value *data,
 	return JSO_SUCCESS;
 }
 
+#if 0 /* disable as currently not used */
 /* Set integer keyword. */
 static jso_rc jso_schema_keyword_set_int(jso_schema *schema, jso_value *data, const char *key,
 		jso_int *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
@@ -251,7 +252,9 @@ static jso_rc jso_schema_keyword_set_int(jso_schema *schema, jso_value *data, co
 
 	return JSO_SUCCESS;
 }
+#endif
 
+/* Set unsigned integer keyword either with zero or without zero. */
 static jso_rc jso_schema_keyword_set_uint_ex(jso_schema *schema, jso_value *data, const char *key,
 		jso_uint *keyword, jso_bitset *keywords, jso_uint64 keyword_type, bool no_zero)
 {
@@ -319,11 +322,13 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 #define JSO_SCHEMA_KW_SET_NUM(_schema, _data, _key, _value, _keyword_type) \
 	JSO_SCHEMA_KW_SET_NUM_EX(_schema, _data, _key, _value, _key, _keyword_type)
 
+#if 0 /* disable as currently not used */
 #define JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
 	JSO_SCHEMA_KW_SET(int, _schema, _data, _key, _value, _keyword_name, _keyword_type)
 
 #define JSO_SCHEMA_KW_SET_INT(_schema, _data, _key, _value, _keyword_type) \
 	JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#endif
 
 #define JSO_SCHEMA_KW_SET_UINT_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
 	JSO_SCHEMA_KW_SET(uint, _schema, _data, _key, _value, _keyword_name, _keyword_type)
@@ -446,6 +451,8 @@ static jso_schema_value *jso_schema_parse_string(
 			schema, data, parent, value_type, string, TYPE_STRING, value_data, strval);
 
 	JSO_SCHEMA_KW_SET_STR_EX(schema, data, default, strval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxLength, strval, max_length, STRING_MAX_LENGTH);
+	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minLength, strval, min_length, STRING_MIN_LENGTH);
 
 	return jso_schema_value_create(schema, "string", value_type, &value_data);
 }
