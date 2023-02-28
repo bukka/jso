@@ -51,6 +51,6 @@ typedef jso_uint64 jso_bitset;
  * @param _bs bit set
  * @param _pos position of the bit to check
  */
-#define JSO_BITSET_ISSET(_bs, _pos) (_bs & (1 << _pos))
+#define JSO_BITSET_IS_SET(_bs, _pos) (_bs & (1 << _pos))
 
 #endif /* JSO_BITSET_H */

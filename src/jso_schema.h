@@ -124,9 +124,9 @@ typedef struct _jso_schema_value_number {
 	/** multipleOf keyword */
 	jso_uint multiple_of;
 	/** minimum keyword */
-	jso_int minimum;
+	jso_number minimum;
 	/** maximum keyword */
-	jso_int maximum;
+	jso_number maximum;
 	/** exclusiveMinimum keyword */
 	jso_bool exclusive_minimum;
 	/** exclusiveMaximum keyword */
@@ -306,6 +306,7 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_TYPE_UNKNOWN,
 	JSO_SCHEMA_ERROR_VALUE_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC,
+	JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
 	JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
 	JSO_SCHEMA_ERROR_VERSION,
 } jso_schema_error_type;
