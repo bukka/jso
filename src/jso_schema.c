@@ -242,7 +242,7 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 	jso_schema_value_type _value_type_var; \
 	_value_data_var._value_data_name = jso_calloc(1, sizeof(jso_schema_value_##_value_type_name)); \
 	jso_schema_value_##_value_type_name *_value_data_name = _value_data_var._value_data_name; \
-    (void) _value_data_name; \
+	(void) _value_data_name; \
 	if (jso_schema_value_common_init(_schema, _data, _parent, \
 				(jso_schema_value_common *) _value_data_var._value_data_name, #_value_type_name) \
 			== JSO_FAILURE) { \
@@ -358,19 +358,19 @@ static jso_schema_value *jso_schema_parse_value(
 		return NULL;
 	}
 
-    if (JSO_STRING_EQUALS_CSTR_P(type, "string")) {
+	if (JSO_STRING_EQUALS_CSTR_P(type, "string")) {
 		return jso_schema_parse_string(schema, data, parent);
 	}
-    if (JSO_STRING_EQUALS_CSTR_P(type, "number")) {
+	if (JSO_STRING_EQUALS_CSTR_P(type, "number")) {
 		return jso_schema_parse_number(schema, data, parent);
 	}
 	if (JSO_STRING_EQUALS_CSTR_P(type, "boolean")) {
 		return jso_schema_parse_boolean(schema, data, parent);
 	}
-    if (JSO_STRING_EQUALS_CSTR_P(type, "array")) {
+	if (JSO_STRING_EQUALS_CSTR_P(type, "array")) {
 		return jso_schema_parse_array(schema, data, parent);
 	}
-    if (JSO_STRING_EQUALS_CSTR_P(type, "object")) {
+	if (JSO_STRING_EQUALS_CSTR_P(type, "object")) {
 		return jso_schema_parse_object(schema, data, parent);
 	}
 	if (JSO_STRING_EQUALS_CSTR_P(type, "null")) {
