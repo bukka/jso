@@ -61,6 +61,7 @@ int jso_yydebug = 1;
 %token <value> JSO_T_DOUBLE
 %token <value> JSO_T_STRING
 %token <value> JSO_T_ESTRING
+%token <value> JSO_T_ENOMEM
 %token <value> JSO_T_EOI
 %token <value> JSO_T_ERROR
 
@@ -162,11 +163,11 @@ member:
 		pair
 			{
 				JSO_PARSER_HOOK(object_create, @1, &$$);
-				JSO_PARSER_HOOK(object_update, @1, $$, &JSO_STR($1.key), &$1.val);
+				JSO_PARSER_HOOK(object_update, @1, $$, JSO_STR($1.key), &$1.val);
 			}
 	|	member ',' pair
 			{
-				JSO_PARSER_HOOK(object_update, @3, $1, &JSO_STR($3.key), &$3.val);
+				JSO_PARSER_HOOK(object_update, @3, $1, JSO_STR($3.key), &$3.val);
 				$$ = $1;
 			}
 	|	member errlex
@@ -229,12 +230,12 @@ element:
 key:
 		JSO_T_STRING
 			{
-				JSO_PARSER_HOOK(object_key, @1, &JSO_STR($1));
+				JSO_PARSER_HOOK(object_key, @1, JSO_STR($1));
 				$$ = $1;
 			}
 	|	JSO_T_ESTRING
 			{
-				JSO_PARSER_HOOK(object_key, @1, &JSO_STR($1));
+				JSO_PARSER_HOOK(object_key, @1, JSO_STR($1));
 				$$ = $1;
 			}
 ;

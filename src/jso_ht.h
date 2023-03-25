@@ -37,8 +37,7 @@
  * @brief Hash table entry.
  */
 typedef struct _jso_ht_entry {
-	jso_string key;
-	jso_uint32 hash;
+	jso_string *key;
 	jso_value value;
 } jso_ht_entry;
 
@@ -64,8 +63,8 @@ typedef struct _jso_ht {
 		size_t _found = 0; \
 		for (size_t _i = 0; _i < _ht->capacity && _found < _ht->count; _i++) { \
 			_entry = &_entries[_i]; \
-			_key = &_entry->key; \
-			if (JSO_STRING_VAL_P(_key) == NULL) \
+			_key = _entry->key; \
+			if (_key == NULL) \
 				continue; \
 			++_found; \
 			_val = &_entry->value;
@@ -126,6 +125,16 @@ JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_boo
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value);
+
+/**
+ * Get value from the hash table by C string key.
+ *
+ * @param ht hash table
+ * @param key C string key of the value to find
+ * @param value pointer that gets the returned value pointer
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value);
 
 /**
  * Copy entries from one table to another.

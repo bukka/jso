@@ -30,9 +30,13 @@
 #define JSO_STRING_H
 
 #include "jso_types.h"
+#include "jso_mm.h"
+
+#include <string.h>
 
 /**
  * Get string length for the supplied string pointer.
+ *
  * @param _str pointer to @ref jso_string
  * @return The string length
  */
@@ -40,110 +44,130 @@
 
 /**
  * Get string value for the supplied string pointer.
+ *
  * @param _str pointer to @ref jso_string
  * @return The string value (char array)
  */
-#define JSO_STRING_VAL_P(_str) (_str)->val
+#define JSO_STRING_VAL_P(_str) ((jso_ctype *) &(_str)->val)
+
+/**
+ * Get string flags of the supplied string pointer.
+ *
+ * @param pjv pointer to @ref jso_string
+ * @return String flags.
+ */
+#define JSO_STRING_FLAGS_P(_str) (_str)->flags
+
+/**
+ * Get hash value count of the supplied string pointer.
+ *
+ * @param pjv pointer to @ref jso_string
+ * @return Hash value.
+ */
+#define JSO_STRING_HASH_P(_str) (_str)->hash
 
 /**
  * Get reference count of the supplied string pointer.
+ *
  * @param pjv pointer to @ref jso_string
  * @return References count value.
  */
 #define JSO_STRING_REFCOUNT_P(_str) (_str)->refcount
 
 /**
- * Get string length.
- * @param _str string of type @ref jso_string
- * @return The string length
+ * Allocate string.
+ *
+ * @param len string length
+ * @return Newly allocated string.
  */
-#define JSO_STRING_LEN(_str) (_str).len
+static inline jso_string *jso_string_alloc(size_t len)
+{
+	return jso_calloc(1, sizeof(jso_string) + len);
+}
 
 /**
- * Get string value.
- * @param _str string of type @ref jso_string
- * @return The string value (char array)
+ * Free string.
+ *
+ * @param str string to free
  */
-#define JSO_STRING_VAL(_str) (_str).val
+static inline void jso_string_free(jso_string *str)
+{
+	if (JSO_STRING_REFCOUNT_P(str) > 0) {
+		--JSO_STRING_REFCOUNT_P(str);
+	} else {
+		jso_free(str);
+	}
+}
 
 /**
- * Get reference count of the supplied string.
- * @param _str string of type @ref jso_string
- * @return References count value.
+ * Duplicate string.
+ *
+ * @param str string to duplicate
+ * @return the duplicated string
  */
-#define JSO_STRING_REFCOUNT(_str) (_str).refcount
+static inline jso_string *jso_string_dup(jso_string *str)
+{
+	++JSO_STRING_REFCOUNT_P(str);
+	return str;
+}
 
 /**
- * Clear string.
- * @param _str string
+ * Check wheter two strings are equal.
+ *
+ * @param s1 first string
+ * @param s2 second string
+ * @return True if strings are equal, otherwise false.
  */
-#define JSO_STRING_CLEAR(_str) \
-	do { \
-		if (JSO_STRING_REFCOUNT(_str) > 0) { \
-			--JSO_STRING_REFCOUNT(_str); \
-		} else if (JSO_STRING_VAL(_str) && JSO_STRING_LEN(_str) > 0) { \
-			jso_free(JSO_STRING_VAL(_str)); \
-			JSO_STRING_VAL(_str) = NULL; \
-			JSO_STRING_LEN(_str) = 0; \
-		} \
-	} while (0)
+static inline bool jso_string_equals(jso_string *s1, jso_string *s2)
+{
+	return s1 == s2
+			|| (JSO_STRING_LEN_P(s1) == JSO_STRING_LEN_P(s2)
+					&& !memcmp(JSO_STRING_VAL_P(s1), JSO_STRING_VAL_P(s2), JSO_STRING_LEN_P(s1)));
+}
 
 /**
- * Clear string pointer.
- * @param _str string pointer
+ * Check wheter a string is equal to C string.
+ *
+ * @param str string to compare
+ * @param cstr C string to compare
+ * @return True if strings are equal, otherwise false.
  */
-#define JSO_STRING_CLEAR_P(_str) \
-	do { \
-		if (JSO_STRING_REFCOUNT_P(_str) > 0) { \
-			--JSO_STRING_REFCOUNT_P(_str); \
-		} else if (JSO_STRING_VAL_P(_str) && JSO_STRING_LEN_P(_str) > 0) { \
-			jso_free(JSO_STRING_VAL_P(_str)); \
-			JSO_STRING_VAL_P(_str) = NULL; \
-			JSO_STRING_LEN_P(_str) = 0; \
-		} \
-	} while (0)
+static inline bool jso_string_equals_to_cstr(jso_string *str, const char *cstr)
+{
+	return !memcmp(JSO_STRING_VAL_P(str), cstr, JSO_STRING_LEN_P(str));
+}
 
 /**
- * Copy strings.
- * @param _src_str source string
- * @param _dest_str destination string
+ * Set string hash.
+ *
+ * @param str string
  */
-#define JSO_STRING_COPY(_src_str, _dest_str) \
-	do { \
-		++JSO_STRING_REFCOUNT(_src_str); \
-		_dest_str = _src_str; \
-	} while (0)
+static inline void jso_string_set_hash(jso_string *str, jso_uint32 hash)
+{
+	JSO_STRING_HASH_P(str) = hash;
+	JSO_STRING_FLAGS_P(str) |= JSO_STRING_FLAG_HASH_SET;
+}
 
 /**
- * Copy string pointers.
- * @param _src_str source string pointer
- * @param _dest_str destination string pointer
+ * Check whether string hash is set.
+ *
+ * @param str string
+ * @return True if hash is set, otherwise false.
  */
-#define JSO_STRING_COPY_P(_src_str, _dest_str) \
-	do { \
-		++JSO_STRING_REFCOUNT_P(_src_str); \
-		*_dest_str = *_src_str; \
-	} while (0)
+static inline bool jso_string_has_hash(jso_string *str)
+{
+	return JSO_STRING_FLAGS_P(str) & JSO_STRING_FLAG_HASH_SET;
+}
 
 /**
- * Check whether string value equals to the supplied C string.
- * @param _str string pointer
- * @param _cstr C string pointer
+ * Return string hash.
+ *
+ * @param str string
+ * @return String hash.
  */
-#define JSO_STRING_EQUALS_CSTR_P(_str, _cstr) \
-	(JSO_STRING_LEN_P(_str) == strlen(_cstr) \
-			&& memcmp(JSO_STRING_VAL_P(_str), _cstr, JSO_STRING_LEN_P(_str)) == 0)
-
-/**
- * Assign static C string to string without any copying of val.
- * @param _str string to assing to
- * @param _cstr C string to assign
- */
-#define JSO_STRING_ASSIGN_STATIC_CSTR(_str, _cstr) \
-	do { \
-		memset(&(_str), 0, sizeof(jso_string)); \
-		JSO_STRING_LEN(_str) = strlen(_cstr); \
-		JSO_STRING_VAL(_str) = (jso_ctype *) _cstr; \
-	} while (0)
+static inline jso_uint32 jso_string_get_hash(jso_string *str)
+{
+	return JSO_STRING_HASH_P(str);
+}
 
 #endif /* JSO_STRING_H */

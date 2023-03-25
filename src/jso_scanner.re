@@ -296,17 +296,18 @@ scanner_start:
 		JSO_SCANNER_ERROR(JSO_ERROR_ESCAPE);
 	}
 	<STR_P1>["]              {
-		jso_ctype *str;
 		JSO_SCANNER_LOC(last_column)++;
 		size_t len = JSO_IO_STR_LENGTH(s->io) - JSO_IO_STR_GET_ESC(s->io);
+		jso_string *str = jso_string_alloc(len);
+		if (str == NULL) {
+			return JSO_T_ENOMEM;
+		}
+		JSO_VALUE_SET_STRING(s->value, str);
 		if (len == 0) {
 			JSO_CONDITION_SET(JS);
-			JSO_VALUE_SET_EMPTY_STRING(s->value);
 			return JSO_T_ESTRING;
 		}
-		str = jso_malloc((len + 1) * sizeof(jso_ctype));
-		str[len] = 0;
-		JSO_VALUE_SET_STRING(s->value, str, len);
+		JSO_STRING_LEN_P(str) = len;
 		if (JSO_IO_STR_GET_ESC(s->io)) {
 			s->pstr = JSO_SVAL(s->value);
 			JSO_IO_CURSOR(s->io) = JSO_IO_STR_GET_START(s->io);

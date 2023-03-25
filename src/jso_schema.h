@@ -59,9 +59,9 @@ typedef struct _jso_schema_value jso_schema_value;
 	/** keywords mask to see what has been set */ \
 	jso_bitset keywords; \
 	/** title keyword */ \
-	jso_string title; \
+	jso_string *title; \
 	/** description keyword */ \
-	jso_string description;
+	jso_string *description;
 
 /**
  * @brief Common schema feilds with default value.
@@ -148,7 +148,7 @@ typedef struct _jso_schema_value_number {
  * @todo support pattern
  */
 typedef struct _jso_schema_value_string {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_string);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_string *);
 	/** maxLength keyword */
 	jso_uint max_length;
 	/** minLength keyword */
@@ -328,7 +328,7 @@ typedef struct _jso_schema {
 	/** root value */
 	jso_schema_value *root;
 	/** schema ID */
-	jso_string id;
+	jso_string *id;
 	/** schema version */
 	jso_schema_version version;
 	/** schema error */

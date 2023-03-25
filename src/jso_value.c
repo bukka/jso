@@ -35,7 +35,7 @@ JSO_API void jso_value_free(jso_value *val)
 {
 	switch (val->type) {
 		case JSO_TYPE_STRING:
-			JSO_STRING_CLEAR(JSO_STR_P(val));
+			jso_string_free(JSO_STR_P(val));
 			break;
 		case JSO_TYPE_ARRAY:
 			jso_array_free(JSO_ARRVAL_P(val));

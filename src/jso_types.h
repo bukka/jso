@@ -90,17 +90,24 @@ typedef struct _jso_number {
 typedef unsigned char jso_ctype;
 
 /**
+ * @brief String flag defining whether the hash was already set.
+ */
+#define JSO_STRING_FLAG_HASH_SET 1
+
+/**
  * @brief String type.
  */
 typedef struct _jso_string {
 	/* reference count */
 	jso_uint16 refcount;
-	/* value flags - currently not used*/
+	/* string flags */
 	jso_uint16 flags;
+	/* hash value */
+	jso_uint32 hash;
 	/** string length */
 	size_t len;
 	/** string characters */
-	jso_ctype *val;
+	jso_ctype val[1];
 } jso_string;
 
 /**
@@ -188,16 +195,15 @@ typedef struct _jso_error {
 /**
  * @brief Value data.
  *
- * The current size of the value data is equal to the largest element which is @ref jso_string with
- * size 128 bits on 64bit platform.
+ * The current size of the value data is equal to the largest element which is 64bit for double.
  */
 typedef union _jso_value_data {
 	/** integer value */
 	jso_int ival;
 	/** double value */
 	jso_double dval;
-	/** string value (embedded) */
-	jso_string str;
+	/** string value (reference) */
+	jso_string *str;
 	/** array value (reference) */
 	jso_array *arr;
 	/** object value (reference) */
@@ -209,8 +215,7 @@ typedef union _jso_value_data {
 /**
  * @brief Value data and type.
  *
- * The size of the structure on 64bit platforms is 192 bits as it is sum of data (128 bits), type
- * (32 bits), refs (16 bits) and flags (16 bits).
+ * The size of the structure 128 bits on 64bit platforms and 96 bits on 32bit platforms.
  */
 typedef struct _jso_value {
 	/** value data */

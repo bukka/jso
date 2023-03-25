@@ -148,7 +148,7 @@ static jso_rc jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
 
 	jso_encoder_output_cchar(encoder, '"');
 	for (pos = 0; pos < JSO_STRING_LEN_P(str); pos++) {
-		c = (char) JSO_STRING_VAL_P(str)[pos];
+		c = JSO_STRING_VAL_P(str)[pos];
 
 		switch (c) {
 			case '"':
@@ -281,7 +281,7 @@ JSO_API jso_rc jso_encoder_encode(jso_encoder *encoder, jso_value *val)
 		case JSO_TYPE_DOUBLE:
 			return jso_encoder_encode_double(encoder, JSO_DVAL_P(val));
 		case JSO_TYPE_STRING:
-			return jso_encoder_encode_string(encoder, &JSO_STR_P(val));
+			return jso_encoder_encode_string(encoder, JSO_STR_P(val));
 		case JSO_TYPE_ARRAY:
 			return jso_encoder_encode_array(encoder, JSO_ARRVAL_P(val));
 		case JSO_TYPE_OBJECT:

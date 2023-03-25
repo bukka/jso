@@ -64,16 +64,16 @@
 /**
  * Get a string value of the supplied pointer to value.
  * @param pjv pointer to @ref jso_value
- * @return String value (characters buffer).
+ * @return Pointer to the string value (characters buffer).
  */
-#define JSO_SVAL_P(pjv) JSO_STR_P(pjv).val
+#define JSO_SVAL_P(pjv) JSO_STRING_VAL_P(JSO_STR_P(pjv))
 
 /**
  * Get a string length of the supplied pointer to value.
  * @param pjv pointer to @ref jso_value
  * @return String length.
  */
-#define JSO_SLEN_P(pjv) JSO_STR_P(pjv).len
+#define JSO_SLEN_P(pjv) JSO_STRING_LEN_P(JSO_STR_P(pjv))
 
 /**
  * Get an array of the supplied pointer to value.
@@ -264,22 +264,10 @@
  * @param sv string value (character buffer)
  * @param sl string length
  */
-#define JSO_VALUE_SET_STRING(jv, sv, sl) \
+#define JSO_VALUE_SET_STRING(jv, sv) \
 	do { \
 		JSO_TYPE(jv) = JSO_TYPE_STRING; \
-		JSO_SVAL(jv) = (sv); \
-		JSO_SLEN(jv) = (sl); \
-	} while (0)
-
-/**
- * Set an empty string to the supplied value.
- * @param jv variable of @ref jso_value type
- */
-#define JSO_VALUE_SET_EMPTY_STRING(jv) \
-	do { \
-		JSO_TYPE(jv) = JSO_TYPE_STRING; \
-		JSO_SVAL(jv) = NULL; \
-		JSO_SLEN(jv) = 0; \
+		JSO_STR(jv) = sv; \
 	} while (0)
 
 /**

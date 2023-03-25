@@ -22,61 +22,35 @@
  */
 
 /**
- * @file jso_tokens.h
- * @brief Tokens returned from scanning.
+ * @file jso_mm.h
+ * @brief JSO memory management
  */
 
-#ifndef JSO_TOKENS_H
-#define JSO_TOKENS_H
+#ifndef JSO_MM_H
+#define JSO_MM_H
+
+/* memeroy functions - just redefinitions for potential future extending */
+
+#include <stdlib.h>
 
 /**
- * @brief JSON null value.
+ * @brief Memory allocation
  */
-#define JSO_T_NUL 1
+#define jso_malloc malloc
 
 /**
- * @brief JSON true value.
+ * @brief Memory reallocation
  */
-#define JSO_T_TRUE 2
+#define jso_realloc realloc
 
 /**
- * @brief JSON false value.
+ * @brief Memory allocation with zeroing all bytes
  */
-#define JSO_T_FALSE 3
+#define jso_calloc calloc
 
 /**
- * @brief JSON long number value.
+ * @brief Memory freeing
  */
-#define JSO_T_LONG 4
+#define jso_free free
 
-/**
- * @brief JSON double number value.
- */
-#define JSO_T_DOUBLE 5
-
-/**
- * @brief JSON string value.
- */
-#define JSO_T_STRING 6
-
-/**
- * @brief Error in string.
- */
-#define JSO_T_ESTRING 7
-
-/**
- * @brief Memory allocation error.
- */
-#define JSO_T_ENOMEM 125
-
-/**
- * @brief IO error.
- */
-#define JSO_T_EOI 126
-
-/**
- * @brief Other error.
- */
-#define JSO_T_ERROR 127
-
-#endif /* JSO_TOKENS_H */
+#endif /* JSO_MM_H */

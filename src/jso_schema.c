@@ -76,11 +76,8 @@ static jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const
 		jso_value_type type, jso_bool required)
 {
 	jso_value *val;
-	jso_string str_key;
 
-	JSO_STRING_ASSIGN_STATIC_CSTR(str_key, key);
-
-	if (jso_ht_get(JSO_OBJHVAL_P(data), &str_key, &val) == JSO_FAILURE) {
+	if (jso_ht_get_by_cstr_key(JSO_OBJHVAL_P(data), key, &val) == JSO_FAILURE) {
 		if (required) {
 			jso_schema_error_format(
 					schema, JSO_SCHEMA_ERROR_KEYWORD_REQUIRED, "Keyword %s is required", key);
@@ -102,7 +99,7 @@ static inline jso_string *jso_schema_data_get_str_ex(
 {
 	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_STRING, required);
 
-	return val == NULL ? NULL : &JSO_STR_P(val);
+	return val == NULL ? NULL : JSO_STR_P(val);
 }
 
 static inline jso_string *jso_schema_data_get_str_required(
@@ -288,14 +285,14 @@ static inline jso_rc jso_schema_keyword_set_uint_nz(jso_schema *schema, jso_valu
 
 /* Set string keyword. */
 static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, const char *key,
-		jso_string *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
+		jso_string **keyword, jso_bitset *keywords, jso_uint64 keyword_type)
 {
 	jso_string *keyword_str = jso_schema_data_get_str(schema, data, key);
 	if (jso_schema_error_is_set(schema)) {
 		return JSO_FAILURE;
 	}
 	if (keyword_str != NULL) {
-		JSO_STRING_COPY_P(keyword_str, keyword);
+		*keyword = jso_string_dup(keyword_str);
 		JSO_BITSET_SET(*keywords, keyword_type);
 	}
 	return JSO_SUCCESS;
@@ -480,22 +477,22 @@ static jso_schema_value *jso_schema_parse_value(
 		return NULL;
 	}
 
-	if (JSO_STRING_EQUALS_CSTR_P(type, "string")) {
+	if (jso_string_equals_to_cstr(type, "string")) {
 		return jso_schema_parse_string(schema, data, parent);
 	}
-	if (JSO_STRING_EQUALS_CSTR_P(type, "number")) {
+	if (jso_string_equals_to_cstr(type, "number")) {
 		return jso_schema_parse_number(schema, data, parent);
 	}
-	if (JSO_STRING_EQUALS_CSTR_P(type, "boolean")) {
+	if (jso_string_equals_to_cstr(type, "boolean")) {
 		return jso_schema_parse_boolean(schema, data, parent);
 	}
-	if (JSO_STRING_EQUALS_CSTR_P(type, "array")) {
+	if (jso_string_equals_to_cstr(type, "array")) {
 		return jso_schema_parse_array(schema, data, parent);
 	}
-	if (JSO_STRING_EQUALS_CSTR_P(type, "object")) {
+	if (jso_string_equals_to_cstr(type, "object")) {
 		return jso_schema_parse_object(schema, data, parent);
 	}
-	if (JSO_STRING_EQUALS_CSTR_P(type, "null")) {
+	if (jso_string_equals_to_cstr(type, "null")) {
 		return jso_schema_parse_null(schema, data, parent);
 	}
 
@@ -509,8 +506,8 @@ static jso_rc jso_schema_version_set(jso_schema *schema, jso_value *data)
 {
 	jso_string *version = jso_schema_data_get_str(schema, data, "$schema");
 
-	if (version == NULL || JSO_STRING_EQUALS_CSTR_P(version, "http://json-schema.org/schema#")
-			|| JSO_STRING_EQUALS_CSTR_P(version, "http://json-schema.org/draft-04/schema#")) {
+	if (version == NULL || jso_string_equals_to_cstr(version, "http://json-schema.org/schema#")
+			|| jso_string_equals_to_cstr(version, "http://json-schema.org/draft-04/schema#")) {
 		schema->version = JSO_SCHEMA_VERSION_DRAFT_04;
 		return JSO_SUCCESS;
 	}
@@ -537,7 +534,7 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		return JSO_FAILURE;
 	}
 	if (id) {
-		JSO_STRING_COPY(*id, schema->id);
+		schema->id = jso_string_dup(id);
 	}
 
 	// parse root value
