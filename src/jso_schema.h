@@ -92,6 +92,48 @@ typedef struct _jso_schema_value_boolean {
 } jso_schema_value_boolean;
 
 /**
+ * @brief Integer keyword multipleOf bit set ID.
+ */
+#define JSO_SCHEMA_KEYWORD_INTEGER_MULTIPLE_OF 10
+
+/**
+ * @brief Integer keyword minimum bit set ID.
+ */
+#define JSO_SCHEMA_KEYWORD_INTEGER_MINIMUM 11
+
+/**
+ * @brief Integer keyword maximum bit set ID.
+ */
+#define JSO_SCHEMA_KEYWORD_INTEGER_MAXIMUM 12
+
+/**
+ * @brief Integer keyword exclusiveMinimum bit set ID.
+ */
+#define JSO_SCHEMA_KEYWORD_INTEGER_EXCLUSIVE_MINIMUM 13
+
+/**
+ * @brief Integer keyword exclusiveMaximum bit set ID.
+ */
+#define JSO_SCHEMA_KEYWORD_INTEGER_EXCLUSIVE_MAXIMUM 14
+
+/**
+ * @brief JsonSchema integer validation keywords.
+ */
+typedef struct _jso_schema_value_integer {
+	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_int);
+	/** multipleOf keyword */
+	jso_uint multiple_of;
+	/** minimum keyword */
+	jso_int minimum;
+	/** maximum keyword */
+	jso_int maximum;
+	/** exclusiveMinimum keyword */
+	jso_bool exclusive_minimum;
+	/** exclusiveMaximum keyword */
+	jso_bool exclusive_maximum;
+} jso_schema_value_integer;
+
+/**
  * @brief Number keyword multipleOf bit set ID.
  */
 #define JSO_SCHEMA_KEYWORD_NUMBER_MULTIPLE_OF 10
@@ -249,6 +291,8 @@ typedef enum {
 	JSO_SCHEMA_TYPE_NULL,
 	/** boolean value type */
 	JSO_SCHEMA_TYPE_BOOLEAN,
+	/** integer value type */
+	JSO_SCHEMA_TYPE_INTEGER,
 	/** numeric value type */
 	JSO_SCHEMA_TYPE_NUMBER,
 	/** string value type */
@@ -270,6 +314,8 @@ typedef union _jso_schema_value_data {
 	jso_schema_value_null *nulval;
 	/** boolean value */
 	jso_schema_value_boolean *boolval;
+	/** integer value */
+	jso_schema_value_integer *intval;
 	/** number value */
 	jso_schema_value_number *numval;
 	/** string value */

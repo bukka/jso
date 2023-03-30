@@ -232,7 +232,6 @@ static jso_rc jso_schema_keyword_set_number(jso_schema *schema, jso_value *data,
 	return JSO_SUCCESS;
 }
 
-#if 0 /* disable as currently not used */
 /* Set integer keyword. */
 static jso_rc jso_schema_keyword_set_int(jso_schema *schema, jso_value *data, const char *key,
 		jso_int *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
@@ -249,7 +248,6 @@ static jso_rc jso_schema_keyword_set_int(jso_schema *schema, jso_value *data, co
 
 	return JSO_SUCCESS;
 }
-#endif
 
 /* Set unsigned integer keyword either with zero or without zero. */
 static jso_rc jso_schema_keyword_set_uint_ex(jso_schema *schema, jso_value *data, const char *key,
@@ -312,6 +310,12 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 
 #define JSO_SCHEMA_KW_SET_BOOL(_schema, _data, _key, _value, _keyword_type) \
 	JSO_SCHEMA_KW_SET_BOOL_EX(_schema, _data, _key, _value, _key, _keyword_type)
+
+#define JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET(int, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+
+#define JSO_SCHEMA_KW_SET_INT(_schema, _data, _key, _value, _keyword_type) \
+	JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _key, _keyword_type)
 
 #define JSO_SCHEMA_KW_SET_NUM_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
 	JSO_SCHEMA_KW_SET(number, _schema, _data, _key, _value, _keyword_name, _keyword_type)
@@ -412,6 +416,36 @@ static jso_schema_value *jso_schema_parse_boolean(
 	return jso_schema_value_create(schema, "boolean", value_type, &value_data);
 }
 
+static jso_schema_value *jso_schema_parse_integer(
+		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+{
+	JSO_SCHEMA_VALUE_DATA_INIT(
+			schema, data, parent, value_type, integer, TYPE_INTEGER, value_data, intval);
+
+	JSO_SCHEMA_KW_SET_INT_EX(schema, data, default, intval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_UINT_NZ_EX(
+			schema, data, multipleOf, intval, multiple_of, INTEGER_MULTIPLE_OF);
+	JSO_SCHEMA_KW_SET_INT(schema, data, minimum, intval, INTEGER_MINIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(
+			schema, data, exclusiveMinimum, intval, exclusive_minimum, INTEGER_EXCLUSIVE_MINIMUM);
+	JSO_SCHEMA_KW_SET_INT(schema, data, maximum, intval, INTEGER_MAXIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(
+			schema, data, exclusiveMaximum, intval, exclusive_maximum, INTEGER_EXCLUSIVE_MAXIMUM);
+
+	if (JSO_SCHEMA_KW_IS_SET(intval, INTEGER_EXCLUSIVE_MINIMUM)
+			&& !JSO_SCHEMA_KW_IS_SET(intval, INTEGER_MINIMUM)) {
+		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+				"The minimum must be set when exclusiveMinimum is set");
+	}
+	if (JSO_SCHEMA_KW_IS_SET(intval, INTEGER_EXCLUSIVE_MAXIMUM)
+			&& !JSO_SCHEMA_KW_IS_SET(intval, INTEGER_MAXIMUM)) {
+		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+				"The maximum must be set when exclusiveMaximum is set");
+	}
+
+	return jso_schema_value_create(schema, "integer", value_type, &value_data);
+}
+
 static jso_schema_value *jso_schema_parse_number(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
@@ -482,6 +516,9 @@ static jso_schema_value *jso_schema_parse_value(
 	}
 	if (jso_string_equals_to_cstr(type, "number")) {
 		return jso_schema_parse_number(schema, data, parent);
+	}
+	if (jso_string_equals_to_cstr(type, "integer")) {
+		return jso_schema_parse_integer(schema, data, parent);
 	}
 	if (jso_string_equals_to_cstr(type, "boolean")) {
 		return jso_schema_parse_boolean(schema, data, parent);
