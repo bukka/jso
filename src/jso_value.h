@@ -66,14 +66,14 @@
  * @param pjv pointer to @ref jso_value
  * @return Pointer to the string value (characters buffer).
  */
-#define JSO_SVAL_P(pjv) JSO_STRING_VAL_P(JSO_STR_P(pjv))
+#define JSO_SVAL_P(pjv) JSO_STRING_VAL(JSO_STR_P(pjv))
 
 /**
  * Get a string length of the supplied pointer to value.
  * @param pjv pointer to @ref jso_value
  * @return String length.
  */
-#define JSO_SLEN_P(pjv) JSO_STRING_LEN_P(JSO_STR_P(pjv))
+#define JSO_SLEN_P(pjv) JSO_STRING_LEN(JSO_STR_P(pjv))
 
 /**
  * Get an array of the supplied pointer to value.

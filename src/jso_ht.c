@@ -40,7 +40,7 @@ static jso_uint32 jso_ht_create_hash(const jso_ctype *val, size_t len)
 
 static inline jso_uint32 jso_ht_create_string_hash(jso_string *str)
 {
-	return jso_ht_create_hash(JSO_STRING_VAL_P(str), JSO_STRING_LEN_P(str));
+	return jso_ht_create_hash(JSO_STRING_VAL(str), JSO_STRING_LEN(str));
 }
 
 static inline jso_uint32 jso_ht_get_string_hash(jso_string *str)
@@ -105,7 +105,7 @@ static void jso_ht_free_entries(jso_ht *ht)
 
 	JSO_HT_FOREACH(ht, key, val)
 	{
-		if (JSO_STRING_VAL_P(key)) {
+		if (JSO_STRING_VAL(key)) {
 			jso_string_free(key);
 		}
 		jso_value_free(val);

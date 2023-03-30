@@ -292,7 +292,7 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 		return JSO_FAILURE;
 	}
 	if (keyword_str != NULL) {
-		*keyword = jso_string_dup(keyword_str);
+		*keyword = jso_string_copy(keyword_str);
 		JSO_BITSET_SET(*keywords, keyword_type);
 	}
 	return JSO_SUCCESS;
@@ -497,7 +497,7 @@ static jso_schema_value *jso_schema_parse_value(
 	}
 
 	jso_schema_error_format(
-			schema, JSO_SCHEMA_ERROR_TYPE_UNKNOWN, "Unknown type %s", JSO_STRING_VAL_P(type));
+			schema, JSO_SCHEMA_ERROR_TYPE_UNKNOWN, "Unknown type %s", JSO_STRING_VAL(type));
 
 	return NULL;
 }
@@ -534,7 +534,7 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		return JSO_FAILURE;
 	}
 	if (id) {
-		schema->id = jso_string_dup(id);
+		schema->id = jso_string_copy(id);
 	}
 
 	// parse root value

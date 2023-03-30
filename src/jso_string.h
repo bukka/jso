@@ -40,7 +40,7 @@
  * @param _str pointer to @ref jso_string
  * @return The string length
  */
-#define JSO_STRING_LEN_P(_str) (_str)->len
+#define JSO_STRING_LEN(_str) (_str)->len
 
 /**
  * Get string value for the supplied string pointer.
@@ -48,7 +48,7 @@
  * @param _str pointer to @ref jso_string
  * @return The string value (char array)
  */
-#define JSO_STRING_VAL_P(_str) ((jso_ctype *) &(_str)->val)
+#define JSO_STRING_VAL(_str) ((jso_ctype *) &(_str)->val)
 
 /**
  * Get string flags of the supplied string pointer.
@@ -56,7 +56,7 @@
  * @param pjv pointer to @ref jso_string
  * @return String flags.
  */
-#define JSO_STRING_FLAGS_P(_str) (_str)->flags
+#define JSO_STRING_FLAGS(_str) (_str)->flags
 
 /**
  * Get hash value count of the supplied string pointer.
@@ -64,7 +64,7 @@
  * @param pjv pointer to @ref jso_string
  * @return Hash value.
  */
-#define JSO_STRING_HASH_P(_str) (_str)->hash
+#define JSO_STRING_HASH(_str) (_str)->hash
 
 /**
  * Get reference count of the supplied string pointer.
@@ -72,7 +72,7 @@
  * @param pjv pointer to @ref jso_string
  * @return References count value.
  */
-#define JSO_STRING_REFCOUNT_P(_str) (_str)->refcount
+#define JSO_STRING_REFCOUNT(_str) (_str)->refcount
 
 /**
  * Allocate string.
@@ -92,22 +92,22 @@ static inline jso_string *jso_string_alloc(size_t len)
  */
 static inline void jso_string_free(jso_string *str)
 {
-	if (JSO_STRING_REFCOUNT_P(str) > 0) {
-		--JSO_STRING_REFCOUNT_P(str);
+	if (JSO_STRING_REFCOUNT(str) > 0) {
+		--JSO_STRING_REFCOUNT(str);
 	} else {
 		jso_free(str);
 	}
 }
 
 /**
- * Duplicate string.
+ * Copy string.
  *
- * @param str string to duplicate
- * @return the duplicated string
+ * @param str string to copy
+ * @return The copied string.
  */
-static inline jso_string *jso_string_dup(jso_string *str)
+static inline jso_string *jso_string_copy(jso_string *str)
 {
-	++JSO_STRING_REFCOUNT_P(str);
+	++JSO_STRING_REFCOUNT(str);
 	return str;
 }
 
@@ -121,8 +121,8 @@ static inline jso_string *jso_string_dup(jso_string *str)
 static inline bool jso_string_equals(jso_string *s1, jso_string *s2)
 {
 	return s1 == s2
-			|| (JSO_STRING_LEN_P(s1) == JSO_STRING_LEN_P(s2)
-					&& !memcmp(JSO_STRING_VAL_P(s1), JSO_STRING_VAL_P(s2), JSO_STRING_LEN_P(s1)));
+			|| (JSO_STRING_LEN(s1) == JSO_STRING_LEN(s2)
+					&& !memcmp(JSO_STRING_VAL(s1), JSO_STRING_VAL(s2), JSO_STRING_LEN(s1)));
 }
 
 /**
@@ -134,7 +134,7 @@ static inline bool jso_string_equals(jso_string *s1, jso_string *s2)
  */
 static inline bool jso_string_equals_to_cstr(jso_string *str, const char *cstr)
 {
-	return !memcmp(JSO_STRING_VAL_P(str), cstr, JSO_STRING_LEN_P(str));
+	return !memcmp(JSO_STRING_VAL(str), cstr, JSO_STRING_LEN(str));
 }
 
 /**
@@ -144,8 +144,8 @@ static inline bool jso_string_equals_to_cstr(jso_string *str, const char *cstr)
  */
 static inline void jso_string_set_hash(jso_string *str, jso_uint32 hash)
 {
-	JSO_STRING_HASH_P(str) = hash;
-	JSO_STRING_FLAGS_P(str) |= JSO_STRING_FLAG_HASH_SET;
+	JSO_STRING_HASH(str) = hash;
+	JSO_STRING_FLAGS(str) |= JSO_STRING_FLAG_HASH_SET;
 }
 
 /**
@@ -156,7 +156,7 @@ static inline void jso_string_set_hash(jso_string *str, jso_uint32 hash)
  */
 static inline bool jso_string_has_hash(jso_string *str)
 {
-	return JSO_STRING_FLAGS_P(str) & JSO_STRING_FLAG_HASH_SET;
+	return JSO_STRING_FLAGS(str) & JSO_STRING_FLAG_HASH_SET;
 }
 
 /**
@@ -167,7 +167,7 @@ static inline bool jso_string_has_hash(jso_string *str)
  */
 static inline jso_uint32 jso_string_get_hash(jso_string *str)
 {
-	return JSO_STRING_HASH_P(str);
+	return JSO_STRING_HASH(str);
 }
 
 #endif /* JSO_STRING_H */

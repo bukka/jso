@@ -147,8 +147,8 @@ static jso_rc jso_encoder_encode_string(jso_encoder *encoder, jso_string *str)
 	char c;
 
 	jso_encoder_output_cchar(encoder, '"');
-	for (pos = 0; pos < JSO_STRING_LEN_P(str); pos++) {
-		c = JSO_STRING_VAL_P(str)[pos];
+	for (pos = 0; pos < JSO_STRING_LEN(str); pos++) {
+		c = JSO_STRING_VAL(str)[pos];
 
 		switch (c) {
 			case '"':
