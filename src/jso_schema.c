@@ -219,7 +219,8 @@ static inline jso_uint jso_schema_data_get_uint(
 }
 
 static jso_schema_union *jso_schema_data_get_union(jso_schema *schema, jso_value *data,
-		const char *key, jso_uint32 union_types, jso_schema_union *schema_union)
+		const char *key, jso_schema_value *parent, jso_uint32 union_types,
+		jso_schema_union *schema_union)
 {
 	for (int union_type = 1; union_type <= JSO_SCHEMA_UNION_TYPE_SCHEMA_OBJECT; union_type <<= 1) {
 		if (union_type & union_types) {
@@ -286,9 +287,8 @@ static jso_schema_union *jso_schema_data_get_union(jso_schema *schema, jso_value
 								jso_schema_array_of_values_free(schema_arr);
 								return NULL;
 							}
-							// TODO: correctly set parent once value created
 							jso_schema_value *schema_value
-									= jso_schema_parse_value(schema, item, NULL);
+									= jso_schema_parse_value(schema, item, parent);
 							if (schema_value == NULL) {
 								jso_schema_array_of_values_free(schema_arr);
 								return NULL;
@@ -303,8 +303,8 @@ static jso_schema_union *jso_schema_data_get_union(jso_schema *schema, jso_value
 				case JSO_SCHEMA_UNION_TYPE_SCHEMA_OBJECT: {
 					jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_OBJECT, false);
 					if (val != NULL) {
-						// TODO: correctly set parent once value created
-						jso_schema_value *schema_value = jso_schema_parse_value(schema, val, NULL);
+						jso_schema_value *schema_value
+								= jso_schema_parse_value(schema, val, parent);
 						if (schema_value != NULL) {
 							schema_union->data.soval = schema_value;
 							return schema_union;
@@ -428,12 +428,12 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 
 /* Set union keyword. */
 static jso_rc jso_schema_keyword_set_union(jso_schema *schema, jso_value *data, const char *key,
-		jso_schema_union **keyword, jso_bitset *keywords, jso_uint64 keyword_type,
-		jso_uint32 union_types)
+		jso_schema_value *value, jso_schema_union **keyword, jso_bitset *keywords,
+		jso_uint64 keyword_type, jso_uint32 union_types)
 {
 	jso_schema_union schema_union;
 	jso_schema_union *schema_union_ptr
-			= jso_schema_data_get_union(schema, data, key, union_types, &schema_union);
+			= jso_schema_data_get_union(schema, data, key, value, union_types, &schema_union);
 	if (jso_schema_error_is_set(schema)) {
 		return JSO_FAILURE;
 	}
@@ -446,88 +446,104 @@ static jso_rc jso_schema_keyword_set_union(jso_schema *schema, jso_value *data, 
 	return JSO_SUCCESS;
 }
 
-#define JSO_SCHEMA_KW_SET_WRAP(_kw_set_call, _value) \
+#define JSO_SCHEMA_KW_SET_WRAP(_kw_set_call, _value, _value_data) \
 	do { \
 		if (_kw_set_call == JSO_FAILURE) { \
 			jso_free(_value); \
+			jso_free(_value_data); \
 			return NULL; \
 		} \
 	} while (0)
 
-#define JSO_SCHEMA_KW_SET(_type_name, _schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET_WRAP( \
-			jso_schema_keyword_set_##_type_name(_schema, _data, #_key, &_value->_keyword_name, \
-					&_value->keywords, JSO_SCHEMA_KEYWORD_##_keyword_type), \
-			_value)
+#define JSO_SCHEMA_KW_SET( \
+		_type_name, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET_WRAP(jso_schema_keyword_set_##_type_name(_schema, _data, #_key, \
+								   &_value_data->_keyword_name, &_value_data->keywords, \
+								   JSO_SCHEMA_KEYWORD_##_keyword_type), \
+			_value, _value_data)
 
 #define JSO_SCHEMA_KW_SET_UNION_2_EX( \
-		_schema, _data, _key, _value, _keyword_name, _keyword_type, _utype1, _utype2) \
-	JSO_SCHEMA_KW_SET_WRAP( \
-			jso_schema_keyword_set_union(_schema, _data, #_key, &_value->_keyword_name, \
-					&_value->keywords, JSO_SCHEMA_KEYWORD_##_keyword_type, \
-					JSO_SCHEMA_UNION_##_utype1 | JSO_SCHEMA_UNION_##_utype2), \
-			_value)
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type, _utype1, _utype2) \
+	JSO_SCHEMA_KW_SET_WRAP(jso_schema_keyword_set_union(_schema, _data, #_key, _value, \
+								   &_value_data->_keyword_name, &_value_data->keywords, \
+								   JSO_SCHEMA_KEYWORD_##_keyword_type, \
+								   JSO_SCHEMA_UNION_##_utype1 | JSO_SCHEMA_UNION_##_utype2), \
+			_value, _value_data)
 
-#define JSO_SCHEMA_KW_SET_UNION_2(_schema, _data, _key, _value, _keyword_type, _utype1, _utype2) \
+#define JSO_SCHEMA_KW_SET_UNION_2( \
+		_schema, _data, _key, _value, _value_data, _keyword_type, _utype1, _utype2) \
 	JSO_SCHEMA_KW_SET_UNION_2_EX( \
-			_schema, _data, _key, _value, _key, _keyword_type, _utype1, _utype2)
+			_schema, _data, _key, _value, _value_data, _key, _keyword_type, _utype1, _utype2)
 
 #define JSO_SCHEMA_KW_SET_UNION JSO_SCHEMA_KW_SET_UNION_2
 #define JSO_SCHEMA_KW_SET_UNION_EX JSO_SCHEMA_KW_SET_UNION_2_EX
 
-#define JSO_SCHEMA_KW_SET_BOOL_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(boolean, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_BOOL_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET( \
+			boolean, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_BOOL(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_BOOL_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_BOOL(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_BOOL_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(int, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_INT_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET(int, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_INT(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_INT(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_INT_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_NUM_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(number, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_NUM_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET( \
+			number, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_NUM(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_NUM_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_NUM(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_NUM_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_UINT_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(uint, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_UINT_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET(uint, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_UINT(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_UINT_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_UINT(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_UINT_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_UINT_NZ_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(uint_nz, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_UINT_NZ_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET( \
+			uint_nz, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_UINT_NZ(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_UINT_NZ_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_UINT_NZ(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_UINT_NZ_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_STR_EX(_schema, _data, _key, _value, _keyword_name, _keyword_type) \
-	JSO_SCHEMA_KW_SET(str, _schema, _data, _key, _value, _keyword_name, _keyword_type)
+#define JSO_SCHEMA_KW_SET_STR_EX( \
+		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type) \
+	JSO_SCHEMA_KW_SET(str, _schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type)
 
-#define JSO_SCHEMA_KW_SET_STR(_schema, _data, _key, _value, _keyword_type) \
-	JSO_SCHEMA_KW_SET_STR_EX(_schema, _data, _key, _value, _key, _keyword_type)
+#define JSO_SCHEMA_KW_SET_STR(_schema, _data, _key, _value, _value_data, _keyword_type) \
+	JSO_SCHEMA_KW_SET_STR_EX(_schema, _data, _key, _value, _value_data, _key, _keyword_type)
 
 #define JSO_SCHEMA_KW_IS_SET(_value, _keyword_type) \
 	JSO_BITSET_IS_SET(_value->keywords, JSO_SCHEMA_KEYWORD_##_keyword_type)
 
-#define JSO_SCHEMA_VALUE_DATA_INIT(_schema, _data, _parent, _value_type_var, _value_type_name, \
-		_value_type_id, _value_data_var, _value_data_name) \
+#define JSO_SCHEMA_VALUE_DATA_INIT(_schema, _data, _parent, _value_var, _value_type_var, \
+		_value_type_name, _value_type_id, _value_data_var, _value_data_name) \
 	jso_schema_value_data _value_data_var; \
-	jso_schema_value_type _value_type_var; \
+	jso_schema_value_type _value_type_var = JSO_SCHEMA_VALUE_##_value_type_id; \
 	_value_data_var._value_data_name = jso_calloc(1, sizeof(jso_schema_value_##_value_type_name)); \
 	jso_schema_value_##_value_type_name *_value_data_name = _value_data_var._value_data_name; \
-	(void) _value_data_name; \
-	if (jso_schema_value_common_init(_schema, _data, _parent, \
-				(jso_schema_value_common *) _value_data_name, #_value_type_name) \
-			== NULL) { \
-		jso_free(_value_data_name); \
-		return NULL; \
-	} \
-	_value_type_var = JSO_SCHEMA_VALUE_##_value_type_id
+	jso_schema_value *_value_var = jso_schema_value_create( \
+			_schema, #_value_type_name, _value_type_var, &_value_data_var); \
+	do { \
+		if (jso_schema_value_common_init(_schema, _data, _parent, _value_var, \
+					(jso_schema_value_common *) _value_data_name, #_value_type_name) \
+				== NULL) { \
+			if (_value_var) \
+				jso_free(_value_var); \
+			jso_free(_value_data_name); \
+			return NULL; \
+		} \
+	} while (0)
 
 static inline jso_schema_value *jso_schema_value_create(jso_schema *schema, const char *type_name,
 		jso_schema_value_type type, jso_schema_value_data *data)
@@ -545,55 +561,59 @@ static inline jso_schema_value *jso_schema_value_create(jso_schema *schema, cons
 }
 
 static jso_schema_value_common *jso_schema_value_common_init(jso_schema *schema, jso_value *data,
-		jso_schema_value *parent, jso_schema_value_common *value, const char *type)
+		jso_schema_value *parent, jso_schema_value *value, jso_schema_value_common *value_data,
+		const char *type)
 {
 	if (value == NULL) {
+		return NULL;
+	}
+	if (value_data == NULL) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
 				"Allocating value data for type %s failed", type);
 		return NULL;
 	}
-	value->parent = parent;
-	JSO_SCHEMA_KW_SET_STR(schema, data, description, value, COMMON_DESCRIPTION);
-	JSO_SCHEMA_KW_SET_STR(schema, data, title, value, COMMON_TITLE);
+	value_data->parent = parent;
+	JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data, COMMON_DESCRIPTION);
+	JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data, COMMON_TITLE);
 
-	return value;
+	return value_data;
 }
 
 static jso_schema_value *jso_schema_parse_null(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, null, TYPE_NULL, value_data, nulval);
+			schema, data, parent, value, value_type, null, TYPE_NULL, value_data, nulval);
 
-	return jso_schema_value_create(schema, "null", value_type, &value_data);
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_boolean(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, boolean, TYPE_BOOLEAN, value_data, boolval);
+			schema, data, parent, value, value_type, boolean, TYPE_BOOLEAN, value_data, boolval);
 
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, default, boolval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, default, value, boolval, default_value, COMMON_DEFAULT);
 
-	return jso_schema_value_create(schema, "boolean", value_type, &value_data);
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_integer(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, integer, TYPE_INTEGER, value_data, intval);
+			schema, data, parent, value, value_type, integer, TYPE_INTEGER, value_data, intval);
 
-	JSO_SCHEMA_KW_SET_INT_EX(schema, data, default, intval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_INT_EX(schema, data, default, value, intval, default_value, COMMON_DEFAULT);
 	JSO_SCHEMA_KW_SET_UINT_NZ_EX(
-			schema, data, multipleOf, intval, multiple_of, INTEGER_MULTIPLE_OF);
-	JSO_SCHEMA_KW_SET_INT(schema, data, minimum, intval, INTEGER_MINIMUM);
-	JSO_SCHEMA_KW_SET_BOOL_EX(
-			schema, data, exclusiveMinimum, intval, exclusive_minimum, INTEGER_EXCLUSIVE_MINIMUM);
-	JSO_SCHEMA_KW_SET_INT(schema, data, maximum, intval, INTEGER_MAXIMUM);
-	JSO_SCHEMA_KW_SET_BOOL_EX(
-			schema, data, exclusiveMaximum, intval, exclusive_maximum, INTEGER_EXCLUSIVE_MAXIMUM);
+			schema, data, multipleOf, value, intval, multiple_of, INTEGER_MULTIPLE_OF);
+	JSO_SCHEMA_KW_SET_INT(schema, data, minimum, value, intval, INTEGER_MINIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, intval, exclusive_minimum,
+			INTEGER_EXCLUSIVE_MINIMUM);
+	JSO_SCHEMA_KW_SET_INT(schema, data, maximum, value, intval, INTEGER_MAXIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, intval, exclusive_maximum,
+			INTEGER_EXCLUSIVE_MAXIMUM);
 
 	if (JSO_SCHEMA_KW_IS_SET(intval, INTEGER_EXCLUSIVE_MINIMUM)
 			&& !JSO_SCHEMA_KW_IS_SET(intval, INTEGER_MINIMUM)) {
@@ -606,23 +626,24 @@ static jso_schema_value *jso_schema_parse_integer(
 				"The maximum must be set when exclusiveMaximum is set");
 	}
 
-	return jso_schema_value_create(schema, "integer", value_type, &value_data);
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_number(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, number, TYPE_NUMBER, value_data, numval);
+			schema, data, parent, value, value_type, number, TYPE_NUMBER, value_data, numval);
 
-	JSO_SCHEMA_KW_SET_NUM_EX(schema, data, default, numval, default_value, COMMON_DEFAULT);
-	JSO_SCHEMA_KW_SET_UINT_NZ_EX(schema, data, multipleOf, numval, multiple_of, NUMBER_MULTIPLE_OF);
-	JSO_SCHEMA_KW_SET_NUM(schema, data, minimum, numval, NUMBER_MINIMUM);
-	JSO_SCHEMA_KW_SET_BOOL_EX(
-			schema, data, exclusiveMinimum, numval, exclusive_minimum, NUMBER_EXCLUSIVE_MINIMUM);
-	JSO_SCHEMA_KW_SET_NUM(schema, data, maximum, numval, NUMBER_MAXIMUM);
-	JSO_SCHEMA_KW_SET_BOOL_EX(
-			schema, data, exclusiveMaximum, numval, exclusive_maximum, NUMBER_EXCLUSIVE_MAXIMUM);
+	JSO_SCHEMA_KW_SET_NUM_EX(schema, data, default, value, numval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_UINT_NZ_EX(
+			schema, data, multipleOf, value, numval, multiple_of, NUMBER_MULTIPLE_OF);
+	JSO_SCHEMA_KW_SET_NUM(schema, data, minimum, value, numval, NUMBER_MINIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, numval, exclusive_minimum,
+			NUMBER_EXCLUSIVE_MINIMUM);
+	JSO_SCHEMA_KW_SET_NUM(schema, data, maximum, value, numval, NUMBER_MAXIMUM);
+	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, numval, exclusive_maximum,
+			NUMBER_EXCLUSIVE_MAXIMUM);
 
 	if (JSO_SCHEMA_KW_IS_SET(numval, NUMBER_EXCLUSIVE_MINIMUM)
 			&& !JSO_SCHEMA_KW_IS_SET(numval, NUMBER_MINIMUM)) {
@@ -635,35 +656,38 @@ static jso_schema_value *jso_schema_parse_number(
 				"The maximum must be set when exclusiveMaximum is set");
 	}
 
-	return jso_schema_value_create(schema, "number", value_type, &value_data);
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_string(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, string, TYPE_STRING, value_data, strval);
+			schema, data, parent, value, value_type, string, TYPE_STRING, value_data, strval);
 
-	JSO_SCHEMA_KW_SET_STR_EX(schema, data, default, strval, default_value, COMMON_DEFAULT);
-	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxLength, strval, max_length, STRING_MAX_LENGTH);
-	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minLength, strval, min_length, STRING_MIN_LENGTH);
+	JSO_SCHEMA_KW_SET_STR_EX(schema, data, default, value, strval, default_value, COMMON_DEFAULT);
+	JSO_SCHEMA_KW_SET_UINT_EX(
+			schema, data, maxLength, value, strval, max_length, STRING_MAX_LENGTH);
+	JSO_SCHEMA_KW_SET_UINT_EX(
+			schema, data, minLength, value, strval, min_length, STRING_MIN_LENGTH);
 
-	return jso_schema_value_create(schema, "string", value_type, &value_data);
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_array(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	JSO_SCHEMA_VALUE_DATA_INIT(
-			schema, data, parent, value_type, array, TYPE_ARRAY, value_data, arrval);
+			schema, data, parent, value, value_type, array, TYPE_ARRAY, value_data, arrval);
 
-	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalItems, arrval, additional_items,
+	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalItems, value, arrval, additional_items,
 			ARRAY_ADDITIONAL_ITEMS, TYPE_BOOLEAN, TYPE_ARRAY_OF_SCHEMA_OBJECTS);
-	JSO_SCHEMA_KW_SET_UNION(schema, data, items, arrval, ARRAY_ITEMS, TYPE_ARRAY_OF_STRINGS,
+	JSO_SCHEMA_KW_SET_UNION(schema, data, items, value, arrval, ARRAY_ITEMS, TYPE_ARRAY_OF_STRINGS,
 			TYPE_ARRAY_OF_SCHEMA_OBJECTS);
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, uniqueItems, arrval, unique_items, ARRAY_UNIQUE_ITEMS);
-	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxItems, arrval, max_items, ARRAY_MAX_ITEMS);
-	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minItems, arrval, min_items, ARRAY_MIN_ITEMS);
+	JSO_SCHEMA_KW_SET_BOOL_EX(
+			schema, data, uniqueItems, value, arrval, unique_items, ARRAY_UNIQUE_ITEMS);
+	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxItems, value, arrval, max_items, ARRAY_MAX_ITEMS);
+	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minItems, value, arrval, min_items, ARRAY_MIN_ITEMS);
 
 	return jso_schema_value_create(schema, "array", value_type, &value_data);
 }
@@ -671,8 +695,10 @@ static jso_schema_value *jso_schema_parse_array(
 static jso_schema_value *jso_schema_parse_object(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
+	JSO_SCHEMA_VALUE_DATA_INIT(
+			schema, data, parent, value, value_type, object, TYPE_OBJECT, value_data, objval);
 
-	return NULL;
+	return value;
 }
 
 static jso_schema_value *jso_schema_parse_value(
