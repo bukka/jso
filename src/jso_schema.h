@@ -33,30 +33,6 @@
 #include "jso_ht.h"
 #include "jso_bitset.h"
 
-#define JSO_SCHEMA
-
-/**
- * @brief JsonSchema union type.
- */
-typedef enum {
-	/** null union type */
-	JSO_SCHEMA_UNION_TYPE_NULL = 0x0001,
-	/** boolean union type */
-	JSO_SCHEMA_UNION_TYPE_BOOLEAN = 0x0002,
-	/** integer union type */
-	JSO_SCHEMA_UNION_TYPE_INTEGER = 0x0004,
-	/** integer union type */
-	JSO_SCHEMA_UNION_TYPE_UNSIGNED_INTEGER = 0x0008,
-	/** string union type */
-	JSO_SCHEMA_UNION_TYPE_STRING = 0x0010,
-	/** string array union type */
-	JSO_SCHEMA_UNION_TYPE_ARRAY_OF_STRINGS = 0x0020,
-	/** schema object array union type */
-	JSO_SCHEMA_UNION_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0040,
-	/** schema object union type */
-	JSO_SCHEMA_UNION_TYPE_SCHEMA_OBJECT = 0x0080
-} jso_schema_union_type;
-
 typedef struct _jso_schema_value jso_schema_value;
 
 /**
@@ -72,12 +48,46 @@ typedef struct _jso_schema_array_of_values {
 } jso_schema_array_of_values;
 
 /**
- * @brief JsonSchema union data.
+ * @brief JsonSchema internal type.
+ */
+typedef enum {
+	/** null internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_NULL = 0x0001,
+	/** boolean internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_BOOLEAN = 0x0002,
+	/** integer internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_INTEGER = 0x0004,
+	/** integer internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_UNSIGNED_INTEGER = 0x0008,
+	/** string internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_STRING = 0x0010,
+	/** string array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY = 0x020,
+	/** string array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS = 0x0040,
+	/** unique string array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS_UNIQUE = 0x0080,
+	/** unique and non empty string array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS_UNIQUE_NON_EMPTY = 0x0100,
+	/** schema object array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0200,
+	/** schema object array internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_SCHEMA_OBJECTS_NON_EMPTY = 0x0400,
+	/** object internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_OBJECT = 0x0800,
+	/** schema object internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_SCHEMA_OBJECT = 0x1000,
+	/** object of schema objects internal type */
+	JSO_SCHEMA_INTERNAL_TYPE_OBJECT_OF_SCHEMA_OBJECTS = 0x2000
+} jso_schema_internal_type;
+
+/**
+ * @brief JsonSchema internal data.
  *
  * The current size of the data is equal to the largest element which is pointer
  * size.
  */
-typedef union _jso_schema_union_data {
+typedef union _jso_schema_internal_data {
 	/** boolean value */
 	jso_bool bval;
 	/** integer value */
@@ -92,18 +102,18 @@ typedef union _jso_schema_union_data {
 	jso_schema_array_of_values *asoval;
 	/** schema object value */
 	jso_schema_value *soval;
-} jso_schema_union_data;
+} jso_schema_internal_data;
 
 /**
- * @brief JsonSchema union value.
+ * @brief JsonSchema internal value.
  *
  * Union values represent the JsonSchema keywords that can have more than one
  * type.
  */
-typedef struct _jso_schema_union_value {
-	jso_schema_union_type type;
-	jso_schema_union_data data;
-} jso_schema_union;
+typedef struct _jso_schema_internal_value {
+	jso_schema_internal_type type;
+	jso_schema_internal_data data;
+} jso_schema_internal;
 
 /**
  * @brief Common keyword default bit set ID.
@@ -298,9 +308,9 @@ typedef struct _jso_schema_value_string {
 typedef struct _jso_schema_value_array {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_array *);
 	/** additionalItems keyword */
-	jso_schema_union *additional_items;
+	jso_schema_internal *additional_items;
 	/** items keyword */
-	jso_schema_union *items;
+	jso_schema_internal *items;
 	/** uniqueItems keyword */
 	jso_bool unique_items;
 	/** maxItems keyword */
@@ -341,7 +351,7 @@ typedef struct _jso_schema_value_array {
 typedef struct _jso_schema_value_object {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_object *);
 	/** additionalProperties keyword */
-	jso_bool additional_properties;
+	jso_schema_internal *additional_properties;
 	/** maxProperties keyword */
 	jso_uint max_properties;
 	/** minProperties keyword */
