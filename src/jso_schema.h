@@ -48,52 +48,20 @@ typedef struct _jso_schema_array_of_values {
 } jso_schema_array_of_values;
 
 /**
- * @brief JsonSchema internal type.
- */
-typedef enum {
-	/** null internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_NULL = 0x0001,
-	/** boolean internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_BOOLEAN = 0x0002,
-	/** integer internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_INTEGER = 0x0004,
-	/** integer internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_UNSIGNED_INTEGER = 0x0008,
-	/** string internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_STRING = 0x0010,
-	/** string array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY = 0x020,
-	/** string array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS = 0x0040,
-	/** unique string array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS_UNIQUE = 0x0080,
-	/** unique and non empty string array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS_UNIQUE_NON_EMPTY = 0x0100,
-	/** schema object array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0200,
-	/** schema object array internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_SCHEMA_OBJECTS_NON_EMPTY = 0x0400,
-	/** object internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_OBJECT = 0x0800,
-	/** schema object internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_SCHEMA_OBJECT = 0x1000,
-	/** object of schema objects internal type */
-	JSO_SCHEMA_INTERNAL_TYPE_OBJECT_OF_SCHEMA_OBJECTS = 0x2000
-} jso_schema_internal_type;
-
-/**
- * @brief JsonSchema internal data.
+ * @brief JsonSchema keyword data.
  *
  * The current size of the data is equal to the largest element which is pointer
  * size.
  */
-typedef union _jso_schema_internal_data {
+typedef union _jso_schema_keyword_data {
 	/** boolean value */
 	jso_bool bval;
 	/** integer value */
-	jso_uint ival;
+	jso_int ival;
 	/** unsigned integer value */
 	jso_uint uval;
+	/** double value */
+	jso_double dval;
 	/** string value */
 	jso_string *sval;
 	/** array of string values */
@@ -102,18 +70,77 @@ typedef union _jso_schema_internal_data {
 	jso_schema_array_of_values *asoval;
 	/** schema object value */
 	jso_schema_value *soval;
-} jso_schema_internal_data;
+} jso_schema_keyword_data;
 
 /**
- * @brief JsonSchema internal value.
+ * @brief JsonSchema keyword type.
+ */
+typedef enum {
+	/** null keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_NULL = 0x0001,
+	/** boolean keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN = 0x0002,
+	/** integer keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_INTEGER = 0x0004,
+	/** integer keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER = 0x0008,
+	/** integer keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_NUMBER = 0x0010,
+	/** string keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_STRING = 0x0020,
+	/** string array keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY = 0x0040,
+	/** string array keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS = 0x0080,
+	/** schema object array keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0200,
+	/** object keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT = 0x0800,
+	/** schema object keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT = 0x1000,
+	/** object of schema objects keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS = 0x2000
+} jso_schema_keyword_type;
+
+#define JSO_SCHEMA_KEYWORD_TYPE_LAST JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS
+
+/**
+ * @brief Flag stating the presence of keyword.
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_PRESENT 0x01
+
+/**
+ * @brief Flag specifying that the value must not be empty.
+ *
+ * An example can be non empty array.
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY 0x02
+
+/**
+ * @brief Flag specifying that the value must be unique.
+ *
+ * This is mainly applicable to
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_UNIQUE 0x04
+
+/**
+ * @brief Flag specifying that the number is a floating number.
+ *
+ * This is mainly applicable to
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_FLOATING 0x08
+
+/**
+ * @brief JsonSchema keyword.
  *
  * Union values represent the JsonSchema keywords that can have more than one
- * type.
+ * type. The size is 128 bits on 64bit platform and 96 bits on 32bit platforms.
  */
-typedef struct _jso_schema_internal_value {
-	jso_schema_internal_type type;
-	jso_schema_internal_data data;
-} jso_schema_internal;
+typedef struct _jso_schema_keyword {
+	jso_schema_keyword_data data;
+	jso_schema_keyword_type type;
+	jso_uint32 flags;
+} jso_schema_keyword;
 
 /**
  * @brief Common keyword default bit set ID.
@@ -308,9 +335,9 @@ typedef struct _jso_schema_value_string {
 typedef struct _jso_schema_value_array {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_array *);
 	/** additionalItems keyword */
-	jso_schema_internal *additional_items;
+	jso_schema_keyword *additional_items;
 	/** items keyword */
-	jso_schema_internal *items;
+	jso_schema_keyword *items;
 	/** uniqueItems keyword */
 	jso_bool unique_items;
 	/** maxItems keyword */
@@ -351,7 +378,7 @@ typedef struct _jso_schema_value_array {
 typedef struct _jso_schema_value_object {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_object *);
 	/** additionalProperties keyword */
-	jso_schema_internal *additional_properties;
+	jso_schema_keyword *additional_properties;
 	/** maxProperties keyword */
 	jso_uint max_properties;
 	/** minProperties keyword */

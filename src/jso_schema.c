@@ -218,46 +218,57 @@ static inline jso_uint jso_schema_data_get_uint(
 	return (jso_uint) val;
 }
 
-static jso_schema_internal *jso_schema_data_get_internal(jso_schema *schema, jso_value *data,
-		const char *key, jso_schema_value *parent, jso_schema_internal_type internal_type,
-		jso_schema_internal *schema_internal)
+static jso_schema_keyword *jso_schema_data_get_keyword(jso_schema *schema, jso_value *data,
+		const char *key, jso_schema_value *parent, jso_schema_keyword_type keyword_type,
+		jso_uint32 keyword_flags, jso_bool required, jso_schema_keyword *schema_keyword)
 {
-	schema_internal->type = internal_type;
-	switch (internal_type) {
-		case JSO_SCHEMA_INTERNAL_TYPE_NULL:
-			if (jso_schema_data_get(schema, data, key, JSO_TYPE_NULL, false) != NULL) {
-				return schema_internal;
+	schema_keyword->type = keyword_type;
+	schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	switch (keyword_type) {
+		case JSO_SCHEMA_KEYWORD_TYPE_NULL:
+			if (jso_schema_data_get(schema, data, key, JSO_TYPE_NULL, required) != NULL) {
+				return schema_keyword;
 			}
 			break;
-		case JSO_SCHEMA_INTERNAL_TYPE_BOOLEAN: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_BOOL, false);
+		case JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN: {
+			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_BOOL, required);
 			if (val != NULL) {
-				schema_internal->data.bval = JSO_IVAL_P(val) ? true : false;
-				return schema_internal;
+				schema_keyword->data.bval = JSO_IVAL_P(val) ? true : false;
+				return schema_keyword;
 			}
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_INTEGER: {
+		case JSO_SCHEMA_KEYWORD_TYPE_INTEGER: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
 			if (val != NULL) {
-				schema_internal->data.ival = JSO_IVAL_P(val);
-				return schema_internal;
+				schema_keyword->data.ival = JSO_IVAL_P(val);
+				return schema_keyword;
 			}
+			val = jso_schema_data_get(schema, data, key, JSO_TYPE_DOUBLE, false);
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_UNSIGNED_INTEGER: {
+		case JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
 			if (val != NULL && JSO_IVAL_P(val) > 0) {
-				schema_internal->data.uval = JSO_IVAL_P(val);
-				return schema_internal;
+				schema_keyword->data.uval = JSO_IVAL_P(val);
+				return schema_keyword;
 			}
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_STRING: {
+		case JSO_SCHEMA_KEYWORD_TYPE_NUMBER: {
+			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_DOUBLE, false);
+			if (val != NULL) {
+				schema_keyword->data.dval = JSO_DVAL_P(val);
+				schema_keyword->flags |= JSO_SCHEMA_KEYWORD_FLAG_FLOATING;
+				return schema_keyword;
+			}
+			val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
+		} break;
+		case JSO_SCHEMA_KEYWORD_TYPE_STRING: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_STRING, false);
 			if (val != NULL) {
-				schema_internal->data.sval = jso_string_copy(JSO_STR_P(val));
-				return schema_internal;
+				schema_keyword->data.sval = jso_string_copy(JSO_STR_P(val));
+				return schema_keyword;
 			}
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_STRINGS: {
+		case JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
 			if (val != NULL) {
 				jso_value *item;
@@ -268,11 +279,11 @@ static jso_schema_internal *jso_schema_data_get_internal(jso_schema *schema, jso
 					}
 				}
 				JSO_ARRAY_FOREACH_END;
-				schema_internal->data.asval = jso_array_copy(JSO_ARRVAL_P(val));
-				return schema_internal;
+				schema_keyword->data.asval = jso_array_copy(JSO_ARRVAL_P(val));
+				return schema_keyword;
 			}
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_ARRAY_OF_SCHEMA_OBJECTS: {
+		case JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
 			if (val != NULL) {
 				jso_value *item;
@@ -293,17 +304,17 @@ static jso_schema_internal *jso_schema_data_get_internal(jso_schema *schema, jso
 					jso_schema_array_of_values_append(schema_arr, schema_value);
 				}
 				JSO_ARRAY_FOREACH_END;
-				schema_internal->data.asoval = schema_arr;
-				return schema_internal;
+				schema_keyword->data.asoval = schema_arr;
+				return schema_keyword;
 			}
 		} break;
-		case JSO_SCHEMA_INTERNAL_TYPE_SCHEMA_OBJECT: {
+		case JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT: {
 			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_OBJECT, false);
 			if (val != NULL) {
 				jso_schema_value *schema_value = jso_schema_parse_value(schema, val, parent);
 				if (schema_value != NULL) {
-					schema_internal->data.soval = schema_value;
-					return schema_internal;
+					schema_keyword->data.soval = schema_value;
+					return schema_keyword;
 				}
 			}
 		} break;
@@ -312,17 +323,16 @@ static jso_schema_internal *jso_schema_data_get_internal(jso_schema *schema, jso
 	return NULL;
 }
 
-static jso_schema_internal *jso_schema_data_get_internal_union(jso_schema *schema, jso_value *data,
+static jso_schema_keyword *jso_schema_data_get_keyword_union(jso_schema *schema, jso_value *data,
 		const char *key, jso_schema_value *parent, jso_uint32 union_types,
-		jso_schema_internal *schema_internal)
+		jso_uint64 keyword_mask_type, jso_schema_keyword *schema_keyword)
 {
-	for (int union_type = 1; union_type <= JSO_SCHEMA_INTERNAL_TYPE_SCHEMA_OBJECT;
-			union_type <<= 1) {
+	for (int union_type = 1; union_type <= JSO_SCHEMA_KEYWORD_TYPE_LAST; union_type <<= 1) {
 		if (union_type & union_types) {
-			jso_schema_internal *schema_internal_result = jso_schema_data_get_internal(
-					schema, data, key, parent, union_type, schema_internal);
-			if (schema_internal_result != NULL || jso_schema_error_is_set(schema)) {
-				return schema_internal_result;
+			jso_schema_keyword *schema_keyword_result = jso_schema_data_get_keyword(
+					schema, data, key, parent, union_type, 0, false, schema_keyword);
+			if (schema_keyword_result != NULL || jso_schema_error_is_set(schema)) {
+				return schema_keyword_result;
 			}
 		}
 	}
@@ -438,24 +448,47 @@ static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, co
 	return JSO_SUCCESS;
 }
 
-/* Set union keyword. */
-static jso_rc jso_schema_keyword_set_internal_union(jso_schema *schema, jso_value *data,
-		const char *key, jso_schema_value *value, jso_schema_internal **keyword,
-		jso_bitset *keywords, jso_uint64 keyword_type, jso_uint32 union_types)
+static inline jso_rc jso_schema_keyword_check(jso_schema *schema,
+		jso_schema_keyword *schema_keyword_static, jso_schema_keyword **keyword,
+		jso_bitset *keyword_mask, jso_uint64 keyword_mask_type)
 {
-	jso_schema_internal schema_internal;
-	jso_schema_internal *schema_internal_ptr = jso_schema_data_get_internal_union(
-			schema, data, key, value, union_types, &schema_internal);
 	if (jso_schema_error_is_set(schema)) {
 		return JSO_FAILURE;
 	}
-	if (schema_internal_ptr != NULL) {
-		jso_schema_internal *schema_internal_new = jso_calloc(1, sizeof(jso_schema_internal));
-		memcpy(*keyword, schema_internal_ptr, sizeof(jso_schema_internal));
-		*keyword = schema_internal_new;
-		JSO_BITSET_SET(*keywords, keyword_type);
+	if (schema_keyword_static != NULL) {
+		jso_schema_keyword *schema_keyword_new = jso_calloc(1, sizeof(jso_schema_keyword));
+		memcpy(schema_keyword_new, schema_keyword_static, sizeof(jso_schema_keyword));
+		*keyword = schema_keyword_new;
+		JSO_BITSET_SET(*keyword_mask, keyword_mask_type);
 	}
 	return JSO_SUCCESS;
+}
+
+/* Set union keyword. */
+static jso_rc jso_schema_keyword_set_union(jso_schema *schema, jso_value *data, const char *key,
+		jso_schema_value *value, jso_schema_keyword **keyword, jso_bitset *keyword_mask,
+		jso_uint64 keyword_mask_type, jso_uint32 union_types)
+{
+	jso_schema_keyword schema_keyword;
+	jso_schema_keyword *schema_keyword_ptr = jso_schema_data_get_keyword_union(
+			schema, data, key, value, union_types, keyword_mask_type, &schema_keyword);
+
+	return jso_schema_keyword_check(
+			schema, schema_keyword_ptr, keyword, keyword_mask, keyword_mask_type);
+}
+
+/* Set keyword. */
+static jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *key,
+		jso_schema_value *value, jso_schema_keyword **keyword, jso_schema_keyword_type keyword_type,
+		jso_bitset *keyword_mask, jso_uint64 keyword_mask_type, jso_uint32 keyword_flags,
+		jso_bool required)
+{
+	jso_schema_keyword schema_keyword;
+	jso_schema_keyword *schema_keyword_ptr = jso_schema_data_get_keyword(
+			schema, data, key, value, keyword_type, keyword_flags, required, &schema_keyword);
+
+	return jso_schema_keyword_check(
+			schema, schema_keyword_ptr, keyword, keyword_mask, keyword_mask_type);
 }
 
 #define JSO_SCHEMA_KW_SET_WRAP(_kw_set_call, _value, _value_data) \
@@ -476,10 +509,10 @@ static jso_rc jso_schema_keyword_set_internal_union(jso_schema *schema, jso_valu
 
 #define JSO_SCHEMA_KW_SET_UNION_2_EX( \
 		_schema, _data, _key, _value, _value_data, _keyword_name, _keyword_type, _utype1, _utype2) \
-	JSO_SCHEMA_KW_SET_WRAP(jso_schema_keyword_set_internal_union(_schema, _data, #_key, _value, \
+	JSO_SCHEMA_KW_SET_WRAP(jso_schema_keyword_set_union(_schema, _data, #_key, _value, \
 								   &_value_data->_keyword_name, &_value_data->keywords, \
 								   JSO_SCHEMA_KEYWORD_##_keyword_type, \
-								   JSO_SCHEMA_INTERNAL_##_utype1 | JSO_SCHEMA_INTERNAL_##_utype2), \
+								   JSO_SCHEMA_KEYWORD_##_utype1 | JSO_SCHEMA_KEYWORD_##_utype2), \
 			_value, _value_data)
 
 #define JSO_SCHEMA_KW_SET_UNION_2( \
