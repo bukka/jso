@@ -35,6 +35,32 @@
 #include <string.h>
 
 /**
+ * @brief String flag defining whether the hash was already set.
+ */
+#define JSO_STRING_FLAG_HASH_SET 1
+
+/**
+ * @brief Character type for scanner.
+ */
+typedef unsigned char jso_ctype;
+
+/**
+ * @brief String type.
+ */
+struct _jso_string {
+	/* reference count */
+	jso_uint16 refcount;
+	/* string flags */
+	jso_uint16 flags;
+	/* hash value */
+	jso_uint32 hash;
+	/** string length */
+	size_t len;
+	/** string characters */
+	jso_ctype val[1];
+};
+
+/**
  * Get string length for the supplied string pointer.
  *
  * @param _str pointer to @ref jso_string
@@ -53,7 +79,7 @@
 /**
  * Get string flags of the supplied string pointer.
  *
- * @param pjv pointer to @ref jso_string
+ * @param _str pointer to @ref jso_string
  * @return String flags.
  */
 #define JSO_STRING_FLAGS(_str) (_str)->flags
@@ -61,7 +87,7 @@
 /**
  * Get hash value count of the supplied string pointer.
  *
- * @param pjv pointer to @ref jso_string
+ * @param _str pointer to @ref jso_string
  * @return Hash value.
  */
 #define JSO_STRING_HASH(_str) (_str)->hash
@@ -69,7 +95,7 @@
 /**
  * Get reference count of the supplied string pointer.
  *
- * @param pjv pointer to @ref jso_string
+ * @param _str pointer to @ref jso_string
  * @return References count value.
  */
 #define JSO_STRING_REFCOUNT(_str) (_str)->refcount

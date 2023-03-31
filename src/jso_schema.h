@@ -33,7 +33,77 @@
 #include "jso_ht.h"
 #include "jso_bitset.h"
 
+#define JSO_SCHEMA
+
+/**
+ * @brief JsonSchema union type.
+ */
+typedef enum {
+	/** null union type */
+	JSO_SCHEMA_UNION_TYPE_NULL = 0x0001,
+	/** boolean union type */
+	JSO_SCHEMA_UNION_TYPE_BOOLEAN = 0x0002,
+	/** integer union type */
+	JSO_SCHEMA_UNION_TYPE_INTEGER = 0x0004,
+	/** integer union type */
+	JSO_SCHEMA_UNION_TYPE_UNSIGNED_INTEGER = 0x0008,
+	/** string union type */
+	JSO_SCHEMA_UNION_TYPE_STRING = 0x0010,
+	/** string array union type */
+	JSO_SCHEMA_UNION_TYPE_ARRAY_OF_STRINGS = 0x0020,
+	/** schema object array union type */
+	JSO_SCHEMA_UNION_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0040,
+	/** schema object union type */
+	JSO_SCHEMA_UNION_TYPE_SCHEMA_OBJECT = 0x0080
+} jso_schema_union_type;
+
 typedef struct _jso_schema_value jso_schema_value;
+
+/**
+ * @brief Array of schema values.
+ */
+typedef struct _jso_schema_array_of_values {
+	/** array length */
+	size_t len;
+	/** array size */
+	size_t capacity;
+	/** array value */
+	jso_schema_value *values[1];
+} jso_schema_array_of_values;
+
+/**
+ * @brief JsonSchema union data.
+ *
+ * The current size of the data is equal to the largest element which is pointer
+ * size.
+ */
+typedef union _jso_schema_union_data {
+	/** boolean value */
+	jso_bool bval;
+	/** integer value */
+	jso_uint ival;
+	/** unsigned integer value */
+	jso_uint uval;
+	/** string value */
+	jso_string *sval;
+	/** array of string values */
+	jso_array *asval;
+	/** array of schema object values */
+	jso_schema_array_of_values *asoval;
+	/** schema object value */
+	jso_schema_value *soval;
+} jso_schema_union_data;
+
+/**
+ * @brief JsonSchema union value.
+ *
+ * Union values represent the JsonSchema keywords that can have more than one
+ * type.
+ */
+typedef struct _jso_schema_union_value {
+	jso_schema_union_type type;
+	jso_schema_union_data data;
+} jso_schema_union;
 
 /**
  * @brief Common keyword default bit set ID.
@@ -224,16 +294,15 @@ typedef struct _jso_schema_value_string {
 
 /**
  * @brief JsonSchema array validation keywords.
- * @todo support object type alternative for additional_items and items
  */
 typedef struct _jso_schema_value_array {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_array *);
 	/** additionalItems keyword */
-	jso_bool additional_items;
+	jso_schema_union *additional_items;
+	/** items keyword */
+	jso_schema_union *items;
 	/** uniqueItems keyword */
 	jso_bool unique_items;
-	/** items keyword */
-	jso_array *items;
 	/** maxItems keyword */
 	jso_uint max_items;
 	/** minItems keyword */
@@ -288,19 +357,19 @@ typedef struct _jso_schema_value_object {
  */
 typedef enum {
 	/** null value type */
-	JSO_SCHEMA_TYPE_NULL,
+	JSO_SCHEMA_VALUE_TYPE_NULL,
 	/** boolean value type */
-	JSO_SCHEMA_TYPE_BOOLEAN,
+	JSO_SCHEMA_VALUE_TYPE_BOOLEAN,
 	/** integer value type */
-	JSO_SCHEMA_TYPE_INTEGER,
+	JSO_SCHEMA_VALUE_TYPE_INTEGER,
 	/** numeric value type */
-	JSO_SCHEMA_TYPE_NUMBER,
+	JSO_SCHEMA_VALUE_TYPE_NUMBER,
 	/** string value type */
-	JSO_SCHEMA_TYPE_STRING,
+	JSO_SCHEMA_VALUE_TYPE_STRING,
 	/** array value type */
-	JSO_SCHEMA_TYPE_ARRAY,
+	JSO_SCHEMA_VALUE_TYPE_ARRAY,
 	/** object value type */
-	JSO_SCHEMA_TYPE_OBJECT
+	JSO_SCHEMA_VALUE_TYPE_OBJECT
 } jso_schema_value_type;
 
 /**
@@ -321,7 +390,7 @@ typedef union _jso_schema_value_data {
 	/** string value */
 	jso_schema_value_string *strval;
 	/** array value */
-	jso_schema_value_array *arrva;
+	jso_schema_value_array *arrval;
 	/** object value */
 	jso_schema_value_object *objval;
 } jso_schema_value_data;
@@ -379,6 +448,8 @@ typedef struct _jso_schema {
 	jso_schema_version version;
 	/** schema error */
 	jso_schema_error error;
+	/** schema initialized */
+	jso_bool is_initialized;
 } jso_schema;
 
 /**

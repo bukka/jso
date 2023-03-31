@@ -35,6 +35,10 @@ JSO_API void jso_array_free(jso_array *arr)
 {
 	if (!arr)
 		return;
+	if (JSO_ARRAY_REFCOUNT(arr) > 0) {
+		--JSO_ARRAY_REFCOUNT(arr);
+		return;
+	}
 	jso_array_element *tmp, *el = arr->head;
 	while (el) {
 		jso_value_free(&el->val);
@@ -59,6 +63,7 @@ JSO_API jso_rc jso_array_append(jso_array *arr, jso_value *val)
 		arr->tail->next = el;
 		arr->tail = el;
 	}
+	++arr->len;
 	return JSO_SUCCESS;
 }
 
@@ -73,6 +78,7 @@ JSO_API jso_rc jso_array_push(jso_array *arr, jso_value *val)
 	arr->head = el;
 	if (!arr->tail)
 		arr->tail = el;
+	++arr->len;
 	return JSO_SUCCESS;
 }
 
@@ -82,6 +88,7 @@ JSO_API jso_rc jso_array_pop(jso_array *arr)
 	jso_array_element *el = arr->head;
 	if (!el)
 		return JSO_FAILURE;
+	--arr->len;
 	if (el == arr->tail)
 		arr->head = arr->tail = NULL;
 	else

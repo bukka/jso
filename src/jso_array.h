@@ -45,9 +45,41 @@ typedef struct _jso_array_element {
  * Currently array is implemented as a linked list.
  */
 struct _jso_array {
+	/* array first element */
 	jso_array_element *head;
+	/* array last element */
 	jso_array_element *tail;
+	/* array length */
+	size_t len;
+	/* array reference count */
+	jso_uint16 refcount;
+	/* array flags */
+	jso_uint16 flags;
 };
+
+/**
+ * Get length of the supplied array.
+ *
+ * @param _arr pointer to @ref jso_array
+ * @return Array length.
+ */
+#define JSO_ARRAY_LEN(_arr) (_arr)->len
+
+/**
+ * Get array flags of the supplied array.
+ *
+ * @param _arr pointer to @ref jso_array
+ * @return String flags.
+ */
+#define JSO_ARRAY_FLAGS(_arr) (_arr)->flags
+
+/**
+ * Get reference count of the supplied array.
+ *
+ * @param _arr pointer to @ref jso_array
+ * @return References count value.
+ */
+#define JSO_ARRAY_REFCOUNT(_arr) (_arr)->refcount
 
 /**
  * @brief Array iteration function callback.
@@ -123,6 +155,18 @@ JSO_API void jso_array_apply_with_arg(jso_array *arr, jso_array_with_arg_callbac
  * @param indent indent for each printed value
  */
 JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
+
+/**
+ * Copy array.
+ *
+ * @param str array to copy
+ * @return The copied array.
+ */
+static inline jso_array *jso_array_copy(jso_array *arr)
+{
+	++JSO_ARRAY_REFCOUNT(arr);
+	return arr;
+}
 
 /**
  * @brief Macro to start iteration of the array.

@@ -90,25 +90,9 @@ typedef struct _jso_number {
 typedef unsigned char jso_ctype;
 
 /**
- * @brief String flag defining whether the hash was already set.
- */
-#define JSO_STRING_FLAG_HASH_SET 1
-
-/**
  * @brief String type.
  */
-typedef struct _jso_string {
-	/* reference count */
-	jso_uint16 refcount;
-	/* string flags */
-	jso_uint16 flags;
-	/* hash value */
-	jso_uint32 hash;
-	/** string length */
-	size_t len;
-	/** string characters */
-	jso_ctype val[1];
-} jso_string;
+typedef struct _jso_string jso_string;
 
 /**
  * @brief Array type.
@@ -125,21 +109,21 @@ typedef struct _jso_object jso_object;
  */
 typedef enum {
 	/** error value type */
-	JSO_TYPE_ERROR,
+	JSO_TYPE_ERROR = 0,
 	/** null value type */
-	JSO_TYPE_NULL,
+	JSO_TYPE_NULL = 0x01,
 	/** boolean value type */
-	JSO_TYPE_BOOL,
+	JSO_TYPE_BOOL = 0x02,
 	/** integer value type */
-	JSO_TYPE_INT,
+	JSO_TYPE_INT = 0x04,
 	/** double value type */
-	JSO_TYPE_DOUBLE,
+	JSO_TYPE_DOUBLE = 0x08,
 	/** string value type */
-	JSO_TYPE_STRING,
+	JSO_TYPE_STRING = 0x10,
 	/** array value type */
-	JSO_TYPE_ARRAY,
+	JSO_TYPE_ARRAY = 0x20,
 	/** object value type */
-	JSO_TYPE_OBJECT
+	JSO_TYPE_OBJECT = 0x40,
 } jso_value_type;
 
 /**
