@@ -320,4 +320,11 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent);
  */
 JSO_API void jso_value_dump(jso_value *val, jso_io *io);
 
+/**
+ * Return string representation of the @ref jso_value_type.
+ * @param type value type.
+ * @return The string representation of the type.
+ */
+JSO_API const char *jso_value_type_to_string(jso_value_type type);
+
 #endif /* JSO_VALUE_H */

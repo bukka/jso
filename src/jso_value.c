@@ -21,12 +21,13 @@
  *
  */
 
+#include "jso.h"
+#include "jso_string.h"
+
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "jso.h"
-#include "jso_string.h"
 
 /* FREEING */
 
@@ -176,4 +177,12 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 JSO_API void jso_value_dump(jso_value *val, jso_io *io)
 {
 	jso_value_dump_ex(val, io, 0);
+}
+
+static const char *type_names[] = { "error", "bool", "int", "double", "string", "array", "object" };
+
+JSO_API const char *jso_value_type_to_string(jso_value_type type)
+{
+	assert(type < sizeof(type_names) / sizeof(const char *));
+	return type_names[(int) type];
 }

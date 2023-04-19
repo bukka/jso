@@ -111,19 +111,19 @@ typedef enum {
 	/** error value type */
 	JSO_TYPE_ERROR = 0,
 	/** null value type */
-	JSO_TYPE_NULL = 0x01,
+	JSO_TYPE_NULL = 1,
 	/** boolean value type */
-	JSO_TYPE_BOOL = 0x02,
+	JSO_TYPE_BOOL = 2,
 	/** integer value type */
-	JSO_TYPE_INT = 0x04,
+	JSO_TYPE_INT = 3,
 	/** double value type */
-	JSO_TYPE_DOUBLE = 0x08,
+	JSO_TYPE_DOUBLE = 4,
 	/** string value type */
-	JSO_TYPE_STRING = 0x10,
+	JSO_TYPE_STRING = 5,
 	/** array value type */
-	JSO_TYPE_ARRAY = 0x20,
+	JSO_TYPE_ARRAY = 6,
 	/** object value type */
-	JSO_TYPE_OBJECT = 0x40,
+	JSO_TYPE_OBJECT = 7,
 } jso_value_type;
 
 /**

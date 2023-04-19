@@ -117,16 +117,23 @@ typedef enum {
 #define JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY 0x02
 
 /**
+ * @brief Flag specifying that the value is not zero.
+ *
+ * This is mainly applicable to number unsigned integer. This is an alias for not empty flag.
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_NOT_ZERO 0x02
+
+/**
  * @brief Flag specifying that the value must be unique.
  *
- * This is mainly applicable to
+ * This is mainly applicable to array.
  */
 #define JSO_SCHEMA_KEYWORD_FLAG_UNIQUE 0x04
 
 /**
  * @brief Flag specifying that the number is a floating number.
  *
- * This is mainly applicable to
+ * This is mainly applicable to number.
  */
 #define JSO_SCHEMA_KEYWORD_FLAG_FLOATING 0x08
 

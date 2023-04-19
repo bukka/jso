@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>-
 
 void jso_schema_value_free(jso_schema_value *val);
 static jso_schema_value *jso_schema_parse_value(
@@ -102,8 +103,8 @@ static jso_rc jso_schema_error_format(
 	return jso_schema_error_set(schema, type, buf);
 }
 
-static jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const char *key,
-		jso_value_type type, jso_bool required)
+static jso_value *jso_schema_data_get_value(
+		jso_schema *schema, jso_value *data, const char *key, jso_bool required)
 {
 	jso_value *val;
 
@@ -115,13 +116,49 @@ static jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const
 		return NULL;
 	}
 
+	return val;
+}
+
+static jso_value *jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
+		jso_value *val, jso_value_type type, jso_value_type primary_type,
+		jso_bool error_on_invalid_type)
+{
 	if ((JSO_TYPE_P(val) & type) == 0) {
-		jso_schema_error_format(
-				schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, "Invalid type for %s", key);
+		if (error_on_invalid_type) {
+			if (type != primary_type) {
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+						"Invalid type for %s - expected either %s or %s but given %s", key,
+						jso_value_type_to_string(primary_type), jso_value_type_to_string(type),
+						jso_value_type_to_string(JSO_TYPE_P(val)));
+			} else {
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+						"Invalid type for %s - expected %s but given %s", key,
+						jso_value_type_to_string(type), jso_value_type_to_string(JSO_TYPE_P(val)));
+			}
+		}
+		return JSO_FAILURE;
+	}
+
+	return JSO_SUCCESS;
+}
+
+static jso_value *jso_schema_data_get_ex(jso_schema *schema, jso_value *data, const char *key,
+		jso_value_type type, jso_bool required, jso_bool error_on_invalid_type)
+{
+	jso_value *val = jso_schema_data_get_value(schema, data, key, required);
+	if (val == NULL) {
 		return NULL;
 	}
 
-	return val;
+	return jso_schema_data_check_type(schema, data, key, val, type, type, true) == JSO_SUCCESS
+			? val
+			: NULL;
+}
+
+static inline jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const char *key,
+		jso_value_type type, jso_bool required)
+{
+	return jso_schema_data_get_ex(schema, data, key, type, required, true);
 }
 
 static inline jso_string *jso_schema_data_get_str_ex(
@@ -144,30 +181,32 @@ static inline jso_string *jso_schema_data_get_str(
 	return jso_schema_data_get_str_ex(schema, data, key, false);
 }
 
-static inline jso_bool jso_schema_data_get_bool(
-		jso_schema *schema, jso_value *data, const char *key, bool *present)
-{
-	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_BOOL, false);
-	if (val == NULL) {
-		*present = false;
-	}
-	*present = true;
-
-	return val == NULL ? false : (jso_bool) JSO_IVAL_P(val);
-}
-
 static inline jso_number *jso_schema_data_get_number(
-		jso_schema *schema, jso_value *data, const char *key, jso_number *num)
+		jso_schema *schema, jso_value *data, const char *key, jso_bool required, jso_number *num)
 {
-	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT | JSO_TYPE_DOUBLE, false);
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
 
-	if (val == NULL) {
+	if (jso_ht_get_by_cstr_key(JSO_OBJHVAL_P(data), key, &val) == JSO_FAILURE) {
+		if (required) {
+			jso_schema_error_format(
+					schema, JSO_SCHEMA_ERROR_KEYWORD_REQUIRED, "Keyword %s is required", key);
+		}
 		return NULL;
 	}
 
 	if (JSO_TYPE_P(val) == JSO_TYPE_INT) {
 		num->is_int = true;
 		num->ival = JSO_IVAL_P(val);
+		jso_schema_error_format(
+				schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, "Invalid type for %s", key);
+		return NULL;
+	}
+
+	if (val == NULL) {
+		return NULL;
+	}
+
+	if (JSO_TYPE_P(val) == JSO_TYPE_INT) {
 	} else {
 		num->is_int = false;
 		num->dval = JSO_DVAL_P(val);
@@ -218,106 +257,231 @@ static inline jso_uint jso_schema_data_get_uint(
 	return (jso_uint) val;
 }
 
+static jso_schema_keyword *jso_schema_data_get_keyword_null(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	if (jso_schema_data_get(schema, data, key, JSO_TYPE_NULL, required) != NULL) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		return schema_keyword;
+	}
+
+	return NULL;
+}
+
+static inline jso_schema_keyword *jso_schema_data_get_keyword_bool(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_BOOL, required);
+	if (val != NULL) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.bval = JSO_IVAL_P(val) ? true : false;
+		return schema_keyword;
+	}
+	return NULL;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_int(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	jso_value *val = jso_schema_data_get_value(schema, data, key, required);
+	if (val == NULL) {
+		return NULL;
+	}
+	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
+			== JSO_SUCCESS) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.ival = JSO_IVAL_P(val);
+		return schema_keyword;
+	}
+	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, true)
+			== JSO_FAILURE) {
+		return NULL;
+	}
+
+	double dval = JSO_DVAL_P(val);
+	if (nearbyint(dval) == dval) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.ival = (jso_int) dval;
+		return schema_keyword;
+	}
+
+	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+			"Integer fraction is not zero for key %s", key);
+
+	return NULL;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_uint(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	jso_schema_keyword *schema_keyword_int = json_schem_data_get_keyword_int(
+			schema, data, key, required, keyword_flags, schema_keyword);
+	if (schema_keyword_int == NULL) {
+		return NULL;
+	}
+
+	jso_int ival = schema_keyword_int->data.ival;
+
+	if (keyword_flags & JSO_SCHEMA_KEYWORD_FLAG_NOT_ZERO) {
+		if (ival <= 0) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+					"Value for for keyword %s must be greater than 0", key);
+			return NULL;
+		}
+	} else if (ival < 0) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+				"Value for for keyword %s must be equal or greater than 0", key);
+		return NULL;
+	}
+	schema_keyword->data.uval = (jso_uint) ival;
+
+	return schema_keyword;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_number(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	jso_value *val = jso_schema_data_get_value(schema, data, key, required);
+	if (val == NULL) {
+		return NULL;
+	}
+
+	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
+			== JSO_SUCCESS) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.ival = JSO_IVAL_P(val);
+		return schema_keyword;
+	}
+	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, true)
+			== JSO_SUCCESS) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT
+				| JSO_SCHEMA_KEYWORD_FLAG_FLOATING;
+		schema_keyword->data.dval = JSO_DVAL_P(val);
+		return schema_keyword;
+	}
+
+	return NULL;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_string(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_STRING, required);
+	if (val != NULL) {
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.sval = JSO_SVAL_P(val);
+		return schema_keyword;
+	}
+	return NULL;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_array_of_strings(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword)
+{
+
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
+	if (val != NULL) {
+		jso_value *item;
+		JSO_ARRAY_FOREACH(JSO_ARRVAL_P(val), item)
+		{
+			if (JSO_TYPE_P(item) != JSO_TYPE_STRING) {
+				return NULL;
+			}
+		}
+		JSO_ARRAY_FOREACH_END;
+		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		schema_keyword->data.asval = jso_array_copy(JSO_ARRVAL_P(val));
+		return schema_keyword;
+	}
+	return NULL;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_array_of_schema_objects(
+		jso_schema *schema, jso_value *data, const char *key, jso_bool required,
+		jso_uint32 keyword_flags, jso_schema_keyword *schema_keyword, jso_schema_value *parent)
+{
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
+	if (val == NULL) {
+		return NULL;
+	}
+	jso_value *item;
+	jso_array *arr = JSO_ARRVAL_P(val);
+	jso_schema_array_of_values *schema_arr = jso_schema_array_of_values_alloc(JSO_ARRAY_LEN(arr));
+	JSO_ARRAY_FOREACH(arr, item)
+	{
+		if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT) {
+			jso_schema_array_of_values_free(schema_arr);
+			return NULL;
+		}
+		jso_schema_value *schema_value = jso_schema_parse_value(schema, item, parent);
+		if (schema_value == NULL) {
+			jso_schema_array_of_values_free(schema_arr);
+			return NULL;
+		}
+		jso_schema_array_of_values_append(schema_arr, schema_value);
+	}
+	JSO_ARRAY_FOREACH_END;
+	schema_keyword->data.asoval = schema_arr;
+	return schema_keyword;
+}
+
+static inline jso_schema_keyword *json_schem_data_get_keyword_schema_object(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_schema_value *parent)
+{
+	jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_OBJECT, false);
+	if (val != NULL) {
+		jso_schema_value *schema_value = jso_schema_parse_value(schema, val, parent);
+		if (schema_value != NULL) {
+			schema_keyword->data.soval = schema_value;
+			return schema_keyword;
+		}
+	}
+
+	return NULL;
+}
+
+typedef jso_schema_keyword *(*jso_schema_keyword_callback)(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool required, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword);
+
 static jso_schema_keyword *jso_schema_data_get_keyword(jso_schema *schema, jso_value *data,
 		const char *key, jso_schema_value *parent, jso_schema_keyword_type keyword_type,
 		jso_uint32 keyword_flags, jso_bool required, jso_schema_keyword *schema_keyword)
 {
 	schema_keyword->type = keyword_type;
-	schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	switch (keyword_type) {
 		case JSO_SCHEMA_KEYWORD_TYPE_NULL:
-			if (jso_schema_data_get(schema, data, key, JSO_TYPE_NULL, required) != NULL) {
-				return schema_keyword;
-			}
-			break;
-		case JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_BOOL, required);
-			if (val != NULL) {
-				schema_keyword->data.bval = JSO_IVAL_P(val) ? true : false;
-				return schema_keyword;
-			}
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_INTEGER: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
-			if (val != NULL) {
-				schema_keyword->data.ival = JSO_IVAL_P(val);
-				return schema_keyword;
-			}
-			val = jso_schema_data_get(schema, data, key, JSO_TYPE_DOUBLE, false);
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
-			if (val != NULL && JSO_IVAL_P(val) > 0) {
-				schema_keyword->data.uval = JSO_IVAL_P(val);
-				return schema_keyword;
-			}
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_NUMBER: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_DOUBLE, false);
-			if (val != NULL) {
-				schema_keyword->data.dval = JSO_DVAL_P(val);
-				schema_keyword->flags |= JSO_SCHEMA_KEYWORD_FLAG_FLOATING;
-				return schema_keyword;
-			}
-			val = jso_schema_data_get(schema, data, key, JSO_TYPE_INT, false);
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_STRING: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_STRING, false);
-			if (val != NULL) {
-				schema_keyword->data.sval = jso_string_copy(JSO_STR_P(val));
-				return schema_keyword;
-			}
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
-			if (val != NULL) {
-				jso_value *item;
-				JSO_ARRAY_FOREACH(JSO_ARRVAL_P(val), item)
-				{
-					if (JSO_TYPE_P(item) != JSO_TYPE_STRING) {
-						return NULL;
-					}
-				}
-				JSO_ARRAY_FOREACH_END;
-				schema_keyword->data.asval = jso_array_copy(JSO_ARRVAL_P(val));
-				return schema_keyword;
-			}
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_ARRAY, false);
-			if (val != NULL) {
-				jso_value *item;
-				jso_array *arr = JSO_ARRVAL_P(val);
-				jso_schema_array_of_values *schema_arr
-						= jso_schema_array_of_values_alloc(JSO_ARRAY_LEN(arr));
-				JSO_ARRAY_FOREACH(arr, item)
-				{
-					if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT) {
-						jso_schema_array_of_values_free(schema_arr);
-						return NULL;
-					}
-					jso_schema_value *schema_value = jso_schema_parse_value(schema, item, parent);
-					if (schema_value == NULL) {
-						jso_schema_array_of_values_free(schema_arr);
-						return NULL;
-					}
-					jso_schema_array_of_values_append(schema_arr, schema_value);
-				}
-				JSO_ARRAY_FOREACH_END;
-				schema_keyword->data.asoval = schema_arr;
-				return schema_keyword;
-			}
-		} break;
-		case JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT: {
-			jso_value *val = jso_schema_data_get(schema, data, key, JSO_TYPE_OBJECT, false);
-			if (val != NULL) {
-				jso_schema_value *schema_value = jso_schema_parse_value(schema, val, parent);
-				if (schema_value != NULL) {
-					schema_keyword->data.soval = schema_value;
-					return schema_keyword;
-				}
-			}
-		} break;
+			return jso_schema_data_get_keyword_null(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN:
+			return jso_schema_data_get_keyword_bool(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_INTEGER:
+			return json_schem_data_get_keyword_int(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER:
+			return json_schem_data_get_keyword_uint(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_NUMBER:
+			return json_schem_data_get_keyword_number(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_STRING:
+			return json_schem_data_get_keyword_string(
+					schema, data, key, required, keyword_flags, schema_keyword);
+		case JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS:
+			return json_schem_data_get_keyword_array_of_schema_objects(
+					schema, data, key, required, keyword_flags, schema_keyword, parent);
+		case JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT:
+			return json_schem_data_get_keyword_schema_object(
+					schema, data, key, required, keyword_flags, schema_keyword, parent);
 	}
 
 	return NULL;
