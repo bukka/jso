@@ -35,6 +35,7 @@
 
 /**
  * Get a type of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Type @ref jso_value_type.
  */
@@ -42,6 +43,7 @@
 
 /**
  * Get an integer value of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Integer value.
  */
@@ -49,6 +51,7 @@
 
 /**
  * Get a double value of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Double precision value.
  */
@@ -56,6 +59,7 @@
 
 /**
  * Get a string of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_string.
  */
@@ -63,6 +67,7 @@
 
 /**
  * Get a string value of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to the string value (characters buffer).
  */
@@ -70,6 +75,7 @@
 
 /**
  * Get a string length of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return String length.
  */
@@ -77,6 +83,7 @@
 
 /**
  * Get an array of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_array.
  */
@@ -84,6 +91,7 @@
 
 /**
  * Get an object of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_object.
  */
@@ -91,13 +99,23 @@
 
 /**
  * Get an object hash table of the supplied pointer to value.
+ *
  * @param pjv variable of @ref jso_value type
  * @return Pointer to @ref jso_ht.
  */
 #define JSO_OBJHVAL_P(pjv) &(pjv)->data.obj->ht
 
 /**
+ * Get a schema value of the supplied pointer to value.
+ *
+ * @param pjv pointer to @ref jso_value
+ * @return Pointer to @ref jso_schema_value.
+ */
+#define JSO_SVVAL_P(pjv) (pjv)->data.sobj
+
+/**
  * Get an error of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error or `NULL` if no error.
  */
@@ -105,6 +123,7 @@
 
 /**
  * Get an error location of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error_location.
  * @note This must be called only if the error is set.
@@ -113,6 +132,7 @@
 
 /**
  * Get an error type of the supplied pointer to value.
+ *
  * @param pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error_type.
  * @note This must be called only if the error is set.
@@ -121,6 +141,7 @@
 
 /**
  * Get a type of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Type @ref jso_value_type.
  */
@@ -128,6 +149,7 @@
 
 /**
  * Get an integer value of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Integer value.
  */
@@ -135,6 +157,7 @@
 
 /**
  * Get a double value of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Double precision value.
  */
@@ -142,6 +165,7 @@
 
 /**
  * Get a string of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_string.
  */
@@ -149,6 +173,7 @@
 
 /**
  * Get a string value of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return String value (characters buffer).
  */
@@ -156,6 +181,7 @@
 
 /**
  * Get a string length of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return String length.
  */
@@ -163,6 +189,7 @@
 
 /**
  * Get an array of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_array.
  */
@@ -170,6 +197,7 @@
 
 /**
  * Get an object of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_object.
  */
@@ -177,13 +205,23 @@
 
 /**
  * Get an object hash table of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_ht.
  */
 #define JSO_OBJHVAL(jv) JSO_OBJHVAL_P(&(jv))
 
 /**
+ * Get a schema value of the supplied value.
+ *
+ * @param jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_schema_value.
+ */
+#define JSO_SVVAL(jv) JSO_SVVAL_P(&(jv))
+
+/**
  * Get an error of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error or `NULL` if no error.
  */
@@ -191,6 +229,7 @@
 
 /**
  * Get an error location of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error_location .
  * @note This must be called only if the error is set.
@@ -199,6 +238,7 @@
 
 /**
  * Get an error type of the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error_type.
  * @note This must be called only if the error is set.
@@ -207,6 +247,7 @@
 
 /**
  * Set error to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param eval error value
  */
@@ -218,6 +259,7 @@
 
 /**
  * Set null to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  */
 #define JSO_VALUE_SET_NULL(jv) \
@@ -227,6 +269,7 @@
 
 /**
  * Set boolean to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param bv boolean value
  */
@@ -238,6 +281,7 @@
 
 /**
  * Set an integer value to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param lv integer value
  */
@@ -249,6 +293,7 @@
 
 /**
  * Set a double floating point number to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param dv double floating point value
  */
@@ -260,6 +305,7 @@
 
 /**
  * Set a string to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param sv string value (character buffer)
  * @param sl string length
@@ -272,6 +318,7 @@
 
 /**
  * Set an array to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param av array
  */
@@ -283,6 +330,7 @@
 
 /**
  * Set an object to the supplied value.
+ *
  * @param jv variable of @ref jso_value type
  * @param ov object
  */
@@ -293,13 +341,27 @@
 	} while (0)
 
 /**
+ * Set a schema value to the supplied value.
+ *
+ * @param jv variable of @ref jso_value type
+ * @param sv schema value
+ */
+#define JSO_VALUE_SET_SCHEMA_VALUE(jv, sv) \
+	do { \
+		JSO_TYPE(jv) = JSO_TYPE_SCHEMA_VALUE; \
+		JSO_SVVAL(jv) = (sv); \
+	} while (0)
+
+/**
  * Free @ref jso_value instance.
+ *
  * @param val instance of @ref jso_value
  */
 JSO_API void jso_value_free(jso_value *val);
 
 /**
  * Return error type for the provided value.
+ *
  * @param val value
  * @return Error description or NULL if val is not an error
  */
@@ -307,6 +369,7 @@ JSO_API const char *jso_value_get_error_description(jso_value *val);
 
 /**
  * Print indented debug output of the supplied value.
+ *
  * @param val instance of @ref jso_value
  * @param io output IO handler
  * @param indent number of spaces for initial indention
@@ -315,6 +378,7 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent);
 
 /**
  * Print debug output of the supplied value.
+ *
  * @param val instance of @ref jso_value
  * @param io output IO handler
  */
@@ -322,6 +386,7 @@ JSO_API void jso_value_dump(jso_value *val, jso_io *io);
 
 /**
  * Return string representation of the @ref jso_value_type.
+ *
  * @param type value type.
  * @return The string representation of the type.
  */

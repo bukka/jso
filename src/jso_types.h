@@ -124,6 +124,8 @@ typedef enum {
 	JSO_TYPE_ARRAY = 6,
 	/** object value type */
 	JSO_TYPE_OBJECT = 7,
+	/** schema object value type */
+	JSO_TYPE_SCHEMA_VALUE = 8,
 } jso_value_type;
 
 /**
@@ -192,6 +194,8 @@ typedef union _jso_value_data {
 	jso_array *arr;
 	/** object value (reference) */
 	jso_object *obj;
+	/** json schema object (reference) */
+	jso_schema_object *sobj;
 	/** error value (reference) */
 	jso_error *err;
 } jso_value_data;

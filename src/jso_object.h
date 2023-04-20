@@ -65,6 +65,15 @@ JSO_API jso_object *jso_object_alloc();
 JSO_API void jso_object_free(jso_object *obj);
 
 /**
+ * Resize object.
+ *
+ * @param obj object
+ * @param size new object size
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_object_resize(jso_object *obj, size_t size);
+
+/**
  * Add value with a key to the object.
  *
  * @param obj object
@@ -119,6 +128,13 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
 	jso_ht *_ht = &_obj->ht; \
 	JSO_HT_FOREACH(_ht, _key, _val)
+
+/**
+ * @brief Object items count retrieving macro
+ * @param _obj object
+ * @return Count of the object items.
+ */
+#define JSO_OBJECT_COUNT(_obj) _obj->ht.count
 
 /**
  * @brief Macro to end iteration of the object.

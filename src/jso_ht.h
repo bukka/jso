@@ -106,6 +106,16 @@ JSO_API void jso_ht_free(jso_ht *ht);
 JSO_API void jso_ht_clear(jso_ht *ht);
 
 /**
+ * Resize hash table.
+ *
+ * @param ht hash table
+ * @param size new size
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ * @note Only increasing of size is allowed.
+ */
+JSO_API jso_rc jso_ht_resize(jso_ht *ht, size_t size);
+
+/**
  * Set value to the hash table.
  *
  * @param ht hash table

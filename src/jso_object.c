@@ -37,6 +37,12 @@ JSO_API void jso_object_free(jso_object *obj)
 	jso_free(obj);
 }
 
+/* resize object */
+JSO_API jso_rc jso_object_resize(jso_object *obj, size_t size)
+{
+	return jso_ht_resize(&obj->ht, size);
+}
+
 /* add new element to the object obj */
 JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
 {

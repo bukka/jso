@@ -70,6 +70,8 @@ typedef union _jso_schema_keyword_data {
 	jso_schema_array_of_values *asoval;
 	/** schema object value */
 	jso_schema_value *soval;
+	/** schema object */
+	jso_object *osoval;
 } jso_schema_keyword_data;
 
 /**

@@ -137,6 +137,16 @@ JSO_API void jso_ht_clear(jso_ht *ht)
 	jso_ht_init(ht);
 }
 
+JSO_API jso_rc jso_ht_resize(jso_ht *ht, size_t size)
+{
+	size_t capacity = (size_t) (ht->capacity * (1 / JSO_HT_MAX_LOAD) + 1);
+	if (capacity <= ht->capacity) {
+		return capacity == ht->capacity ? JSO_SUCCESS : JSO_FAILURE;
+		;
+	}
+	return jso_ht_adjust_capacity(ht, capacity);
+}
+
 JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_bool free_old)
 {
 	if (ht->count + 1 > ht->capacity * JSO_HT_MAX_LOAD) {
