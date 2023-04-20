@@ -468,107 +468,8 @@ JSO_API void jso_schema_init(jso_schema *schema)
 	memset(schema, 0, sizeof(jso_schema));
 }
 
-/* Set boolean keyword. */
-static jso_rc jso_schema_keyword_set_boolean(jso_schema *schema, jso_value *data, const char *key,
-		jso_bool *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	jso_bool present;
-	jso_bool keyword_bool = jso_schema_data_get_bool(schema, data, key, &present);
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (present) {
-		*keyword = keyword_bool;
-		JSO_BITSET_SET(*keywords, keyword_type);
-	}
-
-	return JSO_SUCCESS;
-}
-
-/* Set number keyword. */
-static jso_rc jso_schema_keyword_set_number(jso_schema *schema, jso_value *data, const char *key,
-		jso_number *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	jso_number num;
-	jso_number *pnum = jso_schema_data_get_number(schema, data, key, &num);
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (pnum != NULL) {
-		memcpy(keyword, pnum, sizeof(jso_number));
-		JSO_BITSET_SET(*keywords, keyword_type);
-	}
-
-	return JSO_SUCCESS;
-}
-
-/* Set integer keyword. */
-static jso_rc jso_schema_keyword_set_int(jso_schema *schema, jso_value *data, const char *key,
-		jso_int *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	jso_bool present;
-	jso_int num = jso_schema_data_get_int(schema, data, key, &present);
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (present) {
-		*keyword = num;
-		JSO_BITSET_SET(*keywords, keyword_type);
-	}
-
-	return JSO_SUCCESS;
-}
-
-/* Set unsigned integer keyword either with zero or without zero. */
-static jso_rc jso_schema_keyword_set_uint_ex(jso_schema *schema, jso_value *data, const char *key,
-		jso_uint *keyword, jso_bitset *keywords, jso_uint64 keyword_type, bool no_zero)
-{
-	jso_bool present;
-	jso_uint num = jso_schema_data_get_uint(schema, data, key, &present, no_zero);
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (present) {
-		*keyword = num;
-		JSO_BITSET_SET(*keywords, keyword_type);
-	}
-
-	return JSO_SUCCESS;
-}
-
-/* Set unsigned integer keyword. */
-static inline jso_rc jso_schema_keyword_set_uint(jso_schema *schema, jso_value *data,
-		const char *key, jso_uint *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	return jso_schema_keyword_set_uint_ex(
-			schema, data, key, keyword, keywords, keyword_type, false);
-}
-
-/* Set non zero unsigned integer keyword. */
-static inline jso_rc jso_schema_keyword_set_uint_nz(jso_schema *schema, jso_value *data,
-		const char *key, jso_uint *keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	return jso_schema_keyword_set_uint_ex(schema, data, key, keyword, keywords, keyword_type, true);
-}
-
-/* Set string keyword. */
-static jso_rc jso_schema_keyword_set_str(jso_schema *schema, jso_value *data, const char *key,
-		jso_string **keyword, jso_bitset *keywords, jso_uint64 keyword_type)
-{
-	jso_string *keyword_str = jso_schema_data_get_str(schema, data, key);
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (keyword_str != NULL) {
-		*keyword = jso_string_copy(keyword_str);
-		JSO_BITSET_SET(*keywords, keyword_type);
-	}
-	return JSO_SUCCESS;
-}
-
-static inline jso_rc jso_schema_keyword_check(jso_schema *schema,
-		jso_schema_keyword *schema_keyword_static, jso_schema_keyword **keyword,
-		jso_bitset *keyword_mask, jso_uint64 keyword_mask_type)
+static inline jso_rc jso_schema_keyword_check(
+		jso_schema *schema, jso_schema_keyword *schema_keyword_static, jso_schema_keyword **keyword)
 {
 	if (jso_schema_error_is_set(schema)) {
 		return JSO_FAILURE;
@@ -577,7 +478,6 @@ static inline jso_rc jso_schema_keyword_check(jso_schema *schema,
 		jso_schema_keyword *schema_keyword_new = jso_calloc(1, sizeof(jso_schema_keyword));
 		memcpy(schema_keyword_new, schema_keyword_static, sizeof(jso_schema_keyword));
 		*keyword = schema_keyword_new;
-		JSO_BITSET_SET(*keyword_mask, keyword_mask_type);
 	}
 	return JSO_SUCCESS;
 }
@@ -591,22 +491,19 @@ static jso_rc jso_schema_keyword_set_union(jso_schema *schema, jso_value *data, 
 	jso_schema_keyword *schema_keyword_ptr = jso_schema_data_get_keyword_union(
 			schema, data, key, value, union_types, keyword_mask_type, &schema_keyword);
 
-	return jso_schema_keyword_check(
-			schema, schema_keyword_ptr, keyword, keyword_mask, keyword_mask_type);
+	return jso_schema_keyword_check(schema, schema_keyword_ptr, keyword);
 }
 
 /* Set keyword. */
 static jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *key,
 		jso_schema_value *value, jso_schema_keyword **keyword, jso_schema_keyword_type keyword_type,
-		jso_bitset *keyword_mask, jso_uint64 keyword_mask_type, jso_uint32 keyword_flags,
-		jso_bool required)
+		jso_uint32 keyword_flags, jso_bool required)
 {
 	jso_schema_keyword schema_keyword;
 	jso_schema_keyword *schema_keyword_ptr = jso_schema_data_get_keyword(
-			schema, data, key, value, keyword_type, keyword_flags, required, &schema_keyword);
+			schema, data, key, value, keyword_type, keyword_flags, required, true, &schema_keyword);
 
-	return jso_schema_keyword_check(
-			schema, schema_keyword_ptr, keyword, keyword_mask, keyword_mask_type);
+	return jso_schema_keyword_check(schema, schema_keyword_ptr, keyword);
 }
 
 #define JSO_SCHEMA_KW_SET_WRAP(_kw_set_call, _value, _value_data) \

@@ -152,41 +152,24 @@ typedef struct _jso_schema_keyword {
 } jso_schema_keyword;
 
 /**
- * @brief Common keyword default bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_COMMON_DEFAULT 1
-
-/**
- * @brief Common keyword description bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_COMMON_DESCRIPTION 2
-
-/**
- * @brief Common keyword title bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_COMMON_TITLE 3
-
-/**
  * @brief Common schema feilds without default value.
  */
 #define JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE() \
 	/** parent pointer */ \
 	jso_schema_value *parent; \
-	/** keywords mask to see what has been set */ \
-	jso_bitset keywords; \
 	/** title keyword */ \
-	jso_string *title; \
+	jso_schema_keyword title; \
 	/** description keyword */ \
-	jso_string *description;
+	jso_schema_keyword description
 
 /**
  * @brief Common schema feilds with default value.
  * @param _value_type type of default value
  */
-#define JSO_SCHEMA_VALUE_COMMON_FIELDS(_value_type) \
+#define JSO_SCHEMA_VALUE_COMMON_FIELDS() \
 	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE(); \
 	/** default keyword */ \
-	_value_type default_value
+	jso_schema_keyword default_value
 
 /**
  * @brief JsonSchema common validation keywords.
@@ -204,188 +187,78 @@ typedef jso_schema_value_common jso_schema_value_null;
  * @brief JsonSchema boolean validation keywords.
  */
 typedef struct _jso_schema_value_boolean {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_bool);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 } jso_schema_value_boolean;
-
-/**
- * @brief Integer keyword multipleOf bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_INTEGER_MULTIPLE_OF 10
-
-/**
- * @brief Integer keyword minimum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_INTEGER_MINIMUM 11
-
-/**
- * @brief Integer keyword maximum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_INTEGER_MAXIMUM 12
-
-/**
- * @brief Integer keyword exclusiveMinimum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_INTEGER_EXCLUSIVE_MINIMUM 13
-
-/**
- * @brief Integer keyword exclusiveMaximum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_INTEGER_EXCLUSIVE_MAXIMUM 14
 
 /**
  * @brief JsonSchema integer validation keywords.
  */
 typedef struct _jso_schema_value_integer {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_int);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** multipleOf keyword */
-	jso_uint multiple_of;
+	jso_schema_keyword multiple_of;
 	/** minimum keyword */
-	jso_int minimum;
+	jso_schema_keyword minimum;
 	/** maximum keyword */
-	jso_int maximum;
+	jso_schema_keyword maximum;
 	/** exclusiveMinimum keyword */
-	jso_bool exclusive_minimum;
+	jso_schema_keyword exclusive_minimum;
 	/** exclusiveMaximum keyword */
-	jso_bool exclusive_maximum;
+	jso_schema_keyword exclusive_maximum;
 } jso_schema_value_integer;
-
-/**
- * @brief Number keyword multipleOf bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_NUMBER_MULTIPLE_OF 10
-
-/**
- * @brief Number keyword minimum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_NUMBER_MINIMUM 11
-
-/**
- * @brief Number keyword maximum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_NUMBER_MAXIMUM 12
-
-/**
- * @brief Number keyword exclusiveMinimum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_NUMBER_EXCLUSIVE_MINIMUM 13
-
-/**
- * @brief Number keyword exclusiveMaximum bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_NUMBER_EXCLUSIVE_MAXIMUM 14
 
 /**
  * @brief JsonSchema number validation keywords.
  */
 typedef struct _jso_schema_value_number {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_number);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** multipleOf keyword */
-	jso_uint multiple_of;
+	jso_schema_keyword multiple_of;
 	/** minimum keyword */
-	jso_number minimum;
+	jso_schema_keyword minimum;
 	/** maximum keyword */
-	jso_number maximum;
+	jso_schema_keyword maximum;
 	/** exclusiveMinimum keyword */
-	jso_bool exclusive_minimum;
+	jso_schema_keyword exclusive_minimum;
 	/** exclusiveMaximum keyword */
-	jso_bool exclusive_maximum;
+	jso_schema_keyword exclusive_maximum;
 } jso_schema_value_number;
-
-/**
- * @brief String keyword maxLength bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_STRING_MAX_LENGTH 10
-
-/**
- * @brief String keyword minLength bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_STRING_MIN_LENGTH 11
 
 /**
  * @brief JsonSchema string validation keywords.
  * @todo support pattern
  */
 typedef struct _jso_schema_value_string {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_string *);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** maxLength keyword */
-	jso_uint max_length;
+	jso_schema_keyword max_length;
 	/** minLength keyword */
-	jso_uint min_length;
+	jso_schema_keyword min_length;
 } jso_schema_value_string;
-
-/**
- * @brief Array keyword additionalItems bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_ARRAY_ADDITIONAL_ITEMS 10
-
-/**
- * @brief Array keyword uniqueItems bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_ARRAY_UNIQUE_ITEMS 11
-
-/**
- * @brief Array keyword items bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_ARRAY_ITEMS 12
-
-/**
- * @brief Array keyword maxItems bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_ARRAY_MAX_ITEMS 13
-
-/**
- * @brief Array keyword minItems bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_ARRAY_MIN_ITEMS 14
 
 /**
  * @brief JsonSchema array validation keywords.
  */
 typedef struct _jso_schema_value_array {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_array *);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** additionalItems keyword */
-	jso_schema_keyword *additional_items;
+	jso_schema_keyword additional_items;
 	/** items keyword */
-	jso_schema_keyword *items;
+	jso_schema_keyword items;
 	/** uniqueItems keyword */
-	jso_bool unique_items;
+	jso_schema_keyword unique_items;
 	/** maxItems keyword */
-	jso_uint max_items;
+	jso_schema_keyword max_items;
 	/** minItems keyword */
-	jso_uint min_items;
+	jso_schema_keyword min_items;
 } jso_schema_value_array;
-
-/**
- * @brief Object keyword additionalProperties bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_OBJECT_ADDITIONAL_PROPERTIES 10
-
-/**
- * @brief Object keyword maxProperties bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_OBJECT_MAX_PROPERTIES 11
-
-/**
- * @brief Object keyword minProperties bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_OBJECT_MIN_PROPERTIES 12
-
-/**
- * @brief Object keyword required bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_OBJECT_REQUIRED 13
-
-/**
- * @brief Object keyword properties bit set ID.
- */
-#define JSO_SCHEMA_KEYWORD_OBJECT_PROPERTIES 14
 
 /**
  * @brief JsonSchema array validation keywords.
  * @todo support pattern_properties and dependencies
  */
 typedef struct _jso_schema_value_object {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS(jso_object *);
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** additionalProperties keyword */
 	jso_schema_keyword *additional_properties;
 	/** maxProperties keyword */
