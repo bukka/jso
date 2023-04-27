@@ -38,7 +38,35 @@
 struct _jso_object {
 	/** embedded hash table */
 	jso_ht ht;
+	/* object reference count */
+	jso_uint16 refcount;
+	/* object flags */
+	jso_uint16 flags;
 };
+
+/**
+ * Get object items count.
+ *
+ * @param _obj object
+ * @return Count of the object items.
+ */
+#define JSO_OBJECT_COUNT(_obj) _obj->ht.count
+
+/**
+ * Get object flags of the supplied object.
+ *
+ * @param _obj pointer to @ref jso_object
+ * @return String flags.
+ */
+#define JSO_OBJECT_FLAGS(_obj) (_obj)->flags
+
+/**
+ * Get reference count of the supplied object.
+ *
+ * @param _obj pointer to @ref jso_object
+ * @return References count value.
+ */
+#define JSO_OBJECT_REFCOUNT(_obj) (_obj)->refcount
 
 /**
  * @brief Object iteration function callback.
@@ -120,6 +148,18 @@ JSO_API void jso_object_apply_with_arg(
 JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 
 /**
+ * Copy object.
+ *
+ * @param obj object to copy
+ * @return The copied object.
+ */
+static inline jso_object *jso_object_copy(jso_object *obj)
+{
+	++JSO_OBJECT_REFCOUNT(obj);
+	return obj;
+}
+
+/**
  * @brief Macro to start iteration of the object.
  * @param _obj object
  * @param _key entry key
@@ -128,13 +168,6 @@ JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
 	jso_ht *_ht = &_obj->ht; \
 	JSO_HT_FOREACH(_ht, _key, _val)
-
-/**
- * @brief Object items count retrieving macro
- * @param _obj object
- * @return Count of the object items.
- */
-#define JSO_OBJECT_COUNT(_obj) _obj->ht.count
 
 /**
  * @brief Macro to end iteration of the object.

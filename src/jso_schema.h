@@ -62,6 +62,8 @@ typedef union _jso_schema_keyword_data {
 	jso_double dval;
 	/** string value */
 	jso_string *sval;
+	/** array of any values */
+	jso_array *aval;
 	/** array of string values */
 	jso_array *asval;
 	/** array of schema object values */
@@ -70,6 +72,8 @@ typedef union _jso_schema_keyword_data {
 	jso_schema_value *soval;
 	/** schema object */
 	jso_object *osoval;
+	/** any object */
+	jso_object *oval;
 } jso_schema_keyword_data;
 
 /**

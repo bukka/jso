@@ -159,7 +159,7 @@ JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
 /**
  * Copy array.
  *
- * @param str array to copy
+ * @param arr array to copy
  * @return The copied array.
  */
 static inline jso_array *jso_array_copy(jso_array *arr)

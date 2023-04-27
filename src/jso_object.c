@@ -33,6 +33,12 @@ JSO_API jso_object *jso_object_alloc()
 /* free object and its elements */
 JSO_API void jso_object_free(jso_object *obj)
 {
+	if (!obj)
+		return;
+	if (JSO_OBJECT_REFCOUNT(obj) > 0) {
+		--JSO_OBJECT_REFCOUNT(obj);
+		return;
+	}
 	jso_ht_clear(&obj->ht);
 	jso_free(obj);
 }
