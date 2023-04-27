@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>-
+#include <math.h>
 
 void jso_schema_value_free(jso_schema_value *val);
 static jso_schema_value *jso_schema_parse_value(
@@ -119,7 +119,7 @@ static jso_value *jso_schema_data_get_value(
 	return val;
 }
 
-static jso_value *jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
+static jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
 		jso_value *val, jso_value_type type, jso_value_type primary_type,
 		jso_bool error_on_invalid_type)
 {
@@ -154,6 +154,12 @@ static jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const
 					== JSO_SUCCESS
 			? val
 			: NULL;
+}
+
+static inline jso_string *jso_schema_data_get_str(jso_schema *schema, jso_value *data, const char *key)
+{
+	jso_value *value = jso_schema_data_get(schema, data, key, JSO_TYPE_STRING, 0, true);
+	return value == NULL ? NULL : value->data.str;
 }
 
 static jso_schema_keyword *jso_schema_data_get_keyword_null(jso_schema *schema, jso_value *data,
@@ -279,7 +285,7 @@ static inline jso_schema_keyword *jso_schema_data_get_keyword_string(jso_schema 
 			schema, data, key, JSO_TYPE_STRING, keyword_flags, error_on_invalid_type);
 	if (val != NULL) {
 		schema_keyword->flags = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
-		schema_keyword->data.sval = JSO_SVAL_P(val);
+		schema_keyword->data.sval = JSO_STR_P(val);
 		return schema_keyword;
 	}
 	return NULL;
@@ -369,12 +375,12 @@ static inline jso_schema_keyword *jso_schema_data_get_keyword_object_of_schema_o
 		return NULL;
 	}
 	jso_value objval;
-	jso_string *key;
+	jso_string *objkey;
 	jso_value *item;
 	jso_object *obj = JSO_OBJVAL_P(val);
 	jso_object *schema_obj = jso_object_alloc();
 	jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj));
-	JSO_OBJECT_FOREACH(obj, key, item)
+	JSO_OBJECT_FOREACH(obj, objkey, item)
 	{
 		if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT) {
 			jso_object_free(schema_obj);
@@ -386,7 +392,7 @@ static inline jso_schema_keyword *jso_schema_data_get_keyword_object_of_schema_o
 			return NULL;
 		}
 		JSO_VALUE_SET_SCHEMA_VALUE(objval, schema_value);
-		jso_object_add(schema_obj, jso_string_copy(key), &objval);
+		jso_object_add(schema_obj, jso_string_copy(objkey), &objval);
 	}
 	JSO_OBJECT_FOREACH_END;
 	schema_keyword->data.osoval = schema_obj;
@@ -713,9 +719,10 @@ static jso_schema_value *jso_schema_parse_object(
 static jso_schema_value *jso_schema_parse_value(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
-	jso_string *type = jso_schema_data_get_str_required(schema, data, "type");
+	jso_string *type = jso_schema_data_get_str(schema, data, "type");
 
 	if (type == NULL) {
+		// TODO: support empty schema that always pass
 		return NULL;
 	}
 

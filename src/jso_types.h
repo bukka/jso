@@ -105,6 +105,11 @@ typedef struct _jso_array jso_array;
 typedef struct _jso_object jso_object;
 
 /**
+ * @brief Schema value type.
+ */
+typedef struct _jso_schema_value jso_schema_value;
+
+/**
  * @brief Value type.
  */
 typedef enum {
@@ -195,7 +200,7 @@ typedef union _jso_value_data {
 	/** object value (reference) */
 	jso_object *obj;
 	/** json schema object (reference) */
-	jso_schema_object *sobj;
+	jso_schema_value *sobj;
 	/** error value (reference) */
 	jso_error *err;
 } jso_value_data;

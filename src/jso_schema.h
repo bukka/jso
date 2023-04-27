@@ -33,8 +33,6 @@
 #include "jso_ht.h"
 #include "jso_bitset.h"
 
-typedef struct _jso_schema_value jso_schema_value;
-
 /**
  * @brief Array of schema values.
  */
@@ -267,15 +265,15 @@ typedef struct _jso_schema_value_array {
 typedef struct _jso_schema_value_object {
 	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 	/** additionalProperties keyword */
-	jso_schema_keyword *additional_properties;
+	jso_schema_keyword additional_properties;
 	/** maxProperties keyword */
-	jso_uint max_properties;
+	jso_schema_keyword max_properties;
 	/** minProperties keyword */
-	jso_uint min_properties;
+	jso_schema_keyword min_properties;
 	/** requiredProperties keyword */
-	jso_array *required;
+	jso_schema_keyword required;
 	/** properties keyword */
-	jso_ht *properties;
+	jso_schema_keyword properties;
 } jso_schema_value_object;
 
 /**
