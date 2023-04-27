@@ -126,11 +126,18 @@ typedef enum {
 #define JSO_SCHEMA_KEYWORD_FLAG_NOT_ZERO 0x02
 
 /**
+ * @brief Flag specifying that the value is required.
+ *
+ * This is mainly applicable to array.
+ */
+#define JSO_SCHEMA_KEYWORD_FLAG_REQUIRED 0x04
+
+/**
  * @brief Flag specifying that the value must be unique.
  *
  * This is mainly applicable to array.
  */
-#define JSO_SCHEMA_KEYWORD_FLAG_UNIQUE 0x04
+#define JSO_SCHEMA_KEYWORD_FLAG_UNIQUE 0x08
 
 /**
  * @brief Flag specifying that the number is a floating number.
@@ -298,6 +305,8 @@ typedef enum {
  * element which is pointer size.
  */
 typedef union _jso_schema_value_data {
+	/** common value pointer */
+	jso_schema_value_common *comval;
 	/** null value */
 	jso_schema_value_null *nulval;
 	/** boolean value */

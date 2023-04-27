@@ -24,7 +24,6 @@
 #include "jso.h"
 #include "jso_string.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -184,6 +183,6 @@ static const char *type_names[]
 
 JSO_API const char *jso_value_type_to_string(jso_value_type type)
 {
-	assert(type < sizeof(type_names) / sizeof(const char *));
+	JSO_ASSERT_LT(type, sizeof(type_names) / sizeof(const char *));
 	return type_names[(int) type];
 }

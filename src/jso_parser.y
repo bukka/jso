@@ -26,7 +26,6 @@
 #include "jso_parser.h"
 #include "jso_parser_hooks.h"
 
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -80,7 +79,7 @@ int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser);
 void jso_yyerror(YYLTYPE *location, jso_parser *parser, char const *msg);
 
 #define JSO_PARSER_SET_LOC(_loc) \
-	assert(sizeof(YYLTYPE) == sizeof(jso_parser_location)); \
+	JSO_ASSERT_EQ(sizeof(YYLTYPE), sizeof(jso_parser_location)); \
 	parser->location = (jso_parser_location *) &_loc
 
 #define JSO_PARSER_SET_ERROR(_etype, _loc) \
