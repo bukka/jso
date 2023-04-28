@@ -526,24 +526,33 @@ static inline jso_schema_keyword *jso_schema_data_get_keyword(jso_schema *schema
 			error_on_invalid_type, schema_keyword, NULL);
 }
 
-static jso_schema_keyword *jso_schema_data_get_keyword_union(jso_schema *schema, jso_value *data,
-		const char *key, jso_schema_value *parent, jso_uint32 union_types, jso_uint32 keyword_flags,
-		jso_schema_keyword *schema_keyword)
+static jso_schema_keyword *jso_schema_data_get_keyword_union_of_2_types(jso_schema *schema,
+		jso_value *data, const char *key, jso_schema_value *parent,
+		jso_schema_keyword_type keyword_union_type_1, jso_schema_keyword_type keyword_union_type_2,
+		jso_uint32 keyword_flags, jso_schema_keyword *schema_keyword)
 {
 	jso_value *val = jso_schema_data_get_value_fast(schema, data, key, keyword_flags);
 	if (val == NULL) {
 		return NULL;
 	}
 
-	for (int union_type = 1; union_type <= JSO_SCHEMA_KEYWORD_TYPE_LAST; union_type <<= 1) {
-		if (union_type & union_types) {
-			jso_schema_keyword *schema_keyword_result = jso_schema_data_get_keyword_ex(
-					schema, data, key, parent, union_type, 0, false, schema_keyword, val);
-			if (schema_keyword_result != NULL || jso_schema_error_is_set(schema)) {
-				return schema_keyword_result;
-			}
-		}
+	// Try first type.
+	jso_schema_keyword *schema_keyword_result = jso_schema_data_get_keyword_ex(
+			schema, data, key, parent, keyword_union_type_1, 0, false, schema_keyword, val);
+	if (schema_keyword_result != NULL || jso_schema_error_is_set(schema)) {
+		return schema_keyword_result;
 	}
+
+	// Try second type.
+	schema_keyword_result = jso_schema_data_get_keyword_ex(schema, data, key, parent,
+			keyword_union_type_2, keyword_flags, false, schema_keyword, val);
+	if (schema_keyword_result != NULL || jso_schema_error_is_set(schema)) {
+		return schema_keyword_result;
+	}
+
+	// Trigger type error if types do not match.
+	jso_schema_data_check_type(
+			schema, data, key, val, keyword_union_type_1, keyword_union_type_2, true);
 
 	return NULL;
 }
@@ -564,12 +573,14 @@ static inline jso_rc jso_schema_keyword_check(jso_schema *schema, jso_schema_key
 }
 
 /* Set union keyword. */
-static inline jso_rc jso_schema_keyword_set_union(jso_schema *schema, jso_value *data,
+static inline jso_rc jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_value *data,
 		const char *key, jso_schema_value *value, jso_schema_keyword *schema_keyword,
-		jso_uint32 union_types, jso_uint32 keyword_flags)
+		jso_schema_keyword_type keyword_union_type_1, jso_schema_keyword_type keyword_union_type_2,
+		jso_uint32 keyword_flags)
 {
-	jso_schema_keyword *schema_keyword_ptr = jso_schema_data_get_keyword_union(
-			schema, data, key, value, union_types, keyword_flags, schema_keyword);
+	jso_schema_keyword *schema_keyword_ptr
+			= jso_schema_data_get_keyword_union_of_2_types(schema, data, key, value,
+					keyword_union_type_1, keyword_union_type_2, keyword_flags, schema_keyword);
 
 	return jso_schema_keyword_check(schema, schema_keyword_ptr);
 }
@@ -611,9 +622,9 @@ static inline jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data,
 
 #define JSO_SCHEMA_KW_SET_UNION_2_WITH_FLAGS( \
 		_schema, _data, _key, _value, _value_data, _kw_name, _utype1, _utype2, _kw_flags) \
-	JSO_SCHEMA_KW_SET_WRAP( \
-			jso_schema_keyword_set_union(_schema, _data, #_key, _value, &_value_data->_kw_name, \
-					JSO_SCHEMA_KW_TYPE(_utype1) | JSO_SCHEMA_KW_TYPE(_utype2), _kw_flags), \
+	JSO_SCHEMA_KW_SET_WRAP(jso_schema_keyword_set_union_of_2_types(_schema, _data, #_key, _value, \
+								   &_value_data->_kw_name, JSO_SCHEMA_KW_TYPE(_utype1), \
+								   JSO_SCHEMA_KW_TYPE(_utype2), _kw_flags), \
 			_value, _value_data)
 
 #define JSO_SCHEMA_KW_SET_UNION_2_EX( \
@@ -876,7 +887,7 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		return JSO_FAILURE;
 	}
 
-	// parse id
+	// Parse ID.
 	jso_string *id = jso_schema_data_get_str(schema, data, "id");
 	if (jso_schema_error_is_set(schema)) {
 		return JSO_FAILURE;
@@ -885,7 +896,7 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		schema->id = jso_string_copy(id);
 	}
 
-	// parse root value
+	// Parse root value.
 	jso_schema_value *root = jso_schema_parse_value(schema, data, NULL);
 	if (root == NULL) {
 		return JSO_FAILURE;
