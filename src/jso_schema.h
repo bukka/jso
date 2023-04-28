@@ -36,14 +36,14 @@
 /**
  * @brief Array of schema values.
  */
-typedef struct _jso_schema_array_of_values {
+typedef struct _jso_schema_array {
 	/** array length */
 	size_t len;
 	/** array size */
 	size_t capacity;
 	/** array value */
 	jso_schema_value *values[1];
-} jso_schema_array_of_values;
+} jso_schema_array;
 
 /**
  * @brief JsonSchema keyword data.
@@ -67,7 +67,7 @@ typedef union _jso_schema_keyword_data {
 	/** array of string values */
 	jso_array *asval;
 	/** array of schema object values */
-	jso_schema_array_of_values *asoval;
+	jso_schema_array *asoval;
 	/** schema object value */
 	jso_schema_value *soval;
 	/** schema object */
@@ -155,6 +155,7 @@ typedef struct _jso_schema_keyword {
 	jso_schema_keyword_type type;
 	jso_uint32 flags;
 } jso_schema_keyword;
+
 
 /**
  * @brief Common schema feilds without default value.
