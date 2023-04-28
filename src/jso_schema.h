@@ -81,32 +81,30 @@ typedef union _jso_schema_keyword_data {
  */
 typedef enum {
 	/** null keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_NULL = 0x0001,
+	JSO_SCHEMA_KEYWORD_TYPE_NULL,
 	/** boolean keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN = 0x0002,
+	JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN,
 	/** integer keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_INTEGER = 0x0004,
+	JSO_SCHEMA_KEYWORD_TYPE_INTEGER,
 	/** integer keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER = 0x0008,
+	JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER,
 	/** integer keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_NUMBER = 0x0010,
+	JSO_SCHEMA_KEYWORD_TYPE_NUMBER,
 	/** string keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_STRING = 0x0020,
+	JSO_SCHEMA_KEYWORD_TYPE_STRING,
 	/** string array keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_ARRAY = 0x0040,
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY,
 	/** string array keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS = 0x0080,
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS,
 	/** schema object array keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS = 0x0200,
+	JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS,
 	/** object keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_OBJECT = 0x0800,
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT,
 	/** schema object keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT = 0x1000,
+	JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT,
 	/** object of schema objects keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS = 0x2000
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS
 } jso_schema_keyword_type;
-
-#define JSO_SCHEMA_KEYWORD_TYPE_LAST JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS
 
 /**
  * @brief Flag stating the presence of keyword.
@@ -129,8 +127,6 @@ typedef enum {
 
 /**
  * @brief Flag specifying that the value is required.
- *
- * This is mainly applicable to array.
  */
 #define JSO_SCHEMA_KEYWORD_FLAG_REQUIRED 0x04
 
