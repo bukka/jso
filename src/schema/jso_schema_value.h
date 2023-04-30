@@ -34,6 +34,4 @@
 jso_schema_value *jso_schema_value_parse(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent);
 
-void jso_schema_value_free(jso_schema_value *val);
-
 #endif /* JSO_SCHEMA_VALUE_H */

@@ -70,7 +70,7 @@ typedef union _jso_schema_keyword_data {
 	jso_schema_array *asoval;
 	/** schema object value */
 	jso_schema_value *soval;
-	/** schema object */
+	/** object of schema objects */
 	jso_object *osoval;
 	/** any object */
 	jso_object *oval;
@@ -156,6 +156,213 @@ typedef struct _jso_schema_keyword {
 	jso_uint32 flags;
 } jso_schema_keyword;
 
+/**
+ * Get keyword boolean data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Boolean keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_BOOL_P(_pkw) (_pkw)->data.bval
+
+/**
+ * Get keyword integer data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Integer keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_INT_P(_pkw) (_pkw)->data.ival
+
+/**
+ * Get keyword unsigned integer data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Unsigned integer keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_UINT_P(_pkw) (_pkw)->data.uval
+
+/**
+ * Get keyword double data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Double keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_DOUBLE_P(_pkw) (_pkw)->data.dval
+
+/**
+ * Get keyword string data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return String keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_STR_P(_pkw) (_pkw)->data.sval
+
+/**
+ * Get keyword array data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Array keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR_P(_pkw) (_pkw)->data.aval
+
+/**
+ * Get keyword array of strings data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Array of string keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR_STR_P(_pkw) (_pkw)->data.asval
+
+/**
+ * Get keyword array of schema objects data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Array of schema objects keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(_pkw) (_pkw)->data.asoval
+
+/**
+ * Get keyword schema object data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Schema object keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(_pkw) (_pkw)->data.soval
+
+/**
+ * Get keyword object of schema objects data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Object of schema objects keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(_pkw) (_pkw)->data.osoval
+
+/**
+ * Get keyword object data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Object keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_OBJ_P(_pkw) (_pkw)->data.oval
+
+/**
+ * Get keyword boolean data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Boolean keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_BOOL(_kw) _kw.data.bval
+
+/**
+ * Get keyword integer data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Integer keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_INT(_kw) _kw.data.ival
+
+/**
+ * Get keyword unsigned integer data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Unsigned integer keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_UINT(_kw) _kw.data.uval
+
+/**
+ * Get keyword double data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Double keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_DOUBLE(_kw) _kw.data.dval
+
+/**
+ * Get keyword string data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return String keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_STR(_kw) _kw.data.sval
+
+/**
+ * Get keyword array data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Array keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR(_kw) _kw.data.aval
+
+/**
+ * Get keyword array of strings data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Array of string keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR_STR(_kw) _kw.data.asval
+
+/**
+ * Get keyword array of schema objects data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Array of schema objects keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ(_kw) _kw.data.asoval
+
+/**
+ * Get keyword schema object data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Schema object kenumvalyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(_kw) _kw.data.soval
+
+/**
+ * Get keyword object of schema objects data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Object of schema objects keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(_kw) _kw.data.osoval
+
+/**
+ * Get keyword object data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Object keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_OBJ(_kw) _kw.data.oval
+
+/**
+ * Get schema keyword type for the supplied schema keyword pointer.
+ *
+ * @param _pkw schema keyword pointer
+ * @return The schema keyword type of @ref jso_schema_keyword_type
+ */
+#define JSO_SCHEMA_KEYWORD_TYPE_P(_pkw) _pkw->type
+
+/**
+ * Get schema keyword type for the supplied schema keyword.
+ *
+ * @param _kw schema keyword
+ * @return The schema keyword type of @ref jso_schema_keyword_type
+ */
+#define JSO_SCHEMA_KEYWORD_TYPE(_kw) _kw.type
+
+/**
+ * Get schema keyword flags for the supplied schema keyword pointer.
+ *
+ * @param _pkw schema keyword pointer
+ * @return The schema keyword type of @ref jso_schema_keyword_type
+ */
+#define JSO_SCHEMA_KEYWORD_FLAGS_P(_pkw) _pkw->flags
+
+/**
+ * Get schema keyword flags for the supplied schema keyword.
+ *
+ * @param _kw schema keyword
+ * @return The schema keyword type of @ref jso_schema_keyword_type
+ */
+#define JSO_SCHEMA_KEYWORD_FLAGS(_kw) _kw.flags
 
 /**
  * @brief Common schema feilds without default value.
@@ -333,6 +540,150 @@ struct _jso_schema_value {
 };
 
 /**
+ * Get common schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Common schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_COMMON_P(_psv) (_psv)->data.comval
+
+/**
+ * Get null schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Null schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_NULL_P(_psv) (_psv)->data.nulval
+
+/**
+ * Get boolean schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Boolean schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_BOOL_P(_psv) (_psv)->data.boolval
+
+/**
+ * Get integer schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Integer schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_INT_P(_psv) (_psv)->data.intval
+
+/**
+ * Get number schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Number schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_NUM_P(_psv) (_psv)->data.numval
+
+/**
+ * Get string schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return String schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_STR_P(_psv) (_psv)->data.strval
+
+/**
+ * Get array schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Array schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_ARR_P(_psv) (_psv)->data.arrval
+
+/**
+ * Get object schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Object schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_OBJ_P(_psv) (_psv)->data.objval
+
+/**
+ * Get common schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Common schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_COMMON(_sv) _sv.data.comval
+
+/**
+ * Get null schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Null schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_NULL(_sv) _sv.data.nulval
+
+/**
+ * Get boolean schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Boolean schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_BOOL(_sv) _sv.data.boolval
+
+/**
+ * Get integer schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Integer schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_INT(_sv) _sv.data.intval
+
+/**
+ * Get number schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Number schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_NUM(_sv) _sv.data.numval
+
+/**
+ * Get string schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return String schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_STR(_sv) _sv.data.strval
+
+/**
+ * Get array schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Array schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_ARR(_sv) _sv.data.arrval
+
+/**
+ * Get object schema value data for the supplied schema value.
+ *
+ * @param _psv schema value
+ * @return Object schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_OBJ(_sv) _sv.data.objval
+
+/**
+ * Get schema value type for the supplied schema value pointer.
+ *
+ * @param _pkw schema value pointer
+ * @return The schema keyword type of @ref jso_schema_value_type
+ */
+#define JSO_SCHEMA_VALUE_TYPE_P(_psv) _psv->type
+
+/**
+ * Get schema value type for the supplied schema value.
+ *
+ * @param _kw schema value
+ * @return The schema value type of @ref jso_schema_value_type
+ */
+#define JSO_SCHEMA_VALUE_TYPE(_sv) _sv.type
+
+/**
  * @brief Schema version.
  */
 typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_version;
@@ -358,7 +709,7 @@ typedef enum _jso_schema_error_type {
  */
 typedef struct _jso_schema_error {
 	/** error message */
-	const char *message;
+	char *message;
 	/** error type */
 	jso_schema_error_type type;
 } jso_schema_error;
@@ -430,5 +781,12 @@ JSO_API void jso_schema_clear(jso_schema *schema);
  * @param schema schema to free
  */
 JSO_API void jso_schema_free(jso_schema *schema);
+
+/**
+ * Free schema value.
+ *
+ * @param val scheam value
+ */
+JSO_API void jso_schema_value_free(jso_schema_value *val);
 
 #endif /* JSO_SCHEMA_H */

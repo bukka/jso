@@ -28,8 +28,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-jso_rc jso_schema_error_set(
-		jso_schema *schema, jso_schema_error_type type, const char *message)
+jso_rc jso_schema_error_set(jso_schema *schema, jso_schema_error_type type, const char *message)
 {
 	size_t message_len = strlen(message);
 	char *new_message = jso_malloc(message_len);
@@ -62,4 +61,13 @@ jso_rc jso_schema_error_format(
 	}
 
 	return jso_schema_error_set(schema, type, buf);
+}
+
+void jso_schema_error_free(jso_schema *schema)
+{
+	if (schema->error.message) {
+		jso_free(schema->error.message);
+		schema->error.message = NULL;
+	}
+	schema->error.type = JSO_SCHEMA_ERROR_NONE;
 }

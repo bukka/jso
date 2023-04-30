@@ -38,10 +38,11 @@ static inline bool jso_schema_error_is_set(jso_schema *schema)
 	return JSO_SCHEMA_ERROR_TYPE(schema) != JSO_SCHEMA_ERROR_NONE;
 }
 
-jso_rc jso_schema_error_set(
-		jso_schema *schema, jso_schema_error_type type, const char *message);
+jso_rc jso_schema_error_set(jso_schema *schema, jso_schema_error_type type, const char *message);
 
 jso_rc jso_schema_error_format(
 		jso_schema *schema, jso_schema_error_type type, const char *format, ...);
+
+void jso_schema_error_free(jso_schema *schema);
 
 #endif /* JSO_SCHEMA_ERROR_H */

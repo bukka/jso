@@ -23,6 +23,7 @@
 
 #include "jso.h"
 #include "jso_string.h"
+#include "jso_schema.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,6 +43,9 @@ JSO_API void jso_value_free(jso_value *val)
 			break;
 		case JSO_TYPE_OBJECT:
 			jso_object_free(JSO_OBJVAL_P(val));
+			break;
+		case JSO_TYPE_SCHEMA_VALUE:
+			jso_schema_value_free(JSO_SVVAL_P(val));
 			break;
 		case JSO_TYPE_ERROR:
 			jso_error_free(JSO_EVAL_P(val));
