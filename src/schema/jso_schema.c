@@ -84,14 +84,23 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 	return JSO_SUCCESS;
 }
 
+static inline void jso_schema_empty(jso_schema *schema)
+{
+	jso_schema_value_free(schema->root);
+	jso_string_free(schema->id);
+	jso_schema_error_free(schema);
+}
+
 JSO_API void jso_schema_clear(jso_schema *schema)
 {
+	jso_schema_empty(schema);
+	jso_schema_init(schema);
 }
 
 JSO_API void jso_schema_free(jso_schema *schema)
 {
 	if (schema->is_initialized) {
-		jso_schema_clear(schema);
+		jso_schema_empty(schema);
 	}
 	jso_free(schema);
 }
