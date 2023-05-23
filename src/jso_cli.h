@@ -31,6 +31,7 @@
 
 #include "jso_types.h"
 #include "jso_io.h"
+#include "jso_schema.h"
 
 /**
  * @brief CLI output type.
@@ -57,6 +58,8 @@ typedef struct _jso_cli_options {
 	jso_io *os;
 	/** error stream */
 	jso_io *es;
+	/** JsonSchema to use for validation */
+	jso_schema *schema;
 } jso_cli_options;
 
 /**

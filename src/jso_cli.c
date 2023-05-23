@@ -29,6 +29,7 @@
 #include "jso_scanner.h"
 #include "jso_parser.h"
 #include "jso_encoder.h"
+#include "jso_schema.h"
 #include "io/jso_io_file.h"
 
 static jso_rc jso_cli_param_callback_depth(const char *value, jso_cli_options *options);
@@ -260,7 +261,13 @@ static jso_rc jso_cli_param_callback_schema(const char *value, jso_cli_options *
 		jso_value_dump(&result, options->os);
 	}
 	if (rc == JSO_SUCCESS) {
-		/** TODO: create schema */
+		jso_schema *schema = jso_schema_alloc();
+		if (jso_schema_parse(schema, &result) == JSO_FAILURE) {
+			JSO_IO_PRINTF(options->es, "JsonSchema parsing failed with error: %s\n",
+					JSO_SCHEMA_ERROR_MESSAGE(schema));
+			rc = JSO_FAILURE;
+		}
+		options->schema = schema;
 	}
 
 	jso_value_free(&result);
@@ -298,6 +305,9 @@ JSO_API jso_rc jso_cli_options_destroy(jso_cli_options *options)
 	if (options->es) {
 		rc = JSO_IO_FREE(options->es) == JSO_FAILURE || rc == JSO_FAILURE ? JSO_FAILURE
 																		  : JSO_SUCCESS;
+	}
+	if (options->schema) {
+		jso_schema_free(options->schema);
 	}
 
 	return rc;
