@@ -764,7 +764,7 @@ JSO_API void jso_schema_init(jso_schema *schema);
  *
  * @param schema schema to parse data to
  * @param data source data
- * @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ * @return JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data);
 

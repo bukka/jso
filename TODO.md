@@ -35,6 +35,20 @@
 - unicode escaping
 - marked buffering
 
+## Schema
+
+### Parsing
+- patterns
+- any instance type - anyOf, allOf, oneOf, not, definitions
+- pointers
+  - local - from defintitons
+  - external - curl
+- formats
+- draft 6+
+
+### Validation
+- structure / architecture
+- SAX like validating - parser method
 
 ## CLI
 - generate help message
@@ -44,8 +58,19 @@
 - allow stream input (stdin - using jso in pipe)
   - it requires parser stream support
 
+## Testing
+
+### Unit
+- setup cmocka
+- schema tests
+- other tests
+
+### Integration
+- Perl Test throug CLI
 
 ## Build
+- pkg
+  - version check
 - bison
   - autoconf version check
   - remove Makefile AM rule (use AC)
@@ -61,6 +86,7 @@
   - included generated files that will be used if not checked
 - autogen.sh
   - check for autoconf, automake, libtool (libtoolize)
+- add CMake support to eventually replace autotools
 
 ## Documentation
 - document source using doxygent comments

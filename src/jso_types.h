@@ -105,6 +105,11 @@ typedef struct _jso_array jso_array;
 typedef struct _jso_object jso_object;
 
 /**
+ * @brief Regular expression code.
+ */
+typedef struct _jso_re_code jso_re_code;
+
+/**
  * @brief Schema value type.
  */
 typedef struct _jso_schema_value jso_schema_value;

@@ -6,6 +6,21 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/jso.h])
 AC_CONFIG_HEADERS([config.h])
 
+# Functions
+
+# Check pkg config library
+AC_DEFUN([JSO_CHECK_PKG], [
+  AC_MSG_CHECKING([for $1])
+  if pkg-config $1 --exists; then
+    AC_MSG_RESULT([yes])
+    LIBS="$LIBS $(pkg-config $1 --libs)"
+    CFLAGS="$CFLAGS $(pkg-config $1 --cflags)"
+  else
+    AC_MSG_RESULT([no])
+    AC_MSG_ERROR([$1 not found])
+  fi
+])
+
 # Checks for programs.
 AC_PROG_CC
 
@@ -39,6 +54,13 @@ AS_IF([test "x$RE2C" = x], [AC_MSG_ERROR([re2c not found])])
 # Check sed
 AC_PROG_SED
 
+# Add math lib
+LIBS="$LIBS -lm"
+
+# Check for pcre2
+JSO_CHECK_PKG([libpcre2-8])
+
+# Debug option
 AC_ARG_ENABLE(debug,
   [AS_HELP_STRING([--enable-debug],
 				  [Enable debugging])],
