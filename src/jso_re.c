@@ -34,6 +34,7 @@ JSO_API jso_re_code *jso_re_code_alloc()
 
 JSO_API void jso_re_code_free(jso_re_code *code)
 {
+	pcre2_code_free(code->re);
 	jso_free(code);
 }
 
@@ -46,6 +47,12 @@ JSO_API jso_rc jso_re_compile(jso_string *pattern, jso_re_code *code)
 	}
 	code->re = re;
 	return JSO_SUCCESS;
+}
+
+JSO_API char *jso_re_get_error_message(jso_re_code *code, jso_ctype *buf, size_t buf_size)
+{
+	pcre2_get_error_message(code->error_code, buf, buf_size);
+	return (char *) buf;
 }
 
 JSO_API jso_re_match_data *jse_re_match_data_create(jso_re_code *code)

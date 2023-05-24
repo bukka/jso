@@ -31,6 +31,7 @@
 
 #include "jso_types.h"
 #include "jso_ht.h"
+#include "jso_re.h"
 #include "jso_bitset.h"
 
 /**
@@ -62,6 +63,8 @@ typedef union _jso_schema_keyword_data {
 	jso_double dval;
 	/** string value */
 	jso_string *sval;
+	/** regular expression value */
+	jso_re_code *reval;
 	/** array of any values */
 	jso_array *aval;
 	/** array of string values */
@@ -92,6 +95,8 @@ typedef enum {
 	JSO_SCHEMA_KEYWORD_TYPE_NUMBER,
 	/** string keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_STRING,
+	/** regular expression keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_REGEXP,
 	/** string array keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_ARRAY,
 	/** string array keyword type */
@@ -197,6 +202,14 @@ typedef struct _jso_schema_keyword {
 #define JSO_SCHEMA_KEYWORD_DATA_STR_P(_pkw) (_pkw)->data.sval
 
 /**
+ * Get keyword regular expression code for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Regular expression code keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_RE_P(_pkw) (_pkw)->data.reval
+
+/**
  * Get keyword array data for the supplied pointer to keyword.
  *
  * @param _pkw pointer to keyword
@@ -283,6 +296,14 @@ typedef struct _jso_schema_keyword {
  * @return String keyword data value.
  */
 #define JSO_SCHEMA_KEYWORD_DATA_STR(_kw) _kw.data.sval
+
+/**
+ * Get keyword regular expression code for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Regular expression code keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_RE(_kw) _kw.data.reval
 
 /**
  * Get keyword array data for the supplied keyword.
@@ -447,6 +468,8 @@ typedef struct _jso_schema_value_string {
 	jso_schema_keyword max_length;
 	/** minLength keyword */
 	jso_schema_keyword min_length;
+	/** pattern keyword */
+	jso_schema_keyword pattern;
 } jso_schema_value_string;
 
 /**
@@ -701,6 +724,8 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
 	JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+	JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
+	JSO_SCHEMA_ERROR_KEYWORD_PREP,
 	JSO_SCHEMA_ERROR_VERSION,
 } jso_schema_error_type;
 

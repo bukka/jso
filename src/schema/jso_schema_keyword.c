@@ -168,6 +168,37 @@ static jso_schema_keyword *jso_schema_keyword_get_string(jso_schema *schema, jso
 	return NULL;
 }
 
+static jso_schema_keyword *jso_schema_keyword_get_regexp(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
+{
+	val = jso_schema_data_get(
+			schema, data, key, JSO_TYPE_STRING, keyword_flags, error_on_invalid_type, val);
+	if (val == NULL) {
+		return NULL;
+	}
+
+	jso_re_code *code = jso_re_code_alloc();
+	if (code == NULL) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
+				"Allocating regular expression code for keyword %s failed", key);
+		return NULL;
+	}
+
+	if (jso_re_compile(JSO_STR_P(val), code) == JSO_FAILURE) {
+		jso_ctype buf[256];
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_PREP,
+				"Compiling regular expression for keyword %s failed at position %zu with error: %s",
+				key, jso_re_get_error_offset(code),
+				jso_re_get_error_message(code, buf, sizeof(buf)));
+		jso_re_code_free(code);
+	}
+
+	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_DATA_RE_P(schema_keyword) = code;
+	return schema_keyword;
+}
+
 static inline jso_rc jso_schema_data_check_keyword_array(
 		jso_schema *schema, const char *key, jso_array *arr, jso_uint32 keyword_flags)
 {
@@ -239,7 +270,7 @@ static jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_sc
 	}
 	jso_schema_array *schema_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
 	if (schema_arr == NULL) {
-		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
 				"Allocating schema array of values for keyword %s failed", key);
 		return NULL;
 	}
@@ -337,6 +368,7 @@ static const jso_schema_keyword_get_callback schema_keyword_get_callbacks[] = {
 	[JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER] = jso_schema_keyword_get_uint,
 	[JSO_SCHEMA_KEYWORD_TYPE_NUMBER] = jso_schema_keyword_get_number,
 	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_get_string,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_get_regexp,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY] = jso_schema_keyword_get_array,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS] = jso_schema_keyword_get_array_of_strings,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS]
@@ -432,6 +464,11 @@ static void jso_schema_keyword_free_string(jso_schema_keyword *schema_keyword)
 	jso_string_free(JSO_SCHEMA_KEYWORD_DATA_STR_P(schema_keyword));
 }
 
+static void jso_schema_keyword_free_regexp(jso_schema_keyword *schema_keyword)
+{
+	jso_re_code_free(JSO_SCHEMA_KEYWORD_DATA_RE_P(schema_keyword));
+}
+
 static void jso_schema_keyword_free_array(jso_schema_keyword *schema_keyword)
 {
 	jso_array_free(JSO_SCHEMA_KEYWORD_DATA_ARR_P(schema_keyword));
@@ -464,6 +501,7 @@ static void jso_schema_keyword_free_object_of_schema_objects(jso_schema_keyword 
 
 static const jso_schema_keyword_free_callback schema_keyword_free_callbacks[] = {
 	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_free_string,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_free_regexp,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY] = jso_schema_keyword_free_array,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS] = jso_schema_keyword_free_array_of_strings,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS]

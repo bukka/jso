@@ -39,12 +39,17 @@
  * @brief Regular expression compiled code structure.
  */
 struct _jso_re_code {
-	// regular expression
+	/** regular expression code */
 	pcre2_code *re;
+	/** error code value */
 	int error_code;
+	/** error code offset */
 	PCRE2_SIZE error_offset;
 };
 
+/**
+ * @brief Regular expression match data type.
+ */
 typedef pcre2_match_data jso_re_match_data;
 
 /**
@@ -71,6 +76,29 @@ JSO_API void jso_re_code_free(jso_re_code *code);
 JSO_API jso_rc jso_re_compile(jso_string *pattern, jso_re_code *code);
 
 /**
+ * @brief Get error message
+ *
+ * @param code regular expression code
+ * @param buf buffer
+ * @param buf_size buffer size
+ * @return The buffer casted to char.
+ */
+JSO_API char *jso_re_get_error_message(jso_re_code *code, jso_ctype *buf, size_t buf_size);
+
+/**
+ * @brief Get error message
+ *
+ * @param code regular expression code
+ * @param buf buffer
+ * @param buf_size buffer size
+ * @return The buffer casted to char.
+ */
+static inline size_t jso_re_get_error_offset(jso_re_code *code)
+{
+	return code->error_offset;
+}
+
+/**
  * Create match data.
  *
  * @param code regular expression for match data
@@ -88,10 +116,10 @@ JSO_API void jse_re_match_data_free(jso_re_match_data *match_data);
 /**
  * Match regular expression.
  *
- * @param subject
- * @param code Regular expression code
- * @param match_data Data for matches.
- * @return Result type @ref jso_re_match_result.
+ * @param subject subject to match
+ * @param code regular expression code
+ * @param match_data match data
+ * @return Result of type @ref jso_re_match_result.
  */
 JSO_API int jso_re_match(jso_string *subject, jso_re_code *code, jso_re_match_data *match_data);
 

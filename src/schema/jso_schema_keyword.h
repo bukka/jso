@@ -111,6 +111,12 @@
 #define JSO_SCHEMA_KW_SET_STR(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_STR_EX(_schema, _data, _key, _value, _value_data, _key)
 
+#define JSO_SCHEMA_KW_SET_RE_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_REGEXP)
+
+#define JSO_SCHEMA_KW_SET_RE(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_RE_EX(_schema, _data, _key, _value, _value_data, _key)
+
 #define JSO_SCHEMA_KW_IS_SET(_keyword) (_keyword.flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
 
 #define JSO_SCHEMA_KW_IS_SET_P(_keyword) (_keyword->flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)

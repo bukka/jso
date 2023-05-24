@@ -136,6 +136,7 @@ static jso_schema_value *jso_schema_value_parse_string(
 	JSO_SCHEMA_KW_SET_STR_EX(schema, data, default, value, strval, default_value);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxLength, value, strval, max_length);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minLength, value, strval, min_length);
+	JSO_SCHEMA_KW_SET_RE(schema, data, pattern, value, strval);
 
 	return value;
 }
