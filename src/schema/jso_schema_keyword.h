@@ -129,8 +129,18 @@
 #define JSO_SCHEMA_KW_SET_SCHEMA_OBJ(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_SCHEMA_OBJ_EX(_schema, _data, _key, _value, _value_data, _key)
 
-#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
-	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ARRAY_OF_SCHEMA_OBJECTS)
+#define JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS_EX( \
+		_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX( \
+			_schema, _data, _key, _value, _value_data, _kw_name, TYPE_OBJECT_OF_SCHEMA_OBJECTS)
+
+#define JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _key)
+
+#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX( \
+		_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX( \
+			_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ARRAY_OF_SCHEMA_OBJECTS)
 
 #define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _key)

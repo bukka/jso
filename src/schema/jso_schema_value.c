@@ -59,6 +59,7 @@ static jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *da
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
 	JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
+	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, definitions, value, value_data);
 
 	JSO_SCHEMA_VALUE_DATA_COMMON_P(value) = value_data;
 	JSO_SCHEMA_VALUE_TYPE_P(value) = keyword_type;
@@ -176,7 +177,7 @@ static jso_schema_value *jso_schema_value_parse_object(
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxProperties, value, objval, max_properties);
 	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalProperties, value, objval,
 			additional_properties, TYPE_BOOLEAN, TYPE_SCHEMA_OBJECT);
-	JSO_SCHEMA_KW_SET(schema, data, properties, value, objval, TYPE_OBJECT_OF_SCHEMA_OBJECTS);
+	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, properties, value, objval);
 	JSO_SCHEMA_KW_SET_EX(schema, data, patternProperties, value, objval, pattern_properties,
 			TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS);
 	JSO_SCHEMA_KW_SET_WITH_FLAGS(schema, data, dependencies, value, objval,
