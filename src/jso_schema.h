@@ -108,7 +108,9 @@ typedef enum {
 	/** schema object keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT,
 	/** object of schema objects keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS,
+	/** object with regural expression keys of schema objects keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS
 } jso_schema_keyword_type;
 
 /**
@@ -391,6 +393,8 @@ typedef struct _jso_schema_keyword {
 #define JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE() \
 	/** parent pointer */ \
 	jso_schema_value *parent; \
+	/** regural expression if used by patternProperties */ \
+	jso_re_code *re; \
 	/** title keyword */ \
 	jso_schema_keyword title; \
 	/** description keyword */ \
@@ -505,6 +509,8 @@ typedef struct _jso_schema_value_object {
 	jso_schema_keyword required;
 	/** properties keyword */
 	jso_schema_keyword properties;
+	/** pattern properties keyword */
+	jso_schema_keyword pattern_properties;
 } jso_schema_value_object;
 
 /**
@@ -629,7 +635,7 @@ struct _jso_schema_value {
 /**
  * Get common schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Common schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_COMMON(_sv) _sv.data.comval
@@ -637,7 +643,7 @@ struct _jso_schema_value {
 /**
  * Get null schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Null schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_NULL(_sv) _sv.data.nulval
@@ -645,7 +651,7 @@ struct _jso_schema_value {
 /**
  * Get boolean schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Boolean schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_BOOL(_sv) _sv.data.boolval
@@ -653,7 +659,7 @@ struct _jso_schema_value {
 /**
  * Get integer schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Integer schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_INT(_sv) _sv.data.intval
@@ -661,7 +667,7 @@ struct _jso_schema_value {
 /**
  * Get number schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Number schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_NUM(_sv) _sv.data.numval
@@ -669,7 +675,7 @@ struct _jso_schema_value {
 /**
  * Get string schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return String schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_STR(_sv) _sv.data.strval
@@ -677,7 +683,7 @@ struct _jso_schema_value {
 /**
  * Get array schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Array schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_ARR(_sv) _sv.data.arrval
@@ -685,24 +691,40 @@ struct _jso_schema_value {
 /**
  * Get object schema value data for the supplied schema value.
  *
- * @param _psv schema value
+ * @param _sv schema value
  * @return Object schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_OBJ(_sv) _sv.data.objval
 
 /**
+ * Get schema value regular expression for the supplied schema value pointer.
+ *
+ * @param _psv schema value pointer
+ * @return The schema regular expression of type @ref jso_re_code.
+ */
+#define JSO_SCHEMA_VALUE_REGEXP_P(_psv) JSO_SCHEMA_VALUE_DATA_COMMON_P(_psv)->re
+
+/**
+ * Get schema value regular expression for the supplied schema value.
+ *
+ * @param _sv schema value
+ * @return The schema regular expression of type @ref jso_re_code.
+ */
+#define JSO_SCHEMA_VALUE_REGEXP(_sv) JSO_SCHEMA_VALUE_DATA_COMMON(_sv)->re
+
+/**
  * Get schema value type for the supplied schema value pointer.
  *
- * @param _pkw schema value pointer
- * @return The schema keyword type of @ref jso_schema_value_type
+ * @param _psv schema value pointer
+ * @return The schema keyword type of @ref jso_schema_value_type.
  */
 #define JSO_SCHEMA_VALUE_TYPE_P(_psv) _psv->type
 
 /**
  * Get schema value type for the supplied schema value.
  *
- * @param _kw schema value
- * @return The schema value type of @ref jso_schema_value_type
+ * @param _sv schema value
+ * @return The schema value type of @ref jso_schema_value_type.
  */
 #define JSO_SCHEMA_VALUE_TYPE(_sv) _sv.type
 

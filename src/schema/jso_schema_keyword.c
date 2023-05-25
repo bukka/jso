@@ -309,9 +309,10 @@ static jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *sche
 	return NULL;
 }
 
-static jso_schema_keyword *jso_schema_keyword_get_object_of_schema_objects(jso_schema *schema,
-		jso_value *data, const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
-		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
+static inline jso_schema_keyword *jso_schema_keyword_get_special_object_of_schema_objects(
+		jso_schema *schema, jso_value *data, const char *key, jso_bool error_on_invalid_type,
+		jso_uint32 keyword_flags, jso_schema_keyword *schema_keyword, jso_value *val,
+		jso_schema_value *parent, jso_bool regexp_key)
 {
 	val = jso_schema_data_get(
 			schema, data, key, JSO_TYPE_OBJECT, keyword_flags, error_on_invalid_type, val);
@@ -335,12 +336,56 @@ static jso_schema_keyword *jso_schema_keyword_get_object_of_schema_objects(jso_s
 			jso_object_free(schema_obj);
 			return NULL;
 		}
+
+		if (regexp_key) {
+			jso_re_code *code = jso_re_code_alloc();
+			if (code == NULL) {
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
+						"Allocating regular expression code for key %s in keyword %s failed",
+						JSO_STRING_VAL(objkey), key);
+				jso_schema_value_free(schema_value);
+				jso_object_free(schema_obj);
+				return NULL;
+			}
+
+			if (jso_re_compile(JSO_STR_P(val), code) == JSO_FAILURE) {
+				jso_ctype buf[256];
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_PREP,
+						"Compiling regular expression for key %s in keyword %s failed at position "
+						"%zu with error: %s",
+						JSO_STRING_VAL(objkey), key, jso_re_get_error_offset(code),
+						jso_re_get_error_message(code, buf, sizeof(buf)));
+				jso_schema_value_free(schema_value);
+				jso_object_free(schema_obj);
+				jso_re_code_free(code);
+			}
+
+			JSO_SCHEMA_VALUE_REGEXP_P(schema_value) = code;
+		}
+
 		JSO_VALUE_SET_SCHEMA_VALUE(objval, schema_value);
 		jso_object_add(schema_obj, jso_string_copy(objkey), &objval);
 	}
 	JSO_OBJECT_FOREACH_END;
 	JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword) = schema_obj;
 	return schema_keyword;
+}
+
+static jso_schema_keyword *jso_schema_keyword_get_object_of_schema_objects(jso_schema *schema,
+		jso_value *data, const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
+{
+	return jso_schema_keyword_get_special_object_of_schema_objects(schema, data, key,
+			error_on_invalid_type, keyword_flags, schema_keyword, val, parent, false);
+}
+
+static jso_schema_keyword *jso_schema_keyword_get_regexp_object_of_schema_objects(
+		jso_schema *schema, jso_value *data, const char *key, jso_bool error_on_invalid_type,
+		jso_uint32 keyword_flags, jso_schema_keyword *schema_keyword, jso_value *val,
+		jso_schema_value *parent)
+{
+	return jso_schema_keyword_get_special_object_of_schema_objects(schema, data, key,
+			error_on_invalid_type, keyword_flags, schema_keyword, val, parent, true);
 }
 
 static jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value *data,
@@ -377,6 +422,8 @@ static const jso_schema_keyword_get_callback schema_keyword_get_callbacks[] = {
 	[JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT] = jso_schema_keyword_get_schema_object,
 	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS]
 	= jso_schema_keyword_get_object_of_schema_objects,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS]
+	= jso_schema_keyword_get_regexp_object_of_schema_objects,
 };
 
 static inline jso_schema_keyword *jso_schema_keyword_get_ex(jso_schema *schema, jso_value *data,
@@ -509,6 +556,8 @@ static const jso_schema_keyword_free_callback schema_keyword_free_callbacks[] = 
 	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT] = jso_schema_keyword_free_object,
 	[JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT] = jso_schema_keyword_free_schema_object,
 	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS]
+	= jso_schema_keyword_free_object_of_schema_objects,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS]
 	= jso_schema_keyword_free_object_of_schema_objects,
 };
 

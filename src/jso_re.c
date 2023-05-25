@@ -34,8 +34,10 @@ JSO_API jso_re_code *jso_re_code_alloc()
 
 JSO_API void jso_re_code_free(jso_re_code *code)
 {
-	pcre2_code_free(code->re);
-	jso_free(code);
+	if (code != NULL) {
+		pcre2_code_free(code->re);
+		jso_free(code);
+	}
 }
 
 JSO_API jso_rc jso_re_compile(jso_string *pattern, jso_re_code *code)
