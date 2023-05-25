@@ -54,6 +54,11 @@ static jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *da
 	JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data);
 	JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
 
+	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, allOf, value, value_data, all_of);
+	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
+	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
+	JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
+
 	JSO_SCHEMA_VALUE_DATA_COMMON_P(value) = value_data;
 	JSO_SCHEMA_VALUE_TYPE_P(value) = keyword_type;
 

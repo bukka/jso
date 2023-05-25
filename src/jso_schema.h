@@ -399,6 +399,14 @@ typedef struct _jso_schema_keyword {
 	jso_re_code *re; \
 	/** title keyword */ \
 	jso_schema_keyword title; \
+	/** allOf keyword */ \
+	jso_schema_keyword all_of; \
+	/** anyOf keyword */ \
+	jso_schema_keyword any_of; \
+	/** oneOf keyword */ \
+	jso_schema_keyword one_of; \
+	/** not keyword */ \
+	jso_schema_keyword not; \
 	/** description keyword */ \
 	jso_schema_keyword description
 

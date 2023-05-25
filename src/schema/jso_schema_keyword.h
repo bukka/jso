@@ -123,6 +123,18 @@
 #define JSO_SCHEMA_KW_SET_RE(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_RE_EX(_schema, _data, _key, _value, _value_data, _key)
 
+#define JSO_SCHEMA_KW_SET_SCHEMA_OBJ_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_SCHEMA_OBJECT)
+
+#define JSO_SCHEMA_KW_SET_SCHEMA_OBJ(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_SCHEMA_OBJ_EX(_schema, _data, _key, _value, _value_data, _key)
+
+#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ARRAY_OF_SCHEMA_OBJECTS)
+
+#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _key)
+
 #define JSO_SCHEMA_KW_IS_SET(_keyword) (_keyword.flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
 
 #define JSO_SCHEMA_KW_IS_SET_P(_keyword) (_keyword->flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
