@@ -397,8 +397,8 @@ typedef struct _jso_schema_keyword {
 	jso_schema_value *parent; \
 	/** regural expression if used by patternProperties */ \
 	jso_re_code *re; \
-	/** title keyword */ \
-	jso_schema_keyword title; \
+	/** enum keyword */ \
+	jso_schema_keyword enum_elements; \
 	/** allOf keyword */ \
 	jso_schema_keyword all_of; \
 	/** anyOf keyword */ \
@@ -407,6 +407,8 @@ typedef struct _jso_schema_keyword {
 	jso_schema_keyword one_of; \
 	/** not keyword */ \
 	jso_schema_keyword not; \
+	/** title keyword */ \
+	jso_schema_keyword title; \
 	/** description keyword */ \
 	jso_schema_keyword description
 

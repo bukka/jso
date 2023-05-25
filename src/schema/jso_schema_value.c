@@ -54,6 +54,7 @@ static jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *da
 	JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data);
 	JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
 
+	JSO_SCHEMA_KW_SET_ARR_EX(schema, data, enum, value, value_data, enum_elements);
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, allOf, value, value_data, all_of);
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
@@ -152,7 +153,7 @@ static jso_schema_value *jso_schema_value_parse_array(
 	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, array, TYPE_ARRAY);
 	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
 
-	JSO_SCHEMA_KW_SET_EX(schema, data, default, value, arrval, default_value, TYPE_ARRAY);
+	JSO_SCHEMA_KW_SET_ARR_EX(schema, data, default, value, arrval, default_value);
 	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalItems, value, arrval, additional_items,
 			TYPE_BOOLEAN, TYPE_ARRAY_OF_SCHEMA_OBJECTS);
 	JSO_SCHEMA_KW_SET_UNION(

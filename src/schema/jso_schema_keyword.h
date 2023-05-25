@@ -135,6 +135,12 @@
 #define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _key)
 
+#define JSO_SCHEMA_KW_SET_ARR_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ARRAY)
+
+#define JSO_SCHEMA_KW_SET_ARR(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_ARR_EX(_schema, _data, _key, _value, _value_data, _key)
+
 #define JSO_SCHEMA_KW_IS_SET(_keyword) (_keyword.flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
 
 #define JSO_SCHEMA_KW_IS_SET_P(_keyword) (_keyword->flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
