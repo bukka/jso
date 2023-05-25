@@ -42,15 +42,21 @@
 		} \
 	} while (0)
 
-#define JSO_SCHEMA_KW_SET_WITH_FLAGS( \
+#define JSO_SCHEMA_KW_SET_WITH_FLAGS_EX( \
 		_schema, _data, _key, _value, _value_data, _kw_name, _kw_type, _kw_flags) \
 	JSO_SCHEMA_KW_SET_WRAP( \
 			jso_schema_keyword_set(_schema, _data, #_key, _value, &_value_data->_kw_name, \
 					JSO_SCHEMA_KW_TYPE(_kw_type), _kw_flags), \
 			_value, _value_data)
 
+#define JSO_SCHEMA_KW_SET_WITH_FLAGS( \
+		_schema, _data, _key, _value, _value_data, _kw_type, _kw_flags) \
+	JSO_SCHEMA_KW_SET_WITH_FLAGS_EX( \
+			_schema, _data, _key, _value, _value_data, _key, _kw_type, _kw_flags)
+
 #define JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, _kw_type) \
-	JSO_SCHEMA_KW_SET_WITH_FLAGS(_schema, _data, _key, _value, _value_data, _kw_name, _kw_type, 0)
+	JSO_SCHEMA_KW_SET_WITH_FLAGS_EX( \
+			_schema, _data, _key, _value, _value_data, _kw_name, _kw_type, 0)
 
 #define JSO_SCHEMA_KW_SET(_schema, _data, _key, _value, _value_data, _kw_type) \
 	JSO_SCHEMA_KW_SET_EX(schema, _data, _key, _value, _value_data, _key, _kw_type)
@@ -99,7 +105,7 @@
 	JSO_SCHEMA_KW_SET_UINT_EX(_schema, _data, _key, _value, _value_data, _key)
 
 #define JSO_SCHEMA_KW_SET_UINT_NZ_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
-	JSO_SCHEMA_KW_SET_WITH_FLAGS(_schema, _data, _key, _value, _value_data, _kw_name, \
+	JSO_SCHEMA_KW_SET_WITH_FLAGS_EX(_schema, _data, _key, _value, _value_data, _kw_name, \
 			TYPE_UNSIGNED_INTEGER, JSO_SCHEMA_KEYWORD_FLAG_NOT_ZERO)
 
 #define JSO_SCHEMA_KW_SET_UINT_NZ(_schema, _data, _key, _value, _value_data) \

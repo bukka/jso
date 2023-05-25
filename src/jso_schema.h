@@ -109,6 +109,8 @@ typedef enum {
 	JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT,
 	/** object of schema objects keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS,
+	/** object of schema objects or array of strings keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS,
 	/** object with regural expression keys of schema objects keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS
 } jso_schema_keyword_type;
@@ -511,6 +513,8 @@ typedef struct _jso_schema_value_object {
 	jso_schema_keyword properties;
 	/** pattern properties keyword */
 	jso_schema_keyword pattern_properties;
+	/** dependencies keyword */
+	jso_schema_keyword dependencies;
 } jso_schema_value_object;
 
 /**
