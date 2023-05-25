@@ -83,6 +83,8 @@ typedef union _jso_schema_keyword_data {
  * @brief JsonSchema keyword type.
  */
 typedef enum {
+	/** any keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_ANY,
 	/** null keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_NULL,
 	/** boolean keyword type */
@@ -757,7 +759,7 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_ID,
 	JSO_SCHEMA_ERROR_KEYWORD_REQUIRED,
 	JSO_SCHEMA_ERROR_ROOT_DATA_TYPE,
-	JSO_SCHEMA_ERROR_TYPE_UNKNOWN,
+	JSO_SCHEMA_ERROR_TYPE_INVALID,
 	JSO_SCHEMA_ERROR_VALUE_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,

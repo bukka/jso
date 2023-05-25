@@ -118,3 +118,53 @@ JSO_API void jso_array_apply_with_arg(jso_array *arr, jso_array_with_arg_callbac
 		el = el->next;
 	}
 }
+
+/* compare arrays */
+JSO_API jso_bool jso_array_equals(jso_array *arr1, jso_array *arr2)
+{
+	if (arr1->len != arr2->len) {
+		return JSO_FALSE;
+	}
+
+	jso_array_element *el1 = arr1->head, *el2 = arr2->head;
+	while (el1 && el2) {
+		if (!jso_value_equals(&el1->val, &el2->val)) {
+			return JSO_FALSE;
+		}
+		el1 = el1->next;
+		el2 = el2->next;
+	}
+
+	return el1 == el2;
+}
+
+/* check item types */
+JSO_API jso_bool jso_array_are_all_items_of_type(jso_array *arr, jso_value_type type)
+{
+	jso_array_element *el = arr->head;
+	while (el) {
+		if (JSO_TYPE(el->val) != type) {
+			return JSO_FALSE;
+		}
+		el = el->next;
+	}
+
+	return JSO_TRUE;
+}
+
+/* check uniqueness */
+JSO_API jso_bool jso_array_is_unique(jso_array *arr)
+{
+	jso_array_element *el = arr->head, *el2;
+	while (el) {
+		el2 = el->next;
+		while (el2) {
+			if (jso_value_equals(&el->val, &el2->val)) {
+				return JSO_FALSE;
+			}
+		}
+		el = el->next;
+	}
+
+	return JSO_TRUE;
+}

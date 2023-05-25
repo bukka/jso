@@ -46,7 +46,7 @@ jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const cha
 		jso_value *val, jso_value_type type, jso_value_type primary_type,
 		jso_bool error_on_invalid_type)
 {
-	if ((JSO_TYPE_P(val) & type) == 0) {
+	if (JSO_TYPE_P(val) != type && JSO_TYPE_P(val) != primary_type) {
 		if (error_on_invalid_type) {
 			if (type != primary_type) {
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,

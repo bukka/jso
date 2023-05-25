@@ -86,3 +86,25 @@ JSO_API void jso_object_apply_with_arg(jso_object *obj, jso_object_with_arg_call
 	}
 	JSO_OBJECT_FOREACH_END;
 }
+
+/* check whether two objects are equal */
+JSO_API jso_bool jso_object_equals(jso_object *obj1, jso_object *obj2)
+{
+	jso_string *key;
+	jso_value *val1;
+	jso_value *val2;
+
+	if (JSO_OBJECT_COUNT(obj1) != JSO_OBJECT_COUNT(obj2)) {
+		return JSO_FALSE;
+	}
+
+	JSO_OBJECT_FOREACH(obj1, key, val1)
+	{
+		if (jso_object_get(obj2, key, &val2) == JSO_FAILURE || !jso_value_equals(val1, val2)) {
+			return JSO_FALSE;
+		}
+	}
+	JSO_OBJECT_FOREACH_END;
+
+	return JSO_TRUE;
+}

@@ -22,6 +22,8 @@
  */
 
 #include "jso.h"
+#include "jso_array.h"
+#include "jso_object.h"
 #include "jso_string.h"
 #include "jso_schema.h"
 
@@ -65,6 +67,34 @@ JSO_API const char *jso_value_get_error_description(jso_value *val)
 	}
 
 	return jso_error_type_description(JSO_ETYPE_P(val));
+}
+
+/* COMPARISON */
+/* check whether two jso values are equal */
+JSO_API jso_bool jso_value_equals(jso_value *val1, jso_value *val2)
+{
+	if (val1->type != val2->type) {
+		return false;
+	}
+
+	switch (val1->type) {
+		case JSO_TYPE_NULL:
+			return true;
+		case JSO_TYPE_BOOL:
+		case JSO_TYPE_INT:
+			return JSO_IVAL_P(val1) == JSO_IVAL_P(val2);
+		case JSO_TYPE_DOUBLE:
+			return JSO_DVAL_P(val1) == JSO_DVAL_P(val2);
+		case JSO_TYPE_STRING:
+			return jso_string_equals(JSO_STR_P(val1), JSO_STR_P(val2));
+		case JSO_TYPE_ARRAY:
+			return jso_array_equals(JSO_ARRVAL_P(val1), JSO_ARRVAL_P(val2));
+		case JSO_TYPE_OBJECT:
+			return jso_object_equals(JSO_OBJVAL_P(val1), JSO_OBJVAL_P(val2));
+			break;
+		default:
+			return false;
+	}
 }
 
 /* PRINTING */

@@ -149,12 +149,30 @@ JSO_API void jso_array_apply(jso_array *arr, jso_array_callback cbk);
 JSO_API void jso_array_apply_with_arg(jso_array *arr, jso_array_with_arg_callback cbk, void *arg);
 
 /**
- * Print array with supplied indent.
+ * Check whether two arrays are equal.
+ *
+ * @param arr1 first array
+ * @param arr2 second array
+ * @return @ref JSO_TRUE if the arrays are equal, otherwise @ref JSO_FALSE.
+ */
+JSO_API jso_bool jso_array_equals(jso_array *arr1, jso_array *arr2);
+
+/**
+ * Check whether all items are of the supplied type.
  *
  * @param arr array
- * @param indent indent for each printed value
+ * @param type type to be check for all items
+ * @return  @ref JSO_TRUE if all items are of the supplied type, otherwise @ref JSO_FALSE.
  */
-JSO_API void jso_array_print(jso_array *arr, jso_uint indent);
+JSO_API jso_bool jso_array_are_all_items_of_type(jso_array *arr, jso_value_type type);
+
+/**
+ * Check if array has only unieque items.
+ *
+ * @param arr1 first array
+ * @return @ref JSO_TRUE if the array has unique items, otherwise @ref JSO_FALSE.
+ */
+JSO_API jso_bool jso_array_is_unique(jso_array *arr);
 
 /**
  * Copy array.

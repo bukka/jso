@@ -140,12 +140,13 @@ JSO_API void jso_object_apply_with_arg(
 		jso_object *obj, jso_object_with_arg_callback cbk, void *arg);
 
 /**
- * Print object with supplied indent.
+ * Check whether two objects are equal.
  *
- * @param obj object
- * @param indent indent for each printed value
+ * @param obj1 first object
+ * @param obj2 second object
+ * @return @ref JSO_TRUE if the objects are equal, otherwise @ref JSO_FALSE.
  */
-JSO_API void jso_object_print(jso_object *obj, jso_uint indent);
+JSO_API jso_bool jso_object_equals(jso_object *obj1, jso_object *obj2);
 
 /**
  * Copy object.

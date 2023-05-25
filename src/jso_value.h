@@ -368,6 +368,15 @@ JSO_API void jso_value_free(jso_value *val);
 JSO_API const char *jso_value_get_error_description(jso_value *val);
 
 /**
+ * Check if two values are equal.
+ *
+ * @param val1 first value
+ * @param val2 second value
+ * @return Error description or NULL if val is not an error
+ */
+JSO_API jso_bool jso_value_equals(jso_value *val1, jso_value *val2);
+
+/**
  * Print indented debug output of the supplied value.
  *
  * @param val instance of @ref jso_value

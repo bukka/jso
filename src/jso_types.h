@@ -235,11 +235,11 @@ typedef enum _jso_rc {
 /**
  * @brief TRUE value.
  */
-#define JSO_TRUE 1
+#define JSO_TRUE true
 
 /**
  * @brief Boolean FALSE value.
  */
-#define JSO_FALSE 0
+#define JSO_FALSE false
 
 #endif /* JSO_TYPES_H */
