@@ -74,5 +74,5 @@ if test "x$jso_debug" = "xyes"; then
   CFLAGS="$CFLAGS -O0 -gdwarf-2 -g3"
 fi
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile tests/unit/Makefile])
 AC_OUTPUT

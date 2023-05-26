@@ -15,7 +15,7 @@ fi
 if [ -n "$1" ]; then
 	TDIRS="$@"
 else
-	TDIRS=tests
+	TDIRS=tests/manual
 fi
 
 for TFILE in `find $TDIRS -name '*.json'`; do
