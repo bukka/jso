@@ -77,6 +77,8 @@ typedef union _jso_schema_keyword_data {
 	jso_object *osoval;
 	/** any object */
 	jso_object *oval;
+	/** any value */
+	jso_value *vval;
 } jso_schema_keyword_data;
 
 /**
@@ -264,6 +266,14 @@ typedef struct _jso_schema_keyword {
 #define JSO_SCHEMA_KEYWORD_DATA_OBJ_P(_pkw) (_pkw)->data.oval
 
 /**
+ * Get any keyword data for the supplied pointer to keyword.
+ *
+ * @param _pkw pointer to keyword
+ * @return Any keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ANY_P(_pkw) (_pkw)->data.vval
+
+/**
  * Get keyword boolean data for the supplied keyword.
  *
  * @param _kw keyword
@@ -360,6 +370,14 @@ typedef struct _jso_schema_keyword {
 #define JSO_SCHEMA_KEYWORD_DATA_OBJ(_kw) _kw.data.oval
 
 /**
+ * Get any keyword data for the supplied keyword.
+ *
+ * @param _kw keyword
+ * @return Any keyword data value.
+ */
+#define JSO_SCHEMA_KEYWORD_DATA_ANY(_kw) _kw.data.vval
+
+/**
  * Get schema keyword type for the supplied schema keyword pointer.
  *
  * @param _pkw schema keyword pointer
@@ -394,7 +412,7 @@ typedef struct _jso_schema_keyword {
 /**
  * @brief Common schema feilds without default value.
  */
-#define JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE() \
+#define JSO_SCHEMA_VALUE_COMMON_FIELDS() \
 	/** parent pointer */ \
 	jso_schema_value *parent; \
 	/** regural expression if used by patternProperties */ \
@@ -414,14 +432,7 @@ typedef struct _jso_schema_keyword {
 	/** title keyword */ \
 	jso_schema_keyword title; \
 	/** description keyword */ \
-	jso_schema_keyword description
-
-/**
- * @brief Common schema feilds with default value.
- * @param _value_type type of default value
- */
-#define JSO_SCHEMA_VALUE_COMMON_FIELDS() \
-	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE(); \
+	jso_schema_keyword description; \
 	/** default keyword */ \
 	jso_schema_keyword default_value
 
@@ -429,7 +440,7 @@ typedef struct _jso_schema_keyword {
  * @brief JsonSchema common validation keywords.
  */
 typedef struct _jso_schema_value_common {
-	JSO_SCHEMA_VALUE_COMMON_FIELDS_NO_VALUE();
+	JSO_SCHEMA_VALUE_COMMON_FIELDS();
 } jso_schema_value_common;
 
 /**
@@ -535,6 +546,8 @@ typedef struct _jso_schema_value_object {
  * @brief JsonSchema value type.
  */
 typedef enum {
+	/** any value type */
+	JSO_SCHEMA_VALUE_TYPE_ANY,
 	/** null value type */
 	JSO_SCHEMA_VALUE_TYPE_NULL,
 	/** boolean value type */

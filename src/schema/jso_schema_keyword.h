@@ -80,6 +80,12 @@
 #define JSO_SCHEMA_KW_SET_UNION_EX JSO_SCHEMA_KW_SET_UNION_2_EX
 #define JSO_SCHEMA_KW_SET_UNION_WITH_FLAGS JSO_SCHEMA_KW_SET_UNION_2_WITH_FLAGS
 
+#define JSO_SCHEMA_KW_SET_ANY_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ANY)
+
+#define JSO_SCHEMA_KW_SET_ANY(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_ANY_EX(_schema, _data, _key, _value, _value_data, _key)
+
 #define JSO_SCHEMA_KW_SET_BOOL_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
 	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_BOOLEAN)
 

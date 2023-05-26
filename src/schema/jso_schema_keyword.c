@@ -31,6 +31,20 @@
 
 #include <math.h>
 
+static jso_schema_keyword *jso_schema_keyword_get_any(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
+{
+	val = jso_schema_data_get_value(schema, data, key, keyword_flags, val);
+	if (val != NULL) {
+		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
+				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_DATA_ANY_P(schema_keyword) = val;
+		return schema_keyword;
+	}
+	return NULL;
+}
+
 static jso_schema_keyword *jso_schema_keyword_get_null(jso_schema *schema, jso_value *data,
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
@@ -444,6 +458,7 @@ typedef jso_schema_keyword *(*jso_schema_keyword_get_callback)(jso_schema *schem
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent);
 
 static const jso_schema_keyword_get_callback schema_keyword_get_callbacks[] = {
+	[JSO_SCHEMA_KEYWORD_TYPE_ANY] = jso_schema_keyword_get_any,
 	[JSO_SCHEMA_KEYWORD_TYPE_NULL] = jso_schema_keyword_get_null,
 	[JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN] = jso_schema_keyword_get_bool,
 	[JSO_SCHEMA_KEYWORD_TYPE_INTEGER] = jso_schema_keyword_get_int,
@@ -545,6 +560,11 @@ jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *k
 
 typedef void (*jso_schema_keyword_free_callback)(jso_schema_keyword *schema_keyword);
 
+static void jso_schema_keyword_free_any(jso_schema_keyword *schema_keyword)
+{
+	jso_value_free(JSO_SCHEMA_KEYWORD_DATA_ANY_P(schema_keyword));
+}
+
 static void jso_schema_keyword_free_string(jso_schema_keyword *schema_keyword)
 {
 	jso_string_free(JSO_SCHEMA_KEYWORD_DATA_STR_P(schema_keyword));
@@ -586,6 +606,7 @@ static void jso_schema_keyword_free_object_of_schema_objects(jso_schema_keyword 
 }
 
 static const jso_schema_keyword_free_callback schema_keyword_free_callbacks[] = {
+	[JSO_SCHEMA_KEYWORD_TYPE_ANY] = jso_schema_keyword_free_any,
 	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_free_string,
 	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_free_regexp,
 	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY] = jso_schema_keyword_free_array,
