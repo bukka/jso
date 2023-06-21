@@ -24,6 +24,7 @@ AC_DEFUN([JSO_CHECK_PKG], [
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_RANLIB
+AM_PROG_AR
 
 # Checks for libraries.
 AC_FUNC_MALLOC
