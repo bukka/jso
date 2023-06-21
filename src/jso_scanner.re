@@ -307,7 +307,7 @@ scanner_start:
 			JSO_CONDITION_SET(JS);
 			return JSO_T_ESTRING;
 		}
-		JSO_STRING_LEN_P(str) = len;
+		JSO_STRING_LEN(str) = len;
 		if (JSO_IO_STR_GET_ESC(s->io)) {
 			s->pstr = JSO_SVAL(s->value);
 			JSO_IO_CURSOR(s->io) = JSO_IO_STR_GET_START(s->io);
