@@ -1,5 +1,7 @@
 # object files
 *.o
+# library files
+*.a
 # executable file
 jso
 # Doxygen files
@@ -16,6 +18,7 @@ y.tab.*
 Makefile
 Makefile.in
 aclocal.m4
+ar-lib
 autoscan.log
 autom4te.cache/
 config.guess
@@ -26,6 +29,7 @@ config.status
 config.sub
 configure.scan
 configure
+configure~
 configure-mac
 depcomp
 compile
