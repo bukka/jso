@@ -42,22 +42,45 @@ jso_value *jso_schema_data_get_value_fast(
 	return val;
 }
 
+#define JSO_SCHEMA_DATA_TYPES_BUF_SIZE 256
+
+void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *val,
+		jso_value_type *expected_types, size_t expected_types_count)
+{
+	char expected_types_buf[JSO_SCHEMA_DATA_TYPES_BUF_SIZE];
+	if (expected_types_count == 1) {
+		strcpy(expected_types_buf, jso_value_type_to_string(expected_types[0]));
+	} else if (expected_types_count > 1) {
+		char *expected_types_buf_pos = strcpy(expected_types_buf, "either ");
+		for (size_t i = 0; i < expected_types_count; i++) {
+			if (i > 0) {
+				if (i == expected_types_count - 1) {
+					expected_types_buf_pos = strcpy(expected_types_buf, " or ");
+				} else {
+					expected_types_buf_pos = strcpy(expected_types_buf, ", ");
+				}
+			}
+			expected_types_buf_pos
+					= strcpy(expected_types_buf_pos, jso_value_type_to_string(expected_types[i]));
+		}
+	} else {
+		strcpy(expected_types_buf, "no type");
+	}
+
+	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
+			"Invalid type for %s - expected %s but given %s", key, expected_types_buf,
+			jso_value_type_to_string(JSO_TYPE_P(val)));
+}
+
 jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
 		jso_value *val, jso_value_type type, jso_value_type primary_type,
 		jso_bool error_on_invalid_type)
 {
 	if (JSO_TYPE_P(val) != type && JSO_TYPE_P(val) != primary_type) {
 		if (error_on_invalid_type) {
-			if (type != primary_type) {
-				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
-						"Invalid type for %s - expected either %s or %s but given %s", key,
-						jso_value_type_to_string(primary_type), jso_value_type_to_string(type),
-						jso_value_type_to_string(JSO_TYPE_P(val)));
-			} else {
-				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
-						"Invalid type for %s - expected %s but given %s", key,
-						jso_value_type_to_string(type), jso_value_type_to_string(JSO_TYPE_P(val)));
-			}
+			jso_value_type expected_types[] = { type, primary_type };
+			jso_schema_data_type_error(
+					schema, key, val, expected_types, type == primary_type ? 1 : 2);
 		}
 		return JSO_FAILURE;
 	}

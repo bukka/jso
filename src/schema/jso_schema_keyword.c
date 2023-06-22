@@ -31,6 +31,105 @@
 
 #include <math.h>
 
+static inline size_t jso_schema_keyword_add_type(jso_schema *schema, const char *key,
+		jso_value_type type, size_t pos, jso_value_type *types, size_t types_size)
+{
+	if (pos >= types_size) {
+		if (pos == types_size) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_TYPE,
+					"The number of types is too big to report for key %s", key);
+		}
+	} else {
+		types[pos] = type;
+	}
+	return pos + 1;
+}
+
+static size_t jso_schema_keyword_get_any_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	size_t pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_NULL, 0, types, types_size);
+	pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_BOOL, pos, types, types_size);
+	pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_INT, pos, types, types_size);
+	pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_DOUBLE, pos, types, types_size);
+	pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_STRING, pos, types, types_size);
+	pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_ARRAY, pos, types, types_size);
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_OBJECT, pos, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_null_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_NULL, 0, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_bool_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_BOOL, 0, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_number_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	size_t pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_INT, 0, types, types_size);
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_DOUBLE, pos, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_string_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_STRING, 0, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_array_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_ARRAY, 0, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_object_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_OBJECT, 0, types, types_size);
+}
+
+static size_t jso_schema_keyword_get_object_or_array_types(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size)
+{
+	size_t pos = jso_schema_keyword_add_type(schema, key, JSO_TYPE_OBJECT, 0, types, types_size);
+	return jso_schema_keyword_add_type(schema, key, JSO_TYPE_ARRAY, pos, types, types_size);
+}
+
+typedef size_t (*jso_schema_keyword_get_types_callback)(
+		jso_schema *schema, const char *key, jso_value_type *types, size_t types_size);
+
+static const jso_schema_keyword_get_types_callback schema_keyword_get_types_callbacks[] = {
+	[JSO_SCHEMA_KEYWORD_TYPE_ANY] = jso_schema_keyword_get_any_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_NULL] = jso_schema_keyword_get_null_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN] = jso_schema_keyword_get_bool_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_INTEGER] = jso_schema_keyword_get_number_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER] = jso_schema_keyword_get_number_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_NUMBER] = jso_schema_keyword_get_number_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_get_string_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_get_string_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY] = jso_schema_keyword_get_array_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS] = jso_schema_keyword_get_array_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS] = jso_schema_keyword_get_array_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT] = jso_schema_keyword_get_object_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT] = jso_schema_keyword_get_object_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS] = jso_schema_keyword_get_object_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS]
+	= jso_schema_keyword_get_object_or_array_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS] = jso_schema_keyword_get_object_types,
+};
+
+static size_t jso_schema_keyword_get_types(jso_schema *schema, const char *key,
+		jso_schema_keyword_type keyword_type, jso_value_type *types, size_t types_size)
+{
+	return schema_keyword_get_types_callbacks[keyword_type](schema, key, types, types_size);
+}
+
 static jso_schema_keyword *jso_schema_keyword_get_any(jso_schema *schema, jso_value *data,
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
@@ -499,6 +598,8 @@ static inline jso_schema_keyword *jso_schema_keyword_get(jso_schema *schema, jso
 			error_on_invalid_type, schema_keyword, NULL);
 }
 
+#define JSO_SCHEMA_KW_VALUE_TYPES_SIZE 8
+
 static inline jso_schema_keyword *jso_schema_keyword_get_union_of_2_types(jso_schema *schema,
 		jso_value *data, const char *key, jso_schema_value *parent,
 		jso_schema_keyword_type keyword_union_type_1, jso_schema_keyword_type keyword_union_type_2,
@@ -524,8 +625,12 @@ static inline jso_schema_keyword *jso_schema_keyword_get_union_of_2_types(jso_sc
 	}
 
 	// Trigger type error if types do not match.
-	jso_schema_data_check_type(
-			schema, data, key, val, keyword_union_type_1, keyword_union_type_2, true);
+	jso_value_type value_types[JSO_SCHEMA_KW_VALUE_TYPES_SIZE];
+	size_t types_size = jso_schema_keyword_get_types(
+			schema, key, keyword_union_type_1, value_types, JSO_SCHEMA_KW_VALUE_TYPES_SIZE);
+	types_size += jso_schema_keyword_get_types(schema, key, keyword_union_type_2,
+			&value_types[types_size], JSO_SCHEMA_KW_VALUE_TYPES_SIZE - types_size);
+	jso_schema_data_type_error(schema, key, val, value_types, types_size);
 
 	return NULL;
 }
