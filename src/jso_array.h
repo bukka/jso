@@ -84,12 +84,12 @@ struct _jso_array {
 /**
  * @brief Array iteration function callback.
  */
-typedef jso_rc (*jso_array_callback)(size_t idx, jso_value *val);
+typedef void (*jso_array_callback)(size_t idx, jso_value *val);
 
 /**
  * @brief Array iteration function callback with argument.
  */
-typedef jso_rc (*jso_array_with_arg_callback)(size_t idx, jso_value *val, void *arg);
+typedef void (*jso_array_with_arg_callback)(size_t idx, jso_value *val, void *arg);
 
 /**
  * Allocate array.
