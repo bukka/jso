@@ -17,7 +17,9 @@ AC_DEFUN([JSO_CHECK_PKG], [
     CFLAGS="$CFLAGS $(pkg-config $1 --cflags)"
   else
     AC_MSG_RESULT([no])
-    AC_MSG_ERROR([$1 not found])
+    if "$2" != "test"; then
+      AC_MSG_ERROR([$1 not found])
+    fi
   fi
 ])
 
@@ -61,6 +63,9 @@ LIBS="$LIBS -lm"
 
 # Check for pcre2
 JSO_CHECK_PKG([libpcre2-8])
+
+# Check cmocka
+JSO_CHECK_PKG([cmocka], [test])
 
 # Debug option
 AC_ARG_ENABLE(debug,
