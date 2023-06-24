@@ -162,6 +162,7 @@ JSO_API jso_bool jso_array_is_unique(jso_array *arr)
 			if (jso_value_equals(&el->val, &el2->val)) {
 				return JSO_FALSE;
 			}
+			el2 = el2->next;
 		}
 		el = el->next;
 	}
