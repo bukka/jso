@@ -39,6 +39,7 @@
 typedef struct _jso_ht_entry {
 	jso_string *key;
 	jso_value value;
+	struct _jso_ht_entry *next;
 } jso_ht_entry;
 
 /**
@@ -48,15 +49,48 @@ typedef struct _jso_ht {
 	size_t count;
 	size_t capacity;
 	jso_ht_entry *entries;
+	jso_ht_entry *first_entry;
+	jso_ht_entry *last_entry;
 } jso_ht;
 
 /**
- * @brief Macro to start iteration of the hash table.
+ * @brief Macro to start iteration of the hash table in random order (faster).
+ * @param _ht hash table
+ * @param _key entry key
+ * @param _val entry value pointer
+ */
+#define JSO_HT_FOREACH_RANDOM(_ht, _key, _val) \
+	do { \
+		jso_ht_entry *_entries = _ht->entries; \
+		jso_ht_entry *_entry; \
+		size_t _found = 0; \
+		for (size_t _i = 0; _i < _ht->capacity && _found < _ht->count; _i++) { \
+			_entry = &_entries[_i]; \
+			_key = _entry->key; \
+			if (_key == NULL) \
+				continue; \
+			++_found; \
+			_val = &_entry->value;
+
+/**
+ * @brief Macro to start iteration of the hash table in stable order.
  * @param _ht hash table
  * @param _key entry key
  * @param _val entry value pointer
  */
 #define JSO_HT_FOREACH(_ht, _key, _val) \
+	do { \
+		for (jso_ht_entry *_entry = _ht->first_entry; _entry; _entry = _entry->next) { \
+			_key = _entry->key; \
+			_val = &_entry->value;
+
+/**
+ * @brief Macro to start iteration of the hash table in random order (possibly faster).
+ * @param _ht hash table
+ * @param _key entry key
+ * @param _val entry value pointer
+ */
+#define JSO_HT_FOREACH_RANDOM(_ht, _key, _val) \
 	do { \
 		jso_ht_entry *_entries = _ht->entries; \
 		jso_ht_entry *_entry; \

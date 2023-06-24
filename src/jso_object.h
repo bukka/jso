@@ -71,12 +71,12 @@ struct _jso_object {
 /**
  * @brief Object iteration function callback.
  */
-typedef jso_rc (*jso_object_callback)(jso_string *key, jso_value *val);
+typedef void (*jso_object_callback)(jso_string *key, jso_value *val);
 
 /**
  * @brief Object iteration function callback with argument.
  */
-typedef jso_rc (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, void *arg);
+typedef void (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, void *arg);
 
 /**
  * Allocate object.

@@ -103,7 +103,7 @@ static void jso_ht_free_entries(jso_ht *ht)
 	jso_string *key;
 	jso_value *val;
 
-	JSO_HT_FOREACH(ht, key, val)
+	JSO_HT_FOREACH_RANDOM(ht, key, val)
 	{
 		if (JSO_STRING_VAL(key)) {
 			jso_string_free(key);
@@ -160,6 +160,12 @@ JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_boo
 	jso_bool is_new_key = entry->key == NULL;
 	if (is_new_key) {
 		++ht->count;
+		if (ht->last_entry) {
+			ht->last_entry->next = entry;
+			ht->last_entry = entry;
+		} else {
+			ht->first_entry = ht->last_entry = entry;
+		}
 	} else if (free_old) {
 		jso_string_free(entry->key);
 	}

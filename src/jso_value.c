@@ -132,25 +132,21 @@ typedef struct _jso_value_dump_callback_arg {
 } jso_value_dump_callback_arg;
 
 /* debug print array callback */
-static int jso_value_dump_array_callback(size_t idx, jso_value *val, void *varg)
+static void jso_value_dump_array_callback(size_t idx, jso_value *val, void *varg)
 {
 	jso_value_dump_callback_arg *arg = (jso_value_dump_callback_arg *) varg;
 
 	jso_value_dump_ex(val, arg->io, arg->indent + 1);
-
-	return 0;
 }
 
 /* debug print object callback */
-static int jso_value_dump_object_callback(jso_string *key, jso_value *val, void *varg)
+static void jso_value_dump_object_callback(jso_string *key, jso_value *val, void *varg)
 {
 	jso_value_dump_callback_arg *arg = (jso_value_dump_callback_arg *) varg;
 
 	jso_value_print_indent(arg->indent, arg->io);
 	JSO_IO_PRINTF(arg->io, " KEY: %s\n", key->val);
 	jso_value_dump_ex(val, arg->io, arg->indent + 1);
-
-	return 0;
 }
 
 /* debug print jso value */

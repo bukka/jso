@@ -112,6 +112,26 @@ static inline jso_string *jso_string_alloc(size_t len)
 }
 
 /**
+ * Allocate string and copy C string into it.
+ *
+ * @param cstr C string to copy
+ * @return Newly allocated string containing C string.
+ */
+static inline jso_string *jso_string_create_from_cstr(const char *cstr)
+{
+	size_t len = strlen(cstr);
+	jso_string *str = jso_string_alloc(len);
+	if (str == NULL) {
+		return NULL;
+	}
+	JSO_STRING_LEN(str) = len;
+	memcpy(JSO_STRING_VAL(str), cstr, len);
+	JSO_STRING_VAL(str)[len] = '\0';
+
+	return str;
+}
+
+/**
  * Free string.
  *
  * @param str string to free
