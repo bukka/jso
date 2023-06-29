@@ -80,6 +80,8 @@ static void jso_test_string_get_hash(void **state)
 	assert_int_equal(0, jso_string_get_hash(str));
 	jso_string_set_hash(str, 1234);
 	assert_int_equal(1234, jso_string_get_hash(str));
+
+	jso_string_free(str);
 }
 
 /* A test to check whether hash is set. */
@@ -92,6 +94,8 @@ static void jso_test_string_has_hash(void **state)
 	assert_false(jso_string_has_hash(str));
 	jso_string_set_hash(str, 1234);
 	assert_true(jso_string_has_hash(str));
+
+	jso_string_free(str);
 }
 
 int main(void)
