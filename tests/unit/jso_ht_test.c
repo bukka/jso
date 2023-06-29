@@ -105,12 +105,48 @@ static void jso_test_ht_get(void **state)
 	jso_string_free(key4);
 }
 
+/* A test case that gets item from hash table. */
+static void jso_test_ht_get_by_cstr_key(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3, *val = NULL;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+
+	jso_ht *ht = jso_ht_alloc();
+
+	// get should return false on no value in hash table
+	assert_true(jso_ht_get_by_cstr_key(ht, "key", &val) == JSO_FAILURE);
+	assert_null(val);
+
+	jso_ht_set(ht, key1, &val1, false);
+	jso_ht_set(ht, key2, &val2, false);
+	jso_ht_set(ht, key3, &val3, false);
+
+	// get should return false on no value in hash table
+	assert_true(jso_ht_get_by_cstr_key(ht, "second key", &val) == JSO_SUCCESS);
+	assert_int_equal(2, JSO_IVAL_P(val));
+
+	// get should return false on no value in hash table
+	assert_true(jso_ht_get_by_cstr_key(ht, "unknown key", &val) == JSO_FAILURE);
+	// value should not change
+	assert_int_equal(2, JSO_IVAL_P(val));
+
+	jso_ht_free(ht);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(jso_test_ht_set),
 		cmocka_unit_test(jso_test_ht_get),
-		// cmocka_unit_test(jso_test_ht_get_by_cstr_key),
+		cmocka_unit_test(jso_test_ht_get_by_cstr_key),
 		// cmocka_unit_test(jso_test_ht_copy),
 	};
 
