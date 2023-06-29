@@ -256,7 +256,7 @@ int main(void)
 		cmocka_unit_test(jso_test_ht_set),
 		cmocka_unit_test(jso_test_ht_get),
 		cmocka_unit_test(jso_test_ht_get_by_cstr_key),
-		cmocka_unit_test(jso_test_ht_copy),
+		cmocka_unit_test(jso_test_ht_clone),
 		cmocka_unit_test(jso_test_ht_resize),
 	};
 	// clang-format on
