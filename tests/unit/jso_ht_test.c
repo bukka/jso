@@ -199,13 +199,67 @@ static void jso_test_ht_copy(void **state)
 	jso_ht_free(ht_dest);
 }
 
+/* A test case that resizes hash table. */
+static void jso_test_ht_resize(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3, *val = NULL;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+
+	jso_ht *ht = jso_ht_alloc();
+	jso_ht_set(ht, key1, &val1, false);
+	jso_ht_set(ht, key2, &val2, false);
+	jso_ht_set(ht, key3, &val3, false);
+
+	// it should fail when trying to reduce capacity
+	assert_true(jso_ht_resize(ht, 0) == JSO_FAILURE);
+
+	// it should succeed if increasing capacity
+	assert_true(jso_ht_resize(ht, ht->capacity + 4) == JSO_SUCCESS);
+
+	// check all values and keys are still present and in correct order after resizing
+	jso_int i = 1;
+	jso_string *key;
+	JSO_HT_FOREACH(ht, key, val)
+	{
+		switch (i++) {
+			case 1:
+				assert_true(jso_string_equals_to_cstr(key, "key"));
+				assert_int_equal(1, JSO_IVAL_P(val));
+				break;
+			case 2:
+				assert_true(jso_string_equals_to_cstr(key, "second key"));
+				assert_int_equal(2, JSO_IVAL_P(val));
+				break;
+			case 3:
+				assert_true(jso_string_equals_to_cstr(key, "third key"));
+				assert_int_equal(3, JSO_IVAL_P(val));
+				break;
+		}
+	}
+	JSO_HT_FOREACH_END;
+
+	jso_ht_free(ht);
+}
+
 int main(void)
 {
+	// clang-format off
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_ht_set), cmocka_unit_test(jso_test_ht_get),
-		cmocka_unit_test(jso_test_ht_get_by_cstr_key), cmocka_unit_test(jso_test_ht_copy),
-		// cmocka_unit_test(jso_test_ht_resize),
+		cmocka_unit_test(jso_test_ht_set),
+		cmocka_unit_test(jso_test_ht_get),
+		cmocka_unit_test(jso_test_ht_get_by_cstr_key),
+		cmocka_unit_test(jso_test_ht_copy),
+		cmocka_unit_test(jso_test_ht_resize),
 	};
+	// clang-format on
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
 }

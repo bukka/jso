@@ -146,7 +146,7 @@ JSO_API void jso_ht_clear(jso_ht *ht)
 
 JSO_API jso_rc jso_ht_resize(jso_ht *ht, size_t size)
 {
-	size_t capacity = (size_t) (ht->capacity * (1 / JSO_HT_MAX_LOAD) + 1);
+	size_t capacity = (size_t) (size * (1 / JSO_HT_MAX_LOAD) + 1);
 	if (capacity <= ht->capacity) {
 		return capacity == ht->capacity ? JSO_SUCCESS : JSO_FAILURE;
 		;
