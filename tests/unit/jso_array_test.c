@@ -225,6 +225,33 @@ static void jso_test_array_is_unique(void **state)
 	jso_array_free(arr);
 }
 
+/* A test to check whether copying works by increasing reference */
+static void jso_test_array_copy(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_array *arr = jso_array_alloc();
+	jso_array_push(arr, &val1);
+	jso_array_push(arr, &val2);
+	jso_array_push(arr, &val3);
+
+	assert_int_equal(0, JSO_ARRAY_REFCOUNT(arr));
+	assert_ptr_equal(arr, jso_array_copy(arr));
+	assert_int_equal(1, JSO_ARRAY_REFCOUNT(arr));
+	assert_ptr_equal(arr, jso_array_copy(arr));
+	assert_int_equal(2, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+	assert_int_equal(1, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+	assert_int_equal(0, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -236,6 +263,7 @@ int main(void)
 		cmocka_unit_test(jso_test_array_equals),
 		cmocka_unit_test(jso_test_array_are_all_items_of_type),
 		cmocka_unit_test(jso_test_array_is_unique),
+		cmocka_unit_test(jso_test_array_copy),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
