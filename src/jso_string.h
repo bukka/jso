@@ -180,7 +180,8 @@ static inline bool jso_string_equals(jso_string *s1, jso_string *s2)
  */
 static inline bool jso_string_equals_to_cstr(jso_string *str, const char *cstr)
 {
-	return !memcmp(JSO_STRING_VAL(str), cstr, JSO_STRING_LEN(str));
+	size_t str_len = JSO_STRING_LEN(str);
+	return strlen(cstr) == str_len && !memcmp(JSO_STRING_VAL(str), cstr, str_len);
 }
 
 /**
