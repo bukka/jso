@@ -42,7 +42,6 @@ static void jso_test_ht_set(void **state)
 	jso_int i = 1;
 	JSO_HT_FOREACH(ht, key, val)
 	{
-        printf("key: %s", &key->val[0]);
 		switch (i++) {
 			case 1:
 				assert_true(jso_string_equals_to_cstr(key, "key"));
@@ -161,10 +160,10 @@ static void jso_test_ht_copy(void **state)
 	jso_ht_set(ht_src, key1, &val1, false);
 	jso_ht_set(ht_src, key2, &val2, false);
 	jso_ht_set(ht_src, key3, &val3, false);
-	
+
 	assert_true(jso_ht_copy(ht_src, ht_dest) == JSO_SUCCESS);
 
-	// assert that 
+	// assert that all values have been copied
 	assert_int_equal(3, ht_dest->count);
 	assert_true(jso_ht_get_by_cstr_key(ht_dest, "key", &val) == JSO_SUCCESS);
 	assert_int_equal(1, JSO_IVAL_P(val));
@@ -203,10 +202,8 @@ static void jso_test_ht_copy(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_ht_set),
-		cmocka_unit_test(jso_test_ht_get),
-		cmocka_unit_test(jso_test_ht_get_by_cstr_key),
-		cmocka_unit_test(jso_test_ht_copy),
+		cmocka_unit_test(jso_test_ht_set), cmocka_unit_test(jso_test_ht_get),
+		cmocka_unit_test(jso_test_ht_get_by_cstr_key), cmocka_unit_test(jso_test_ht_copy),
 		// cmocka_unit_test(jso_test_ht_resize),
 	};
 

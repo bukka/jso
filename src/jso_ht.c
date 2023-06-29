@@ -216,7 +216,7 @@ JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **v
 JSO_API jso_rc jso_ht_copy(jso_ht *from, jso_ht *to)
 {
 	for (jso_ht_entry *entry = from->first_entry; entry; entry = entry->next) {
-		
+
 		if (jso_ht_set(to, jso_string_copy(entry->key), &entry->value, true) == JSO_FAILURE) {
 			return JSO_FAILURE;
 		}
