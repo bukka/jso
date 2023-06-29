@@ -2,6 +2,7 @@
 #include "../../src/jso_ht.h"
 #include "../../src/jso.h"
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -17,8 +18,8 @@ static void jso_test_ht_set(void **state)
 	JSO_VALUE_SET_INT(val1, 1);
 	JSO_VALUE_SET_INT(val2, 2);
 	JSO_VALUE_SET_INT(val3, 3);
-	JSO_VALUE_SET_INT(val3, 4);
-	JSO_VALUE_SET_INT(val3, 5);
+	JSO_VALUE_SET_INT(val4, 4);
+	JSO_VALUE_SET_INT(val5, 5);
 
 	jso_string *key;
 	jso_string *key1 = jso_string_create_from_cstr("key");
@@ -33,18 +34,19 @@ static void jso_test_ht_set(void **state)
 	jso_ht_set(ht, key2, &val2, false);
 	jso_ht_set(ht, key3, &val3, false);
 	jso_ht_set(ht, key4, &val4, false);
-	jso_ht_set(ht, key5, &val5, true);
-	jso_ht_set(ht, key1, &val3, false);
+	jso_ht_set(ht, key5, &val5, false);
+	jso_ht_set(ht, key1, &val3, true);
 
 	assert_int_equal(3, ht->count);
 
 	jso_int i = 1;
 	JSO_HT_FOREACH(ht, key, val)
 	{
+        printf("key: %s", &key->val[0]);
 		switch (i++) {
 			case 1:
 				assert_true(jso_string_equals_to_cstr(key, "key"));
-				assert_int_equal(5, JSO_IVAL_P(val));
+				assert_int_equal(3, JSO_IVAL_P(val));
 				break;
 			case 2:
 				assert_true(jso_string_equals_to_cstr(key, "second key"));
@@ -61,7 +63,7 @@ static void jso_test_ht_set(void **state)
 	jso_ht_free(ht);
 
 	// check the key1 is not freed
-	assert_true(jso_string_equals_to_cstr(key1, "key"));
+	assert_true(jso_string_equals_to_cstr(key4, "key"));
 	jso_string_free(key4);
 }
 

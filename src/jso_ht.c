@@ -83,17 +83,24 @@ static jso_rc jso_ht_adjust_capacity(jso_ht *ht, size_t capacity)
 		return JSO_FAILURE;
 	}
 
-	for (size_t i = 0; i < ht->capacity; i++) {
-		jso_ht_entry *src_entry = &ht->entries[i];
-		if (src_entry->key != NULL) {
-			jso_ht_entry *dest_entry = jso_ht_find_entry(entries, capacity, src_entry->key);
-			memcpy(dest_entry, src_entry, sizeof(jso_ht_entry));
+	jso_ht_entry *first_entry = NULL, *last_entry = NULL;
+	for (jso_ht_entry *src_entry = ht->first_entry; src_entry; src_entry = src_entry->next) {
+		jso_ht_entry *dest_entry = jso_ht_find_entry(entries, capacity, src_entry->key);
+		dest_entry->key = src_entry->key;
+		dest_entry->value = src_entry->value;
+		if (last_entry) {
+			last_entry->next = dest_entry;
+		} else {
+			first_entry = dest_entry;
 		}
+		last_entry = dest_entry;
 	}
 
 	jso_free(ht->entries);
 	ht->entries = entries;
 	ht->capacity = capacity;
+	ht->first_entry = first_entry;
+	ht->last_entry = last_entry;
 
 	return JSO_SUCCESS;
 }
