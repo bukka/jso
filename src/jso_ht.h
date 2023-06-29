@@ -85,6 +85,14 @@ typedef struct _jso_ht {
 			_val = &_entry->value;
 
 /**
+ * @brief Macro to end iteration of the hash table.
+ */
+#define JSO_HT_FOREACH_END \
+	} \
+	} \
+	while (0)
+
+/**
  * @brief Macro to start iteration of the hash table in random order (possibly faster).
  * @param _ht hash table
  * @param _key entry key
@@ -102,14 +110,6 @@ typedef struct _jso_ht {
 				continue; \
 			++_found; \
 			_val = &_entry->value;
-
-/**
- * @brief Macro to end iteration of the hash table.
- */
-#define JSO_HT_FOREACH_END \
-	} \
-	} \
-	while (0)
 
 /**
  * Allocate new hash table.

@@ -53,6 +53,14 @@ struct _jso_object {
 #define JSO_OBJECT_COUNT(_obj) _obj->ht.count
 
 /**
+ * Get object items capacity.
+ *
+ * @param _obj object
+ * @return Capacity of all object items.
+ */
+#define JSO_OBJECT_CAPACITY(_obj) _obj->ht.capacity
+
+/**
  * Get object flags of the supplied object.
  *
  * @param _obj pointer to @ref jso_object
@@ -167,12 +175,16 @@ static inline jso_object *jso_object_copy(jso_object *obj)
  * @param _val entry value pointer
  */
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
-	jso_ht *_ht = &_obj->ht; \
+	do { \
+		jso_ht *_ht = &_obj->ht; \
 	JSO_HT_FOREACH(_ht, _key, _val)
 
 /**
  * @brief Macro to end iteration of the object.
  */
-#define JSO_OBJECT_FOREACH_END JSO_HT_FOREACH_END
+#define JSO_OBJECT_FOREACH_END \
+	JSO_HT_FOREACH_END; \
+	} \
+	while (0)
 
 #endif /* JSO_OBJECT_H */
