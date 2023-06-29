@@ -138,7 +138,7 @@ static void jso_test_array_apply_with_args(void **state)
 	jso_array_free(arr);
 }
 
-/* A test case that tests applying function with args for all array items. */
+/* A test case that tests whether two array are equal. */
 static void jso_test_array_equals(void **state)
 {
 	(void) state; /* unused */
@@ -175,7 +175,7 @@ static void jso_test_array_equals(void **state)
 	jso_array_free(arr2);
 }
 
-/* A test to check whether all items in array have the supplied type */
+/* A test to check whether all items in array have the supplied type. */
 static void jso_test_array_are_all_items_of_type(void **state)
 {
 	(void) state; /* unused */
@@ -225,7 +225,7 @@ static void jso_test_array_is_unique(void **state)
 	jso_array_free(arr);
 }
 
-/* A test to check whether copying works by increasing reference */
+/* A test to check whether array copying works by increasing reference */
 static void jso_test_array_copy(void **state)
 {
 	(void) state; /* unused */
