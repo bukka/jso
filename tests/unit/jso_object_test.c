@@ -146,6 +146,176 @@ static void jso_test_object_resize(void **state)
 	jso_object_free(obj);
 }
 
+/* A test case that tests applying function for all object key value pairs. */
+static jso_int object_apply_mask = 0;
+
+static void jso_test_object_apply_callback(jso_string *key, jso_value *val)
+{
+	jso_int ival = JSO_IVAL_P(val);
+	switch (ival) {
+		case 1:
+			assert_true(jso_string_equals_to_cstr(key, "key"));
+			break;
+		case 2:
+			assert_true(jso_string_equals_to_cstr(key, "second key"));
+			break;
+		case 3:
+			assert_true(jso_string_equals_to_cstr(key, "third key"));
+			break;
+		default:
+			// make sure no other value is returned
+			assert_true(false);
+	}
+	object_apply_mask |= (1 << (ival - 1));
+}
+
+static void jso_test_object_apply(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+
+	jso_object *obj = jso_object_alloc();
+	jso_object_add(obj, key1, &val1);
+	jso_object_add(obj, key2, &val2);
+	jso_object_add(obj, key3, &val3);
+
+	object_apply_mask = 0;
+	jso_object_apply(obj, jso_test_object_apply_callback);
+	assert_int_equal(7, object_apply_mask);
+	object_apply_mask = 0;
+
+	jso_object_free(obj);
+}
+
+/* A test case that tests applying function with args for all object key value pairs. */
+static void jso_test_object_apply_with_arg_callback(jso_string *key, jso_value *val, void *arg)
+{
+
+	jso_int ival = JSO_IVAL_P(val);
+	switch (ival) {
+		case 1:
+			assert_true(jso_string_equals_to_cstr(key, "key"));
+			break;
+		case 2:
+			assert_true(jso_string_equals_to_cstr(key, "second key"));
+			break;
+		case 3:
+			assert_true(jso_string_equals_to_cstr(key, "third key"));
+			break;
+		default:
+			// make sure no other value is returned
+			assert_true(false);
+	}
+	int *obj_mask = (int *) arg;
+	*obj_mask |= (1 << (ival - 1));
+}
+
+static void jso_test_object_apply_with_arg(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+
+	jso_object *obj = jso_object_alloc();
+	jso_object_add(obj, key1, &val1);
+	jso_object_add(obj, key2, &val2);
+	jso_object_add(obj, key3, &val3);
+
+	int object_mask = 0;
+	jso_object_apply_with_arg(obj, jso_test_object_apply_with_arg_callback, &object_mask);
+	assert_int_equal(7, object_mask);
+
+	jso_object_free(obj);
+}
+
+/* A test case that tests whether two objects are equal. */
+static void jso_test_object_equals(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val11, val21, val31, val41, val12, val22, val32, val42;
+	JSO_VALUE_SET_INT(val11, 1);
+	JSO_VALUE_SET_INT(val21, 2);
+	JSO_VALUE_SET_INT(val31, 3);
+	JSO_VALUE_SET_INT(val41, 3);
+	JSO_VALUE_SET_INT(val12, 1);
+	JSO_VALUE_SET_INT(val22, 2);
+	JSO_VALUE_SET_INT(val32, 3);
+	JSO_VALUE_SET_INT(val42, 4);
+
+	jso_string *key11 = jso_string_create_from_cstr("key");
+	jso_string *key21 = jso_string_create_from_cstr("second key");
+	jso_string *key31 = jso_string_create_from_cstr("third key");
+	jso_string *key41 = jso_string_create_from_cstr("fourth key");
+	jso_string *key12 = jso_string_create_from_cstr("key");
+	jso_string *key22 = jso_string_create_from_cstr("second key");
+	jso_string *key32 = jso_string_create_from_cstr("third key");
+	jso_string *key42 = jso_string_create_from_cstr("fourth key");
+
+	jso_object *obj1 = jso_object_alloc();
+	jso_object_add(obj1, key11, &val11);
+	jso_object_add(obj1, key21, &val21);
+	jso_object_add(obj1, key31, &val31);
+
+	jso_object *obj2 = jso_object_alloc();
+	jso_object_add(obj2, key12, &val12);
+	jso_object_add(obj2, key22, &val22);
+
+	assert_false(jso_object_equals(obj1, obj2));
+
+	jso_object_add(obj2, key32, &val32);
+	assert_true(jso_object_equals(obj1, obj2));
+
+	jso_object_add(obj1, key41, &val41);
+	jso_object_add(obj2, key42, &val42);
+	assert_false(jso_object_equals(obj1, obj2));
+
+	jso_object_free(obj1);
+	jso_object_free(obj2);
+}
+
+/* A test to check whether object copying works by increasing reference */
+static void jso_test_object_copy(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_array *arr = jso_array_alloc();
+	jso_array_push(arr, &val1);
+	jso_array_push(arr, &val2);
+	jso_array_push(arr, &val3);
+
+	assert_int_equal(0, JSO_ARRAY_REFCOUNT(arr));
+	assert_ptr_equal(arr, jso_array_copy(arr));
+	assert_int_equal(1, JSO_ARRAY_REFCOUNT(arr));
+	assert_ptr_equal(arr, jso_array_copy(arr));
+	assert_int_equal(2, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+	assert_int_equal(1, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+	assert_int_equal(0, JSO_ARRAY_REFCOUNT(arr));
+	jso_array_free(arr);
+}
+
 int main(void)
 {
 	// clang-format off
@@ -153,6 +323,10 @@ int main(void)
 		cmocka_unit_test(jso_test_object_add),
 		cmocka_unit_test(jso_test_object_get),
 		cmocka_unit_test(jso_test_object_resize),
+		cmocka_unit_test(jso_test_object_apply),
+		cmocka_unit_test(jso_test_object_apply_with_arg),
+		cmocka_unit_test(jso_test_object_equals),
+		cmocka_unit_test(jso_test_object_copy),
 	};
 	// clang-format on
 
