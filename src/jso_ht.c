@@ -213,7 +213,7 @@ JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **v
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_ht_copy(jso_ht *from, jso_ht *to)
+JSO_API jso_rc jso_ht_clone(jso_ht *from, jso_ht *to)
 {
 	for (jso_ht_entry *entry = from->first_entry; entry; entry = entry->next) {
 

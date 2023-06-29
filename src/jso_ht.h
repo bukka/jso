@@ -181,12 +181,12 @@ JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value);
 JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value);
 
 /**
- * Copy entries from one table to another.
+ * Clone entries from one table to another.
  *
  * @param from source hash table
  * @param to destination hash table
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_ht_copy(jso_ht *from, jso_ht *to);
+JSO_API jso_rc jso_ht_clone(jso_ht *from, jso_ht *to);
 
 #endif /* JSO_HT_H */

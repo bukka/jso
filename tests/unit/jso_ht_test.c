@@ -140,8 +140,8 @@ static void jso_test_ht_get_by_cstr_key(void **state)
 	jso_ht_free(ht);
 }
 
-/* A test case that copies hash table. */
-static void jso_test_ht_copy(void **state)
+/* A test case that clones hash table. */
+static void jso_test_ht_clone(void **state)
 {
 	(void) state; /* unused */
 
@@ -161,7 +161,7 @@ static void jso_test_ht_copy(void **state)
 	jso_ht_set(ht_src, key2, &val2, false);
 	jso_ht_set(ht_src, key3, &val3, false);
 
-	assert_true(jso_ht_copy(ht_src, ht_dest) == JSO_SUCCESS);
+	assert_true(jso_ht_clone(ht_src, ht_dest) == JSO_SUCCESS);
 
 	// assert that all values have been copied
 	assert_int_equal(3, ht_dest->count);
