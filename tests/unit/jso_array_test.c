@@ -1,4 +1,3 @@
-#include "../../src/jso_array.h"
 #include "../../src/jso.h"
 
 #include <stdarg.h>
