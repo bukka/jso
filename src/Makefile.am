@@ -5,7 +5,8 @@ libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number
 	jso_encoder.c jso_error.c jso_ht.c jso_re.c jso_scanner.c jso_parser.tab.c \
 	parser/jso_parser_hooks_decode.c io/jso_io.c io/jso_io_file.c io/jso_io_memory.c \
 	schema/jso_schema_array.c schema/jso_schema_data.c schema/jso_schema_error.c  \
-	schema/jso_schema_keyword.c schema/jso_schema_value.c schema/jso_schema.c
+	schema/jso_schema_keyword.c schema/jso_schema_value.c schema/jso_schema_version.c \
+	schema/jso_schema.c
 
 bin_PROGRAMS = jso
 jso_SOURCES =  main.c jso_cli.c
@@ -15,7 +16,7 @@ include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_
 	jso_bitset.h jso_number.h jso_error.h jso_encoder.h jso_ht.h jso_parser.h jso_parser.tab.h \
 	jso_parser_hooks.h jso_mm.h parser/jso_parser_hooks_decode.h jso_scanner.h jso_string.h \
 	jso_schema.h schema/jso_schema_array.h schema/jso_schema_data.h schema/jso_schema_error.h  \
-	schema/jso_schema_keyword.h schema/jso_schema_value.h \
+	schema/jso_schema_keyword.h schema/jso_schema_value.h  schema/jso_schema_version.h \
 	jso_tokens.h jso_re.h jso_cli.h jso_io.h io/jso_io_file.h io/jso_io_memory.h
 
 

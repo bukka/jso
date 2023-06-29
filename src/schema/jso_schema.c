@@ -24,6 +24,7 @@
 #include "jso_schema_data.h"
 #include "jso_schema_error.h"
 #include "jso_schema_value.h"
+#include "jso_schema_version.h"
 
 #include "jso_schema.h"
 
@@ -37,20 +38,6 @@ JSO_API jso_schema *jso_schema_alloc()
 JSO_API void jso_schema_init(jso_schema *schema)
 {
 	memset(schema, 0, sizeof(jso_schema));
-}
-
-static jso_rc jso_schema_version_set(jso_schema *schema, jso_value *data)
-{
-	jso_string *version = jso_schema_data_get_str(schema, data, "$schema");
-
-	if (version == NULL || jso_string_equals_to_cstr(version, "http://json-schema.org/schema#")
-			|| jso_string_equals_to_cstr(version, "http://json-schema.org/draft-04/schema#")) {
-		schema->version = JSO_SCHEMA_VERSION_DRAFT_04;
-		return JSO_SUCCESS;
-	}
-
-	return jso_schema_error_set(
-			schema, JSO_SCHEMA_ERROR_VERSION, "Only draft 4 is currently supported");
 }
 
 JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
