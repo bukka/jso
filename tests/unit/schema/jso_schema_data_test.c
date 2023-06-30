@@ -340,6 +340,115 @@ static void test_jso_schema_data_get_value_if_not_set(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* tests for jso_schema_data_get */
+
+/* Test getting value if no value set before and successful type check. */
+static void test_jso_schema_data_get_if_set(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	jso_value *rv = jso_schema_data_get(&schema, &data, "hkey", JSO_TYPE_INT, 0, true, &val);
+
+	assert_ptr_equal(rv, &val);
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
+/* Test getting value if no value set before and successful type check. */
+static void test_jso_schema_data_get_if_not_set_and_success(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "hkey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_SUCCESS);
+	will_return(__wrap_jso_ht_get_by_cstr_key, &val);
+
+	jso_value *rv = jso_schema_data_get(&schema, &data, "hkey", JSO_TYPE_INT, 0, true, NULL);
+
+	assert_true(jso_value_equals(rv, &val));
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
+/* Test getting value if no value set before and failed type check with no error. */
+static void test_jso_schema_data_get_if_not_set_and_fail_with_no_error(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "hkey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_SUCCESS);
+	will_return(__wrap_jso_ht_get_by_cstr_key, &val);
+
+	jso_value *rv = jso_schema_data_get(&schema, &data, "hkey", JSO_TYPE_BOOL, 0, false, NULL);
+
+	assert_null(rv);
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
+/* Test getting value if no value set before and failed type check with no error. */
+static void test_jso_schema_data_get_if_not_set_and_fail_with_error(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "hkey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_SUCCESS);
+	will_return(__wrap_jso_ht_get_by_cstr_key, &val);
+
+	jso_value *rv = jso_schema_data_get(&schema, &data, "hkey", JSO_TYPE_BOOL, 0, true, NULL);
+
+	assert_null(rv);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Invalid type for hkey - expected bool but given int",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -356,6 +465,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_data_get_value_fast_if_not_found_and_required),
 		cmocka_unit_test(test_jso_schema_data_get_value_if_set),
 		cmocka_unit_test(test_jso_schema_data_get_value_if_not_set),
+		cmocka_unit_test(test_jso_schema_data_get_if_set),
+		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_success),
+		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_fail_with_no_error),
+		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_fail_with_error),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
