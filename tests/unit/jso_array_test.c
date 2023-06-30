@@ -107,7 +107,7 @@ static void test_jso_array_pop(void **state)
 }
 
 /* A test case that tests applying function for all array items. */
-static void test_jso_array_apply_callback(size_t idx, jso_value *val)
+static void jso_test_array_apply_callback(size_t idx, jso_value *val)
 {
 	assert_int_equal(idx + 1, JSO_IVAL_P(val));
 }
@@ -126,13 +126,13 @@ static void test_jso_array_apply(void **state)
 	jso_array_append(arr, &val2);
 	jso_array_append(arr, &val3);
 
-	jso_array_apply(arr, test_jso_array_apply_callback);
+	jso_array_apply(arr, jso_test_array_apply_callback);
 
 	jso_array_free(arr);
 }
 
 /* A test case that tests applying function with args for all array items. */
-static void test_jso_array_apply_with_args_callback(size_t idx, jso_value *val, void *arg)
+static void jso_test_array_apply_with_args_callback(size_t idx, jso_value *val, void *arg)
 {
 	int *expected_val = (int *) arg;
 	assert_int_equal(*expected_val, JSO_IVAL_P(val));
@@ -154,7 +154,7 @@ static void test_jso_array_apply_with_args(void **state)
 	jso_array_push(arr, &val3);
 
 	jso_int i = 3;
-	jso_array_apply_with_arg(arr, test_jso_array_apply_with_args_callback, &i);
+	jso_array_apply_with_arg(arr, jso_test_array_apply_with_args_callback, &i);
 	assert_int_equal(0, i);
 
 	jso_array_free(arr);

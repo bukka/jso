@@ -170,7 +170,7 @@ static void test_jso_object_resize(void **state)
 /* A test case that tests applying function for all object key value pairs. */
 static jso_int object_apply_mask = 0;
 
-static void test_jso_object_apply_callback(jso_string *key, jso_value *val)
+static void jso_test_object_apply_callback(jso_string *key, jso_value *val)
 {
 	jso_int ival = JSO_IVAL_P(val);
 	switch (ival) {
@@ -209,7 +209,7 @@ static void test_jso_object_apply(void **state)
 	jso_object_add(obj, key3, &val3);
 
 	object_apply_mask = 0;
-	jso_object_apply(obj, test_jso_object_apply_callback);
+	jso_object_apply(obj, jso_test_object_apply_callback);
 	assert_int_equal(7, object_apply_mask);
 	object_apply_mask = 0;
 
@@ -217,7 +217,7 @@ static void test_jso_object_apply(void **state)
 }
 
 /* A test case that tests applying function with args for all object key value pairs. */
-static void test_jso_object_apply_with_arg_callback(jso_string *key, jso_value *val, void *arg)
+static void jso_test_object_apply_with_arg_callback(jso_string *key, jso_value *val, void *arg)
 {
 
 	jso_int ival = JSO_IVAL_P(val);
@@ -258,7 +258,7 @@ static void test_jso_object_apply_with_arg(void **state)
 	jso_object_add(obj, key3, &val3);
 
 	int object_mask = 0;
-	jso_object_apply_with_arg(obj, test_jso_object_apply_with_arg_callback, &object_mask);
+	jso_object_apply_with_arg(obj, jso_test_object_apply_with_arg_callback, &object_mask);
 	assert_int_equal(7, object_mask);
 
 	jso_object_free(obj);
