@@ -26,22 +26,6 @@
 
 #include "jso.h"
 
-jso_value *jso_schema_data_get_value_fast(
-		jso_schema *schema, jso_value *data, const char *key, jso_uint32 keyword_flags)
-{
-	jso_value *val;
-
-	if (jso_ht_get_by_cstr_key(JSO_OBJHVAL_P(data), key, &val) == JSO_FAILURE) {
-		if (keyword_flags & JSO_SCHEMA_KEYWORD_FLAG_REQUIRED) {
-			jso_schema_error_format(
-					schema, JSO_SCHEMA_ERROR_KEYWORD_REQUIRED, "Keyword %s is required", key);
-		}
-		return NULL;
-	}
-
-	return val;
-}
-
 #define JSO_SCHEMA_DATA_TYPES_BUF_SIZE 256
 
 void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *val,
@@ -86,6 +70,22 @@ jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const cha
 	}
 
 	return JSO_SUCCESS;
+}
+
+jso_value *jso_schema_data_get_value_fast(
+		jso_schema *schema, jso_value *data, const char *key, jso_uint32 keyword_flags)
+{
+	jso_value *val;
+
+	if (jso_ht_get_by_cstr_key(JSO_OBJHVAL_P(data), key, &val) == JSO_FAILURE) {
+		if (keyword_flags & JSO_SCHEMA_KEYWORD_FLAG_REQUIRED) {
+			jso_schema_error_format(
+					schema, JSO_SCHEMA_ERROR_KEYWORD_REQUIRED, "Keyword %s is required", key);
+		}
+		return NULL;
+	}
+
+	return val;
 }
 
 jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const char *key,

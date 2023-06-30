@@ -31,7 +31,7 @@
 #include <cmocka.h>
 
 /* A test case that adds items to object and loop through them. */
-static void jso_test_object_add(void **state)
+static void test_jso_object_add(void **state)
 {
 	(void) state; /* unused */
 
@@ -80,7 +80,7 @@ static void jso_test_object_add(void **state)
 }
 
 /* A test case that gets item from object. */
-static void jso_test_object_get(void **state)
+static void test_jso_object_get(void **state)
 {
 	(void) state; /* unused */
 
@@ -118,7 +118,7 @@ static void jso_test_object_get(void **state)
 }
 
 /* A test case that resizes hash table. */
-static void jso_test_object_resize(void **state)
+static void test_jso_object_resize(void **state)
 {
 	(void) state; /* unused */
 
@@ -170,7 +170,7 @@ static void jso_test_object_resize(void **state)
 /* A test case that tests applying function for all object key value pairs. */
 static jso_int object_apply_mask = 0;
 
-static void jso_test_object_apply_callback(jso_string *key, jso_value *val)
+static void test_jso_object_apply_callback(jso_string *key, jso_value *val)
 {
 	jso_int ival = JSO_IVAL_P(val);
 	switch (ival) {
@@ -190,7 +190,7 @@ static void jso_test_object_apply_callback(jso_string *key, jso_value *val)
 	object_apply_mask |= (1 << (ival - 1));
 }
 
-static void jso_test_object_apply(void **state)
+static void test_jso_object_apply(void **state)
 {
 	(void) state; /* unused */
 
@@ -209,7 +209,7 @@ static void jso_test_object_apply(void **state)
 	jso_object_add(obj, key3, &val3);
 
 	object_apply_mask = 0;
-	jso_object_apply(obj, jso_test_object_apply_callback);
+	jso_object_apply(obj, test_jso_object_apply_callback);
 	assert_int_equal(7, object_apply_mask);
 	object_apply_mask = 0;
 
@@ -217,7 +217,7 @@ static void jso_test_object_apply(void **state)
 }
 
 /* A test case that tests applying function with args for all object key value pairs. */
-static void jso_test_object_apply_with_arg_callback(jso_string *key, jso_value *val, void *arg)
+static void test_jso_object_apply_with_arg_callback(jso_string *key, jso_value *val, void *arg)
 {
 
 	jso_int ival = JSO_IVAL_P(val);
@@ -239,7 +239,7 @@ static void jso_test_object_apply_with_arg_callback(jso_string *key, jso_value *
 	*obj_mask |= (1 << (ival - 1));
 }
 
-static void jso_test_object_apply_with_arg(void **state)
+static void test_jso_object_apply_with_arg(void **state)
 {
 	(void) state; /* unused */
 
@@ -258,14 +258,14 @@ static void jso_test_object_apply_with_arg(void **state)
 	jso_object_add(obj, key3, &val3);
 
 	int object_mask = 0;
-	jso_object_apply_with_arg(obj, jso_test_object_apply_with_arg_callback, &object_mask);
+	jso_object_apply_with_arg(obj, test_jso_object_apply_with_arg_callback, &object_mask);
 	assert_int_equal(7, object_mask);
 
 	jso_object_free(obj);
 }
 
 /* A test case that tests whether two objects are equal. */
-static void jso_test_object_equals(void **state)
+static void test_jso_object_equals(void **state)
 {
 	(void) state; /* unused */
 
@@ -311,7 +311,7 @@ static void jso_test_object_equals(void **state)
 }
 
 /* A test to check whether object copying works by increasing reference */
-static void jso_test_object_copy(void **state)
+static void test_jso_object_copy(void **state)
 {
 	(void) state; /* unused */
 
@@ -341,13 +341,13 @@ int main(void)
 {
 	// clang-format off
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_object_add),
-		cmocka_unit_test(jso_test_object_get),
-		cmocka_unit_test(jso_test_object_resize),
-		cmocka_unit_test(jso_test_object_apply),
-		cmocka_unit_test(jso_test_object_apply_with_arg),
-		cmocka_unit_test(jso_test_object_equals),
-		cmocka_unit_test(jso_test_object_copy),
+		cmocka_unit_test(test_jso_object_add),
+		cmocka_unit_test(test_jso_object_get),
+		cmocka_unit_test(test_jso_object_resize),
+		cmocka_unit_test(test_jso_object_apply),
+		cmocka_unit_test(test_jso_object_apply_with_arg),
+		cmocka_unit_test(test_jso_object_equals),
+		cmocka_unit_test(test_jso_object_copy),
 	};
 	// clang-format on
 

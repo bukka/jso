@@ -36,7 +36,7 @@ void __wrap_jso_schema_value_free(jso_schema_value *val)
 }
 
 /* A test to schema value append and and free calls */
-static void jso_test_schema_array_append_and_free(void **state)
+static void test_jso_schema_array_append_and_free(void **state)
 {
 	(void) state; /* unused */
 
@@ -60,7 +60,7 @@ static void jso_test_schema_array_append_and_free(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_schema_array_append_and_free),
+		cmocka_unit_test(test_jso_schema_array_append_and_free),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

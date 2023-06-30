@@ -31,7 +31,7 @@
 #include <cmocka.h>
 
 /* A test case that sets item in hash table and loop through them. */
-static void jso_test_ht_set(void **state)
+static void test_jso_ht_set(void **state)
 {
 	(void) state; /* unused */
 
@@ -88,7 +88,7 @@ static void jso_test_ht_set(void **state)
 }
 
 /* A test case that gets item from hash table. */
-static void jso_test_ht_get(void **state)
+static void test_jso_ht_get(void **state)
 {
 	(void) state; /* unused */
 
@@ -126,7 +126,7 @@ static void jso_test_ht_get(void **state)
 }
 
 /* A test case that gets item by C string key from hash table. */
-static void jso_test_ht_get_by_cstr_key(void **state)
+static void test_jso_ht_get_by_cstr_key(void **state)
 {
 	(void) state; /* unused */
 
@@ -162,7 +162,7 @@ static void jso_test_ht_get_by_cstr_key(void **state)
 }
 
 /* A test case that clones hash table. */
-static void jso_test_ht_clone(void **state)
+static void test_jso_ht_clone(void **state)
 {
 	(void) state; /* unused */
 
@@ -221,7 +221,7 @@ static void jso_test_ht_clone(void **state)
 }
 
 /* A test case that resizes hash table. */
-static void jso_test_ht_resize(void **state)
+static void test_jso_ht_resize(void **state)
 {
 	(void) state; /* unused */
 
@@ -274,11 +274,11 @@ int main(void)
 {
 	// clang-format off
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_ht_set),
-		cmocka_unit_test(jso_test_ht_get),
-		cmocka_unit_test(jso_test_ht_get_by_cstr_key),
-		cmocka_unit_test(jso_test_ht_clone),
-		cmocka_unit_test(jso_test_ht_resize),
+		cmocka_unit_test(test_jso_ht_set),
+		cmocka_unit_test(test_jso_ht_get),
+		cmocka_unit_test(test_jso_ht_get_by_cstr_key),
+		cmocka_unit_test(test_jso_ht_clone),
+		cmocka_unit_test(test_jso_ht_resize),
 	};
 	// clang-format on
 

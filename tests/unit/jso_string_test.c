@@ -31,7 +31,7 @@
 #include <cmocka.h>
 
 /* A test case that tests whether string is correctly created from C string. */
-static void jso_test_string_create_from_cstr(void **state)
+static void test_jso_string_create_from_cstr(void **state)
 {
 	(void) state; /* unused */
 
@@ -45,7 +45,7 @@ static void jso_test_string_create_from_cstr(void **state)
 }
 
 /* A test case that tests whether two strings are equal. */
-static void jso_test_string_equals(void **state)
+static void test_jso_string_equals(void **state)
 {
 	(void) state; /* unused */
 	jso_string *str1 = jso_string_create_from_cstr("test");
@@ -62,7 +62,7 @@ static void jso_test_string_equals(void **state)
 }
 
 /* A test case that tests whether string are equal to C string. */
-static void jso_test_string_equals_to_cstr(void **state)
+static void test_jso_string_equals_to_cstr(void **state)
 {
 	(void) state; /* unused */
 	jso_string *str = jso_string_create_from_cstr("test");
@@ -75,7 +75,7 @@ static void jso_test_string_equals_to_cstr(void **state)
 }
 
 /* A test to check whether string copying works by increasing reference. */
-static void jso_test_string_copy(void **state)
+static void test_jso_string_copy(void **state)
 {
 	(void) state; /* unused */
 
@@ -94,7 +94,7 @@ static void jso_test_string_copy(void **state)
 }
 
 /* A test to check whether getting hash works. */
-static void jso_test_string_get_hash(void **state)
+static void test_jso_string_get_hash(void **state)
 {
 	(void) state; /* unused */
 
@@ -108,7 +108,7 @@ static void jso_test_string_get_hash(void **state)
 }
 
 /* A test to check whether hash is set. */
-static void jso_test_string_has_hash(void **state)
+static void test_jso_string_has_hash(void **state)
 {
 	(void) state; /* unused */
 
@@ -124,12 +124,12 @@ static void jso_test_string_has_hash(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(jso_test_string_create_from_cstr),
-		cmocka_unit_test(jso_test_string_equals),
-		cmocka_unit_test(jso_test_string_equals_to_cstr),
-		cmocka_unit_test(jso_test_string_copy),
-		cmocka_unit_test(jso_test_string_get_hash),
-		cmocka_unit_test(jso_test_string_has_hash),
+		cmocka_unit_test(test_jso_string_create_from_cstr),
+		cmocka_unit_test(test_jso_string_equals),
+		cmocka_unit_test(test_jso_string_equals_to_cstr),
+		cmocka_unit_test(test_jso_string_copy),
+		cmocka_unit_test(test_jso_string_get_hash),
+		cmocka_unit_test(test_jso_string_has_hash),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
