@@ -209,7 +209,7 @@ JSO_API void jso_value_dump(jso_value *val, jso_io *io)
 }
 
 static const char *type_names[]
-		= { "error", "bool", "int", "double", "string", "array", "object", "schema" };
+		= { "error", "null", "bool", "int", "double", "string", "array", "object", "schema" };
 
 JSO_API const char *jso_value_type_to_string(jso_value_type type)
 {

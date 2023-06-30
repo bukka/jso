@@ -814,14 +814,14 @@ typedef struct _jso_schema {
  *
  * @param _schema shema of type @ref jso_schema
  */
-#define JSO_SCHEMA_ERROR_TYPE(_schema) _schema->error.type
+#define JSO_SCHEMA_ERROR_TYPE(_schema) (_schema)->error.type
 
 /**
  * Get JsonSchema error message.
  *
  * @param _schema shema of type @ref jso_schema
  */
-#define JSO_SCHEMA_ERROR_MESSAGE(_schema) _schema->error.message
+#define JSO_SCHEMA_ERROR_MESSAGE(_schema) (_schema)->error.message
 
 /**
  * Allocate new schema.

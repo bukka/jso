@@ -32,7 +32,7 @@
 
 void __wrap_jso_schema_value_free(jso_schema_value *val)
 {
-    check_expected_ptr(val);
+	check_expected_ptr(val);
 }
 
 /* A test to schema value append and and free calls */
@@ -41,18 +41,18 @@ static void test_jso_schema_array_append_and_free(void **state)
 	(void) state; /* unused */
 
 	jso_schema_value sv1, sv2;
-    jso_schema_value *psv1 = &sv1, *psv2 = &sv2;
+	jso_schema_value *psv1 = &sv1, *psv2 = &sv2;
 
 	jso_schema_array *arr = jso_schema_array_alloc(2);
 	jso_schema_array_append(arr, psv1);
 	jso_schema_array_append(arr, psv2);
 
-    assert_int_equal(2, arr->len);
-    assert_ptr_equal(psv1, arr->values[0]);
-    assert_ptr_equal(psv2, arr->values[1]);
+	assert_int_equal(2, arr->len);
+	assert_ptr_equal(psv1, arr->values[0]);
+	assert_ptr_equal(psv2, arr->values[1]);
 
 	expect_value(__wrap_jso_schema_value_free, val, psv1);
-    expect_value(__wrap_jso_schema_value_free, val, psv2);
+	expect_value(__wrap_jso_schema_value_free, val, psv2);
 
 	jso_schema_array_free(arr);
 }

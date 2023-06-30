@@ -29,7 +29,7 @@
 #define JSO_SCHEMA_DATA_TYPES_BUF_SIZE 256
 
 void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *val,
-		jso_value_type *expected_types, size_t expected_types_count)
+		const jso_value_type *expected_types, size_t expected_types_count)
 {
 	char expected_types_buf[JSO_SCHEMA_DATA_TYPES_BUF_SIZE];
 	if (expected_types_count == 1) {

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *val,
-		jso_value_type *expected_types, size_t expected_types_count);
+		const jso_value_type *expected_types, size_t expected_types_count);
 
 jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
 		jso_value *val, jso_value_type type, jso_value_type primary_type,
