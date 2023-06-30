@@ -251,7 +251,7 @@ jso_schema_value *jso_schema_value_parse(
 	if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
 		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val));
 	}
-	if (jso_schema_data_check_type(schema, data, "type", val, JSO_TYPE_STRING, JSO_TYPE_ARRAY, true)
+	if (jso_schema_data_check_type(schema, "type", val, JSO_TYPE_STRING, JSO_TYPE_ARRAY, true)
 			== JSO_FAILURE) {
 		return NULL;
 	}

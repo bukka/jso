@@ -824,6 +824,17 @@ typedef struct _jso_schema {
 #define JSO_SCHEMA_ERROR_MESSAGE(_schema) (_schema)->error.message
 
 /**
+ * Check if schema error is set.
+ *
+ * @param schema shema of type @ref jso_schema
+ * @return JSO_TRUE on success, otherwise JSO_FALSE
+ */
+static inline bool jso_schema_error_is_set(jso_schema *schema)
+{
+	return JSO_SCHEMA_ERROR_TYPE(schema) != JSO_SCHEMA_ERROR_NONE;
+}
+
+/**
  * Allocate new schema.
  *
  * @param data json source data

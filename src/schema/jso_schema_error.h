@@ -33,11 +33,6 @@
 
 #define JSO_SCHEMA_ERROR_FORMAT_SIZE 512
 
-static inline bool jso_schema_error_is_set(jso_schema *schema)
-{
-	return JSO_SCHEMA_ERROR_TYPE(schema) != JSO_SCHEMA_ERROR_NONE;
-}
-
 jso_rc jso_schema_error_set(jso_schema *schema, jso_schema_error_type type, const char *message);
 
 jso_rc jso_schema_error_format(

@@ -183,7 +183,7 @@ static jso_schema_keyword *jso_schema_keyword_get_int(jso_schema *schema, jso_va
 		return NULL;
 	}
 
-	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
+	if (jso_schema_data_check_type(schema, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
@@ -191,7 +191,7 @@ static jso_schema_keyword *jso_schema_keyword_get_int(jso_schema *schema, jso_va
 		return schema_keyword;
 	}
 	if (jso_schema_data_check_type(
-				schema, data, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, error_on_invalid_type)
+				schema, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, error_on_invalid_type)
 			== JSO_FAILURE) {
 		return NULL;
 	}
@@ -247,7 +247,7 @@ static jso_schema_keyword *jso_schema_keyword_get_number(jso_schema *schema, jso
 		return NULL;
 	}
 
-	if (jso_schema_data_check_type(schema, data, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
+	if (jso_schema_data_check_type(schema, key, val, JSO_TYPE_INT, JSO_TYPE_INT, false)
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
@@ -255,7 +255,7 @@ static jso_schema_keyword *jso_schema_keyword_get_number(jso_schema *schema, jso
 		return schema_keyword;
 	}
 	if (jso_schema_data_check_type(
-				schema, data, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, error_on_invalid_type)
+				schema, key, val, JSO_TYPE_DOUBLE, JSO_TYPE_INT, error_on_invalid_type)
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT
 				| JSO_SCHEMA_KEYWORD_FLAG_FLOATING;

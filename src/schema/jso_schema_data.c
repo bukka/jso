@@ -72,9 +72,8 @@ void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *
 			jso_value_type_to_string(JSO_TYPE_P(val)));
 }
 
-jso_rc jso_schema_data_check_type(jso_schema *schema, jso_value *data, const char *key,
-		jso_value *val, jso_value_type type, jso_value_type primary_type,
-		jso_bool error_on_invalid_type)
+jso_rc jso_schema_data_check_type(jso_schema *schema, const char *key, jso_value *val,
+		jso_value_type type, jso_value_type primary_type, jso_bool error_on_invalid_type)
 {
 	if (JSO_TYPE_P(val) != type && JSO_TYPE_P(val) != primary_type) {
 		if (error_on_invalid_type) {
@@ -113,7 +112,7 @@ jso_value *jso_schema_data_get(jso_schema *schema, jso_value *data, const char *
 		return NULL;
 	}
 
-	return jso_schema_data_check_type(schema, data, key, val, type, type, error_on_invalid_type)
+	return jso_schema_data_check_type(schema, key, val, type, type, error_on_invalid_type)
 					== JSO_SUCCESS
 			? val
 			: NULL;

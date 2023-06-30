@@ -117,6 +117,84 @@ static void test_jso_schema_data_type_error_with_three_types(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* tests for jso_schema_data_check_type */
+
+static void test_jso_schema_data_check_type_success(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	assert_true(
+			jso_schema_data_check_type(&schema, "tkey", &val, JSO_TYPE_BOOL, JSO_TYPE_INT, false)
+			== JSO_SUCCESS);
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_schema_clear(&schema);
+}
+
+static void test_jso_schema_data_check_type_failure_and_no_error(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	assert_true(
+			jso_schema_data_check_type(&schema, "tkey", &val, JSO_TYPE_ARRAY, JSO_TYPE_BOOL, false)
+			== JSO_FAILURE);
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_schema_clear(&schema);
+}
+
+static void test_jso_schema_data_check_type_failure_and_single_type_error(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	assert_true(
+			jso_schema_data_check_type(&schema, "tkey", &val, JSO_TYPE_ARRAY, JSO_TYPE_ARRAY, true)
+			== JSO_FAILURE);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Invalid type for tkey - expected array but given int",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
+static void test_jso_schema_data_check_type_failure_and_double_type_error(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	assert_true(
+			jso_schema_data_check_type(&schema, "tkey", &val, JSO_TYPE_ARRAY, JSO_TYPE_BOOL, true)
+			== JSO_FAILURE);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Invalid type for tkey - expected either array or bool but given int",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
 /* tests for jso_schema_data_get_value_fast */
 
 jso_rc __wrap_jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
@@ -165,6 +243,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_data_type_error_with_one_type),
 		cmocka_unit_test(test_jso_schema_data_type_error_with_two_types),
 		cmocka_unit_test(test_jso_schema_data_type_error_with_three_types),
+		cmocka_unit_test(test_jso_schema_data_check_type_success),
+		cmocka_unit_test(test_jso_schema_data_check_type_failure_and_no_error),
+		cmocka_unit_test(test_jso_schema_data_check_type_failure_and_single_type_error),
+		cmocka_unit_test(test_jso_schema_data_check_type_failure_and_double_type_error),
 		cmocka_unit_test(test_jso_schema_data_get_value_fast_if_found),
 	};
 
