@@ -51,10 +51,11 @@ jso_rc jso_schema_error_format(
 
 	va_start(args, format);
 	int written = vsnprintf(buf, JSO_SCHEMA_ERROR_FORMAT_SIZE, format, args);
-	if (written < 0) {
-		return JSO_FAILURE;
-	}
 	va_end(args);
+
+	if (written < 0) {
+		return jso_schema_error_set(schema, type, "Error with incorrect format");
+	}
 
 	if (written == JSO_SCHEMA_ERROR_FORMAT_SIZE) {
 		buf[JSO_SCHEMA_ERROR_FORMAT_SIZE] = '\0';

@@ -35,7 +35,7 @@ void __wrap_jso_schema_value_free(jso_schema_value *val)
 	check_expected_ptr(val);
 }
 
-/* A test to schema value append and and free calls */
+/* A test to schema value array append and free calls */
 static void test_jso_schema_array_append_and_free(void **state)
 {
 	(void) state; /* unused */
