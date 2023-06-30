@@ -30,8 +30,25 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
-/* tests for jso_schema_data_type_error */
+/* Wrapping. */
 
+/* Wrapper for jso_ht_get_by_cstr_key. */
+jso_rc __wrap_jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
+{
+	check_expected_ptr(ht);
+	check_expected(key);
+
+	jso_rc rc = mock_type(jso_rc);
+	if (rc == JSO_SUCCESS) {
+		jso_value *val = mock_ptr_type(jso_value *);
+		*value = val;
+	}
+	return rc;
+}
+
+/* Tests for jso_schema_data_type_error. */
+
+/* Test type error emitting for no type. */
 static void test_jso_schema_data_type_error_with_no_type(void **state)
 {
 	(void) state; /* unused */
@@ -53,6 +70,7 @@ static void test_jso_schema_data_type_error_with_no_type(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test type error emitting for 1 type. */
 static void test_jso_schema_data_type_error_with_one_type(void **state)
 {
 	(void) state; /* unused */
@@ -74,6 +92,7 @@ static void test_jso_schema_data_type_error_with_one_type(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test type error emitting for 2 types. */
 static void test_jso_schema_data_type_error_with_two_types(void **state)
 {
 	(void) state; /* unused */
@@ -95,6 +114,7 @@ static void test_jso_schema_data_type_error_with_two_types(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test type error emitting for 3 types. */
 static void test_jso_schema_data_type_error_with_three_types(void **state)
 {
 	(void) state; /* unused */
@@ -119,6 +139,7 @@ static void test_jso_schema_data_type_error_with_three_types(void **state)
 
 /* tests for jso_schema_data_check_type */
 
+/* Test checking type failure for successful check. */
 static void test_jso_schema_data_check_type_success(void **state)
 {
 	(void) state; /* unused */
@@ -137,6 +158,7 @@ static void test_jso_schema_data_check_type_success(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test checking type failure for failed check without error reporting. */
 static void test_jso_schema_data_check_type_failure_and_no_error(void **state)
 {
 	(void) state; /* unused */
@@ -155,6 +177,7 @@ static void test_jso_schema_data_check_type_failure_and_no_error(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test checking type failure for failed check with error reporting and the same type. */
 static void test_jso_schema_data_check_type_failure_and_single_type_error(void **state)
 {
 	(void) state; /* unused */
@@ -175,6 +198,7 @@ static void test_jso_schema_data_check_type_failure_and_single_type_error(void *
 	jso_schema_clear(&schema);
 }
 
+/* Test checking type failure for failed check with error reporting and two different types. */
 static void test_jso_schema_data_check_type_failure_and_double_type_error(void **state)
 {
 	(void) state; /* unused */
@@ -197,19 +221,7 @@ static void test_jso_schema_data_check_type_failure_and_double_type_error(void *
 
 /* tests for jso_schema_data_get_value_fast */
 
-jso_rc __wrap_jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
-{
-	check_expected_ptr(ht);
-	check_expected(key);
-
-	jso_rc rc = mock_type(jso_rc);
-	if (rc == JSO_SUCCESS) {
-		jso_value *val = mock_ptr_type(jso_value *);
-		*value = val;
-	}
-	return rc;
-}
-
+/* Test getting value fast if it is found in the object. */
 static void test_jso_schema_data_get_value_fast_if_found(void **state)
 {
 	jso_schema schema;
@@ -236,6 +248,7 @@ static void test_jso_schema_data_get_value_fast_if_found(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test getting value fast if it is not found in the object and value is not required. */
 static void test_jso_schema_data_get_value_fast_if_not_found_and_not_required(void **state)
 {
 	jso_schema schema;
@@ -263,6 +276,7 @@ static void test_jso_schema_data_get_value_fast_if_not_found_and_not_required(vo
 	jso_schema_clear(&schema);
 }
 
+/* Test getting value fast if it is not found in the object and value is required. */
 static void test_jso_schema_data_get_value_fast_if_not_found_and_required(void **state)
 {
 	jso_schema schema;
@@ -294,6 +308,7 @@ static void test_jso_schema_data_get_value_fast_if_not_found_and_required(void *
 
 /* tests for jso_schema_data_get_value */
 
+/* Test getting value if value set before. */
 static void test_jso_schema_data_get_value_if_set(void **state)
 {
 	jso_schema schema;
@@ -314,6 +329,7 @@ static void test_jso_schema_data_get_value_if_set(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test getting value if no value set before. */
 static void test_jso_schema_data_get_value_if_not_set(void **state)
 {
 	jso_schema schema;
@@ -340,7 +356,7 @@ static void test_jso_schema_data_get_value_if_not_set(void **state)
 	jso_schema_clear(&schema);
 }
 
-/* tests for jso_schema_data_get */
+/* Tests for jso_schema_data_get. */
 
 /* Test getting value if no value set before and successful type check. */
 static void test_jso_schema_data_get_if_set(void **state)
