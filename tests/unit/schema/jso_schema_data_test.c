@@ -465,6 +465,68 @@ static void test_jso_schema_data_get_if_not_set_and_fail_with_error(void **state
 	jso_schema_clear(&schema);
 }
 
+/* Tests for jso_schema_data_get_str. */
+
+/* Test getting string value if value type is string. */
+static void test_jso_schema_data_get_str_if_string_val(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	jso_string *str = jso_string_create_from_cstr("test");
+	JSO_VALUE_SET_STRING(val, str);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "skey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_SUCCESS);
+	will_return(__wrap_jso_ht_get_by_cstr_key, &val);
+
+	jso_string *rs = jso_schema_data_get_str(&schema, &data, "skey");
+
+	assert_ptr_equal(rs, str);
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_object_free(obj);
+	jso_string_free(str);
+	jso_schema_clear(&schema);
+}
+
+/* Test getting string value if value type is not string. */
+static void test_jso_schema_data_get_str_if_not_string_val(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_INT(val, 1);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "skey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_SUCCESS);
+	will_return(__wrap_jso_ht_get_by_cstr_key, &val);
+
+	jso_string *rs = jso_schema_data_get_str(&schema, &data, "skey");
+
+	assert_null(rs);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Invalid type for skey - expected string but given int",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -485,6 +547,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_success),
 		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_fail_with_no_error),
 		cmocka_unit_test(test_jso_schema_data_get_if_not_set_and_fail_with_error),
+		cmocka_unit_test(test_jso_schema_data_get_str_if_string_val),
+		cmocka_unit_test(test_jso_schema_data_get_str_if_not_string_val),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
