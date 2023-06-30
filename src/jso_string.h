@@ -138,6 +138,9 @@ static inline jso_string *jso_string_create_from_cstr(const char *cstr)
  */
 static inline void jso_string_free(jso_string *str)
 {
+	if (str == NULL) {
+		return;
+	}
 	if (JSO_STRING_REFCOUNT(str) > 0) {
 		--JSO_STRING_REFCOUNT(str);
 	} else {

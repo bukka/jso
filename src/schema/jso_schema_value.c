@@ -395,6 +395,9 @@ static const jso_schema_value_free_callback schema_value_free_callbacks[] = {
 
 void jso_schema_value_free(jso_schema_value *val)
 {
+	if (val == NULL) {
+		return;
+	}
 	jso_schema_value_free_common(val);
 	schema_value_free_callbacks[JSO_SCHEMA_VALUE_TYPE_P(val)](val);
 	JSO_SCHEMA_VALUE_TYPE_P(val) = 0;

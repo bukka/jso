@@ -42,13 +42,15 @@ static void test_jso_schema_data_type_error_with_no_type(void **state)
 	jso_value val;
 	JSO_VALUE_SET_INT(val, 1);
 
-	const jso_value_type types[] = {};
+	const jso_value_type types[] = { JSO_TYPE_BOOL };
 
 	jso_schema_data_type_error(&schema, "tkey", &val, types, 0);
 
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Invalid type for tkey - expected no type but given int",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 static void test_jso_schema_data_type_error_with_one_type(void **state)
@@ -68,6 +70,8 @@ static void test_jso_schema_data_type_error_with_one_type(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Invalid type for tkey - expected bool but given int",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 static void test_jso_schema_data_type_error_with_two_types(void **state)
@@ -85,8 +89,10 @@ static void test_jso_schema_data_type_error_with_two_types(void **state)
 	jso_schema_data_type_error(&schema, "tkey", &val, types, 2);
 
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
-	assert_string_equal("Invalid type for tkey - expected bool or double but given int",
+	assert_string_equal("Invalid type for tkey - expected either bool or double but given int",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 static void test_jso_schema_data_type_error_with_three_types(void **state)
@@ -104,8 +110,11 @@ static void test_jso_schema_data_type_error_with_three_types(void **state)
 	jso_schema_data_type_error(&schema, "tkey", &val, types, 3);
 
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
-	assert_string_equal("Invalid type for tkey - expected bool, array or object but given int",
+	assert_string_equal(
+			"Invalid type for tkey - expected either bool, array or object but given int",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* tests for jso_schema_data_get_value_fast */
@@ -146,6 +155,7 @@ static void test_jso_schema_data_get_value_fast_if_found(void **state)
 	assert_true(jso_value_equals(rv, &val));
 
 	jso_object_free(obj);
+	jso_schema_clear(&schema);
 }
 
 int main(void)

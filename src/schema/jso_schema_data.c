@@ -28,27 +28,43 @@
 
 #define JSO_SCHEMA_DATA_TYPES_BUF_SIZE 256
 
+static size_t jso_schema_data_types_cstr_append(char *buf, size_t pos, const char *cstr)
+{
+	size_t cstr_len = strlen(cstr);
+	size_t end_pos = pos + cstr_len;
+	if (end_pos >= JSO_SCHEMA_DATA_TYPES_BUF_SIZE) {
+		// if the buffer is full, no new types are included
+		return pos;
+	}
+	strncpy(buf + pos, cstr, cstr_len + 1);
+	return end_pos;
+}
+
 void jso_schema_data_type_error(jso_schema *schema, const char *key, jso_value *val,
 		const jso_value_type *expected_types, size_t expected_types_count)
 {
 	char expected_types_buf[JSO_SCHEMA_DATA_TYPES_BUF_SIZE];
 	if (expected_types_count == 1) {
-		strcpy(expected_types_buf, jso_value_type_to_string(expected_types[0]));
+		jso_schema_data_types_cstr_append(
+				expected_types_buf, 0, jso_value_type_to_string(expected_types[0]));
 	} else if (expected_types_count > 1) {
-		char *expected_types_buf_pos = strcpy(expected_types_buf, "either ");
+		size_t expected_types_buf_pos
+				= jso_schema_data_types_cstr_append(expected_types_buf, 0, "either ");
 		for (size_t i = 0; i < expected_types_count; i++) {
 			if (i > 0) {
 				if (i == expected_types_count - 1) {
-					expected_types_buf_pos = strcpy(expected_types_buf, " or ");
+					expected_types_buf_pos = jso_schema_data_types_cstr_append(
+							expected_types_buf, expected_types_buf_pos, " or ");
 				} else {
-					expected_types_buf_pos = strcpy(expected_types_buf, ", ");
+					expected_types_buf_pos = jso_schema_data_types_cstr_append(
+							expected_types_buf, expected_types_buf_pos, ", ");
 				}
 			}
-			expected_types_buf_pos
-					= strcpy(expected_types_buf_pos, jso_value_type_to_string(expected_types[i]));
+			expected_types_buf_pos = jso_schema_data_types_cstr_append(expected_types_buf,
+					expected_types_buf_pos, jso_value_type_to_string(expected_types[i]));
 		}
 	} else {
-		strcpy(expected_types_buf, "no type");
+		jso_schema_data_types_cstr_append(expected_types_buf, 0, "no type");
 	}
 
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,

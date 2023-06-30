@@ -31,11 +31,11 @@
 jso_rc jso_schema_error_set(jso_schema *schema, jso_schema_error_type type, const char *message)
 {
 	size_t message_len = strlen(message);
-	char *new_message = jso_malloc(message_len);
+	char *new_message = jso_malloc(message_len + 1);
 	if (new_message == NULL) {
 		return JSO_FAILURE;
 	}
-	memcpy(new_message, message, message_len);
+	memcpy(new_message, message, message_len + 1);
 
 	JSO_SCHEMA_ERROR_MESSAGE(schema) = new_message;
 	JSO_SCHEMA_ERROR_TYPE(schema) = type;
