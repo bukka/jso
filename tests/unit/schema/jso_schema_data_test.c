@@ -236,6 +236,62 @@ static void test_jso_schema_data_get_value_fast_if_found(void **state)
 	jso_schema_clear(&schema);
 }
 
+static void test_jso_schema_data_get_value_fast_if_not_found_and_not_required(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_NULL(val);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "hkey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_FAILURE);
+
+	jso_value *rv = jso_schema_data_get_value_fast(&schema, &data, "hkey", 0);
+
+	assert_null(rv);
+	assert_int_equal(JSO_TYPE_NULL, JSO_TYPE(val));
+	assert_false(jso_schema_error_is_set(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
+static void test_jso_schema_data_get_value_fast_if_not_found_and_required(void **state)
+{
+	jso_schema schema;
+	jso_schema_init(&schema);
+
+	jso_object *obj = jso_object_alloc();
+	jso_value data;
+	JSO_VALUE_SET_OBJECT(data, obj);
+
+	jso_value val;
+	JSO_VALUE_SET_NULL(val);
+
+	expect_value(__wrap_jso_ht_get_by_cstr_key, ht, &obj->ht);
+	expect_string(__wrap_jso_ht_get_by_cstr_key, key, "hkey");
+
+	will_return(__wrap_jso_ht_get_by_cstr_key, JSO_FAILURE);
+
+	jso_value *rv = jso_schema_data_get_value_fast(
+			&schema, &data, "hkey", JSO_SCHEMA_KEYWORD_FLAG_REQUIRED);
+
+	assert_null(rv);
+	assert_int_equal(JSO_TYPE_NULL, JSO_TYPE(val));
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_REQUIRED, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Keyword hkey is required", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_object_free(obj);
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -248,6 +304,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_data_check_type_failure_and_single_type_error),
 		cmocka_unit_test(test_jso_schema_data_check_type_failure_and_double_type_error),
 		cmocka_unit_test(test_jso_schema_data_get_value_fast_if_found),
+		cmocka_unit_test(test_jso_schema_data_get_value_fast_if_not_found_and_not_required),
+		cmocka_unit_test(test_jso_schema_data_get_value_fast_if_not_found_and_required),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
