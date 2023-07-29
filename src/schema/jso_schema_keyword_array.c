@@ -31,12 +31,12 @@
 
 #include <math.h>
 
-static inline jso_rc jso_schema_data_check_keyword_array(
+static inline jso_rc jso_schema_keyword_check_array(
 		jso_schema *schema, const char *key, jso_array *arr, jso_uint32 keyword_flags)
 {
 	if ((keyword_flags & JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY) && JSO_ARRAY_LEN(arr) == 0) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
-				"Array value for keyword %s must not be empty", key);
+				"Array for keyword %s must not be empty", key);
 		return JSO_FAILURE;
 	}
 	if ((keyword_flags & JSO_SCHEMA_KEYWORD_FLAG_UNIQUE) && !jso_array_is_unique(arr)) {
@@ -50,12 +50,12 @@ static inline jso_rc jso_schema_data_check_keyword_array(
 jso_rc jso_schema_keyword_validate_array_of_strings(
 		jso_schema *schema, const char *key, jso_array *arr, jso_uint32 keyword_flags)
 {
-	if (jso_schema_data_check_keyword_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
+	if (jso_schema_keyword_check_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
 		return JSO_FAILURE;
 	}
 	if (!jso_array_are_all_items_of_type(arr, JSO_TYPE_STRING)) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
-				"Array value for keyword %s must be a string", key);
+				"Array values for keyword %s must be a string", key);
 		return JSO_FAILURE;
 	}
 	return JSO_SUCCESS;
@@ -71,7 +71,7 @@ jso_schema_keyword *jso_schema_keyword_get_array(jso_schema *schema, jso_value *
 		return NULL;
 	}
 	jso_array *arr = JSO_ARRVAL_P(val);
-	if (jso_schema_data_check_keyword_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
+	if (jso_schema_keyword_check_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
 		return NULL;
 	}
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
@@ -110,7 +110,7 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_schema *s
 	}
 	jso_value *item;
 	jso_array *arr = JSO_ARRVAL_P(val);
-	if (jso_schema_data_check_keyword_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
+	if (jso_schema_keyword_check_array(schema, key, arr, keyword_flags) == JSO_FAILURE) {
 		return NULL;
 	}
 	jso_schema_array *schema_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
