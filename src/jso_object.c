@@ -30,6 +30,12 @@ JSO_API jso_object *jso_object_alloc()
 	return jso_calloc(1, sizeof(jso_object));
 }
 
+/* init object */
+JSO_API void jso_object_init(jso_object *obj)
+{
+	memset(obj, 0, sizeof(jso_object));
+}
+
 /* free object and its elements */
 JSO_API void jso_object_free(jso_object *obj)
 {

@@ -94,6 +94,13 @@ typedef void (*jso_object_with_arg_callback)(jso_string *key, jso_value *val, vo
 JSO_API jso_object *jso_object_alloc();
 
 /**
+ * Inititalize object.
+ *
+ * @param obj object
+ */
+JSO_API void jso_object_init(jso_object *obj);
+
+/**
  * Free object.
  *
  * @param obj object

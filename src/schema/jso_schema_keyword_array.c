@@ -132,9 +132,11 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_schema *s
 			jso_schema_array_free(schema_arr);
 			return NULL;
 		}
-		jso_schema_array_append(schema_arr, schema_value);
+		JSO_ASSERT_EQ(jso_schema_array_append(schema_arr, schema_value), JSO_SUCCESS);
 	}
 	JSO_ARRAY_FOREACH_END;
+
+	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(schema_keyword) = schema_arr;
 	return schema_keyword;
 }

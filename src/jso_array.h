@@ -201,7 +201,7 @@ static inline jso_array *jso_array_copy(jso_array *arr)
 #define JSO_ARRAY_FOREACH(_arr, _val) \
 	do { \
 		struct _jso_array_element *_array_el; \
-		for (_array_el = _arr->head; _array_el; _array_el = _array_el->next) { \
+		for (_array_el = (_arr)->head; _array_el; _array_el = _array_el->next) { \
 			_val = &_array_el->val;
 
 /**
