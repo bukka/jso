@@ -93,13 +93,12 @@ jso_value *__wrap_jso_schema_data_get(jso_schema *schema, jso_value *data, const
 	check_expected_ptr(schema);
 	check_expected_ptr(data);
 	check_expected(key);
+	check_expected(type);
 	check_expected(keyword_flags);
 	check_expected(error_on_invalid_type);
 	check_expected_ptr(val);
 
-	jso_value *value = mock_ptr_type(jso_value *);
-
-	return value;
+	return mock_ptr_type(jso_value *);
 }
 
 /* Wrapper for jso_schema_value_parse. */
@@ -263,6 +262,7 @@ static void test_jso_schema_keyword_get_array_when_value_ok(void **state)
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -299,6 +299,7 @@ static void test_jso_schema_keyword_get_array_when_value_not_found(void **state)
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -332,6 +333,7 @@ static void test_jso_schema_keyword_get_array_when_empty(void **state)
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -369,6 +371,7 @@ static void test_jso_schema_keyword_get_array_when_not_unique(void **state)
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags,
 			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
@@ -413,6 +416,7 @@ static void test_jso_schema_keyword_get_array_of_strings_when_all_strings(void *
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -454,6 +458,7 @@ static void test_jso_schema_keyword_get_array_of_strings_when_not_all_strings(vo
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -495,6 +500,7 @@ static void test_jso_schema_keyword_get_array_of_strings_when_value_not_found(vo
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -528,6 +534,7 @@ static void test_jso_schema_keyword_get_array_of_strings_when_empty(void **state
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -565,6 +572,7 @@ static void test_jso_schema_keyword_get_array_of_strings_when_not_unique(void **
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags,
 			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
@@ -620,6 +628,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_all_ok(void
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -664,7 +673,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_parse_fails
 	jso_array array;
 	jso_object obj1, obj2;
 	jso_value data, val, av1, av2, *item;
-	jso_schema_value parent, sv[2];
+	jso_schema_value parent;
 	jso_schema_keyword keyword;
 	jso_schema_array sa;
 
@@ -685,6 +694,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_parse_fails
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -694,7 +704,6 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_parse_fails
 	expect_value(__wrap_jso_schema_array_alloc, size, 2);
 	will_return(__wrap_jso_schema_array_alloc, &sa);
 
-	int i = 0;
 	JSO_ARRAY_FOREACH(&array, item)
 	{
 		expect_function_call(__wrap_jso_schema_value_parse);
@@ -724,8 +733,8 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_non_object(
 
 	jso_schema schema;
 	jso_array array;
-	jso_value data, val, av1, *item;
-	jso_schema_value parent, sv[2];
+	jso_value data, val, av1;
+	jso_schema_value parent;
 	jso_schema_keyword keyword;
 	jso_schema_array sa;
 
@@ -742,6 +751,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_non_object(
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -773,10 +783,9 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_sa_alloc_fa
 	jso_schema schema;
 	jso_array array;
 	jso_object obj1;
-	jso_value data, val, av1, *item;
-	jso_schema_value parent, sv[2];
+	jso_value data, val, av1;
+	jso_schema_value parent;
 	jso_schema_keyword keyword;
-	jso_schema_array sa;
 
 	jso_schema_init(&schema);
 	jso_array_init(&array);
@@ -792,6 +801,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_sa_alloc_fa
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -832,6 +842,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_value_not_f
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -866,6 +877,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_empty(void 
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
 	expect_value(__wrap_jso_schema_data_get, val, &val);
@@ -903,6 +915,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_not_unique(
 	expect_value(__wrap_jso_schema_data_get, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get, data, &data);
 	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_data_get, keyword_flags,
 			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
