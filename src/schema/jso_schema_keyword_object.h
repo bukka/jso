@@ -31,6 +31,10 @@
 
 #include "jso_schema.h"
 
+jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent);
+
 jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *schema, jso_value *data,
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent);
@@ -46,10 +50,6 @@ jso_schema_keyword *jso_schema_keyword_get_object_of_schema_objects_or_array_of_
 
 jso_schema_keyword *jso_schema_keyword_get_regexp_object_of_schema_objects(jso_schema *schema,
 		jso_value *data, const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
-		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent);
-
-jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value *data,
-		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent);
 
 void jso_schema_keyword_free_object(jso_schema_keyword *schema_keyword);

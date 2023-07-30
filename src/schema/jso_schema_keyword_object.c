@@ -31,7 +31,19 @@
 
 #include "jso.h"
 
-#include <math.h>
+jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value *data,
+		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
+		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
+{
+	val = jso_schema_data_get(
+			schema, data, key, JSO_TYPE_OBJECT, keyword_flags, error_on_invalid_type, val);
+	if (val == NULL) {
+		return NULL;
+	}
+	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_DATA_OBJ_P(schema_keyword) = jso_object_copy(JSO_OBJVAL_P(val));
+	return schema_keyword;
+}
 
 jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *schema, jso_value *data,
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
@@ -42,6 +54,8 @@ jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *schema, jso
 	if (val != NULL) {
 		jso_schema_value *schema_value = jso_schema_value_parse(schema, val, parent);
 		if (schema_value != NULL) {
+			JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
+					= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 			JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(schema_keyword) = schema_value;
 			return schema_keyword;
 		}
@@ -65,7 +79,11 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 	jso_value *item;
 	jso_object *obj = JSO_OBJVAL_P(val);
 	jso_object *schema_obj = jso_object_alloc();
-	jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj));
+	if (jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj)) == JSO_FAILURE) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
+				"Allocating object for keyword %s failed", key);
+		return NULL;
+	}
 	JSO_OBJECT_FOREACH(obj, objkey, item)
 	{
 		if (can_be_array_of_strings && JSO_TYPE_P(item) == JSO_TYPE_ARRAY) {
@@ -103,9 +121,11 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 			JSO_VALUE_SET_SCHEMA_VALUE(objval, schema_value);
 		}
 
-		jso_object_add(schema_obj, jso_string_copy(objkey), &objval);
+		JSO_ASSERT_EQ(jso_object_add(schema_obj, jso_string_copy(objkey), &objval), JSO_SUCCESS);
 	}
 	JSO_OBJECT_FOREACH_END;
+
+	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword) = schema_obj;
 	return schema_keyword;
 }
@@ -133,20 +153,6 @@ jso_schema_keyword *jso_schema_keyword_get_regexp_object_of_schema_objects(jso_s
 {
 	return jso_schema_keyword_get_custom_object(schema, data, key, error_on_invalid_type,
 			keyword_flags, schema_keyword, val, parent, true, false);
-}
-
-jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value *data,
-		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
-		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
-{
-	val = jso_schema_data_get(
-			schema, data, key, JSO_TYPE_OBJECT, keyword_flags, error_on_invalid_type, val);
-	if (val == NULL) {
-		return NULL;
-	}
-	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
-	JSO_SCHEMA_KEYWORD_DATA_OBJ_P(schema_keyword) = jso_object_copy(JSO_OBJVAL_P(val));
-	return schema_keyword;
 }
 
 void jso_schema_keyword_free_object(jso_schema_keyword *schema_keyword)

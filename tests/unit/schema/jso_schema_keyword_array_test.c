@@ -49,7 +49,7 @@ void __wrap_jso_array_free(jso_array *arr)
 	check_expected_ptr(arr);
 }
 
-/* Wrapper for jso_array_free. */
+/* Wrapper for jso_array_is_unique. */
 jso_bool __wrap_jso_array_is_unique(jso_array *arr)
 {
 	function_called();
@@ -58,6 +58,7 @@ jso_bool __wrap_jso_array_is_unique(jso_array *arr)
 	return mock_type(jso_bool);
 }
 
+/* Wrapper for jso_schema_array_alloc. */
 jso_schema_array *__wrap_jso_schema_array_alloc(size_t size)
 {
 	function_called();
@@ -66,6 +67,7 @@ jso_schema_array *__wrap_jso_schema_array_alloc(size_t size)
 	return mock_ptr_type(jso_schema_array *);
 }
 
+/* Wrapper for jso_schema_array_append. */
 jso_rc __wrap_jso_schema_array_append(jso_schema_array *arr, jso_schema_value *val)
 {
 	function_called();
@@ -75,6 +77,7 @@ jso_rc __wrap_jso_schema_array_append(jso_schema_array *arr, jso_schema_value *v
 	return mock_type(jso_rc);
 }
 
+/* Wrapper for jso_schema_array_free. */
 void __wrap_jso_schema_array_free(jso_schema_array *arr)
 {
 	function_called();
@@ -99,6 +102,7 @@ jso_value *__wrap_jso_schema_data_get(jso_schema *schema, jso_value *data, const
 	return value;
 }
 
+/* Wrapper for jso_schema_value_parse. */
 jso_schema_value *__wrap_jso_schema_value_parse(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
