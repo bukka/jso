@@ -92,11 +92,18 @@ typedef void (*jso_array_callback)(size_t idx, jso_value *val);
 typedef void (*jso_array_with_arg_callback)(size_t idx, jso_value *val, void *arg);
 
 /**
- * Allocate array.
+ * Allocate and initialize array.
  *
  * @return New initialized array.
  */
 JSO_API jso_array *jso_array_alloc();
+
+/**
+ * Initialize array.
+ *
+ * @param arr array
+ */
+JSO_API void jso_array_init(jso_array *arr);
 
 /**
  * Free array.

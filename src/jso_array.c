@@ -30,6 +30,12 @@ JSO_API jso_array *jso_array_alloc()
 	return jso_calloc(1, sizeof(jso_array));
 }
 
+/* init array */
+JSO_API void jso_array_init(jso_array *arr)
+{
+	memset(arr, 0, sizeof(jso_array));
+}
+
 /* free array and its elements */
 JSO_API void jso_array_free(jso_array *arr)
 {

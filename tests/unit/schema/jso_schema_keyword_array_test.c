@@ -21,7 +21,7 @@
  *
  */
 
-#include "../../../src/schema/jso_schema_keyword.h"
+#include "../../../src/schema/jso_schema_keyword_array.h"
 #include "../../../src/jso.h"
 
 #include <stdarg.h>
@@ -31,15 +31,6 @@
 #include <cmocka.h>
 
 /* Wrapping. */
-
-/* Wrapper for jso_schema_data_get. */
-jso_rc __wrap_jso_array_append(jso_array *arr, jso_value *val)
-{
-	check_expected_ptr(arr);
-	check_expected_ptr(val);
-
-	return mock_type(jso_rc);
-}
 
 /* Wrapper for jso_schema_data_get. */
 jso_bool __wrap_jso_array_are_all_items_of_type(jso_array *arr, jso_value_type type)
@@ -77,9 +68,9 @@ jso_value *__wrap_jso_schema_data_get(jso_schema *schema, jso_value *data, const
 		jso_value_type type, jso_uint32 keyword_flags, jso_bool error_on_invalid_type,
 		jso_value *val)
 {
+	function_called();
 	check_expected_ptr(schema);
 	check_expected_ptr(data);
-	check_expected(key);
 	check_expected(key);
 	check_expected(keyword_flags);
 	check_expected(error_on_invalid_type);
@@ -101,16 +92,18 @@ jso_schema_value *__wrap_jso_schema_value_parse(
 	return mock_ptr_type(jso_schema_value *);
 }
 
-/* Tests for jso_schema_data_type_error. */
+/* Tests for jso_schema_keyword_validate_array_of_strings. */
 
 /* Test validation of string array when all items are strings. */
 static void test_jso_schema_keyword_validate_array_of_strings_when_all_strings(void **state)
 {
 	(void) state; /* unused */
 
-	jso_array array;
 	jso_schema schema;
 	jso_schema_init(&schema);
+
+	jso_array array;
+	jso_array_init(&array);
 
 	expect_function_call(__wrap_jso_array_are_all_items_of_type);
 	expect_value(__wrap_jso_array_are_all_items_of_type, arr, &array);
@@ -129,9 +122,11 @@ static void test_jso_schema_keyword_validate_array_of_strings_when_not_all_strin
 {
 	(void) state; /* unused */
 
-	jso_array array;
 	jso_schema schema;
 	jso_schema_init(&schema);
+
+	jso_array array;
+	jso_array_init(&array);
 
 	expect_function_call(__wrap_jso_array_are_all_items_of_type);
 	expect_value(__wrap_jso_array_are_all_items_of_type, arr, &array);
@@ -153,9 +148,11 @@ static void test_jso_schema_keyword_validate_array_of_strings_when_unique(void *
 {
 	(void) state; /* unused */
 
-	jso_array array;
 	jso_schema schema;
 	jso_schema_init(&schema);
+
+	jso_array array;
+	jso_array_init(&array);
 
 	expect_function_call(__wrap_jso_array_is_unique);
 	expect_value(__wrap_jso_array_is_unique, arr, &array);
@@ -179,9 +176,11 @@ static void test_jso_schema_keyword_validate_array_of_strings_when_not_unique(vo
 {
 	(void) state; /* unused */
 
-	jso_array array;
 	jso_schema schema;
 	jso_schema_init(&schema);
+
+	jso_array array;
+	jso_array_init(&array);
 
 	expect_function_call(__wrap_jso_array_is_unique);
 	expect_value(__wrap_jso_array_is_unique, arr, &array);
@@ -203,11 +202,11 @@ static void test_jso_schema_keyword_validate_array_of_strings_when_empty(void **
 {
 	(void) state; /* unused */
 
-	jso_array array;
 	jso_schema schema;
 	jso_schema_init(&schema);
 
-	array.len = 0;
+	jso_array array;
+	jso_array_init(&array);
 
 	jso_rc rc = jso_schema_keyword_validate_array_of_strings(
 			&schema, "tkey", &array, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
@@ -220,6 +219,156 @@ static void test_jso_schema_keyword_validate_array_of_strings_when_empty(void **
 	jso_schema_clear(&schema);
 }
 
+/* Tests for jso_schema_keyword_get_array. */
+
+/* Test getting of array if all good. */
+static void test_jso_schema_keyword_get_array_when_value_ok(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_array array;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_array_init(&array);
+
+	JSO_VALUE_SET_ARRAY(val, &array);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_array(
+			&schema, &data, "akey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_non_null(schema_keyword);
+	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_ptr_equal(&array, JSO_SCHEMA_KEYWORD_DATA_ARR_STR_P(schema_keyword));
+	assert_int_equal(JSO_ARRAY_REFCOUNT(&array), 1);
+
+	jso_schema_clear(&schema);
+}
+
+/* Test getting of array if no data. */
+static void test_jso_schema_keyword_get_array_when_value_not_found(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_array array;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_array_init(&array);
+
+	JSO_VALUE_SET_ARRAY(val, &array);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_array(
+			&schema, &data, "akey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+
+	jso_schema_clear(&schema);
+}
+
+/* Test getting of array if the data array is empty when it should not be empty. */
+static void test_jso_schema_keyword_get_array_when_empty(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_array array;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_array_init(&array);
+
+	JSO_VALUE_SET_ARRAY(val, &array);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_array(&schema, &data, "akey",
+			JSO_TRUE, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
+			"Array for keyword akey must not be empty", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
+/* Test getting of array if the data array is not unique when it should be. */
+static void test_jso_schema_keyword_get_array_when_not_unique(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_array array;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_array_init(&array);
+	array.len = 1;
+
+	JSO_VALUE_SET_ARRAY(val, &array);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "akey");
+	expect_value(__wrap_jso_schema_data_get, keyword_flags,
+			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_array_is_unique);
+	expect_value(__wrap_jso_array_is_unique, arr, &array);
+	will_return(__wrap_jso_array_is_unique, JSO_FALSE);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_array(&schema, &data, "akey",
+			JSO_TRUE, JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY, &keyword,
+			&val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
+			"Array values for keyword akey must be unique", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -228,9 +377,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_validate_array_of_strings_when_unique),
 		cmocka_unit_test(test_jso_schema_keyword_validate_array_of_strings_when_not_unique),
 		cmocka_unit_test(test_jso_schema_keyword_validate_array_of_strings_when_empty),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
+		cmocka_unit_test(test_jso_schema_keyword_get_array_when_value_ok),
+		cmocka_unit_test(test_jso_schema_keyword_get_array_when_value_not_found),
+		cmocka_unit_test(test_jso_schema_keyword_get_array_when_empty),
+		cmocka_unit_test(test_jso_schema_keyword_get_array_when_not_unique),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
