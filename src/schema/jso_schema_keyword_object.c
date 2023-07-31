@@ -82,6 +82,7 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 	if (jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj)) == JSO_FAILURE) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
 				"Allocating object for keyword %s failed", key);
+		jso_object_free(schema_obj);
 		return NULL;
 	}
 	JSO_OBJECT_FOREACH(obj, objkey, item)
@@ -121,7 +122,8 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 			JSO_VALUE_SET_SCHEMA_VALUE(objval, schema_value);
 		}
 
-		JSO_ASSERT_EQ(jso_object_add(schema_obj, jso_string_copy(objkey), &objval), JSO_SUCCESS);
+		jso_rc add_res = jso_object_add(schema_obj, jso_string_copy(objkey), &objval);
+		JSO_ASSERT_EQ(add_res, JSO_SUCCESS);
 	}
 	JSO_OBJECT_FOREACH_END;
 

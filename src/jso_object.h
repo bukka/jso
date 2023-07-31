@@ -50,7 +50,7 @@ struct _jso_object {
  * @param _obj object
  * @return Count of the object items.
  */
-#define JSO_OBJECT_COUNT(_obj) _obj->ht.count
+#define JSO_OBJECT_COUNT(_obj) (_obj)->ht.count
 
 /**
  * Get object items capacity.
@@ -58,7 +58,15 @@ struct _jso_object {
  * @param _obj object
  * @return Capacity of all object items.
  */
-#define JSO_OBJECT_CAPACITY(_obj) _obj->ht.capacity
+#define JSO_OBJECT_CAPACITY(_obj) (_obj)->ht.capacity
+
+/**
+ * Get object underlaying hash table.
+ *
+ * @param _obj object
+ * @return Hash table.
+ */
+#define JSO_OBJECT_HT(_obj) &(_obj)->ht
 
 /**
  * Get object flags of the supplied object.
@@ -183,7 +191,7 @@ static inline jso_object *jso_object_copy(jso_object *obj)
  */
 #define JSO_OBJECT_FOREACH(_obj, _key, _val) \
 	do { \
-		jso_ht *_ht = &_obj->ht; \
+		jso_ht *_ht = &(_obj)->ht; \
 	JSO_HT_FOREACH(_ht, _key, _val)
 
 /**

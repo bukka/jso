@@ -132,7 +132,8 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_schema *s
 			jso_schema_array_free(schema_arr);
 			return NULL;
 		}
-		JSO_ASSERT_EQ(jso_schema_array_append(schema_arr, schema_value), JSO_SUCCESS);
+		jso_rc append_res = jso_schema_array_append(schema_arr, schema_value);
+		JSO_ASSERT_EQ(append_res, JSO_SUCCESS);
 	}
 	JSO_ARRAY_FOREACH_END;
 
