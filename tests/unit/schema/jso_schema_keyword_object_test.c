@@ -213,15 +213,133 @@ static void test_jso_schema_keyword_get_object_when_value_not_found(void **state
 	jso_test_clear_schema(&schema);
 }
 
+/* Tests for jso_schema_keyword_get_schema_object. */
+
+/* Test getting of schema object if all good. */
+static void test_jso_schema_keyword_get_schema_object_when_value_ok(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+	jso_schema_value schema_value;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_schema_value_parse);
+	expect_value(__wrap_jso_schema_value_parse, schema, &schema);
+	expect_value(__wrap_jso_schema_value_parse, data, &val);
+	expect_value(__wrap_jso_schema_value_parse, parent, &parent);
+	will_return(__wrap_jso_schema_value_parse, &schema_value);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_schema_object(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_non_null(schema_keyword);
+	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_ptr_equal(&schema_value, JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(schema_keyword));
+
+	jso_test_clear_schema(&schema);
+}
+
+/* Test getting of schema object if all good. */
+static void test_jso_schema_keyword_get_schema_object_when_parsing_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_schema_value_parse);
+	expect_value(__wrap_jso_schema_value_parse, schema, &schema);
+	expect_value(__wrap_jso_schema_value_parse, data, &val);
+	expect_value(__wrap_jso_schema_value_parse, parent, &parent);
+	will_return(__wrap_jso_schema_value_parse, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_schema_object(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+
+	jso_test_clear_schema(&schema);
+}
+
+/* Test getting of schema object if no data. */
+static void test_jso_schema_keyword_get_schema_object_when_value_not_found(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object;
+	jso_value data, val;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_FALSE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_schema_object(
+			&schema, &data, "sokey", JSO_FALSE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+
+	jso_test_clear_schema(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_schema_keyword_get_object_when_value_ok),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_when_value_not_found),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
+		cmocka_unit_test(test_jso_schema_keyword_get_schema_object_when_value_ok),
+		cmocka_unit_test(test_jso_schema_keyword_get_schema_object_when_parsing_fails),
+		cmocka_unit_test(test_jso_schema_keyword_get_schema_object_when_value_not_found),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
