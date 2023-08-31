@@ -32,7 +32,7 @@
 #include "jso_schema.h"
 
 jso_re_code *jso_schema_keyword_get_regexp_code(
-		jso_schema *schema, const char *keyword_key, jso_string *object_key, jso_value *val);
+		jso_schema *schema, const char *keyword_key, jso_string *object_key, jso_string *val);
 
 jso_schema_keyword *jso_schema_keyword_get_regexp(jso_schema *schema, jso_value *data,
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,

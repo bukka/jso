@@ -29,7 +29,7 @@
 #include "jso.h"
 
 jso_re_code *jso_schema_keyword_get_regexp_code(
-		jso_schema *schema, const char *keyword_key, jso_string *object_key, jso_value *val)
+		jso_schema *schema, const char *keyword_key, jso_string *object_key, jso_string *pattern)
 {
 	jso_re_code *code = jso_re_code_alloc();
 	if (code == NULL) {
@@ -44,7 +44,7 @@ jso_re_code *jso_schema_keyword_get_regexp_code(
 		return NULL;
 	}
 
-	if (jso_re_compile(JSO_STR_P(val), code) == JSO_FAILURE) {
+	if (jso_re_compile(pattern, code) == JSO_FAILURE) {
 		jso_ctype buf[256];
 		if (object_key != NULL) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_PREP,
@@ -76,7 +76,7 @@ jso_schema_keyword *jso_schema_keyword_get_regexp(jso_schema *schema, jso_value 
 		return NULL;
 	}
 
-	jso_re_code *code = jso_schema_keyword_get_regexp_code(schema, key, NULL, val);
+	jso_re_code *code = jso_schema_keyword_get_regexp_code(schema, key, NULL, JSO_STR_P(val));
 	if (code == NULL) {
 		return NULL;
 	}

@@ -109,7 +109,7 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 			}
 
 			if (regexp_key) {
-				jso_re_code *code = jso_schema_keyword_get_regexp_code(schema, key, objkey, val);
+				jso_re_code *code = jso_schema_keyword_get_regexp_code(schema, key, objkey, objkey);
 				if (code == NULL) {
 					jso_schema_value_free(schema_value);
 					jso_object_free(schema_obj);
