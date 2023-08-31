@@ -88,7 +88,7 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 	JSO_OBJECT_FOREACH(obj, objkey, item)
 	{
 		if (can_be_array_of_strings && JSO_TYPE_P(item) == JSO_TYPE_ARRAY) {
-			jso_array *arr = JSO_ARRVAL_P(val);
+			jso_array *arr = JSO_ARRVAL_P(item);
 			if (jso_schema_keyword_validate_array_of_strings(schema, key, arr, keyword_flags)
 					== JSO_FAILURE) {
 				return NULL;
