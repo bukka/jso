@@ -32,6 +32,13 @@
 
 /* Wrapping. */
 
+/* Wrapper for jso_object_free. */
+void __wrap_jso_array_free(jso_array *arr)
+{
+	function_called();
+	check_expected_ptr(arr);
+}
+
 /* Wrapper for jso_object_add. */
 jso_rc __wrap_jso_object_add(jso_object *obj, jso_string *key, jso_value *val)
 {
@@ -413,6 +420,13 @@ static void test_jso_schema_keyword_get_object_of_so_when_all_ok(void **state)
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
 	assert_ptr_equal(&schema_obj, JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
 	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
@@ -485,8 +499,13 @@ static void test_jso_schema_keyword_get_object_of_so_when_parse_fails(void **sta
 
 	assert_null(schema_keyword);
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -567,8 +586,11 @@ static void test_jso_schema_keyword_get_object_of_so_when_item_not_object(void *
 	assert_string_equal("Object value for keyword sokey must be a schema object",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
-	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
 }
 
@@ -629,8 +651,13 @@ static void test_jso_schema_keyword_get_object_of_so_when_resize_fails(void **st
 	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -744,6 +771,13 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_all_objs_ok(voi
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
 	assert_ptr_equal(&schema_obj, JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
 	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
@@ -840,6 +874,13 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_arr_of_str_ok(v
 	assert_ptr_equal(&schema_obj, JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword));
 	assert_int_equal(1, JSO_ARRAY_REFCOUNT(&sarr));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj);
+
+	expect_function_call(__wrap_jso_array_free);
+	expect_value(__wrap_jso_array_free, arr, &sarr);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
 	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
@@ -915,8 +956,13 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_arr_of_str_inva
 
 	assert_null(schema_keyword);
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_array_free);
+	expect_value(__wrap_jso_array_free, arr, &sarr);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -988,8 +1034,13 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_parse_fails(voi
 
 	assert_null(schema_keyword);
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -1072,8 +1123,11 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_item_not_object
 			"Object value for keyword sokey must be a schema object or array of strings",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
-	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
 }
 
@@ -1135,8 +1189,13 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_resize_fails(vo
 	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -1264,6 +1323,13 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_all_ok(void **state
 	assert_ptr_equal(&code[0], JSO_SCHEMA_VALUE_REGEXP(sov[0]));
 	assert_ptr_equal(&code[1], JSO_SCHEMA_VALUE_REGEXP(sov[1]));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
 	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
@@ -1348,8 +1414,13 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_re_invalid(void **s
 
 	assert_null(schema_keyword);
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -1420,8 +1491,13 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_parse_fails(void **
 
 	assert_null(schema_keyword);
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
@@ -1513,8 +1589,11 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_item_not_object(voi
 	assert_string_equal("Object value for keyword sokey must be a schema object",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_string_free(kov1);
-	jso_string_free(kov2);
 	jso_test_clear_schema(&schema);
 }
 
@@ -1575,8 +1654,13 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_resize_fails(void *
 	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_string_free(kov1);
-	jso_string_free(kov2);
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
 	jso_test_clear_schema(&schema);
 }
 
