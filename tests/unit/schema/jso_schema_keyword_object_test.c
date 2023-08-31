@@ -1698,6 +1698,58 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_data_not_found(void
 	jso_test_clear_schema(&schema);
 }
 
+/* Tests for jso_schema_keyword_free_object. */
+
+static void test_jso_schema_keyword_free_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_object object;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_OBJ(keyword) = &object;
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &object);
+
+	jso_schema_keyword_free_object(&keyword);
+}
+
+/* Tests for jso_schema_keyword_free_schema_object. */
+
+static void test_jso_schema_keyword_free_schema_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_value schema_object;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(keyword) = &schema_object;
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, val, &schema_object);
+	will_return(__wrap_jso_schema_value_free, false);
+
+	jso_schema_keyword_free_schema_object(&keyword);
+}
+
+/* Tests for jso_schema_keyword_free_object_of_schema_objects. */
+
+static void test_jso_schema_keyword_free_object_of_schema_objects(void **state)
+{
+	(void) state; /* unused */
+
+	jso_object object;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(keyword) = &object;
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &object);
+
+	jso_schema_keyword_free_object_of_schema_objects(&keyword);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -1724,6 +1776,9 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_resize_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_data_not_found),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_item_not_object),
+		cmocka_unit_test(test_jso_schema_keyword_free_object),
+		cmocka_unit_test(test_jso_schema_keyword_free_schema_object),
+		cmocka_unit_test(test_jso_schema_keyword_free_object_of_schema_objects),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
