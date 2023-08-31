@@ -486,6 +486,88 @@ static void test_jso_schema_keyword_get_object_of_schema_objects_when_parse_fail
 	jso_test_clear_schema(&schema);
 }
 
+/* Test getting of object of schema objects if parsing value fails. */
+static void test_jso_schema_keyword_get_object_of_schema_objects_when_item_not_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_string *objkey;
+	jso_object object, schema_obj, sobj1;
+	jso_value data, val, ov1, ov2, *item;
+	jso_schema_value parent, sov;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+	jso_object_init(&sobj1);
+
+	jso_string *item2 = jso_string_create_from_cstr("item");
+
+	JSO_VALUE_SET_OBJECT(ov1, &sobj1);
+	JSO_VALUE_SET_STRING(ov2, item2);
+
+	jso_string *kov1 = jso_string_create_from_cstr("o1");
+	jso_string *kov2 = jso_string_create_from_cstr("o2");
+
+	// hash table needs to be set as jso_object_add is mocked
+	jso_ht_set(JSO_OBJECT_HT(&object), kov1, &ov1, true);
+	jso_ht_set(JSO_OBJECT_HT(&object), kov2, &ov2, true);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_object_alloc);
+	will_return(__wrap_jso_object_alloc, &schema_obj);
+
+	expect_function_call(__wrap_jso_object_resize);
+	expect_value(__wrap_jso_object_resize, obj, &schema_obj);
+	expect_value(__wrap_jso_object_resize, size, 2);
+	will_return(__wrap_jso_object_resize, JSO_SUCCESS);
+
+	JSO_OBJECT_FOREACH(&object, objkey, item)
+	{
+		expect_function_call(__wrap_jso_schema_value_parse);
+		expect_value(__wrap_jso_schema_value_parse, schema, &schema);
+		expect_value(__wrap_jso_schema_value_parse, data, item);
+		expect_value(__wrap_jso_schema_value_parse, parent, &parent);
+		will_return(__wrap_jso_schema_value_parse, &sov);
+
+		expect_function_call(__wrap_jso_object_add);
+		expect_value(__wrap_jso_object_add, obj, &schema_obj);
+		expect_value(__wrap_jso_object_add, key, objkey);
+		will_return(__wrap_jso_object_add, &sov);
+		will_return(__wrap_jso_object_add, JSO_SUCCESS);
+
+		break;
+	}
+	JSO_OBJECT_FOREACH_END;
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &schema_obj);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_object_of_schema_objects(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Object value for keyword sokey must be a schema object",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(kov1);
+	jso_string_free(kov2);
+	jso_test_clear_schema(&schema);
+}
+
 /* Test getting of object of schema objects if resizing object fails. */
 static void test_jso_schema_keyword_get_object_of_schema_objects_when_resize_fails(void **state)
 {
@@ -539,6 +621,9 @@ static void test_jso_schema_keyword_get_object_of_schema_objects_when_resize_fai
 			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
 
 	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
+			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	jso_string_free(kov1);
 	jso_string_free(kov2);
@@ -591,7 +676,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_schema_objects_when_parse_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_schema_objects_when_resize_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_schema_objects_when_data_not_found),
-		// cmocka_unit_test(),
+		cmocka_unit_test(test_jso_schema_keyword_get_object_of_schema_objects_when_item_not_object),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
 		// cmocka_unit_test(),
