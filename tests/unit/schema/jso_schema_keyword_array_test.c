@@ -943,6 +943,57 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_not_unique(
 	jso_schema_clear(&schema);
 }
 
+/* Tests for jso_schema_keyword_free_array. */
+
+static void test_jso_schema_keyword_free_array(void **state)
+{
+	(void) state; /* unused */
+
+	jso_array array;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_ARR(keyword) = &array;
+
+	expect_function_call(__wrap_jso_array_free);
+	expect_value(__wrap_jso_array_free, arr, &array);
+
+	jso_schema_keyword_free_array(&keyword);
+}
+
+/* Tests for jso_schema_keyword_free_array_of_strings. */
+
+static void test_jso_schema_keyword_free_array_of_strings(void **state)
+{
+	(void) state; /* unused */
+
+	jso_array array;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_ARR_STR(keyword) = &array;
+
+	expect_function_call(__wrap_jso_array_free);
+	expect_value(__wrap_jso_array_free, arr, &array);
+
+	jso_schema_keyword_free_array_of_strings(&keyword);
+}
+
+/* Tests for jso_schema_keyword_free_array_of_schema_objects. */
+
+static void test_jso_schema_keyword_free_array_of_schema_objects(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_array schema_array;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ(keyword) = &schema_array;
+
+	expect_function_call(__wrap_jso_schema_array_free);
+	expect_value(__wrap_jso_schema_array_free, arr, &schema_array);
+
+	jso_schema_keyword_free_array_of_schema_objects(&keyword);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -967,6 +1018,9 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_array_of_schema_objects_when_value_not_found),
 		cmocka_unit_test(test_jso_schema_keyword_get_array_of_schema_objects_when_empty),
 		cmocka_unit_test(test_jso_schema_keyword_get_array_of_schema_objects_when_not_unique),
+		cmocka_unit_test(test_jso_schema_keyword_free_array),
+		cmocka_unit_test(test_jso_schema_keyword_free_array_of_strings),
+		cmocka_unit_test(test_jso_schema_keyword_free_array_of_schema_objects),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
