@@ -106,6 +106,13 @@ JSO_API jso_array *jso_array_alloc();
 JSO_API void jso_array_init(jso_array *arr);
 
 /**
+ * Clear array items.
+ *
+ * @param arr array
+ */
+JSO_API void jso_array_clear(jso_array *arr);
+
+/**
  * Free array.
  *
  * @param arr array

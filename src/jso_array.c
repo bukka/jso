@@ -36,6 +36,23 @@ JSO_API void jso_array_init(jso_array *arr)
 	memset(arr, 0, sizeof(jso_array));
 }
 
+/* clear all array items without clearing values */
+JSO_API void jso_array_clear(jso_array *arr)
+{
+	if (!arr)
+		return;
+	if (JSO_ARRAY_REFCOUNT(arr) > 0) {
+		--JSO_ARRAY_REFCOUNT(arr);
+		return;
+	}
+	jso_array_element *tmp, *el = arr->head;
+	while (el) {
+		tmp = el->next;
+		jso_free(el);
+		el = tmp;
+	}
+}
+
 /* free array and its elements */
 JSO_API void jso_array_free(jso_array *arr)
 {

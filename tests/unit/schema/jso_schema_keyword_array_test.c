@@ -661,6 +661,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_all_ok(void
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
 	assert_ptr_equal(&sa, JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(schema_keyword));
 
+	jso_array_clear(&array);
 	jso_schema_clear(&schema);
 }
 
@@ -723,6 +724,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_parse_fails
 
 	assert_null(schema_keyword);
 
+	jso_array_clear(&array);
 	jso_schema_clear(&schema);
 }
 
@@ -772,6 +774,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_non_object(
 	assert_string_equal("Object value for keyword akey must be a schema object",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
+	jso_array_clear(&array);
 	jso_schema_clear(&schema);
 }
 
@@ -819,6 +822,7 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_sa_alloc_fa
 	assert_string_equal("Allocating schema array of values for keyword akey failed",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
+	jso_array_clear(&array);
 	jso_schema_clear(&schema);
 }
 
