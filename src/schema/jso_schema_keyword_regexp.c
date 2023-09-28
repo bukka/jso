@@ -33,7 +33,7 @@ jso_re_code *jso_schema_keyword_get_regexp_code(
 {
 	jso_re_code *code = jso_re_code_alloc();
 	if (code == NULL) {
-		if (object_key != NULL) {
+		if (object_key == NULL) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
 					"Allocating regular expression code for keyword %s failed", keyword_key);
 		} else {
@@ -46,7 +46,7 @@ jso_re_code *jso_schema_keyword_get_regexp_code(
 
 	if (jso_re_compile(pattern, code) == JSO_FAILURE) {
 		jso_ctype buf[256];
-		if (object_key != NULL) {
+		if (object_key == NULL) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_PREP,
 					"Compiling regular expression for keyword %s failed at position %zu with "
 					"error: %s",

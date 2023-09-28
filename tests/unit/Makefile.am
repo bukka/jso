@@ -23,5 +23,5 @@ schema_jso_schema_keyword_array_test_LDFLAGS = -Wl,--wrap=jso_array_are_all_item
 schema_jso_schema_keyword_array_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_object_test_LDFLAGS = -Wl,--wrap=jso_array_free,--wrap=jso_object_add,--wrap=jso_object_alloc,--wrap=jso_object_free,--wrap=jso_object_resize,--wrap=jso_schema_data_get,--wrap=jso_schema_keyword_get_regexp_code,--wrap=jso_schema_keyword_validate_array_of_strings,--wrap=jso_schema_value_free,--wrap=jso_schema_value_parse
 schema_jso_schema_keyword_object_test_LDADD = -lcmocka ../../src/libjso.a
-schema_jso_schema_keyword_regexp_test_LDFLAGS = -Wl,--wrap=jso_re_code_alloc,--wrap=jso_re_code_compile,--wrap=jso_re_code_free,--wrap=jso_schema_data_get
+schema_jso_schema_keyword_regexp_test_LDFLAGS = -Wl,--wrap=jso_re_code_alloc,--wrap=jso_re_code_free,--wrap=jso_re_compile,--wrap=jso_re_get_error_message,--wrap=jso_schema_data_get
 schema_jso_schema_keyword_regexp_test_LDADD = -lcmocka ../../src/libjso.a
