@@ -38,6 +38,7 @@ jso_schema_keyword *jso_schema_keyword_get_any(jso_schema *schema, jso_value *da
 	if (val != NULL) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_ANY;
 		JSO_SCHEMA_KEYWORD_DATA_ANY_P(schema_keyword) = val;
 		return schema_keyword;
 	}
@@ -53,6 +54,7 @@ jso_schema_keyword *jso_schema_keyword_get_null(jso_schema *schema, jso_value *d
 			!= NULL) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_NULL;
 		return schema_keyword;
 	}
 
@@ -68,6 +70,7 @@ jso_schema_keyword *jso_schema_keyword_get_bool(jso_schema *schema, jso_value *d
 	if (val != NULL) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN;
 		JSO_SCHEMA_KEYWORD_DATA_BOOL_P(schema_keyword) = JSO_IVAL_P(val) ? true : false;
 		return schema_keyword;
 	}
@@ -87,6 +90,7 @@ jso_schema_keyword *jso_schema_keyword_get_int(jso_schema *schema, jso_value *da
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_INTEGER;
 		JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword) = JSO_IVAL_P(val);
 		return schema_keyword;
 	}
@@ -100,12 +104,13 @@ jso_schema_keyword *jso_schema_keyword_get_int(jso_schema *schema, jso_value *da
 	if (nearbyint(dval) == dval) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_INTEGER;
 		JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword) = (jso_int) dval;
 		return schema_keyword;
 	}
 
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
-			"Integer fraction is not zero for key %s", key);
+			"Integer fraction is not zero for keyword %s", key);
 
 	return NULL;
 }
@@ -115,7 +120,7 @@ jso_schema_keyword *jso_schema_keyword_get_uint(jso_schema *schema, jso_value *d
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
 {
 	jso_schema_keyword *schema_keyword_int = jso_schema_keyword_get_int(
-			schema, data, key, keyword_flags, error_on_invalid_type, schema_keyword, val, parent);
+			schema, data, key, error_on_invalid_type, keyword_flags, schema_keyword, val, parent);
 	if (schema_keyword_int == NULL) {
 		return NULL;
 	}
@@ -133,6 +138,7 @@ jso_schema_keyword *jso_schema_keyword_get_uint(jso_schema *schema, jso_value *d
 				"Value for for keyword %s must be equal or greater than 0", key);
 		return NULL;
 	}
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER;
 	JSO_SCHEMA_KEYWORD_DATA_UINT_P(schema_keyword) = (jso_uint) ival;
 
 	return schema_keyword;
@@ -151,6 +157,7 @@ jso_schema_keyword *jso_schema_keyword_get_number(jso_schema *schema, jso_value 
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_INTEGER;
 		JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword) = JSO_IVAL_P(val);
 		return schema_keyword;
 	}
@@ -159,6 +166,7 @@ jso_schema_keyword *jso_schema_keyword_get_number(jso_schema *schema, jso_value 
 			== JSO_SUCCESS) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT
 				| JSO_SCHEMA_KEYWORD_FLAG_FLOATING;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_DOUBLE;
 		JSO_SCHEMA_KEYWORD_DATA_DOUBLE_P(schema_keyword) = JSO_DVAL_P(val);
 		return schema_keyword;
 	}
@@ -175,6 +183,7 @@ jso_schema_keyword *jso_schema_keyword_get_string(jso_schema *schema, jso_value 
 	if (val != NULL) {
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_STRING;
 		JSO_SCHEMA_KEYWORD_DATA_STR_P(schema_keyword) = JSO_STR_P(val);
 		return schema_keyword;
 	}

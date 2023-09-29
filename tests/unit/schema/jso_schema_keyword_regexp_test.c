@@ -297,13 +297,10 @@ static void test_jso_schema_keyword_get_regexp_when_no_data(void **state)
 	jso_schema schema;
 	jso_value data, val;
 	jso_string pattern;
-	jso_re_code code;
 	jso_schema_value parent;
 	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
-
-	code.error_offset = 11;
 
 	JSO_VALUE_SET_STRING(val, &pattern);
 

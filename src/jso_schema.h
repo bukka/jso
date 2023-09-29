@@ -95,6 +95,8 @@ typedef enum {
 	JSO_SCHEMA_KEYWORD_TYPE_INTEGER,
 	/** integer keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER,
+	/** double floating number keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_DOUBLE,
 	/** integer keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_NUMBER,
 	/** string keyword type */
