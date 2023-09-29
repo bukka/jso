@@ -59,7 +59,8 @@ char *__wrap_jso_re_get_error_message(jso_re_code *code, jso_ctype *buf, size_t 
 	check_expected_ptr(buf_size);
 	const char *data = mock_ptr_type(const char *);
 
-	strncpy(buf, data, buf_size);
+	char *cbuf = (char *) buf;
+	strncpy(cbuf, data, buf_size);
 
 	return (char *) buf;
 }
@@ -133,6 +134,8 @@ static void test_jso_schema_keyword_get_regexp_code_when_alloc_fails_without_obj
 	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Allocating regular expression code for keyword kre failed",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test validation of regexp code if code allocation fails and there is objkey. */
@@ -157,6 +160,7 @@ static void test_jso_schema_keyword_get_regexp_code_when_alloc_fails_with_objkey
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	jso_string_free(objkey);
+	jso_schema_clear(&schema);
 }
 
 /* Test validation of regexp code if pattern compilation fails and there is no objkey. */
@@ -195,6 +199,8 @@ static void test_jso_schema_keyword_get_regexp_code_when_comp_fails_without_objk
 	assert_string_equal("Compiling regular expression for keyword kre failed at position 10 with "
 						"error: rerr",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test validation of regexp code if pattern compilation fails and there is objkey. */
@@ -236,6 +242,143 @@ static void test_jso_schema_keyword_get_regexp_code_when_comp_fails_with_objkey(
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	jso_string_free(objkey);
+	jso_schema_clear(&schema);
+}
+
+/* Tests for jso_schema_keyword_get_regexp. */
+
+/* Test seccusful setting of regexp code. */
+static void test_jso_schema_keyword_get_regexp_when_success(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, val;
+	jso_string pattern;
+	jso_re_code code;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+
+	JSO_VALUE_SET_STRING(val, &pattern);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_re_code_alloc);
+	will_return(__wrap_jso_re_code_alloc, &code);
+
+	expect_function_call(__wrap_jso_re_compile);
+	expect_value(__wrap_jso_re_compile, pattern, &pattern);
+	expect_value(__wrap_jso_re_compile, code, &code);
+	will_return(__wrap_jso_re_compile, JSO_SUCCESS);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_regexp(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_non_null(schema_keyword);
+	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_ptr_equal(&code, JSO_SCHEMA_KEYWORD_DATA_RE_P(schema_keyword));
+}
+
+/* Test failed setting of regexp code when no schema data present. */
+static void test_jso_schema_keyword_get_regexp_when_no_data(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, val;
+	jso_string pattern;
+	jso_re_code code;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+
+	code.error_offset = 11;
+
+	JSO_VALUE_SET_STRING(val, &pattern);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_regexp(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+
+	jso_schema_clear(&schema);
+}
+
+/* Test failed setting of regexp code when regexp compilation fails. */
+static void test_jso_schema_keyword_get_regexp_when_re_comp_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, val;
+	jso_string pattern;
+	jso_re_code code;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+
+	code.error_offset = 11;
+
+	JSO_VALUE_SET_STRING(val, &pattern);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_re_code_alloc);
+	will_return(__wrap_jso_re_code_alloc, &code);
+
+	expect_function_call(__wrap_jso_re_compile);
+	expect_value(__wrap_jso_re_compile, pattern, &pattern);
+	expect_value(__wrap_jso_re_compile, code, &code);
+	will_return(__wrap_jso_re_compile, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_re_get_error_message);
+	expect_value(__wrap_jso_re_get_error_message, code, &code);
+	expect_value(__wrap_jso_re_get_error_message, buf_size, 256);
+	will_return(__wrap_jso_re_get_error_message, "regexp err");
+
+	expect_function_call(__wrap_jso_re_code_free);
+	expect_value(__wrap_jso_re_code_free, code, &code);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_regexp(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_PREP, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Compiling regular expression for keyword sokey failed at position 11 "
+						"with error: regexp err",
+			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 int main(void)
@@ -246,12 +389,9 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_regexp_code_when_alloc_fails_with_objkey),
 		cmocka_unit_test(test_jso_schema_keyword_get_regexp_code_when_comp_fails_without_objkey),
 		cmocka_unit_test(test_jso_schema_keyword_get_regexp_code_when_comp_fails_with_objkey),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
-		// cmocka_unit_test(),
+		cmocka_unit_test(test_jso_schema_keyword_get_regexp_when_success),
+		cmocka_unit_test(test_jso_schema_keyword_get_regexp_when_no_data),
+		cmocka_unit_test(test_jso_schema_keyword_get_regexp_when_re_comp_fails),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
