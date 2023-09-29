@@ -3,12 +3,14 @@ AM_CFLAGS = -Wall -std=c11 -I$(top_srcdir)/src
 check_PROGRAMS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_object_test \
-    schema/jso_schema_keyword_regexp_test schema/jso_schema_keyword_scalar_test
+    schema/jso_schema_keyword_regexp_test schema/jso_schema_keyword_scalar_test \
+    schema/jso_schema_keyword_types_test
 
 TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_object_test \
-    schema/jso_schema_keyword_regexp_test schema/jso_schema_keyword_scalar_test
+    schema/jso_schema_keyword_regexp_test schema/jso_schema_keyword_scalar_test \
+    schema/jso_schema_keyword_types_test
 
 jso_array_test_LDADD = -lcmocka ../../src/libjso.a
 jso_ht_test_LDADD = -lcmocka ../../src/libjso.a
@@ -27,3 +29,4 @@ schema_jso_schema_keyword_regexp_test_LDFLAGS = -Wl,--wrap=jso_re_code_alloc,--w
 schema_jso_schema_keyword_regexp_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_scalar_test_LDFLAGS = -Wl,--wrap=jso_schema_data_check_type,--wrap=jso_schema_data_get,--wrap=jso_schema_data_get_value_fast
 schema_jso_schema_keyword_scalar_test_LDADD = -lcmocka ../../src/libjso.a
+schema_jso_schema_keyword_types_test_LDADD = -lcmocka ../../src/libjso.a

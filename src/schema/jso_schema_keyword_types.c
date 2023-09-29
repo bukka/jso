@@ -106,6 +106,7 @@ static const jso_schema_keyword_get_types_callback schema_keyword_get_types_call
 	[JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN] = jso_schema_keyword_get_bool_types,
 	[JSO_SCHEMA_KEYWORD_TYPE_INTEGER] = jso_schema_keyword_get_number_types,
 	[JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER] = jso_schema_keyword_get_number_types,
+	[JSO_SCHEMA_KEYWORD_TYPE_DOUBLE] = jso_schema_keyword_get_number_types,
 	[JSO_SCHEMA_KEYWORD_TYPE_NUMBER] = jso_schema_keyword_get_number_types,
 	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_get_string_types,
 	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_get_string_types,
