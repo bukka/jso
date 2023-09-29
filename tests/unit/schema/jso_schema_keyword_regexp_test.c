@@ -286,6 +286,7 @@ static void test_jso_schema_keyword_get_regexp_when_success(void **state)
 
 	assert_non_null(schema_keyword);
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_int_equal(JSO_SCHEMA_KEYWORD_TYPE_REGEXP, JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_ptr_equal(&code, JSO_SCHEMA_KEYWORD_DATA_RE_P(schema_keyword));
 }
 

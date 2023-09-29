@@ -82,7 +82,9 @@ jso_schema_keyword *jso_schema_keyword_get_regexp(jso_schema *schema, jso_value 
 	}
 
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_REGEXP;
 	JSO_SCHEMA_KEYWORD_DATA_RE_P(schema_keyword) = code;
+
 	return schema_keyword;
 }
 

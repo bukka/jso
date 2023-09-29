@@ -273,6 +273,7 @@ static void test_jso_schema_keyword_get_array_when_value_ok(void **state)
 
 	assert_non_null(schema_keyword);
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_int_equal(JSO_SCHEMA_KEYWORD_TYPE_ARRAY, JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_ptr_equal(&array, JSO_SCHEMA_KEYWORD_DATA_ARR_STR_P(schema_keyword));
 	assert_int_equal(JSO_ARRAY_REFCOUNT(&array), 1);
 
@@ -432,6 +433,8 @@ static void test_jso_schema_keyword_get_array_of_strings_when_all_strings(void *
 
 	assert_non_null(schema_keyword);
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_int_equal(
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS, JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_ptr_equal(&array, JSO_SCHEMA_KEYWORD_DATA_ARR_STR_P(schema_keyword));
 	assert_int_equal(JSO_ARRAY_REFCOUNT(&array), 1);
 
@@ -659,6 +662,8 @@ static void test_jso_schema_keyword_get_array_of_schema_objects_when_all_ok(void
 
 	assert_non_null(schema_keyword);
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
+	assert_int_equal(JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS,
+			JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_ptr_equal(&sa, JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(schema_keyword));
 
 	jso_array_clear(&array);

@@ -75,6 +75,7 @@ jso_schema_keyword *jso_schema_keyword_get_array(jso_schema *schema, jso_value *
 		return NULL;
 	}
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_P(schema_keyword) = jso_array_copy(arr);
 	return schema_keyword;
 }
@@ -95,6 +96,7 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_strings(jso_schema *schema, 
 	}
 
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_STR_P(schema_keyword) = jso_array_copy(arr);
 	return schema_keyword;
 }
@@ -138,6 +140,7 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_schema *s
 	JSO_ARRAY_FOREACH_END;
 
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(schema_keyword) = schema_arr;
 	return schema_keyword;
 }

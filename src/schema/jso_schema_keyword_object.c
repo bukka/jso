@@ -41,6 +41,7 @@ jso_schema_keyword *jso_schema_keyword_get_object(jso_schema *schema, jso_value 
 		return NULL;
 	}
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_OBJECT;
 	JSO_SCHEMA_KEYWORD_DATA_OBJ_P(schema_keyword) = jso_object_copy(JSO_OBJVAL_P(val));
 	return schema_keyword;
 }
@@ -56,6 +57,7 @@ jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *schema, jso
 		if (schema_value != NULL) {
 			JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 					= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+			JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT;
 			JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(schema_keyword) = schema_value;
 			return schema_keyword;
 		}
@@ -128,6 +130,7 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 	JSO_OBJECT_FOREACH_END;
 
 	JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) = keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ_P(schema_keyword) = schema_obj;
 	return schema_keyword;
 }
