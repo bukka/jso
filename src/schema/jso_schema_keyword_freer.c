@@ -30,7 +30,6 @@
 
 #include "jso.h"
 
-
 typedef void (*jso_schema_keyword_free_callback)(jso_schema_keyword *schema_keyword);
 
 static const jso_schema_keyword_free_callback schema_keyword_free_callbacks[] = {
@@ -63,4 +62,3 @@ void jso_schema_keyword_free(jso_schema_keyword *keyword)
 		callback(keyword);
 	}
 }
-
