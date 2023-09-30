@@ -26,6 +26,7 @@
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
 #include "jso_schema_keyword_array.h"
+#include "jso_schema_keyword_freer.h"
 #include "jso_schema_keyword_object.h"
 #include "jso_schema_keyword_regexp.h"
 #include "jso_schema_keyword_scalar.h"
@@ -68,7 +69,6 @@ static inline jso_schema_keyword *jso_schema_keyword_get_ex(jso_schema *schema, 
 		jso_uint32 keyword_flags, jso_bool error_on_invalid_type,
 		jso_schema_keyword *schema_keyword, jso_value *val)
 {
-	JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = keyword_type;
 	return schema_keyword_get_callbacks[keyword_type](
 			schema, data, key, error_on_invalid_type, keyword_flags, schema_keyword, val, parent);
 }
@@ -147,36 +147,9 @@ jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *k
 	return jso_schema_keyword_check(schema, schema_keyword_ptr);
 }
 
-typedef void (*jso_schema_keyword_free_callback)(jso_schema_keyword *schema_keyword);
-
-static const jso_schema_keyword_free_callback schema_keyword_free_callbacks[] = {
-	[JSO_SCHEMA_KEYWORD_TYPE_ANY] = jso_schema_keyword_free_any,
-	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_free_string,
-	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_free_regexp,
-	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY] = jso_schema_keyword_free_array,
-	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS] = jso_schema_keyword_free_array_of_strings,
-	[JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS]
-	= jso_schema_keyword_free_array_of_schema_objects,
-	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT] = jso_schema_keyword_free_object,
-	[JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT] = jso_schema_keyword_free_schema_object,
-	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS]
-	= jso_schema_keyword_free_object_of_schema_objects,
-	[JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS]
-	= jso_schema_keyword_free_object_of_schema_objects,
-	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS]
-	= jso_schema_keyword_free_object_of_schema_objects,
-};
-
-void jso_schema_keyword_free(jso_schema_keyword *keyword)
+/* Clear keyword */
+void jso_schema_keyword_clear(jso_schema_keyword *keyword)
 {
-	if (!JSO_SCHEMA_KW_IS_SET_P(keyword)) {
-		return;
-	}
-
-	jso_schema_keyword_free_callback callback
-			= schema_keyword_free_callbacks[JSO_SCHEMA_KEYWORD_TYPE_P(keyword)];
-	if (callback) {
-		callback(keyword);
-	}
+	jso_schema_keyword_free(keyword);
 	JSO_SCHEMA_KEYWORD_FLAGS_P(keyword) = 0;
 }

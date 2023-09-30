@@ -173,6 +173,6 @@ jso_rc jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_value *da
 jso_rc jso_schema_keyword_validate_array_of_strings(
 		jso_schema *schema, const char *key, jso_array *arr, jso_uint32 keyword_flags);
 
-void jso_schema_keyword_free(jso_schema_keyword *keyword);
+void jso_schema_keyword_clear(jso_schema_keyword *keyword);
 
 #endif /* JSO_SCHEMA_KEYWORD_H */
