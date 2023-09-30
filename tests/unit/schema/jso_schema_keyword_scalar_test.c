@@ -77,6 +77,13 @@ jso_value *__wrap_jso_schema_data_get_value_fast(
 	return mock_ptr_type(jso_value *);
 }
 
+/* Wrapper for jso_value_free. */
+void __wrap_jso_value_free(jso_value *val)
+{
+	function_called();
+	check_expected_ptr(val);
+}
+
 /* Tests for jso_schema_keyword_get_any. */
 
 /* Test getting any keyword when all successful. */
@@ -350,6 +357,8 @@ static void test_jso_schema_keyword_get_int_when_near_double(void **state)
 	assert_true(JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword) & JSO_SCHEMA_KEYWORD_FLAG_PRESENT);
 	assert_int_equal(JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_int_equal(3, JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting integer keyword when double that is not near to integer value provided. */
@@ -398,6 +407,8 @@ static void test_jso_schema_keyword_get_int_when_distant_double(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
 			"Integer fraction is not zero for keyword ikey", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting integer keyword when not int or double provided. */
@@ -610,6 +621,8 @@ static void test_jso_schema_keyword_get_uint_when_distant_double(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
 			"Integer fraction is not zero for keyword uikey", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting unsigned integer keyword when not int or double provided. */
@@ -656,6 +669,8 @@ static void test_jso_schema_keyword_get_uint_when_not_int_or_double(void **state
 			&schema, &data, "uikey", JSO_TRUE, 0, &keyword, NULL, &parent);
 
 	assert_null(schema_keyword);
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting unsigned integer keyword when integer value negative. */
@@ -695,6 +710,8 @@ static void test_jso_schema_keyword_get_uint_when_int_negative(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Value for for keyword uikey must be equal or greater than 0",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting unsigned integer keyword when integer is zero and not zero flag supplied. */
@@ -744,6 +761,8 @@ static void test_jso_schema_keyword_get_uint_when_int_zero_not_allowed(void **st
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Value for for keyword uikey must be greater than 0",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_schema_clear(&schema);
 }
 
 /* Test getting unsigned integer keyword when no schema data present. */
@@ -1001,6 +1020,46 @@ static void test_jso_schema_keyword_get_string_when_no_data(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* Test for jso_schema_keyword_free_any. */
+
+/* Test if freeing is done. */
+static void test_jso_schema_keyword_free_any(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val;
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_DATA_ANY(keyword) = &val;
+
+	expect_function_call(__wrap_jso_value_free);
+	expect_value(__wrap_jso_value_free, val, &val);
+
+	jso_schema_keyword_free_any(&keyword);
+}
+
+/* Test for jso_schema_keyword_free_string. */
+
+/* Test if freeing is done and string reference decreased. */
+static void test_jso_schema_keyword_free_string(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_keyword keyword;
+	jso_string *str = jso_string_create_from_cstr("str2free");
+
+	JSO_SCHEMA_KEYWORD_DATA_STR(keyword) = str;
+
+	JSO_STRING_REFCOUNT(str)++;
+	assert_int_equal(1, JSO_STRING_REFCOUNT(str));
+
+	jso_schema_keyword_free_string(&keyword);
+
+	assert_int_equal(0, JSO_STRING_REFCOUNT(str));
+
+	jso_string_free(str);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -1028,6 +1087,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_number_when_not_int_or_double),
 		cmocka_unit_test(test_jso_schema_keyword_get_string_when_success),
 		cmocka_unit_test(test_jso_schema_keyword_get_string_when_no_data),
+		cmocka_unit_test(test_jso_schema_keyword_free_any),
+		cmocka_unit_test(test_jso_schema_keyword_free_string),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

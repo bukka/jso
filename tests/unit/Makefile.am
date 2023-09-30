@@ -27,6 +27,6 @@ schema_jso_schema_keyword_object_test_LDFLAGS = -Wl,--wrap=jso_array_free,--wrap
 schema_jso_schema_keyword_object_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_regexp_test_LDFLAGS = -Wl,--wrap=jso_re_code_alloc,--wrap=jso_re_code_free,--wrap=jso_re_compile,--wrap=jso_re_get_error_message,--wrap=jso_schema_data_get
 schema_jso_schema_keyword_regexp_test_LDADD = -lcmocka ../../src/libjso.a
-schema_jso_schema_keyword_scalar_test_LDFLAGS = -Wl,--wrap=jso_schema_data_check_type,--wrap=jso_schema_data_get,--wrap=jso_schema_data_get_value_fast
+schema_jso_schema_keyword_scalar_test_LDFLAGS = -Wl,--wrap=jso_schema_data_check_type,--wrap=jso_schema_data_get,--wrap=jso_schema_data_get_value_fast,--wrap=jso_value_free
 schema_jso_schema_keyword_scalar_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_types_test_LDADD = -lcmocka ../../src/libjso.a
