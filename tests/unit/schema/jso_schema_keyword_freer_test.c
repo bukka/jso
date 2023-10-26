@@ -49,8 +49,8 @@ void __wrap_jso_schema_keyword_free_string(jso_schema_keyword *schema_keyword)
 /* Wrapper for jso_schema_keyword_free_regexp. */
 void __wrap_jso_schema_keyword_free_regexp(jso_schema_keyword *schema_keyword)
 {
-	function_called();
 	check_expected_ptr(schema_keyword);
+	function_called();
 }
 
 /* Wrapper for jso_schema_keyword_free_array. */
@@ -97,6 +97,19 @@ void __wrap_jso_schema_keyword_free_object_of_schema_objects(jso_schema_keyword 
 
 /* Tests for jso_schema_keyword_free. */
 
+/* Test freeing keyword if not present. */
+static void test_jso_schema_keyword_free_if_not_present(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_keyword keyword;
+
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = 0;
+	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_ANY;
+
+	jso_schema_keyword_free(&keyword);
+}
+
 /* Test freeing keyword with any type. */
 static void test_jso_schema_keyword_free_for_any(void **state)
 {
@@ -104,6 +117,7 @@ static void test_jso_schema_keyword_free_for_any(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_ANY;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_any);
@@ -119,6 +133,7 @@ static void test_jso_schema_keyword_free_for_string(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_STRING;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_string);
@@ -134,6 +149,7 @@ static void test_jso_schema_keyword_free_for_regexp(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_REGEXP;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_regexp);
@@ -149,6 +165,7 @@ static void test_jso_schema_keyword_free_for_array(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_array);
@@ -164,6 +181,7 @@ static void test_jso_schema_keyword_free_for_array_of_strings(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_STRINGS;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_array_of_strings);
@@ -179,6 +197,7 @@ static void test_jso_schema_keyword_free_for_array_of_schema_objects(void **stat
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_array_of_schema_objects);
@@ -194,6 +213,7 @@ static void test_jso_schema_keyword_free_for_object(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_object);
@@ -209,6 +229,7 @@ static void test_jso_schema_keyword_free_for_schema_object(void **state)
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_schema_object);
@@ -224,6 +245,7 @@ static void test_jso_schema_keyword_free_for_object_of_schema_objects(void **sta
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_object_of_schema_objects);
@@ -239,7 +261,9 @@ static void test_jso_schema_keyword_free_for_object_of_schema_objects_or_arrstr(
 
 	jso_schema_keyword keyword;
 
-	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS;
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE(keyword)
+			= JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS;
 
 	// TODO: verify this as it might not free the array of strings or fail on it
 	expect_function_call(__wrap_jso_schema_keyword_free_object_of_schema_objects);
@@ -255,6 +279,7 @@ static void test_jso_schema_keyword_free_for_regexp_object_of_schema_objects(voi
 
 	jso_schema_keyword keyword;
 
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE(keyword) = JSO_SCHEMA_KEYWORD_TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS;
 
 	expect_function_call(__wrap_jso_schema_keyword_free_object_of_schema_objects);
@@ -266,6 +291,7 @@ static void test_jso_schema_keyword_free_for_regexp_object_of_schema_objects(voi
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_jso_schema_keyword_free_if_not_present),
 		cmocka_unit_test(test_jso_schema_keyword_free_for_any),
 		cmocka_unit_test(test_jso_schema_keyword_free_for_string),
 		cmocka_unit_test(test_jso_schema_keyword_free_for_regexp),
