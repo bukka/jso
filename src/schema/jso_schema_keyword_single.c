@@ -42,6 +42,7 @@ static const jso_schema_keyword_get_callback schema_keyword_get_callbacks[] = {
 	[JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN] = jso_schema_keyword_get_bool,
 	[JSO_SCHEMA_KEYWORD_TYPE_INTEGER] = jso_schema_keyword_get_int,
 	[JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER] = jso_schema_keyword_get_uint,
+	[JSO_SCHEMA_KEYWORD_TYPE_DOUBLE] = jso_schema_keyword_get_number,
 	[JSO_SCHEMA_KEYWORD_TYPE_NUMBER] = jso_schema_keyword_get_number,
 	[JSO_SCHEMA_KEYWORD_TYPE_STRING] = jso_schema_keyword_get_string,
 	[JSO_SCHEMA_KEYWORD_TYPE_REGEXP] = jso_schema_keyword_get_regexp,
