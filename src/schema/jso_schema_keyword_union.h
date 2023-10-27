@@ -31,6 +31,8 @@
 
 #include "jso_schema.h"
 
+#define JSO_SCHEMA_KW_VALUE_TYPES_SIZE 8
+
 jso_schema_keyword *jso_schema_keyword_get_union_of_2_types(jso_schema *schema, jso_value *data,
 		const char *key, jso_schema_value *parent, jso_schema_keyword_type keyword_union_type_1,
 		jso_schema_keyword_type keyword_union_type_2, jso_uint32 keyword_flags,
