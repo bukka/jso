@@ -34,6 +34,17 @@ static inline jso_rc jso_schema_keyword_check(jso_schema *schema, jso_schema_key
 	return keyword == NULL || jso_schema_error_is_set(schema) ? JSO_FAILURE : JSO_SUCCESS;
 }
 
+/* Set keyword. */
+jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *key,
+		jso_schema_value *value, jso_schema_keyword *schema_keyword,
+		jso_schema_keyword_type keyword_type, jso_uint32 keyword_flags)
+{
+	jso_schema_keyword *schema_keyword_ptr = jso_schema_keyword_get(
+			schema, data, key, value, keyword_type, keyword_flags, true, schema_keyword);
+
+	return jso_schema_keyword_check(schema, schema_keyword_ptr);
+}
+
 /* Set union keyword. */
 jso_rc jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_value *data, const char *key,
 		jso_schema_value *value, jso_schema_keyword *schema_keyword,
@@ -42,17 +53,6 @@ jso_rc jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_value *da
 {
 	jso_schema_keyword *schema_keyword_ptr = jso_schema_keyword_get_union_of_2_types(schema, data,
 			key, value, keyword_union_type_1, keyword_union_type_2, keyword_flags, schema_keyword);
-
-	return jso_schema_keyword_check(schema, schema_keyword_ptr);
-}
-
-/* Set keyword. */
-jso_rc jso_schema_keyword_set(jso_schema *schema, jso_value *data, const char *key,
-		jso_schema_value *value, jso_schema_keyword *schema_keyword,
-		jso_schema_keyword_type keyword_type, jso_uint32 keyword_flags)
-{
-	jso_schema_keyword *schema_keyword_ptr = jso_schema_keyword_get(
-			schema, data, key, value, keyword_type, keyword_flags, true, schema_keyword);
 
 	return jso_schema_keyword_check(schema, schema_keyword_ptr);
 }

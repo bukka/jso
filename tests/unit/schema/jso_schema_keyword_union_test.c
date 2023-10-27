@@ -119,7 +119,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_no_type_found(void
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_INT);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -132,7 +132,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_no_type_found(void
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -143,14 +143,15 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_no_type_found(void
 	expect_function_call(__wrap_jso_schema_keyword_get_types);
 	expect_value(__wrap_jso_schema_keyword_get_types, schema, &schema);
 	expect_string(__wrap_jso_schema_keyword_get_types, key, "ukey");
-	expect_value(__wrap_jso_schema_keyword_get_types, keyword_type, JSO_TYPE_INT);
+	expect_value(
+			__wrap_jso_schema_keyword_get_types, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_types, types_size, JSO_SCHEMA_KW_VALUE_TYPES_SIZE);
 	will_return(__wrap_jso_schema_keyword_get_types, 2);
 
 	expect_function_call(__wrap_jso_schema_keyword_get_types);
 	expect_value(__wrap_jso_schema_keyword_get_types, schema, &schema);
 	expect_string(__wrap_jso_schema_keyword_get_types, key, "ukey");
-	expect_value(__wrap_jso_schema_keyword_get_types, keyword_type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_get_types, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
 	expect_value(
 			__wrap_jso_schema_keyword_get_types, types_size, JSO_SCHEMA_KW_VALUE_TYPES_SIZE - 2);
 	will_return(__wrap_jso_schema_keyword_get_types, 1);
@@ -161,8 +162,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_no_type_found(void
 	expect_value(__wrap_jso_schema_data_type_error, val, &val);
 	expect_value(__wrap_jso_schema_data_type_error, expected_types_count, 3);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_null(schema_keyword);
 }
@@ -191,7 +193,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_found(
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_INT);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -204,7 +206,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_found(
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -212,8 +214,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_found(
 	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_NONE);
 	will_return(__wrap_jso_schema_keyword_get_ex, &keyword_result);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_ptr_equal(schema_keyword, &keyword_result);
 }
@@ -242,7 +245,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_errors
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_INT);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -255,7 +258,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_errors
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -263,8 +266,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_second_type_errors
 	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_VALUE_ALLOC);
 	will_return(__wrap_jso_schema_keyword_get_ex, NULL);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_null(schema_keyword);
 }
@@ -293,7 +297,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_first_type_found(v
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_INT);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -301,8 +305,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_first_type_found(v
 	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_NONE);
 	will_return(__wrap_jso_schema_keyword_get_ex, &keyword_result);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_ptr_equal(schema_keyword, &keyword_result);
 }
@@ -331,7 +336,7 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_first_type_errors(
 	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
 	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
 	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &parent);
-	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_TYPE_INT);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
 	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, false);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
@@ -339,8 +344,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_first_type_errors(
 	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_VALUE_ALLOC);
 	will_return(__wrap_jso_schema_keyword_get_ex, NULL);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_null(schema_keyword);
 }
@@ -364,8 +370,9 @@ static void test_jso_schema_keyword_get_union_of_2_types_when_no_data(void **sta
 	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
 	will_return(__wrap_jso_schema_data_get_value_fast, NULL);
 
-	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_union_of_2_types(
-			&schema, &data, "ukey", &parent, JSO_TYPE_INT, JSO_TYPE_STRING, 0, &keyword);
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_union_of_2_types(&schema, &data, "ukey", &parent,
+					JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0, &keyword);
 
 	assert_null(schema_keyword);
 }

@@ -5,14 +5,17 @@ check_PROGRAMS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_freer_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
-    schema/jso_schema_keyword_types_test schema/jso_schema_keyword_union_test
+    schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
+    schema/jso_schema_keyword_union_test
 
 TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_freer_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
-    schema/jso_schema_keyword_types_test schema/jso_schema_keyword_union_test
+    schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
+    schema/jso_schema_keyword_union_test
+     
 
 jso_array_test_LDADD = -lcmocka ../../src/libjso.a
 jso_ht_test_LDADD = -lcmocka ../../src/libjso.a
@@ -35,6 +38,8 @@ schema_jso_schema_keyword_scalar_test_LDFLAGS = -Wl,--wrap=jso_schema_data_check
 schema_jso_schema_keyword_scalar_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_single_test_LDFLAGS = -Wl,--wrap=jso_schema_keyword_get_any,--wrap=jso_schema_keyword_get_null,--wrap=jso_schema_keyword_get_bool,--wrap=jso_schema_keyword_get_int,--wrap=jso_schema_keyword_get_uint,--wrap=jso_schema_keyword_get_number,--wrap=jso_schema_keyword_get_string,--wrap=jso_schema_keyword_get_regexp,--wrap=jso_schema_keyword_get_array,--wrap=jso_schema_keyword_get_array_of_strings,--wrap=jso_schema_keyword_get_array_of_schema_objects,--wrap=jso_schema_keyword_get_object,--wrap=jso_schema_keyword_get_schema_object,--wrap=jso_schema_keyword_get_object_of_schema_objects,--wrap=jso_schema_keyword_get_object_of_schema_objects_or_array_of_strings,--wrap=jso_schema_keyword_get_regexp_object_of_schema_objects
 schema_jso_schema_keyword_single_test_LDADD = -lcmocka ../../src/libjso.a
+schema_jso_schema_keyword_test_LDFLAGS = -Wl,--wrap=jso_schema_keyword_free,--wrap=jso_schema_keyword_get_ex,--wrap=jso_schema_keyword_get_union_of_2_types
+schema_jso_schema_keyword_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_types_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_union_test_LDFLAGS = -Wl,--wrap=jso_schema_data_get_value_fast,--wrap=jso_schema_data_type_error,--wrap=jso_schema_keyword_get_ex,--wrap=jso_schema_keyword_get_types
 schema_jso_schema_keyword_union_test_LDADD = -lcmocka ../../src/libjso.a
