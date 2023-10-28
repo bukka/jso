@@ -36,8 +36,7 @@
 #define JSO_SCHEMA_KW_SET_WRAP(_kw_set_call, _value, _value_data) \
 	do { \
 		if (_kw_set_call == JSO_FAILURE) { \
-			jso_free(_value); \
-			jso_free(_value_data); \
+			jso_schema_value_free(_value); \
 			return NULL; \
 		} \
 	} while (0)
