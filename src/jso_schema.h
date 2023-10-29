@@ -881,4 +881,68 @@ JSO_API void jso_schema_free(jso_schema *schema);
  */
 JSO_API void jso_schema_value_free(jso_schema_value *val);
 
+/**
+ * @brief Schema validation position type.
+ */
+typedef enum _jso_schema_validation_position_type {
+	JSO_SCHEMA_VALIDATION_POSITION_BASIC = 0,
+	JSO_SCHEMA_VALIDATION_POSITION_COMPOSED,
+	JSO_SCHEMA_VALIDATION_POSITION_SENTINEL,
+} jso_schema_validation_position_type;
+
+/**
+ * @brief JsonSchema validation position structure used during the stream validation.
+ */
+typedef struct _jso_schema_validation_position {
+	/** position type */
+	jso_schema_validation_position_type type;
+	/** schema parent validation position */
+	struct _jso_schema_validation_position *parent;
+	/** schema value currently processed */
+	jso_schema_value *current_value;
+	/** schema object key if object is being processed */
+	jso_string *object_key;
+	/** previous sentinel position schema array index if array is being processed */
+	size_t index;
+} jso_schema_validation_position;
+
+/**
+ * @brief JsonSchema validation stack.
+ */
+typedef struct _jso_schema_validation_stack {
+	/** validation positions */
+	jso_schema_validation_position *positions;
+	/** allocated capacity */
+	size_t capacity;
+	/** used stack size*/
+	size_t size;
+} jso_schema_validation_stack;
+
+/**
+ * @brief JsonSchema validation stream structure.
+ */
+typedef struct _jso_schema_validation_stream {
+	/** root schema */
+	jso_schema root_schema;
+	/** validation stack of positions */
+	jso_schema_validation_stack stack;
+} jso_schema_validation_stream;
+
+JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance);
+
+JSO_API jso_rc jso_schema_validation_stream_init(
+		jso_schema *schema, jso_schema_validation_stream *stream);
+
+JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream);
+
+JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *context);
+
+JSO_API jso_rc jso_schema_validation_stream_object_key(
+		jso_schema_validation_stream *context, jso_value *str);
+
+JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *context);
+
+JSO_API jso_rc jso_schema_validation_stream_value(
+		jso_schema_validation_stream *context, jso_value *value);
+
 #endif /* JSO_SCHEMA_H */
