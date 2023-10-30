@@ -21,11 +21,33 @@
  *
  */
 
-#include "jso_schema.h"
+#include "jso_schema_error.h"
+#include "jso_schema_keyword_freer.h"
+#include "jso_schema_value.h"
 
 #include "jso.h"
 
-JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
+jso_schema_value *jso_schema_value_alloc(jso_schema *schema, const char *type_name)
 {
-	return JSO_SUCCESS;
+	jso_schema_value *value = jso_calloc(1, sizeof(jso_schema_value));
+	if (value == NULL) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
+				"Allocating value for type %s failed", type_name);
+		return NULL;
+	}
+
+	return value;
+}
+
+jso_schema_value_common *jso_schema_value_data_alloc(
+		size_t value_size, jso_schema *schema, const char *type_name)
+{
+	jso_schema_value_common *value_data = jso_calloc(1, value_size);
+	if (value_data == NULL) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
+				"Allocating value data for type %s failed", type_name);
+		return NULL;
+	}
+
+	return value_data;
 }

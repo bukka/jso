@@ -21,10 +21,6 @@
  *
  */
 
-#include "jso_schema_array.h"
-#include "jso_schema_data.h"
-#include "jso_schema_error.h"
-#include "jso_schema_keyword.h"
 #include "jso_schema_keyword_freer.h"
 #include "jso_schema_value.h"
 

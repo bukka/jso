@@ -21,11 +21,58 @@
  *
  */
 
-#include "jso_schema.h"
+#include "../../../src/schema/jso_schema_value.h"
+#include "../../../src/jso.h"
 
-#include "jso.h"
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <setjmp.h>
+#include <cmocka.h>
 
-JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
+/* Tests for jso_schema_value_allocate. */
+
+/* Test allocating schema value. */
+static void test_jso_schema_value_allocate(void **state)
 {
-	return JSO_SUCCESS;
+	(void) state; /* unused */
+
+	jso_schema schema;
+
+	jso_schema_init(&schema);
+
+	jso_schema_value *value = jso_schema_value_alloc(&schema, "null");
+
+	assert_non_null(value);
+
+	jso_schema_value_free(value);
+}
+
+/* Tests for jso_schema_value_allocate. */
+
+/* Test allocating schema value data. */
+static void test_jso_schema_value_data_allocate(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+
+	jso_schema_init(&schema);
+
+	jso_schema_value_null *value
+			= jso_schema_value_data_alloc(sizeof(jso_schema_value_null), &schema, "null");
+
+	assert_non_null(value);
+
+	jso_free(value);
+}
+
+int main(void)
+{
+	const struct CMUnitTest tests[] = {
+		cmocka_unit_test(test_jso_schema_value_allocate),
+		cmocka_unit_test(test_jso_schema_value_data_allocate),
+	};
+
+	return cmocka_run_group_tests(tests, NULL, NULL);
 }

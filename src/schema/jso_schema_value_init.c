@@ -30,18 +30,6 @@
 
 #include "jso.h"
 
-jso_schema_value *jso_schema_value_alloc(jso_schema *schema, const char *type_name)
-{
-	jso_schema_value *value = jso_calloc(1, sizeof(jso_schema_value));
-	if (value == NULL) {
-		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
-				"Allocating value for type %s failed", type_name);
-		return NULL;
-	}
-
-	return value;
-}
-
 jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		jso_schema_value *parent, const char *type_name, size_t value_size,
 		jso_schema_value_type value_type)
@@ -51,14 +39,16 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		return NULL;
 	}
 
-	jso_schema_value_common *value_data = jso_calloc(1, value_size);
+	jso_schema_value_common *value_data
+			= jso_schema_value_data_alloc(value_size, schema, type_name);
 	if (value_data == NULL) {
-		jso_free(value);
-		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
-				"Allocating value data for type %s failed", type_name);
+		jso_schema_value_free(value);
 		return NULL;
 	}
 	value_data->parent = parent;
+
+	JSO_SCHEMA_VALUE_DATA_COMMON_P(value) = value_data;
+	JSO_SCHEMA_VALUE_TYPE_P(value) = value_type;
 
 	// set default keyword
 	JSO_SCHEMA_KW_SET_ANY_EX(schema, data, default, value, value_data, default_value);
@@ -74,9 +64,6 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
 	JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
 	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, definitions, value, value_data);
-
-	JSO_SCHEMA_VALUE_DATA_COMMON_P(value) = value_data;
-	JSO_SCHEMA_VALUE_TYPE_P(value) = value_type;
 
 	return value;
 }

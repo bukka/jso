@@ -21,6 +21,8 @@
  *
  */
 
+#include "jso_schema.h"
+
 #include "jso.h"
 
 JSO_API jso_rc jso_schema_validation_stream_init(
