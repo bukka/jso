@@ -92,24 +92,32 @@
 
 /* memeroy functions - just redefinitions for future extending (checking) */
 
+#ifndef jso_malloc
 /**
  * @brief Memory allocation
  */
 #define jso_malloc malloc
+#endif
 
+#ifndef jso_realloc
 /**
  * @brief Memory reallocation
  */
 #define jso_realloc realloc
+#endif
 
+#ifndef jso_calloc
 /**
  * @brief Memory allocation with zeroing all bytes
  */
 #define jso_calloc calloc
+#endif
 
+#ifndef jso_free
 /**
  * @brief Memory freeing
  */
 #define jso_free free
+#endif
 
 #endif /* JSO_H */

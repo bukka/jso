@@ -6,7 +6,7 @@ check_PROGRAMS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
     schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
-    schema/jso_schema_keyword_union_test
+    schema/jso_schema_keyword_union_test schema/jso_schema_value_freer_test
 
 TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
@@ -14,7 +14,7 @@ TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
     schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
-    schema/jso_schema_keyword_union_test
+    schema/jso_schema_keyword_union_test schema/jso_schema_value_freer_test
      
 
 jso_array_test_LDADD = -lcmocka ../../src/libjso.a
@@ -43,3 +43,9 @@ schema_jso_schema_keyword_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_types_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_union_test_LDFLAGS = -Wl,--wrap=jso_schema_data_get_value_fast,--wrap=jso_schema_data_type_error,--wrap=jso_schema_keyword_get_ex,--wrap=jso_schema_keyword_get_types
 schema_jso_schema_keyword_union_test_LDADD = -lcmocka ../../src/libjso.a
+schema_jso_schema_value_freer_test_LDFLAGS =  -Wl,--wrap=jso_re_code_free,--wrap=jso_schema_keyword_free
+schema_jso_schema_value_freer_test_LDADD = -lcmocka ../../src/libjso.a
+# schema_jso_schema_value_init_test_LDFLAGS = -Wl,--wrap=jso_schema_keyword_set
+# schema_jso_schema_value_init_test_LDADD = -lcmocka ../../src/libjso.a
+# schema_jso_schema_value_parser_test_LDFLAGS = -Wl,--wrap=jso_schema_keyword_set,--wrap=jso_schema_keyword_set_union_of_2_types
+# schema_jso_schema_value_parser_test_LDADD = -lcmocka ../../src/libjso.a

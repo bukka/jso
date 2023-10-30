@@ -33,6 +33,8 @@
 
 #define JSO_SCHEMA_VALUE_TYPE_NAME(_value_type) JSO_SCHEMA_VALUE_##_value_type
 
+jso_schema_value *jso_schema_value_alloc(jso_schema *schema, const char *type_name);
+
 #define JSO_SCHEMA_VALUE_INIT(_schema, _data, _parent, _type_name, _value_type) \
 	jso_schema_value_init(_schema, _data, _parent, #_type_name, \
 			sizeof(jso_schema_value_##_type_name), JSO_SCHEMA_VALUE_TYPE_NAME(_value_type))

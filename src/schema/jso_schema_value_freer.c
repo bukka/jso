@@ -57,8 +57,7 @@ static void jso_schema_value_free_null(jso_schema_value *val)
 
 static void jso_schema_value_free_boolean(jso_schema_value *val)
 {
-	jso_schema_value_boolean *boolval = JSO_SCHEMA_VALUE_DATA_BOOL_P(val);
-	jso_free(boolval);
+	jso_free(JSO_SCHEMA_VALUE_DATA_BOOL_P(val));
 	JSO_SCHEMA_VALUE_DATA_BOOL_P(val) = NULL;
 }
 
@@ -117,7 +116,7 @@ static void jso_schema_value_free_object(jso_schema_value *val)
 	jso_schema_keyword_free(&objval->properties);
 	jso_schema_keyword_free(&objval->required);
 	jso_schema_keyword_free(&objval->pattern_properties);
-	jso_schema_keyword_free(&objval->required);
+	jso_schema_keyword_free(&objval->dependencies);
 	jso_free(objval);
 	JSO_SCHEMA_VALUE_DATA_OBJ_P(val) = NULL;
 }
@@ -134,7 +133,7 @@ static const jso_schema_value_free_callback schema_value_free_callbacks[] = {
 
 void jso_schema_value_free(jso_schema_value *val)
 {
-	if (val == NULL) {
+	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_ANY) {
 		return;
 	}
 	jso_schema_value_free_common(val);

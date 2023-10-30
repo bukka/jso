@@ -30,14 +30,24 @@
 
 #include "jso.h"
 
-jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
-		jso_schema_value *parent, const char *type_name, size_t value_size,
-		jso_schema_value_type value_type)
+jso_schema_value *jso_schema_value_alloc(jso_schema *schema, const char *type_name)
 {
 	jso_schema_value *value = jso_calloc(1, sizeof(jso_schema_value));
 	if (value == NULL) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_ALLOC,
 				"Allocating value for type %s failed", type_name);
+		return NULL;
+	}
+
+	return value;
+}
+
+jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
+		jso_schema_value *parent, const char *type_name, size_t value_size,
+		jso_schema_value_type value_type)
+{
+	jso_schema_value *value = jso_schema_value_alloc(schema, type_name);
+	if (value == NULL) {
 		return NULL;
 	}
 
