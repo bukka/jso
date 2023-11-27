@@ -32,11 +32,58 @@
 
 /* Wrapping. */
 
-/* Wrapper for jso_schema_keyword_free. */
-void __wrap_jso_schema_keyword_free(jso_schema_keyword *keyword)
+/* Wrapper for jso_schema_array_alloc. */
+jso_schema_array *__wrap_jso_schema_array_alloc(size_t size)
 {
 	function_called();
-	check_expected_ptr(keyword);
+	check_expected(size);
+
+	return mock_ptr_type(jso_schema_array *);
+}
+
+/* Wrapper for jso_schema_array_append. */
+jso_rc __wrap_jso_schema_array_append(jso_schema_array *arr, jso_schema_value *val)
+{
+	function_called();
+	check_expected_ptr(arr);
+	check_expected_ptr(val);
+
+	return mock_type(jso_rc);
+}
+
+/* Wrapper for jso_schema_array_free. */
+void __wrap_jso_schema_array_free(jso_schema_array *arr)
+{
+	function_called();
+	check_expected_ptr(arr);
+}
+
+/* Wrapper for jso_schema_data_check_type. */
+jso_rc __wrap_jso_schema_data_check_type(jso_schema *schema, const char *key, jso_value *val,
+		jso_value_type type, jso_value_type primary_type, jso_bool error_on_invalid_type)
+{
+	function_called();
+	check_expected_ptr(schema);
+	check_expected(key);
+	check_expected_ptr(val);
+	check_expected(type);
+	check_expected(primary_type);
+	check_expected(error_on_invalid_type);
+
+	return mock_type(jso_rc);
+}
+
+/* Wrapper for jso_schema_data_get_value. */
+jso_value *__wrap_jso_schema_data_get_value_fast(
+		jso_schema *schema, jso_value *data, const char *key, jso_uint32 keyword_flags)
+{
+	function_called();
+	check_expected_ptr(schema);
+	check_expected_ptr(data);
+	check_expected(key);
+	check_expected(keyword_flags);
+
+	return mock_ptr_type(jso_value *);
 }
 
 /* Wrapper for jso_schema_keyword_set. */
@@ -73,6 +120,42 @@ jso_rc __wrap_jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_va
 	check_expected(keyword_flags);
 
 	return mock_type(jso_rc);
+}
+
+/* Wrapper for jso_schema_keyword_validate_array_of_strings. */
+jso_rc __wrap_jso_schema_keyword_validate_array_of_strings(
+		jso_schema *schema, const char *key, jso_array *arr, jso_uint32 keyword_flags)
+{
+	function_called();
+	check_expected_ptr(schema);
+	check_expected(key);
+	check_expected_ptr(arr);
+	check_expected(keyword_flags);
+
+	return mock_type(jso_rc);
+}
+
+/* Wrapper for jso_schema_value_free. */
+void __wrap_jso_schema_value_free(jso_schema_value *value)
+{
+	function_called();
+	check_expected_ptr(value);
+}
+
+/* Wrapper for jso_schema_value_init. */
+jso_schema_value *__wrap_jso_schema_value_init(jso_schema *schema, jso_value *data,
+		jso_schema_value *parent, const char *type_name, size_t value_size,
+		jso_schema_value_type value_type)
+{
+	function_called();
+	check_expected_ptr(schema);
+	check_expected_ptr(data);
+	check_expected_ptr(parent);
+	check_expected(type_name);
+	check_expected(value_size);
+	check_expected(value_type);
+
+	return mock_ptr_type(jso_schema_value *);
 }
 
 /* Tests for jso_schema_value_parse. */
