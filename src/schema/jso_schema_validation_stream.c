@@ -53,7 +53,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_key(
-		jso_schema_validation_stream *context, jso_value *str)
+		jso_schema_validation_stream *context, jso_string *str)
 {
 
 	return JSO_SUCCESS;

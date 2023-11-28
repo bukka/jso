@@ -925,7 +925,7 @@ typedef struct _jso_schema_validation_stack {
  */
 typedef struct _jso_schema_validation_stream {
 	/** root schema */
-	jso_schema root_schema;
+	jso_schema *root_schema;
 	/** validation stack of positions */
 	jso_schema_validation_stack stack;
 } jso_schema_validation_stream;
@@ -940,7 +940,7 @@ JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *st
 JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *context);
 
 JSO_API jso_rc jso_schema_validation_stream_object_key(
-		jso_schema_validation_stream *context, jso_value *str);
+		jso_schema_validation_stream *context, jso_string *str);
 
 JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *context);
 

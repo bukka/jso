@@ -25,9 +25,45 @@
 
 #include "jso.h"
 
-jso_rc jso_schema_validate_instance(
-		jso_schema *schema, jso_value *instance, jso_schema_validation_stream *stream)
+jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_stream *stream)
 {
+	jso_value *val;
+
+
+	switch (JSO_TYPE_P(instance)) {
+		case JSO_TYPE_ARRAY:
+			if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+			JSO_ARRAY_FOREACH(JSO_ARRVAL_P(instance), val)
+			{
+				if (jso_schema_validate_instance(val, stream) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+			}
+			JSO_ARRAY_FOREACH_END;
+			break;
+		case JSO_TYPE_OBJECT: {
+			jso_string *key;
+			if (jso_schema_validation_stream_object_start(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+			JSO_OBJECT_FOREACH(JSO_OBJVAL_P(instance), key, val)
+			{
+				if (jso_schema_validation_stream_object_key(stream, key)
+						== JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+				if (jso_schema_validate_instance(val, stream) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+			}
+			JSO_OBJECT_FOREACH_END;
+		} break;
+		default:
+			return jso_schema_validation_stream_value(stream, instance);
+	}
+
 	return JSO_SUCCESS;
 }
 
@@ -35,7 +71,11 @@ JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
 {
 	jso_schema_validation_stream stream;
 
-	jso_schema_validation_stream_init(schema, &stream);
+	jso_schema_validation_stream_init(schema, &stream, 32);
 
-	return JSO_SUCCESS;
+	jso_rc result = jso_schema_validate_instance(instance, &stream);
+
+	jso_schema_validation_stream_clear(&stream);
+
+	return result;
 }
