@@ -160,6 +160,152 @@ jso_schema_value *__wrap_jso_schema_value_init(jso_schema *schema, jso_value *da
 
 /* Tests for jso_schema_value_parse. */
 
+/* Test parsing value for string type null when all successful. */
+static void test_jso_schema_value_parse_type_null_when_all_good(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_null nulval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("null");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_NULL(value) = &nulval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "null");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_null));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_NULL);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_ptr_equal(&value, returned_value);
+}
+
+/* Test parsing value for string type null when value init fails. */
+static void test_jso_schema_value_parse_type_null_when_value_init_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("null");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "null");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_null));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_NULL);
+	will_return(__wrap_jso_schema_value_init, NULL);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type boolean when all successful. */
+static void test_jso_schema_value_parse_type_boolean_when_all_good(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_boolean boolval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("boolean");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_BOOL(value) = &boolval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "boolean");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_boolean));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_BOOLEAN);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_ptr_equal(&value, returned_value);
+}
+
+/* Test parsing value for string type boolean when value init fails. */
+static void test_jso_schema_value_parse_type_boolean_when_value_init_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("boolean");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "boolean");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_boolean));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_BOOLEAN);
+	will_return(__wrap_jso_schema_value_init, NULL);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
 /* Test parsing value for string type string when all successful. */
 static void test_jso_schema_value_parse_type_string_when_all_good(void **state)
 {
@@ -169,7 +315,6 @@ static void test_jso_schema_value_parse_type_string_when_all_good(void **state)
 	jso_value data, tval;
 	jso_schema_value parent, value;
 	jso_schema_value_string strval;
-	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
 
@@ -240,7 +385,6 @@ static void test_jso_schema_value_parse_type_string_when_pattern_fails(void **st
 	jso_value data, tval;
 	jso_schema_value parent, value;
 	jso_schema_value_string strval;
-	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
 
@@ -314,7 +458,6 @@ static void test_jso_schema_value_parse_type_string_when_min_length_fails(void *
 	jso_value data, tval;
 	jso_schema_value parent, value;
 	jso_schema_value_string strval;
-	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
 
@@ -378,7 +521,6 @@ static void test_jso_schema_value_parse_type_string_when_max_length_fails(void *
 	jso_value data, tval;
 	jso_schema_value parent, value;
 	jso_schema_value_string strval;
-	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
 
@@ -429,16 +571,12 @@ static void test_jso_schema_value_parse_type_string_when_value_init_fails(void *
 
 	jso_schema schema;
 	jso_value data, tval;
-	jso_schema_value parent, value;
-	jso_schema_value_string strval;
-	jso_schema_keyword keyword;
+	jso_schema_value parent;
 
 	jso_schema_init(&schema);
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
-
-	JSO_SCHEMA_VALUE_DATA_STR(value) = &strval;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -469,7 +607,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_value_parse_type_string_when_min_length_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_string_when_max_length_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_string_when_value_init_fails),
-		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_parse_type_null_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_parse_type_null_when_value_init_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_type_boolean_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_parse_type_boolean_when_value_init_fails),
 		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
 		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
 		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
