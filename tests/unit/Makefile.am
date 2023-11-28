@@ -7,7 +7,8 @@ check_PROGRAMS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
     schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
     schema/jso_schema_keyword_union_test schema/jso_schema_value_allocator_test \
-    schema/jso_schema_value_freer_test schema/jso_schema_value_init_test
+    schema/jso_schema_value_freer_test schema/jso_schema_value_init_test \
+    schema/jso_schema_value_parser_test
 
 TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
@@ -16,7 +17,8 @@ TESTS = jso_array_test jso_ht_test jso_object_test jso_string_test \
     schema/jso_schema_keyword_scalar_test schema/jso_schema_keyword_single_test \
     schema/jso_schema_keyword_test schema/jso_schema_keyword_types_test \
     schema/jso_schema_keyword_union_test schema/jso_schema_value_allocator_test \
-    schema/jso_schema_value_freer_test schema/jso_schema_value_init_test
+    schema/jso_schema_value_freer_test schema/jso_schema_value_init_test \
+    schema/jso_schema_value_parser_test
      
 
 jso_array_test_LDADD = -lcmocka ../../src/libjso.a
