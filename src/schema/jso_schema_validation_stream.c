@@ -59,7 +59,21 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 	return JSO_SUCCESS;
 }
 
+JSO_API jso_rc jso_schema_validation_stream_object_end(
+		jso_schema_validation_stream *context, jso_value *value)
+{
+
+	return JSO_SUCCESS;
+}
+
 JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *context)
+{
+
+	return JSO_SUCCESS;
+}
+
+JSO_API jso_rc jso_schema_validation_stream_array_end(
+		jso_schema_validation_stream *context, jso_value *value)
 {
 
 	return JSO_SUCCESS;

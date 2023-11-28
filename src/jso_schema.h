@@ -942,7 +942,13 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 JSO_API jso_rc jso_schema_validation_stream_object_key(
 		jso_schema_validation_stream *context, jso_string *str);
 
+JSO_API jso_rc jso_schema_validation_stream_object_end(
+		jso_schema_validation_stream *context, jso_value *value);
+
 JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *context);
+
+JSO_API jso_rc jso_schema_validation_stream_array_end(
+		jso_schema_validation_stream *context, jso_value *value);
 
 JSO_API jso_rc jso_schema_validation_stream_value(
 		jso_schema_validation_stream *context, jso_value *value);

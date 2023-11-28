@@ -29,7 +29,6 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 {
 	jso_value *val;
 
-
 	switch (JSO_TYPE_P(instance)) {
 		case JSO_TYPE_ARRAY:
 			if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
@@ -42,6 +41,9 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 				}
 			}
 			JSO_ARRAY_FOREACH_END;
+			if (jso_schema_validation_stream_array_end(stream, instance) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
 			break;
 		case JSO_TYPE_OBJECT: {
 			jso_string *key;
@@ -50,8 +52,7 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 			}
 			JSO_OBJECT_FOREACH(JSO_OBJVAL_P(instance), key, val)
 			{
-				if (jso_schema_validation_stream_object_key(stream, key)
-						== JSO_FAILURE) {
+				if (jso_schema_validation_stream_object_key(stream, key) == JSO_FAILURE) {
 					return JSO_FAILURE;
 				}
 				if (jso_schema_validate_instance(val, stream) == JSO_FAILURE) {
@@ -59,6 +60,9 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 				}
 			}
 			JSO_OBJECT_FOREACH_END;
+			if (jso_schema_validation_stream_object_end(stream, instance) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
 		} break;
 		default:
 			return jso_schema_validation_stream_value(stream, instance);
