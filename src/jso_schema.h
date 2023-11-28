@@ -890,21 +890,23 @@ typedef enum _jso_schema_validation_position_type {
 	JSO_SCHEMA_VALIDATION_POSITION_SENTINEL,
 } jso_schema_validation_position_type;
 
+typedef struct _jso_schema_validation_position jso_schema_validation_position;
+
 /**
  * @brief JsonSchema validation position structure used during the stream validation.
  */
-typedef struct _jso_schema_validation_position {
+struct _jso_schema_validation_position {
 	/** position type */
 	jso_schema_validation_position_type type;
 	/** schema parent validation position */
-	struct _jso_schema_validation_position *parent;
+	jso_schema_validation_position *parent;
 	/** schema value currently processed */
 	jso_schema_value *current_value;
 	/** schema object key if object is being processed */
 	jso_string *object_key;
-	/** previous sentinel position schema array index if array is being processed */
+	/** previous sentinel position or schema array index if array is being processed */
 	size_t index;
-} jso_schema_validation_position;
+};
 
 /**
  * @brief JsonSchema validation stack.
@@ -931,7 +933,7 @@ typedef struct _jso_schema_validation_stream {
 JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance);
 
 JSO_API jso_rc jso_schema_validation_stream_init(
-		jso_schema *schema, jso_schema_validation_stream *stream);
+		jso_schema *schema, jso_schema_validation_stream *stream, size_t positions_capacity);
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream);
 

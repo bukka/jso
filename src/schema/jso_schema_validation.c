@@ -25,7 +25,17 @@
 
 #include "jso.h"
 
+jso_rc jso_schema_validate_instance(
+		jso_schema *schema, jso_value *instance, jso_schema_validation_stream *stream)
+{
+	return JSO_SUCCESS;
+}
+
 JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
 {
+	jso_schema_validation_stream stream;
+
+	jso_schema_validation_stream_init(schema, &stream);
+
 	return JSO_SUCCESS;
 }

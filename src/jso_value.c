@@ -36,7 +36,7 @@
 /* free jso value */
 JSO_API void jso_value_free(jso_value *val)
 {
-	switch (val->type) {
+	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_STRING:
 			jso_string_free(JSO_STR_P(val));
 			break;

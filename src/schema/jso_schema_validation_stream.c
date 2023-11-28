@@ -21,19 +21,29 @@
  *
  */
 
-#include "jso_schema.h"
-
 #include "jso.h"
 
+#include "jso_schema.h"
+
 JSO_API jso_rc jso_schema_validation_stream_init(
-		jso_schema *schema, jso_schema_validation_stream *stream)
+		jso_schema *schema, jso_schema_validation_stream *stream, size_t positions_capacity)
 {
+	stream->root_schema = schema;
+	stream->stack.positions
+			= jso_calloc(positions_capacity, sizeof(jso_schema_validation_position));
+	if (stream->stack.positions == NULL) {
+		return JSO_FAILURE;
+	}
+	stream->stack.capacity = positions_capacity;
+	stream->stack.size = 0;
 
 	return JSO_SUCCESS;
 }
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
 {
+	jso_free(stream->stack.positions);
+	memset(stream, 0, sizeof(jso_schema_validation_stream));
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *context)
