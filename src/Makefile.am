@@ -9,10 +9,10 @@ libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number
 	schema/jso_schema_keyword_freer.c schema/jso_schema_keyword_object.c \
 	schema/jso_schema_keyword_regexp.c schema/jso_schema_keyword_scalar.c \
 	schema/jso_schema_keyword_single.c schema/jso_schema_keyword_types.c \
-	schema/jso_schema_keyword_union.c  schema/jso_schema_validation_stream.c \
-	schema/jso_schema_validation.c schema/jso_schema_value_allocator.c \
-	schema/jso_schema_value_freer.c schema/jso_schema_value_init.c \
-	schema/jso_schema_value_parser.c schema/jso_schema_version.c schema/jso_schema.c
+	schema/jso_schema_keyword_union.c  schema/jso_schema_validation.c \
+	schema/jso_schema_validation_stack.c schema/jso_schema_validation_stream.c \
+	schema/jso_schema_value_allocator.c schema/jso_schema_value_freer.c \
+	schema/jso_schema_value_init.c schema/jso_schema_value_parser.c schema/jso_schema_version.c schema/jso_schema.c
 
 bin_PROGRAMS = jso
 jso_SOURCES =  main.c jso_cli.c
@@ -27,6 +27,7 @@ include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_
 	schema/jso_schema_keyword_regexp.h schema/jso_schema_keyword_scalar.h \
 	schema/jso_schema_keyword_single.h schema/jso_schema_keyword_types.h \
 	schema/jso_schema_keyword_union.h schema/jso_schema_value.h  \
+	schema/jso_schema_validation_stack.h \
 	schema/jso_schema_version.h jso_tokens.h jso_re.h jso_cli.h \
 	jso_io.h io/jso_io_file.h io/jso_io_memory.h
 
