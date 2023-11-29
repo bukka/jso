@@ -153,13 +153,13 @@ static jso_schema_value *jso_schema_value_parse_array(
 static jso_schema_value *jso_schema_value_parse_object(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, array, TYPE_OBJECT);
+	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, object, TYPE_OBJECT);
 	if (value == NULL) {
 		return NULL;
 	}
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
 
-	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minProperties, value, objval, max_properties);
+	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minProperties, value, objval, min_properties);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxProperties, value, objval, max_properties);
 	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalProperties, value, objval,
 			additional_properties, TYPE_BOOLEAN, TYPE_SCHEMA_OBJECT);
