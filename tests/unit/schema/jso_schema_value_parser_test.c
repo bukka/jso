@@ -2173,6 +2173,528 @@ static void test_jso_schema_value_parse_type_string_when_value_init_fails(void *
 	assert_null(returned_value);
 }
 
+/* Test parsing value for string type array when all successful. */
+static void test_jso_schema_value_parse_type_array_when_all_good(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "items");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword, &arrval.items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "uniqueItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.unique_items);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "maxItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.max_items);
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "minItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.min_items);
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_ptr_equal(&value, returned_value);
+}
+
+/* Test parsing value for string type array when min items setting fails. */
+static void test_jso_schema_value_parse_type_array_when_min_items_setting_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "items");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword, &arrval.items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "uniqueItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.unique_items);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "maxItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.max_items);
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "minItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.min_items);
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type array when max items setting fails. */
+static void test_jso_schema_value_parse_type_array_when_max_items_setting_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "items");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword, &arrval.items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "uniqueItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.unique_items);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "maxItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.max_items);
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type array when unique items setting fails. */
+static void test_jso_schema_value_parse_type_array_when_unique_items_setting_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "items");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword, &arrval.items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "uniqueItems");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &arrval.unique_items);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type array when items setting fails. */
+static void test_jso_schema_value_parse_type_array_when_items_setting_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "items");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword, &arrval.items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type array when additional items setting fails. */
+static void test_jso_schema_value_parse_type_array_when_additional_items_setting_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent, value;
+	jso_schema_value_array arrval;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, &value);
+
+	expect_function_call(__wrap_jso_schema_keyword_set_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set_union_of_2_types, key, "additionalItems");
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, schema_keyword,
+			&arrval.additional_items);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_FAILURE);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &value);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
+/* Test parsing value for string type array when value init fails. */
+static void test_jso_schema_value_parse_type_array_when_value_init_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("array");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "array");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_array));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ARRAY);
+	will_return(__wrap_jso_schema_value_init, NULL);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -2205,9 +2727,15 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_value_parse_type_number_when_minimum_setting_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_number_when_multiple_of_setting_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_number_when_value_init_fails),
-		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
-		// cmocka_unit_test(test_jso_schema_value_parse_type_string_when_all_good),
-		// cmocka_unit_test(),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_min_items_setting_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_max_items_setting_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_unique_items_setting_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_items_setting_fails),
+		cmocka_unit_test(
+				test_jso_schema_value_parse_type_array_when_additional_items_setting_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_type_array_when_value_init_fails),
+		// cmocka_unit_test(test_jso_schema_value_parse_type_object_when_all_good),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
