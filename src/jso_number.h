@@ -106,4 +106,58 @@ JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val
  */
 JSO_API double jso_number_cstr_to_double(char *str);
 
+/**
+ * Compare two numbers if the first one is equal to the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 equeal to num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_eq(jso_number *num1, jso_number *num2);
+
+/**
+ * Compare two numbers if the first one is greater than or equal to the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 is greater than or equeal to num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_ge(jso_number *num1, jso_number *num2);
+
+/**
+ * Compare two numbers if the first one is greater than the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 is greater than than num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_gt(jso_number *num1, jso_number *num2);
+
+/**
+ * Compare two numbers if the first one is lower than or equal to the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 is lower than or equeal to num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_le(jso_number *num1, jso_number *num2);
+
+/**
+ * Compare two numbers if the first one is lower than the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 is lower than than num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_lt(jso_number *num1, jso_number *num2);
+
+/**
+ * Check if the first number is multiple of the second one.
+ *
+ * @param num1 first number
+ * @param num2 second number
+ * @return @ref JSO_TRUE if number num1 is lower than than num2, otherwise @ref JSO_FALSE
+ */
+JSO_API bool jso_number_is_multiple_of(jso_number *num, jso_number *multiple);
+
 #endif /* JSO_NUMBER_H */

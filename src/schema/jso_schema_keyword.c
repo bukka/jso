@@ -57,6 +57,28 @@ jso_rc jso_schema_keyword_set_union_of_2_types(jso_schema *schema, jso_value *da
 	return jso_schema_keyword_check(schema, schema_keyword_ptr);
 }
 
+/* Convert keyword data to number */
+jso_rc jso_schema_keyword_convert_to_number(jso_schema_keyword *schema_keyword, jso_number *num)
+{
+	switch (JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword)) {
+		case JSO_SCHEMA_KEYWORD_TYPE_INTEGER:
+			num->ival = JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword);
+			num->is_int = true;
+			return JSO_SUCCESS;
+		case JSO_SCHEMA_KEYWORD_TYPE_UNSIGNED_INTEGER:
+			num->ival = JSO_SCHEMA_KEYWORD_DATA_UINT_P(schema_keyword);
+			num->is_int = true;
+			return JSO_SUCCESS;
+		case JSO_SCHEMA_KEYWORD_TYPE_DOUBLE:
+		case JSO_SCHEMA_KEYWORD_TYPE_NUMBER:
+			num->dval = JSO_SCHEMA_KEYWORD_DATA_DOUBLE_P(schema_keyword);
+			num->is_int = false;
+			return JSO_SUCCESS;
+		default:
+			return JSO_FAILURE;
+	}
+}
+
 /* Clear keyword */
 void jso_schema_keyword_clear(jso_schema_keyword *keyword)
 {

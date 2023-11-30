@@ -24,6 +24,8 @@
 #include "jso.h"
 
 #include "jso_schema.h"
+
+#include "jso_schema_value.h"
 #include "jso_schema_validation_stack.h"
 
 inline jso_rc jso_schema_validation_stream_stack_init(
@@ -105,5 +107,6 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 {
 	jso_schema_validation_position *pos = jso_schema_validation_stream_stack_pop(stream);
 
-	return JSO_SUCCESS;
+	// TODO: position should have its own schema so root schema should not be used
+	return jso_schema_value_validate(stream->root_schema, pos->current_value, value);
 }
