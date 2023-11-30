@@ -36,7 +36,13 @@ inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_b
 		jso_schema_validation_stream *stream, jso_schema_value *current_value,
 		jso_schema_validation_position *parent)
 {
-	return jso_schema_validation_stack_push_basic_position(&stream->stack, current_value, parent);
+	return jso_schema_validation_stack_push_basic(&stream->stack, current_value, parent);
+}
+
+inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
+		jso_schema_validation_stream *stream)
+{
+	return jso_schema_validation_stack_pop(&stream->stack);
 }
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
@@ -61,42 +67,43 @@ JSO_API jso_rc jso_schema_validation_stream_init(
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *context)
+JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_key(
-		jso_schema_validation_stream *context, jso_string *str)
+		jso_schema_validation_stream *stream, jso_string *str)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_end(
-		jso_schema_validation_stream *context, jso_value *value)
+		jso_schema_validation_stream *stream, jso_value *value)
 {
 
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *context)
+JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_array_end(
-		jso_schema_validation_stream *context, jso_value *value)
+		jso_schema_validation_stream *stream, jso_value *value)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_value(
-		jso_schema_validation_stream *context, jso_value *value)
+		jso_schema_validation_stream *stream, jso_value *value)
 {
+	jso_schema_validation_position *pos = jso_schema_validation_stream_stack_pop(stream);
 
 	return JSO_SUCCESS;
 }

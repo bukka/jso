@@ -35,8 +35,10 @@ jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size
 
 void jso_schema_validation_stack_clear(jso_schema_validation_stack *stack);
 
-jso_schema_validation_position *jso_schema_validation_stack_push_basic_position(
+jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_stack *stack, jso_schema_value *current_value,
 		jso_schema_validation_position *parent);
+
+jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_validation_stack *stack);
 
 #endif /* JSO_SCHEMA_VALIDATION_STACK_H */

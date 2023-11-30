@@ -28,7 +28,7 @@
 
 jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size_t capacity)
 {
-	stack->positions = jso_calloc(capacity, sizeof(jso_schema_validation_position));
+	stack->positions = jso_malloc(capacity * sizeof(jso_schema_validation_position));
 	if (stack->positions == NULL) {
 		return JSO_FAILURE;
 	}
@@ -56,19 +56,22 @@ static jso_rc jso_schema_validation_stack_resize_if_needed(jso_schema_validation
 	if (stack->positions == NULL) {
 		return JSO_FAILURE;
 	}
-	memset(positions + capacity, 0, capacity * sizeof(jso_schema_validation_position));
 	stack->positions = positions;
 	stack->capacity = new_capacity;
 	return JSO_SUCCESS;
 }
 
-static inline jso_schema_validation_position *jso_schema_validation_stack_next_position(
+static inline jso_schema_validation_position *jso_schema_validation_stack_next(
 		jso_schema_validation_stack *stack)
 {
-	return &stack->positions[stack->size];
+	jso_schema_validation_position *position = &stack->positions[stack->size];
+	// clear position before use
+	memset(position, 0, sizeof(jso_schema_validation_position));
+
+	return position;
 }
 
-jso_schema_validation_position *jso_schema_validation_stack_push_basic_position(
+jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_stack *stack, jso_schema_value *current_value,
 		jso_schema_validation_position *parent)
 {
@@ -76,9 +79,18 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic_position(
 		return NULL;
 	}
 
-	jso_schema_validation_position *next = jso_schema_validation_stack_next_position(stack);
+	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
 	next->current_value = current_value;
 	next->parent = parent;
 
 	return next;
+}
+
+jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_validation_stack *stack)
+{
+	if (stack->size == 0) {
+		return NULL;
+	}
+
+	return &stack->positions[--stack->size];
 }
