@@ -3326,6 +3326,63 @@ static void test_jso_schema_value_parse_type_object_when_value_init_fails(void *
 	assert_null(returned_value);
 }
 
+/* Test parsing value for empty string type. */
+static void test_jso_schema_value_parse_empty_string_type(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+	assert_int_equal(JSO_SCHEMA_ERROR_TYPE_INVALID, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
+			"Invalid schema type because it is an empty string", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+}
+
+/* Test parsing value for invalid string type. */
+static void test_jso_schema_value_parse_invalid_string_type(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data, tval;
+	jso_schema_value parent;
+
+	jso_schema_init(&schema);
+
+	jso_string *type = jso_string_create_from_cstr("wrong");
+	JSO_VALUE_SET_STRING(tval, type);
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, &tval);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+	assert_int_equal(JSO_SCHEMA_ERROR_TYPE_INVALID, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal("Invalid schema type wrong", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -3373,6 +3430,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_value_parse_type_object_when_max_props_setting_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_object_when_min_props_setting_fails),
 		cmocka_unit_test(test_jso_schema_value_parse_type_object_when_value_init_fails),
+		cmocka_unit_test(test_jso_schema_value_parse_empty_string_type),
+		cmocka_unit_test(test_jso_schema_value_parse_invalid_string_type),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

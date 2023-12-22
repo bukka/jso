@@ -38,7 +38,7 @@ JSO_API double jso_number_cstr_to_double(char *str)
 	return 0.0;
 }
 
-JSO_API bool jso_number_eq(jso_number *num1, jso_number *num2) 
+JSO_API bool jso_number_eq(jso_number *num1, jso_number *num2)
 {
 	if (num1->is_int && num2->is_int) {
 		return num1->ival == num2->ival;
@@ -63,7 +63,6 @@ JSO_API bool jso_number_ge(jso_number *num1, jso_number *num2)
 		return num1->dval >= num2->dval;
 	}
 }
-
 
 JSO_API bool jso_number_gt(jso_number *num1, jso_number *num2)
 {

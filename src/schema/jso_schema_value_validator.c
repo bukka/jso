@@ -79,7 +79,8 @@ jso_rc jso_schema_value_validate_integer(
 
 	if (JSO_TYPE_P(instance) == JSO_TYPE_INT) {
 		inst_ival = JSO_IVAL_P(instance);
-	} if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
+	}
+	if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
 		if (nearbyint(JSO_DVAL_P(instance)) != JSO_DVAL_P(instance)) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 					"Double integer type cannot have decimal point");
@@ -145,7 +146,8 @@ jso_rc jso_schema_value_validate_number(
 	if (JSO_TYPE_P(instance) == JSO_TYPE_INT) {
 		inst_num.ival = JSO_IVAL_P(instance);
 		inst_num.is_int = true;
-	} if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
+	}
+	if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
 		inst_num.dval = JSO_DVAL_P(instance);
 		inst_num.is_int = false;
 	} else {
@@ -195,7 +197,8 @@ jso_rc jso_schema_value_validate_number(
 
 	if (JSO_SCHEMA_KW_IS_SET(numval->multiple_of)) {
 		jso_number kw_num;
-		JSO_ASSERT_EQ(jso_schema_keyword_convert_to_number(&numval->multiple_of, &kw_num), JSO_SUCCESS);
+		JSO_ASSERT_EQ(
+				jso_schema_keyword_convert_to_number(&numval->multiple_of, &kw_num), JSO_SUCCESS);
 		if (jso_number_is_multiple_of(&inst_num, &kw_num)) {
 			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
@@ -211,8 +214,7 @@ jso_rc jso_schema_value_validate_string(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_STRING) {
-		return jso_schema_value_validate_type_error(
-				schema, JSO_TYPE_STRING, JSO_TYPE_P(instance));
+		return jso_schema_value_validate_type_error(schema, JSO_TYPE_STRING, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_string *strval = JSO_SCHEMA_VALUE_DATA_STR_P(value);
@@ -221,16 +223,18 @@ jso_rc jso_schema_value_validate_string(
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(strval->min_length);
 		if (JSO_SLEN_P(instance) < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"String length %zu is lower than minimum length %lu", JSO_SLEN_P(instance), kw_uval);
+					"String length %zu is lower than minimum length %lu", JSO_SLEN_P(instance),
+					kw_uval);
 			return JSO_FAILURE;
 		}
 	}
-	
+
 	if (JSO_SCHEMA_KW_IS_SET(strval->max_length)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(strval->max_length);
 		if (JSO_SLEN_P(instance) > kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"String length %zu is greater than maximum length %lu", JSO_SLEN_P(instance), kw_uval);
+					"String length %zu is greater than maximum length %lu", JSO_SLEN_P(instance),
+					kw_uval);
 			return JSO_FAILURE;
 		}
 	}
@@ -244,8 +248,7 @@ jso_rc jso_schema_value_validate_array(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_ARRAY) {
-		return jso_schema_value_validate_type_error(
-				schema, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
+		return jso_schema_value_validate_type_error(schema, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
@@ -255,17 +258,20 @@ jso_rc jso_schema_value_validate_array(
 		size_t arrlen = JSO_ARRAY_LEN(JSO_ARRVAL_P(instance));
 		if (arrlen < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Array number of items is %zu which is lower than minimum number of items %lu", arrlen, kw_uval);
+					"Array number of items is %zu which is lower than minimum number of items %lu",
+					arrlen, kw_uval);
 			return JSO_FAILURE;
 		}
 	}
-	
+
 	if (JSO_SCHEMA_KW_IS_SET(arrval->max_items)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->max_items);
 		size_t arrlen = JSO_ARRAY_LEN(JSO_ARRVAL_P(instance));
 		if (arrlen > kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Array number of items is %zu which is greater than maximum number of items %lu", arrlen, kw_uval);
+					"Array number of items is %zu which is greater than maximum number of items "
+					"%lu",
+					arrlen, kw_uval);
 			return JSO_FAILURE;
 		}
 	}
@@ -279,8 +285,7 @@ jso_rc jso_schema_value_validate_object(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
-		return jso_schema_value_validate_type_error(
-				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+		return jso_schema_value_validate_type_error(schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
@@ -290,7 +295,9 @@ jso_rc jso_schema_value_validate_object(
 		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
 		if (objlen < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Object number of properties is %zu which is lower than minimum number of properties %lu", objlen, kw_uval);
+					"Object number of properties is %zu which is lower than minimum number of "
+					"properties %lu",
+					objlen, kw_uval);
 			return JSO_FAILURE;
 		}
 	}
@@ -300,7 +307,9 @@ jso_rc jso_schema_value_validate_object(
 		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
 		if (objlen > kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Object number of properties is %zu which is greater than maximum number of properties %lu", objlen, kw_uval);
+					"Object number of properties is %zu which is greater than maximum number of "
+					"properties %lu",
+					objlen, kw_uval);
 			return JSO_FAILURE;
 		}
 	}
