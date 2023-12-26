@@ -1,4 +1,4 @@
-/*jso_schema_value_validate_callback
+/*
  * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,7 +30,7 @@
 
 #include <math.h>
 
-static jso_rc jso_schema_value_validate_type_error_ex(jso_schema *schema, jso_value_type expected,
+static jso_rc jso_schema_validation_value_type_error_ex(jso_schema *schema, jso_value_type expected,
 		jso_value_type expected_alternative, jso_value_type actual)
 {
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
@@ -40,7 +40,7 @@ static jso_rc jso_schema_value_validate_type_error_ex(jso_schema *schema, jso_va
 	return JSO_FAILURE;
 }
 
-static jso_rc jso_schema_value_validate_type_error(
+static jso_rc jso_schema_validation_value_type_error(
 		jso_schema *schema, jso_value_type expected, jso_value_type actual)
 {
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
@@ -49,30 +49,30 @@ static jso_rc jso_schema_value_validate_type_error(
 	return JSO_FAILURE;
 }
 
-typedef jso_rc (*jso_schema_value_validate_callback)(
+typedef jso_rc (*jso_schema_validation_value_callback)(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
-jso_rc jso_schema_value_validate_null(
+jso_rc jso_schema_validation_value_null(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_NULL) {
-		return jso_schema_value_validate_type_error(schema, JSO_TYPE_NULL, JSO_TYPE_P(instance));
+		return jso_schema_validation_value_type_error(schema, JSO_TYPE_NULL, JSO_TYPE_P(instance));
 	}
 
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_boolean(
+jso_rc jso_schema_validation_value_boolean(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_BOOL) {
-		return jso_schema_value_validate_type_error(schema, JSO_TYPE_BOOL, JSO_TYPE_P(instance));
+		return jso_schema_validation_value_type_error(schema, JSO_TYPE_BOOL, JSO_TYPE_P(instance));
 	}
 
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_integer(
+jso_rc jso_schema_validation_value_integer(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_int inst_ival;
@@ -88,7 +88,7 @@ jso_rc jso_schema_value_validate_integer(
 		}
 		inst_ival = (jso_int) JSO_DVAL_P(instance);
 	} else {
-		return jso_schema_value_validate_type_error_ex(
+		return jso_schema_validation_value_type_error_ex(
 				schema, JSO_TYPE_INT, JSO_TYPE_DOUBLE, JSO_TYPE_P(instance));
 	}
 
@@ -138,7 +138,7 @@ jso_rc jso_schema_value_validate_integer(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_number(
+jso_rc jso_schema_validation_value_number(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_number inst_num;
@@ -151,7 +151,7 @@ jso_rc jso_schema_value_validate_number(
 		inst_num.dval = JSO_DVAL_P(instance);
 		inst_num.is_int = false;
 	} else {
-		return jso_schema_value_validate_type_error_ex(
+		return jso_schema_validation_value_type_error_ex(
 				schema, JSO_TYPE_INT, JSO_TYPE_DOUBLE, JSO_TYPE_P(instance));
 	}
 
@@ -210,11 +210,12 @@ jso_rc jso_schema_value_validate_number(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_string(
+jso_rc jso_schema_validation_value_string(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_STRING) {
-		return jso_schema_value_validate_type_error(schema, JSO_TYPE_STRING, JSO_TYPE_P(instance));
+		return jso_schema_validation_value_type_error(
+				schema, JSO_TYPE_STRING, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_string *strval = JSO_SCHEMA_VALUE_DATA_STR_P(value);
@@ -244,11 +245,11 @@ jso_rc jso_schema_value_validate_string(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_array(
+jso_rc jso_schema_validation_value_array(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_ARRAY) {
-		return jso_schema_value_validate_type_error(schema, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
+		return jso_schema_validation_value_type_error(schema, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
@@ -276,16 +277,17 @@ jso_rc jso_schema_value_validate_array(
 		}
 	}
 
-	// TODO: other keywords validation
+	// TODO: possibly other keywords validation
 
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_value_validate_object(
+jso_rc jso_schema_validation_value_object(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
-		return jso_schema_value_validate_type_error(schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+		return jso_schema_validation_value_type_error(
+				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
 	}
 
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
@@ -302,6 +304,7 @@ jso_rc jso_schema_value_validate_object(
 		}
 	}
 
+	// TODO: move to jso_schema_validation_object_update
 	if (JSO_SCHEMA_KW_IS_SET(objval->max_properties)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->max_properties);
 		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
@@ -314,22 +317,23 @@ jso_rc jso_schema_value_validate_object(
 		}
 	}
 
-	// TODO: other keywords validation
+	// TODO: possibly other keywords validation
 
 	return JSO_SUCCESS;
 }
 
-static const jso_schema_value_validate_callback schema_value_validate_callbacks[] = {
-	[JSO_SCHEMA_VALUE_TYPE_NULL] = jso_schema_value_validate_null,
-	[JSO_SCHEMA_VALUE_TYPE_BOOLEAN] = jso_schema_value_validate_boolean,
-	[JSO_SCHEMA_VALUE_TYPE_INTEGER] = jso_schema_value_validate_integer,
-	[JSO_SCHEMA_VALUE_TYPE_NUMBER] = jso_schema_value_validate_number,
-	[JSO_SCHEMA_VALUE_TYPE_STRING] = jso_schema_value_validate_string,
-	[JSO_SCHEMA_VALUE_TYPE_ARRAY] = jso_schema_value_validate_array,
-	[JSO_SCHEMA_VALUE_TYPE_OBJECT] = jso_schema_value_validate_object,
+static const jso_schema_validation_value_callback schema_validation_value_callbacks[] = {
+	[JSO_SCHEMA_VALUE_TYPE_NULL] = jso_schema_validation_value_null,
+	[JSO_SCHEMA_VALUE_TYPE_BOOLEAN] = jso_schema_validation_value_boolean,
+	[JSO_SCHEMA_VALUE_TYPE_INTEGER] = jso_schema_validation_value_integer,
+	[JSO_SCHEMA_VALUE_TYPE_NUMBER] = jso_schema_validation_value_number,
+	[JSO_SCHEMA_VALUE_TYPE_STRING] = jso_schema_validation_value_string,
+	[JSO_SCHEMA_VALUE_TYPE_ARRAY] = jso_schema_validation_value_array,
+	[JSO_SCHEMA_VALUE_TYPE_OBJECT] = jso_schema_validation_value_object,
 };
 
-jso_rc jso_schema_value_validate(jso_schema *schema, jso_schema_value *value, jso_value *instance)
+jso_rc jso_schema_validation_value(jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
-	return schema_value_validate_callbacks[JSO_SCHEMA_VALUE_TYPE_P(value)](schema, value, instance);
+	return schema_validation_value_callbacks[JSO_SCHEMA_VALUE_TYPE_P(value)](
+			schema, value, instance);
 }

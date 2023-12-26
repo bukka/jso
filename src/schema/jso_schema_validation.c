@@ -25,7 +25,7 @@
 
 #include "jso.h"
 
-jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_stream *stream)
+jso_rc jso_schema_validate_instance(jso_schema_validation_stream *stream, jso_value *instance)
 {
 	jso_value *val;
 
@@ -34,14 +34,21 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 			if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			JSO_ARRAY_FOREACH(JSO_ARRVAL_P(instance), val)
+			jso_array *array = JSO_ARRVAL_P(instance);
+			JSO_ARRAY_FOREACH(array, val)
 			{
-				if (jso_schema_validate_instance(val, stream) == JSO_FAILURE) {
+				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+				if (jso_schema_validation_stream_array_append(stream, array, val) == JSO_FAILURE) {
 					return JSO_FAILURE;
 				}
 			}
 			JSO_ARRAY_FOREACH_END;
-			if (jso_schema_validation_stream_array_end(stream, instance) == JSO_FAILURE) {
+			if (jso_schema_validation_stream_array_end(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 			break;
@@ -50,17 +57,25 @@ jso_rc jso_schema_validate_instance(jso_value *instance, jso_schema_validation_s
 			if (jso_schema_validation_stream_object_start(stream) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			JSO_OBJECT_FOREACH(JSO_OBJVAL_P(instance), key, val)
+			jso_object *object = JSO_OBJVAL_P(instance);
+			JSO_OBJECT_FOREACH(object, key, val)
 			{
 				if (jso_schema_validation_stream_object_key(stream, key) == JSO_FAILURE) {
 					return JSO_FAILURE;
 				}
-				if (jso_schema_validate_instance(val, stream) == JSO_FAILURE) {
+				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
+					return JSO_FAILURE;
+				}
+				if (jso_schema_validation_stream_object_update(stream, object, key, val)
+						== JSO_FAILURE) {
 					return JSO_FAILURE;
 				}
 			}
 			JSO_OBJECT_FOREACH_END;
-			if (jso_schema_validation_stream_object_end(stream, instance) == JSO_FAILURE) {
+			if (jso_schema_validation_stream_object_end(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 		} break;
@@ -77,7 +92,7 @@ JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
 
 	jso_schema_validation_stream_init(schema, &stream, 32);
 
-	jso_rc result = jso_schema_validate_instance(instance, &stream);
+	jso_rc result = jso_schema_validate_instance(&stream, instance);
 
 	jso_schema_validation_stream_clear(&stream);
 

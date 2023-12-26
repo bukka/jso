@@ -76,14 +76,21 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_key(
-		jso_schema_validation_stream *stream, jso_string *str)
+		jso_schema_validation_stream *stream, jso_string *key)
+{
+
+	return JSO_SUCCESS;
+}
+
+JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
+		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_end(
-		jso_schema_validation_stream *stream, jso_value *value)
+		jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;
@@ -95,18 +102,25 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 	return JSO_SUCCESS;
 }
 
+JSO_API jso_rc jso_schema_validation_stream_array_append(
+		jso_schema_validation_stream *stream, jso_array *instance_array, jso_value *instance_item)
+{
+
+	return JSO_SUCCESS;
+}
+
 JSO_API jso_rc jso_schema_validation_stream_array_end(
-		jso_schema_validation_stream *stream, jso_value *value)
+		jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_value(
-		jso_schema_validation_stream *stream, jso_value *value)
+		jso_schema_validation_stream *stream, jso_value *instance)
 {
 	jso_schema_validation_position *pos = jso_schema_validation_stream_stack_pop(stream);
 
 	// TODO: position should have its own schema so root schema should not be used
-	return jso_schema_value_validate(stream->root_schema, pos->current_value, value);
+	return jso_schema_value_validate(stream->root_schema, pos->current_value, instance);
 }
