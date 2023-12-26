@@ -41,11 +41,69 @@ typedef struct _jso_number_string {
 	char result[128];
 	/** length of the result */
 	size_t len;
-	jso_bool overflow;
+	jso_bool infinity;
+	jso_bool negative;
 	jso_bool underflow;
+	jso_bool sign;
 	jso_bool nan;
 	jso_bool exp_notation;
 } jso_number_string;
+
+/**
+ * Number string value getter.
+ * @param nstr number string pointer
+ * @return Number string value
+ */
+#define JSO_NUMBER_STRING_VAL_P(nstr) (nstr)->result
+
+/**
+ * Number string length getter.
+ * @param nstr number string pointer
+ * @return Number string length
+ */
+#define JSO_NUMBER_STRING_LEN_P(nstr) (nstr)->len
+
+/**
+ * Check whether the number string is infinity.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string is infinity, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_INFINITY_P(nstr) (nstr)->infinity
+
+/**
+ * Check whether the number string is negative.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string is negative, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_NEGATIVE_P(nstr) (nstr)->negative
+
+/**
+ * Check whether the number string overflows.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string overflows, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_UNDERFLOW_P(nstr) (nstr)->underflow
+
+/**
+ * Check whether the number string is not a number.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string is not a number, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_NAN_P(nstr) (nstr)->nan
+
+/**
+ * Check whether the number string overflows.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string overflows, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_UNDERFLOW_P(nstr) (nstr)->underflow
+
+/**
+ * Check whether the number string underflows.
+ * @param nstr number string pointer
+ * @return @ref JSO_TRUE if number string underflows, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_OVERFLOW_P(nstr) (nstr)->overflow
 
 /**
  * Number string value getter.
@@ -60,6 +118,20 @@ typedef struct _jso_number_string {
  * @return Number string length
  */
 #define JSO_NUMBER_STRING_LEN(nstr) (nstr).len
+
+/**
+ * Check whether the number string is infinity.
+ * @param nstr number string
+ * @return @ref JSO_TRUE if number string is infinity, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_INFINITY(nstr) (nstr).infinity
+
+/**
+ * Check whether the number string is negative.
+ * @param nstr number string
+ * @return @ref JSO_TRUE if number string is negative, otherwise @ref JSO_FALSE
+ */
+#define JSO_NUMBER_STRING_IS_NEGATIVE(nstr) (nstr).negative
 
 /**
  * Check whether the number string is not a number.
@@ -95,16 +167,39 @@ typedef struct _jso_number_string {
  * Create a number string from double.
  * @param nstr number string
  * @param val value which is the string converted from
- * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ * @return The supplied number string.
  */
-JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val);
+JSO_API jso_number_string *jso_number_string_from_double(jso_number_string *nstr, double val);
 
 /**
- * Convert a string to double.
- * @param str string to convert
- * @return Converted double value.
+ * Create a number string from number.
+ * @param nstr number string
+ * @param num number which is the string converted from
+ * @return The supplied number string.
  */
-JSO_API double jso_number_cstr_to_double(char *str);
+JSO_API jso_number_string *jso_number_string_from_number(jso_number_string *nstr, jso_number *num);
+
+/**
+ * Create a number C string from double.
+ * @param nstr number string
+ * @param val value which is the string converted from
+ * @return The supplied number C string.
+ */
+static inline char *jso_number_cstr_from_double(jso_number_string *nstr, double val)
+{
+	return JSO_NUMBER_STRING_VAL_P(jso_number_string_from_double(nstr, val));
+}
+
+/**
+ * Create a number C string from number.
+ * @param nstr number string
+ * @param num number which is the string converted from
+ * @return The supplied number C string.
+ */
+static inline char *jso_number_cstr_from_number(jso_number_string *nstr, jso_number *num)
+{
+	return JSO_NUMBER_STRING_VAL_P(jso_number_string_from_number(nstr, num));
+}
 
 /**
  * Compare two numbers if the first one is equal to the second one.

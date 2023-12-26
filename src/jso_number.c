@@ -26,16 +26,86 @@
 
 #include "jso_dg_dtoa.h"
 
+#include "jso.h"
+
+#include <stdio.h>
 #include <math.h>
 
-JSO_API jso_rc jso_number_string_from_double(jso_number_string *nstr, double val)
+JSO_API jso_number_string *jso_number_string_from_double(jso_number_string *nstr, double val)
 {
-	return JSO_SUCCESS;
+	char *digits, *dst, *src;
+	int i, decpt;
+	int sign;
+
+	memset(nstr, 0, sizeof(jso_number_string));
+
+	digits = jso_dg_dtoa(val, 0, 17, &decpt, &sign, NULL);
+	nstr->negative = (bool) sign;
+	if (decpt == 9999) {
+		if (*digits == 'I') {
+			nstr->infinity = true;
+		} else {
+			nstr->nan = true;
+		}
+
+		nstr->len = snprintf(&nstr->result[0], sizeof(nstr->result), "%s%s",
+				(sign && *digits == 'I') ? "-" : "", *digits == 'I' ? "INF" : "NaN");
+
+		jso_dg_freedtoa(digits);
+		return nstr;
+	}
+
+	dst = &nstr->result[0];
+	if (sign) {
+		*dst++ = '-';
+	}
+	if (decpt < 0) {
+		/* standard format 0. */
+		*dst++ = '0'; /* zero before decimal point */
+		*dst++ = '.';
+		do {
+			*dst++ = '0';
+		} while (++decpt < 0);
+		src = digits;
+		while (*src != '\0') {
+			*dst++ = *src++;
+		}
+		*dst = '\0';
+	} else {
+		/* standard format */
+		for (i = 0, src = digits; i < decpt; i++) {
+			if (*src != '\0') {
+				*dst++ = *src++;
+			} else {
+				*dst++ = '0';
+			}
+		}
+		if (*src != '\0') {
+			if (src == digits) {
+				*dst++ = '0'; /* zero before decimal point */
+			}
+			*dst++ = '.';
+			for (i = decpt; digits[i] != '\0'; i++) {
+				*dst++ = digits[i];
+			}
+		}
+		*dst = '\0';
+	}
+	nstr->len = strlen(dst);
+	jso_dg_freedtoa(digits);
+	return nstr;
 }
 
-JSO_API double jso_number_cstr_to_double(char *str)
+JSO_API jso_number_string *jso_number_string_from_number(jso_number_string *nstr, jso_number *num)
 {
-	return 0.0;
+	if (num->is_int) {
+		memset(nstr, 0, sizeof(jso_number_string));
+		nstr->negative = num->ival < 0;
+		nstr->len = snprintf(&nstr->result[0], sizeof(nstr->result), "%ld", num->ival);
+		return nstr;
+	}
+
+	return jso_number_string_from_double(nstr, num->dval);
 }
 
 JSO_API bool jso_number_eq(jso_number *num1, jso_number *num2)
@@ -117,3 +187,5 @@ JSO_API bool jso_number_is_multiple_of(jso_number *num, jso_number *multiple_of)
 		return fmod(num->dval, multiple_of->dval) == 0.0;
 	}
 }
+
+JSO_API

@@ -68,4 +68,10 @@ double jso_dg_strtod(const char *s00, char **se);
  */
 char *jso_dg_dtoa(double d, int mode, int ndigits, int *decpt, int *sign, char **rve);
 
+/**
+ * Free dtoa allocated string.
+ * @param s string to frees
+ */
+void jso_dg_freedtoa(char *s);
+
 #endif /* JSO_DG_DTOA_H */

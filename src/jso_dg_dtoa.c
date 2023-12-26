@@ -3670,7 +3670,7 @@ freedtoa(char *s)
  */
 
  char *
-jso_dtoa
+jso_dg_dtoa
 #ifdef KR_headers
 	(dd, mode, ndigits, decpt, sign, rve)
 	double dd; int mode, ndigits, *decpt, *sign; char **rve;

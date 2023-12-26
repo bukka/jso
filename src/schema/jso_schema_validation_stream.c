@@ -89,8 +89,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_schema_validation_stream_object_end(
-		jso_schema_validation_stream *stream)
+JSO_API jso_rc jso_schema_validation_stream_object_end(jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;
@@ -109,8 +108,7 @@ JSO_API jso_rc jso_schema_validation_stream_array_append(
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_schema_validation_stream_array_end(
-		jso_schema_validation_stream *stream)
+JSO_API jso_rc jso_schema_validation_stream_array_end(jso_schema_validation_stream *stream)
 {
 
 	return JSO_SUCCESS;

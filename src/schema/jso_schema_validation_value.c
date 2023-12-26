@@ -156,22 +156,24 @@ jso_rc jso_schema_validation_value_number(
 	}
 
 	jso_schema_value_number *numval = JSO_SCHEMA_VALUE_DATA_NUM_P(value);
+	jso_number_string inst_num_str, kw_num_str;
 
 	if (JSO_SCHEMA_KW_IS_SET(numval->minimum)) {
 		jso_number kw_num;
 		JSO_ASSERT_EQ(jso_schema_keyword_convert_to_number(&numval->minimum, &kw_num), JSO_SUCCESS);
 		if (jso_number_lt(&inst_num, &kw_num)) {
-			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Value is lower than minimum value");
+					"Value %s is lower than minimum value %s",
+					jso_number_cstr_from_number(&inst_num_str, &inst_num),
+					jso_number_cstr_from_number(&kw_num_str, &kw_num));
 			return JSO_FAILURE;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_minimum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(numval->exclusive_minimum)
 				&& jso_number_eq(&inst_num, &kw_num)) {
-			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Value is equal to exclusive minimum");
+					"Value %s is equal to exclusive minimum",
+					jso_number_cstr_from_number(&inst_num_str, &inst_num));
 			return JSO_FAILURE;
 		}
 	}
@@ -180,17 +182,18 @@ jso_rc jso_schema_validation_value_number(
 		jso_number kw_num;
 		JSO_ASSERT_EQ(jso_schema_keyword_convert_to_number(&numval->maximum, &kw_num), JSO_SUCCESS);
 		if (jso_number_gt(&inst_num, &kw_num)) {
-			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Value is greater than maximum value");
+					"Value %s is greater than maximum value %s",
+					jso_number_cstr_from_number(&inst_num_str, &inst_num),
+					jso_number_cstr_from_number(&kw_num_str, &kw_num));
 			return JSO_FAILURE;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_maximum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(numval->exclusive_maximum)
 				&& jso_number_eq(&inst_num, &kw_num)) {
-			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Value is equal to exclusive maximum");
+					"Value %s is equal to exclusive maximum",
+					jso_number_cstr_from_number(&inst_num_str, &inst_num));
 			return JSO_FAILURE;
 		}
 	}
@@ -200,9 +203,9 @@ jso_rc jso_schema_validation_value_number(
 		JSO_ASSERT_EQ(
 				jso_schema_keyword_convert_to_number(&numval->multiple_of, &kw_num), JSO_SUCCESS);
 		if (jso_number_is_multiple_of(&inst_num, &kw_num)) {
-			// TODO: print number values in message like for ints
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Value is is not multiple of keyword value");
+					"Value %s is is not multiple of keyword value",
+					jso_number_cstr_from_number(&inst_num_str, &inst_num));
 			return JSO_FAILURE;
 		}
 	}
