@@ -30,7 +30,7 @@
 #include "jso.h"
 
 jso_rc jso_schema_validation_composition_check(
-		jso_schema_validation_stream *stream, jso_schema *schema, jso_schema_value *value)
+		jso_schema_validation_stream *stream, jso_schema_value *value)
 {
 	return JSO_SUCCESS;
 }

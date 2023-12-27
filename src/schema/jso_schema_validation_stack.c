@@ -94,3 +94,24 @@ jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_valid
 
 	return &stack->positions[--stack->size];
 }
+
+void jso_schema_validation_stack_layer_iterator_start(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	JSO_ASSERT_GT(stack->size, 0);
+	jso_schema_validation_position *last_position = &stack->positions[stack->size - 1];
+	iterator->start = iterator->index = last_position->layer_start;
+}
+
+jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	if (iterator->index + 1 >= stack->size) {
+		return NULL;
+	}
+	jso_schema_validation_position *pos = &stack->positions[++iterator->index];
+	if (JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
+		return NULL;
+	}
+	return pos;
+}

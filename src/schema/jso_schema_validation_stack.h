@@ -31,6 +31,14 @@
 
 #include "jso_schema.h"
 
+/**
+ * @brief JsonSchema validation stack layer iterator.
+ */
+typedef struct _jso_schema_validation_stack_layer_iterator {
+	size_t start;
+	size_t index;
+} jso_schema_validation_stack_layer_iterator;
+
 jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size_t capacity);
 
 void jso_schema_validation_stack_clear(jso_schema_validation_stack *stack);
@@ -40,5 +48,11 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_position *parent);
 
 jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_validation_stack *stack);
+
+void jso_schema_validation_stack_layer_iterator_start(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
+
+jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
 
 #endif /* JSO_SCHEMA_VALIDATION_STACK_H */

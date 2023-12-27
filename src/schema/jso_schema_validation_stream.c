@@ -26,6 +26,7 @@
 #include "jso_schema.h"
 
 #include "jso_schema_value.h"
+#include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_stack.h"
 
 inline jso_rc jso_schema_validation_stream_stack_init(
@@ -50,6 +51,18 @@ inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
 {
 	jso_schema_validation_stack_clear(&stream->stack);
+}
+
+void jso_schema_validation_stream_stack_layer_iterator_start(
+		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	jso_schema_validation_stack_layer_iterator_start(&stream->stack, iterator);
+}
+
+jso_schema_validation_position *jso_schema_validation_stream_layer_iterator_next(
+		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	return jso_schema_validation_stack_layer_iterator_next(&stream->stack, iterator);
 }
 
 JSO_API jso_rc jso_schema_validation_stream_init(
@@ -117,8 +130,23 @@ JSO_API jso_rc jso_schema_validation_stream_array_end(jso_schema_validation_stre
 JSO_API jso_rc jso_schema_validation_stream_value(
 		jso_schema_validation_stream *stream, jso_value *instance)
 {
-	jso_schema_validation_position *pos = jso_schema_validation_stream_stack_pop(stream);
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+	jso_schema *schema = stream->root_schema;
 
-	// TODO: position should have its own schema so root schema should not be used
-	return jso_schema_value_validate(stream->root_schema, pos->current_value, instance);
+	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
+	while ((pos = jso_schema_validation_stream_layer_iterator_next(stream, &iterator))) {
+		jso_schema_value *value = pos->current_value;
+		jso_schema_value_type value_type = JSO_TYPE_P(value);
+		if (value_type == JSO_SCHEMA_VALUE_TYPE_OBJECT || value_type == JSO_SCHEMA_VALUE_TYPE_ARRAY
+				|| (pos->validation_result = jso_schema_validation_composition_check(stream, value))
+						== JSO_SUCCESS) {
+			pos->validation_result = jso_schema_value_validate(schema, value, instance);
+		}
+		if (pos->validation_result == JSO_FAILURE && jso_schema_error_is_set(schema)) {
+			return JSO_FAILURE;
+		}
+	}
+
+	return JSO_SUCCESS;
 }
