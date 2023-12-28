@@ -617,6 +617,14 @@ struct _jso_schema_value {
 #define JSO_SCHEMA_VALUE_DATA_COMMON_P(_psv) (_psv)->data.comval
 
 /**
+ * Get any schema value data for the supplied pointer to schema value.
+ *
+ * @param _psv pointer to schema value
+ * @return Any schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_ANY_P(_psv) (_psv)->data.anyval
+
+/**
  * Get null schema value data for the supplied pointer to schema value.
  *
  * @param _psv pointer to schema value
@@ -679,6 +687,14 @@ struct _jso_schema_value {
  * @return Common schema value data.
  */
 #define JSO_SCHEMA_VALUE_DATA_COMMON(_sv) _sv.data.comval
+
+/**
+ * Get any schema value data for the supplied schema value.
+ *
+ * @param _sv schema value
+ * @return Any schema value data.
+ */
+#define JSO_SCHEMA_VALUE_DATA_ANY(_sv) _sv.data.anyval
 
 /**
  * Get null schema value data for the supplied schema value.

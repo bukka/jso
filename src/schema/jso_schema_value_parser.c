@@ -253,11 +253,11 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 			jso_schema_value_free(schema_value);
 			return NULL;
 		}
-		jso_schema_array_append(any_of_arr, schema_type_value);
+		JSO_ASSERT_EQ(jso_schema_array_append(any_of_arr, schema_type_value), JSO_SUCCESS);
 	}
 
-	// save subschema to the
-	jso_schema_keyword *any_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->any_of;
+	// save subschema to the any value
+	jso_schema_keyword *any_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->any_of;
 	JSO_SCHEMA_KEYWORD_FLAGS_P(any_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(any_of_kw) = any_of_arr;
 
