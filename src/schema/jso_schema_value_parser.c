@@ -33,29 +33,26 @@
 static jso_schema_value *jso_schema_value_parse_any(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
-	jso_schema_value *value = jso_schema_value_alloc(schema, "any");
-	// this is not necessary but it is done in case type any value changed.
-	JSO_SCHEMA_VALUE_TYPE_P(value) = JSO_SCHEMA_VALUE_TYPE_ANY;
-
-	return value;
+	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, null, TYPE_ANY, true);
 }
 
 static jso_schema_value *jso_schema_value_parse_null(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, null, TYPE_NULL);
+	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, null, TYPE_NULL, init_keywords);
 }
 
 static jso_schema_value *jso_schema_value_parse_boolean(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, boolean, TYPE_BOOLEAN);
+	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, boolean, TYPE_BOOLEAN, init_keywords);
 }
 
 static jso_schema_value *jso_schema_value_parse_integer(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, integer, TYPE_INTEGER);
+	jso_schema_value *value
+			= JSO_SCHEMA_VALUE_INIT(schema, data, parent, integer, TYPE_INTEGER, init_keywords);
 	if (value == NULL) {
 		return NULL;
 	}
@@ -84,9 +81,10 @@ static jso_schema_value *jso_schema_value_parse_integer(
 }
 
 static jso_schema_value *jso_schema_value_parse_number(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, number, TYPE_NUMBER);
+	jso_schema_value *value
+			= JSO_SCHEMA_VALUE_INIT(schema, data, parent, number, TYPE_NUMBER, init_keywords);
 	if (value == NULL) {
 		return NULL;
 	}
@@ -115,9 +113,10 @@ static jso_schema_value *jso_schema_value_parse_number(
 }
 
 static jso_schema_value *jso_schema_value_parse_string(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, string, TYPE_STRING);
+	jso_schema_value *value
+			= JSO_SCHEMA_VALUE_INIT(schema, data, parent, string, TYPE_STRING, init_keywords);
 	if (value == NULL) {
 		return NULL;
 	}
@@ -131,9 +130,10 @@ static jso_schema_value *jso_schema_value_parse_string(
 }
 
 static jso_schema_value *jso_schema_value_parse_array(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, array, TYPE_ARRAY);
+	jso_schema_value *value
+			= JSO_SCHEMA_VALUE_INIT(schema, data, parent, array, TYPE_ARRAY, init_keywords);
 	if (value == NULL) {
 		return NULL;
 	}
@@ -151,9 +151,10 @@ static jso_schema_value *jso_schema_value_parse_array(
 }
 
 static jso_schema_value *jso_schema_value_parse_object(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent)
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keywords)
 {
-	jso_schema_value *value = JSO_SCHEMA_VALUE_INIT(schema, data, parent, object, TYPE_OBJECT);
+	jso_schema_value *value
+			= JSO_SCHEMA_VALUE_INIT(schema, data, parent, object, TYPE_OBJECT, init_keywords);
 	if (value == NULL) {
 		return NULL;
 	}
@@ -173,7 +174,7 @@ static jso_schema_value *jso_schema_value_parse_object(
 }
 
 typedef jso_schema_value *(*jso_schema_value_parse_type_func)(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent);
+		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_bool init_keyword);
 
 const jso_schema_value_parse_type_func value_parse_funcs[] = {
 	jso_schema_value_parse_null,
@@ -185,8 +186,8 @@ const jso_schema_value_parse_type_func value_parse_funcs[] = {
 	jso_schema_value_parse_object,
 };
 
-static jso_schema_value *jso_schema_value_parse_by_string_type(
-		jso_schema *schema, jso_value *data, jso_schema_value *parent, jso_string *type)
+static jso_schema_value *jso_schema_value_parse_by_string_type(jso_schema *schema, jso_value *data,
+		jso_schema_value *parent, jso_string *type, jso_bool init_keywords)
 {
 	if (JSO_STRING_LEN(type) == 0) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_TYPE_INVALID,
@@ -197,35 +198,35 @@ static jso_schema_value *jso_schema_value_parse_by_string_type(
 	switch (JSO_STRING_VAL(type)[0]) {
 		case 's':
 			if (jso_string_equals_to_cstr(type, "string")) {
-				return jso_schema_value_parse_string(schema, data, parent);
+				return jso_schema_value_parse_string(schema, data, parent, init_keywords);
 			}
 			break;
 		case 'n':
 			if (jso_string_equals_to_cstr(type, "number")) {
-				return jso_schema_value_parse_number(schema, data, parent);
+				return jso_schema_value_parse_number(schema, data, parent, init_keywords);
 			}
 			if (jso_string_equals_to_cstr(type, "null")) {
-				return jso_schema_value_parse_null(schema, data, parent);
+				return jso_schema_value_parse_null(schema, data, parent, init_keywords);
 			}
 			break;
 		case 'i':
 			if (jso_string_equals_to_cstr(type, "integer")) {
-				return jso_schema_value_parse_integer(schema, data, parent);
+				return jso_schema_value_parse_integer(schema, data, parent, init_keywords);
 			}
 			break;
 		case 'b':
 			if (jso_string_equals_to_cstr(type, "boolean")) {
-				return jso_schema_value_parse_boolean(schema, data, parent);
+				return jso_schema_value_parse_boolean(schema, data, parent, init_keywords);
 			}
 			break;
 		case 'a':
 			if (jso_string_equals_to_cstr(type, "array")) {
-				return jso_schema_value_parse_array(schema, data, parent);
+				return jso_schema_value_parse_array(schema, data, parent, init_keywords);
 			}
 			break;
 		case 'o':
 			if (jso_string_equals_to_cstr(type, "object")) {
-				return jso_schema_value_parse_object(schema, data, parent);
+				return jso_schema_value_parse_object(schema, data, parent, init_keywords);
 			}
 			break;
 	}
@@ -246,7 +247,7 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
 
 	for (int i = 0; i < func_count; i++) {
-		jso_schema_value *schema_type_value = value_parse_funcs[i](schema, data, parent);
+		jso_schema_value *schema_type_value = value_parse_funcs[i](schema, data, parent, false);
 		if (schema_type_value == NULL) {
 			jso_schema_array_free(any_of_arr);
 			jso_schema_value_free(schema_value);
@@ -271,7 +272,7 @@ jso_schema_value *jso_schema_value_parse(
 	if (val == NULL) {
 		return jso_schema_value_parse_any_type(schema, data, parent);
 	} else if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
-		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val));
+		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val), true);
 	}
 	if (jso_schema_data_check_type(schema, "type", val, JSO_TYPE_STRING, JSO_TYPE_ARRAY, true)
 			== JSO_FAILURE) {
@@ -295,7 +296,7 @@ jso_schema_value *jso_schema_value_parse(
 	{
 		JSO_ASSERT_EQ(JSO_TYPE_P(item), JSO_TYPE_STRING);
 		jso_schema_value *schema_type_value = jso_schema_value_parse_by_string_type(
-				schema, data, schema_value, JSO_STR_P(item));
+				schema, data, schema_value, JSO_STR_P(item), false);
 		if (schema_type_value == NULL) {
 			jso_schema_array_free(any_of_arr);
 			jso_schema_value_free(schema_value);

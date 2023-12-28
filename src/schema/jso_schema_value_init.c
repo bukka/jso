@@ -32,7 +32,7 @@
 
 jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		jso_schema_value *parent, const char *type_name, size_t value_size,
-		jso_schema_value_type value_type)
+		jso_schema_value_type value_type, jso_bool init_keywords)
 {
 	jso_schema_value *value = jso_schema_value_alloc(schema, type_name);
 	if (value == NULL) {
@@ -50,20 +50,22 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 	JSO_SCHEMA_VALUE_DATA_COMMON_P(value) = value_data;
 	JSO_SCHEMA_VALUE_TYPE_P(value) = value_type;
 
-	// set default keyword
-	JSO_SCHEMA_KW_SET_ANY_EX(schema, data, default, value, value_data, default_value);
+	if (init_keywords) {
+		// set default keyword
+		JSO_SCHEMA_KW_SET_ANY_EX(schema, data, default, value, value_data, default_value);
 
-	// set metadata keywords
-	JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data);
-	JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
+		// set metadata keywords
+		JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data);
+		JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
 
-	// set other common keywords
-	JSO_SCHEMA_KW_SET_ARR_EX(schema, data, enum, value, value_data, enum_elements);
-	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, allOf, value, value_data, all_of);
-	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
-	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
-	JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
-	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, definitions, value, value_data);
+		// set other common keywords
+		JSO_SCHEMA_KW_SET_ARR_EX(schema, data, enum, value, value_data, enum_elements);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, allOf, value, value_data, all_of);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
+		JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
+		JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, definitions, value, value_data);
+	}
 
 	return value;
 }

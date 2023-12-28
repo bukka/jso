@@ -446,6 +446,11 @@ typedef struct _jso_schema_value_common {
 } jso_schema_value_common;
 
 /**
+ * @brief JsonSchema any validation keywords.
+ */
+typedef jso_schema_value_common jso_schema_value_any;
+
+/**
  * @brief JsonSchema null validation keywords.
  */
 typedef jso_schema_value_common jso_schema_value_null;
@@ -575,6 +580,8 @@ typedef enum {
 typedef union _jso_schema_value_data {
 	/** common value pointer */
 	jso_schema_value_common *comval;
+	/** any value */
+	jso_schema_value_any *anyval;
 	/** null value */
 	jso_schema_value_null *nulval;
 	/** boolean value */

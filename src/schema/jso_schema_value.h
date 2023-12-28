@@ -38,13 +38,14 @@ jso_schema_value *jso_schema_value_alloc(jso_schema *schema, const char *type_na
 jso_schema_value_common *jso_schema_value_data_alloc(
 		size_t value_size, jso_schema *schema, const char *type_name);
 
-#define JSO_SCHEMA_VALUE_INIT(_schema, _data, _parent, _type_name, _value_type) \
+#define JSO_SCHEMA_VALUE_INIT(_schema, _data, _parent, _type_name, _value_type, _init_keywords) \
 	jso_schema_value_init(_schema, _data, _parent, #_type_name, \
-			sizeof(jso_schema_value_##_type_name), JSO_SCHEMA_VALUE_TYPE_NAME(_value_type))
+			sizeof(jso_schema_value_##_type_name), JSO_SCHEMA_VALUE_TYPE_NAME(_value_type), \
+			_init_keywords)
 
 jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		jso_schema_value *parent, const char *type_name, size_t value_size,
-		jso_schema_value_type value_type);
+		jso_schema_value_type value_type, jso_bool init_keywords);
 
 jso_schema_value *jso_schema_value_parse(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent);

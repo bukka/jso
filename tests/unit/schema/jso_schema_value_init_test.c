@@ -72,7 +72,7 @@ jso_schema_value_common *__wrap_jso_schema_value_data_alloc(
 }
 
 /* Wrapper for jso_schema_value_free. */
-jso_schema_value *__wrap_jso_schema_value_free(jso_schema_value *schema_value)
+void __wrap_jso_schema_value_free(jso_schema_value *schema_value)
 {
 	function_called();
 	check_expected_ptr(schema_value);
@@ -80,8 +80,8 @@ jso_schema_value *__wrap_jso_schema_value_free(jso_schema_value *schema_value)
 
 /* Tests for jso_schema_value_init. */
 
-/* Test initializing value if all ok. */
-static void test_jso_schema_value_init_when_all_good(void **state)
+/* Test initializing value if all ok and keword initialization is enabled. */
+static void test_jso_schema_value_init_when_all_good_and_keyword_init_enabled(void **state)
 {
 	(void) state; /* unused */
 
@@ -199,7 +199,38 @@ static void test_jso_schema_value_init_when_all_good(void **state)
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
 	jso_schema_value *result_value = jso_schema_value_init(
-			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL);
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, true);
+
+	assert_ptr_equal(&value, result_value);
+	assert_ptr_equal(JSO_SCHEMA_VALUE_DATA_COMMON_P(result_value), &value_data);
+	assert_ptr_equal(value_data.parent, &parent);
+}
+
+/* Test initializing value if all ok and keword initialization is disabled. */
+static void test_jso_schema_value_init_when_all_good_and_keyword_init_disabled(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data;
+	jso_schema_value value, parent;
+	jso_schema_value_common value_data;
+
+	jso_schema_init(&schema);
+
+	expect_function_call(__wrap_jso_schema_value_alloc);
+	expect_value(__wrap_jso_schema_value_alloc, schema, &schema);
+	expect_string(__wrap_jso_schema_value_alloc, type_name, "null");
+	will_return(__wrap_jso_schema_value_alloc, &value);
+
+	expect_function_call(__wrap_jso_schema_value_data_alloc);
+	expect_value(__wrap_jso_schema_value_data_alloc, value_size, 64);
+	expect_value(__wrap_jso_schema_value_data_alloc, schema, &schema);
+	expect_string(__wrap_jso_schema_value_data_alloc, type_name, "null");
+	will_return(__wrap_jso_schema_value_data_alloc, &value_data);
+
+	jso_schema_value *result_value = jso_schema_value_init(
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, false);
 
 	assert_ptr_equal(&value, result_value);
 	assert_ptr_equal(JSO_SCHEMA_VALUE_DATA_COMMON_P(result_value), &value_data);
@@ -253,7 +284,7 @@ static void test_jso_schema_value_init_when_description_fails(void **state)
 	expect_value(__wrap_jso_schema_value_free, schema_value, &value);
 
 	jso_schema_value *result_value = jso_schema_value_init(
-			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL);
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, true);
 
 	assert_null(result_value);
 }
@@ -266,7 +297,6 @@ static void test_jso_schema_value_init_when_allocating_value_data_fails(void **s
 	jso_schema schema;
 	jso_value data;
 	jso_schema_value value, parent;
-	jso_schema_value_common value_data;
 
 	jso_schema_init(&schema);
 
@@ -285,7 +315,7 @@ static void test_jso_schema_value_init_when_allocating_value_data_fails(void **s
 	expect_value(__wrap_jso_schema_value_free, schema_value, &value);
 
 	jso_schema_value *result_value = jso_schema_value_init(
-			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL);
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, true);
 
 	assert_null(result_value);
 }
@@ -297,8 +327,7 @@ static void test_jso_schema_value_init_when_allocating_value_fails(void **state)
 
 	jso_schema schema;
 	jso_value data;
-	jso_schema_value value, parent;
-	jso_schema_value_common value_data;
+	jso_schema_value parent;
 
 	jso_schema_init(&schema);
 
@@ -308,7 +337,7 @@ static void test_jso_schema_value_init_when_allocating_value_fails(void **state)
 	will_return(__wrap_jso_schema_value_alloc, NULL);
 
 	jso_schema_value *result_value = jso_schema_value_init(
-			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL);
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, true);
 
 	assert_null(result_value);
 }
@@ -316,7 +345,8 @@ static void test_jso_schema_value_init_when_allocating_value_fails(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_jso_schema_value_init_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_keyword_init_enabled),
+		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_keyword_init_disabled),
 		cmocka_unit_test(test_jso_schema_value_init_when_description_fails),
 		cmocka_unit_test(test_jso_schema_value_init_when_allocating_value_data_fails),
 		cmocka_unit_test(test_jso_schema_value_init_when_allocating_value_fails),
