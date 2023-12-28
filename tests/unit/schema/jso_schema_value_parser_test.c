@@ -136,10 +136,15 @@ jso_rc __wrap_jso_schema_keyword_validate_array_of_strings(
 }
 
 /* Wrapper for jso_schema_value_free. */
+extern void __real_jso_schema_value_free(jso_schema_value *value);
 void __wrap_jso_schema_value_free(jso_schema_value *value)
 {
 	function_called();
 	check_expected_ptr(value);
+	bool proceed_real_free = mock_type(bool);
+	if (proceed_real_free) {
+		__real_jso_schema_value_free(value);
+	}
 }
 
 /* Wrapper for jso_schema_value_init. */
@@ -156,6 +161,15 @@ jso_schema_value *__wrap_jso_schema_value_init(jso_schema *schema, jso_value *da
 	check_expected(value_type);
 
 	return mock_ptr_type(jso_schema_value *);
+}
+
+/* Helper funcitons */
+static void jso_test_clear_schema(jso_schema *schema)
+{
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, schema->root);
+	will_return(__wrap_jso_schema_value_free, true);
+	jso_schema_clear(schema);
 }
 
 /* Tests for jso_schema_value_parse. */
@@ -196,6 +210,8 @@ static void test_jso_schema_value_parse_type_null_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type null when value init fails. */
@@ -231,6 +247,8 @@ static void test_jso_schema_value_parse_type_null_when_value_init_fails(void **s
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type boolean when all successful. */
@@ -269,6 +287,8 @@ static void test_jso_schema_value_parse_type_boolean_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type boolean when value init fails. */
@@ -304,6 +324,8 @@ static void test_jso_schema_value_parse_type_boolean_when_value_init_fails(void 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when all successful. */
@@ -394,6 +416,8 @@ static void test_jso_schema_value_parse_type_integer_when_all_good_without_exclu
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when all successful and min and max exclusive set. */
@@ -489,6 +513,8 @@ static void test_jso_schema_value_parse_type_integer_when_all_good_with_exclusiv
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when exclusive minimum is set but minimum is not. */
@@ -578,6 +604,7 @@ static void test_jso_schema_value_parse_type_integer_when_min_exclusive_fails(vo
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	JSO_SCHEMA_KEYWORD_FLAGS(intval.exclusive_maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_FLAGS(intval.maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
@@ -590,6 +617,9 @@ static void test_jso_schema_value_parse_type_integer_when_min_exclusive_fails(vo
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("The minimum must be set when exclusiveMinimum is set",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test parsing value for string type integer when exclusive maximum is set but maximum is not. */
@@ -679,6 +709,7 @@ static void test_jso_schema_value_parse_type_integer_when_max_exclusive_fails(vo
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	JSO_SCHEMA_KEYWORD_FLAGS(intval.exclusive_maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_FLAGS(intval.maximum) = 0;
@@ -691,6 +722,9 @@ static void test_jso_schema_value_parse_type_integer_when_max_exclusive_fails(vo
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("The maximum must be set when exclusiveMaximum is set",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test parsing value for string type integer when setting of exclusive maximum fails. */
@@ -780,10 +814,13 @@ static void test_jso_schema_value_parse_type_integer_when_exclusive_max_setting_
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when setting of maximum fails. */
@@ -863,10 +900,13 @@ static void test_jso_schema_value_parse_type_integer_when_maximum_setting_fails(
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when setting of exclusive minimum fails. */
@@ -936,10 +976,13 @@ static void test_jso_schema_value_parse_type_integer_when_exclusive_min_setting_
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when setting of minimum fails. */
@@ -999,10 +1042,13 @@ static void test_jso_schema_value_parse_type_integer_when_minimum_setting_fails(
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when setting of multiple of fails. */
@@ -1052,10 +1098,13 @@ static void test_jso_schema_value_parse_type_integer_when_multiple_of_setting_fa
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type integer when value init fails. */
@@ -1091,6 +1140,8 @@ static void test_jso_schema_value_parse_type_integer_when_value_init_fails(void 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when all successful. */
@@ -1181,6 +1232,8 @@ static void test_jso_schema_value_parse_type_number_when_all_good_without_exclus
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when all successful and min and max exclusive set. */
@@ -1276,6 +1329,8 @@ static void test_jso_schema_value_parse_type_number_when_all_good_with_exclusive
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when exclusive minimum is set but minimum is not. */
@@ -1365,6 +1420,7 @@ static void test_jso_schema_value_parse_type_number_when_min_exclusive_fails(voi
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	JSO_SCHEMA_KEYWORD_FLAGS(numval.exclusive_maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_FLAGS(numval.maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
@@ -1377,6 +1433,9 @@ static void test_jso_schema_value_parse_type_number_when_min_exclusive_fails(voi
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("The minimum must be set when exclusiveMinimum is set",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test parsing value for string type number when exclusive maximum is set but maximum is not. */
@@ -1466,6 +1525,7 @@ static void test_jso_schema_value_parse_type_number_when_max_exclusive_fails(voi
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	JSO_SCHEMA_KEYWORD_FLAGS(numval.exclusive_maximum) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_FLAGS(numval.maximum) = 0;
@@ -1478,6 +1538,9 @@ static void test_jso_schema_value_parse_type_number_when_max_exclusive_fails(voi
 	assert_int_equal(JSO_SCHEMA_ERROR_VALUE_DATA_DEPS, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("The maximum must be set when exclusiveMaximum is set",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test parsing value for string type number when setting of exclusive maximum fails. */
@@ -1567,10 +1630,13 @@ static void test_jso_schema_value_parse_type_number_when_exclusive_max_setting_f
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when setting of maximum fails. */
@@ -1650,10 +1716,13 @@ static void test_jso_schema_value_parse_type_number_when_maximum_setting_fails(v
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when setting of exclusive minimum fails. */
@@ -1723,10 +1792,13 @@ static void test_jso_schema_value_parse_type_number_when_exclusive_min_setting_f
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when setting of minimum fails. */
@@ -1786,10 +1858,13 @@ static void test_jso_schema_value_parse_type_number_when_minimum_setting_fails(v
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when setting of multiple of fails. */
@@ -1839,10 +1914,13 @@ static void test_jso_schema_value_parse_type_number_when_multiple_of_setting_fai
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type number when value init fails. */
@@ -1878,6 +1956,8 @@ static void test_jso_schema_value_parse_type_number_when_value_init_fails(void *
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type string when all successful. */
@@ -1948,6 +2028,8 @@ static void test_jso_schema_value_parse_type_string_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type string when setting pattern fails. */
@@ -2017,10 +2099,13 @@ static void test_jso_schema_value_parse_type_string_when_pattern_fails(void **st
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type string when setting minLength fails. */
@@ -2080,10 +2165,13 @@ static void test_jso_schema_value_parse_type_string_when_min_length_fails(void *
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type string when setting maxLength fails. */
@@ -2132,10 +2220,13 @@ static void test_jso_schema_value_parse_type_string_when_max_length_fails(void *
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type string when value init fails. */
@@ -2171,6 +2262,8 @@ static void test_jso_schema_value_parse_type_string_when_value_init_fails(void *
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when all successful. */
@@ -2268,6 +2361,8 @@ static void test_jso_schema_value_parse_type_array_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when min items setting fails. */
@@ -2364,10 +2459,13 @@ static void test_jso_schema_value_parse_type_array_when_min_items_setting_fails(
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when max items setting fails. */
@@ -2453,10 +2551,13 @@ static void test_jso_schema_value_parse_type_array_when_max_items_setting_fails(
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when unique items setting fails. */
@@ -2531,10 +2632,13 @@ static void test_jso_schema_value_parse_type_array_when_unique_items_setting_fai
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when items setting fails. */
@@ -2599,10 +2703,13 @@ static void test_jso_schema_value_parse_type_array_when_items_setting_fails(void
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when additional items setting fails. */
@@ -2654,10 +2761,13 @@ static void test_jso_schema_value_parse_type_array_when_addition_items_setting_f
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type array when value init fails. */
@@ -2693,6 +2803,8 @@ static void test_jso_schema_value_parse_type_array_when_value_init_fails(void **
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when all successful. */
@@ -2800,6 +2912,8 @@ static void test_jso_schema_value_parse_type_object_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&value, returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when dependencies setting fails. */
@@ -2906,10 +3020,13 @@ static void test_jso_schema_value_parse_type_object_when_deps_setting_fails(void
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when pattern properties setting fails. */
@@ -3005,10 +3122,13 @@ static void test_jso_schema_value_parse_type_object_when_pattern_props_setting_f
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when properties setting fails. */
@@ -3093,10 +3213,13 @@ static void test_jso_schema_value_parse_type_object_when_props_setting_fails(voi
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when additional properties setting fails. */
@@ -3170,10 +3293,13 @@ static void test_jso_schema_value_parse_type_object_when_addition_props_setting_
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when max preperties setting fails. */
@@ -3233,10 +3359,13 @@ static void test_jso_schema_value_parse_type_object_when_max_props_setting_fails
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when min preperties setting fails. */
@@ -3285,10 +3414,13 @@ static void test_jso_schema_value_parse_type_object_when_min_props_setting_fails
 
 	expect_function_call(__wrap_jso_schema_value_free);
 	expect_value(__wrap_jso_schema_value_free, value, &value);
+	will_return(__wrap_jso_schema_value_free, false);
 
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for string type object when value init fails. */
@@ -3324,6 +3456,8 @@ static void test_jso_schema_value_parse_type_object_when_value_init_fails(void *
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_null(returned_value);
+
+	jso_string_free(type);
 }
 
 /* Test parsing value for empty string type. */
@@ -3353,6 +3487,9 @@ static void test_jso_schema_value_parse_empty_string_type(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_TYPE_INVALID, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
 			"Invalid schema type because it is an empty string", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test parsing value for invalid string type. */
@@ -3381,6 +3518,9 @@ static void test_jso_schema_value_parse_invalid_string_type(void **state)
 	assert_null(returned_value);
 	assert_int_equal(JSO_SCHEMA_ERROR_TYPE_INVALID, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("Invalid schema type wrong", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	jso_string_free(type);
+	jso_test_clear_schema(&schema);
 }
 
 int main(void)
