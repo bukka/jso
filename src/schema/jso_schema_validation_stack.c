@@ -86,6 +86,21 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 	return next;
 }
 
+jso_schema_validation_position *jso_schema_validation_stack_push_separator(
+		jso_schema_validation_stack *stack)
+{
+	if (jso_schema_validation_stack_resize_if_needed(stack) == JSO_FAILURE) {
+		return NULL;
+	}
+
+	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
+	next->type = JSO_SCHEMA_VALIDATION_POSITION_SENTINEL;
+	next->parent = stack->last_separator;
+	stack->last_separator = next;
+
+	return next;
+}
+
 jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_validation_stack *stack)
 {
 	if (stack->size == 0) {

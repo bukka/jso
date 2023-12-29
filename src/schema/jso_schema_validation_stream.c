@@ -27,6 +27,8 @@
 
 #include "jso_schema_value.h"
 #include "jso_schema_validation_composition.h"
+#include "jso_schema_validation_array.h"
+#include "jso_schema_validation_object.h"
 #include "jso_schema_validation_stack.h"
 
 inline jso_rc jso_schema_validation_stream_stack_init(
@@ -40,6 +42,18 @@ inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_b
 		jso_schema_validation_position *parent)
 {
 	return jso_schema_validation_stack_push_basic(&stream->stack, current_value, parent);
+}
+
+inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_separator(
+		jso_schema_validation_stream *stream)
+{
+	return jso_schema_validation_stack_push_separator(&stream->stack);
+}
+
+inline jso_bool jso_schema_validation_stream_should_terminate(
+		jso_schema *schema, jso_schema_validation_position *pos)
+{
+	return pos->validation_result == JSO_FAILURE && jso_schema_error_is_fatal(schema);
 }
 
 inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
@@ -59,7 +73,7 @@ void jso_schema_validation_stream_stack_layer_iterator_start(
 	jso_schema_validation_stack_layer_iterator_start(&stream->stack, iterator);
 }
 
-jso_schema_validation_position *jso_schema_validation_stream_layer_iterator_next(
+jso_schema_validation_position *jso_schema_validation_stream_stack_layer_iterator_next(
 		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
 {
 	return jso_schema_validation_stack_layer_iterator_next(&stream->stack, iterator);
@@ -84,6 +98,45 @@ JSO_API jso_rc jso_schema_validation_stream_init(
 
 JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *stream)
 {
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+	jso_schema *schema = stream->root_schema;
+
+	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
+	if (jso_schema_validation_stream_stack_push_separator(stream) == NULL) {
+		return JSO_FAILURE;
+	}
+	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
+		jso_schema_value *value = pos->current_value;
+		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
+			if (pos->parent != NULL) {
+				jso_schema_value *next_value;
+				if (pos->object_key) { // object
+					next_value = jso_schema_validation_object_find_value(
+							schema, value, pos->object_key);
+				} else { // array
+					next_value = jso_schema_validation_array_find_value(schema, value, pos->index);
+				}
+				if (next_value == NULL) {
+					pos->validation_result = JSO_FAILURE;
+				} else {
+					if (jso_schema_validation_stream_stack_push_basic(stream, next_value, pos)
+							== NULL) {
+						return JSO_FAILURE;
+					}
+					pos->validation_result
+							= jso_schema_validation_composition_check(stream, next_value);
+				}
+			}
+
+		} else {
+			pos->validation_result = JSO_FAILURE;
+		}
+
+		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
+			return JSO_FAILURE;
+		}
+	}
 
 	return JSO_SUCCESS;
 }
@@ -135,15 +188,15 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	jso_schema *schema = stream->root_schema;
 
 	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
-	while ((pos = jso_schema_validation_stream_layer_iterator_next(stream, &iterator))) {
+	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
-		jso_schema_value_type value_type = JSO_TYPE_P(value);
+		jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
 		if (value_type == JSO_SCHEMA_VALUE_TYPE_OBJECT || value_type == JSO_SCHEMA_VALUE_TYPE_ARRAY
 				|| (pos->validation_result = jso_schema_validation_composition_check(stream, value))
 						== JSO_SUCCESS) {
 			pos->validation_result = jso_schema_value_validate(schema, value, instance);
 		}
-		if (pos->validation_result == JSO_FAILURE && jso_schema_error_is_set(schema)) {
+		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 			return JSO_FAILURE;
 		}
 	}

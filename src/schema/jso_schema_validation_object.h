@@ -31,7 +31,8 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_validation_object_start(jso_schema *schema, jso_schema_value *value);
+jso_schema_value *jso_schema_validation_object_find_value(
+		jso_schema *schema, jso_schema_value *value, jso_string *key);
 
 jso_rc jso_schema_validation_object_key(
 		jso_schema *schema, jso_schema_value *value, jso_string *key);

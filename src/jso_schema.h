@@ -855,11 +855,24 @@ typedef struct _jso_schema {
  * Check if schema error is set.
  *
  * @param schema shema of type @ref jso_schema
- * @return JSO_TRUE on success, otherwise JSO_FALSE
+ * @return JSO_TRUE if error set, otherwise JSO_FALSE
  */
 static inline bool jso_schema_error_is_set(jso_schema *schema)
 {
 	return JSO_SCHEMA_ERROR_TYPE(schema) != JSO_SCHEMA_ERROR_NONE;
+}
+
+/**
+ * Check if schema error is a fatal error that requires quick termination.
+ *
+ * @param schema shema of type @ref jso_schema
+ * @return JSO_TRUE if fatal error, otherwise JSO_FALSE
+ */
+static inline bool jso_schema_error_is_fatal(jso_schema *schema)
+{
+	jso_schema_error_type type = JSO_SCHEMA_ERROR_TYPE(schema);
+	return (type == JSO_SCHEMA_ERROR_VALUE_ALLOC || type == JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC
+			|| type == JSO_SCHEMA_ERROR_KEYWORD_ALLOC || type == JSO_SCHEMA_ERROR_VALIDATION_ALLOC);
 }
 
 /**
@@ -950,6 +963,8 @@ struct _jso_schema_validation_position {
 typedef struct _jso_schema_validation_stack {
 	/** validation positions */
 	jso_schema_validation_position *positions;
+	/** last separator position */
+	jso_schema_validation_position *last_separator;
 	/** allocated capacity */
 	size_t capacity;
 	/** used stack size */
@@ -960,7 +975,7 @@ typedef struct _jso_schema_validation_stack {
  * @brief JsonSchema validation stream structure.
  */
 typedef struct _jso_schema_validation_stream {
-	/** root schema */
+	/** root schema, TODO: move to stack so allocation errors can be reported */
 	jso_schema *root_schema;
 	/** validation stack of positions */
 	jso_schema_validation_stack stack;

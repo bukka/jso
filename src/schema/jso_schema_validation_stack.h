@@ -47,6 +47,9 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_stack *stack, jso_schema_value *current_value,
 		jso_schema_validation_position *parent);
 
+jso_schema_validation_position *jso_schema_validation_stack_push_separator(
+		jso_schema_validation_stack *stack);
+
 jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_validation_stack *stack);
 
 void jso_schema_validation_stack_layer_iterator_start(
