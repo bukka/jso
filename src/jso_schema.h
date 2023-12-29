@@ -951,7 +951,8 @@ struct _jso_schema_validation_position {
 	jso_schema_value *current_value;
 	/** schema object key if object is being processed */
 	jso_string *object_key;
-	/** schema array index if array is being processed */
+	/** schema array index if array is being processed or size of object if object is being
+	 * processed */
 	size_t index;
 	/** start of the current layer */
 	size_t layer_start;

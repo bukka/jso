@@ -144,6 +144,20 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 JSO_API jso_rc jso_schema_validation_stream_object_key(
 		jso_schema_validation_stream *stream, jso_string *key)
 {
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+	jso_schema *schema = stream->root_schema;
+
+	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
+	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
+		++pos->index;
+		pos->validation_result
+				= jso_schema_validation_object_key(schema, pos->current_value, key, pos->index);
+		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
+			return JSO_FAILURE;
+		}
+		pos->object_key = key;
+	}
 
 	return JSO_SUCCESS;
 }
@@ -151,7 +165,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
 		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item)
 {
-
+	// currently there is nothing to validate
 	return JSO_SUCCESS;
 }
 

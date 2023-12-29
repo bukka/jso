@@ -35,7 +35,7 @@ jso_schema_value *jso_schema_validation_object_find_value(
 		jso_schema *schema, jso_schema_value *value, jso_string *key);
 
 jso_rc jso_schema_validation_object_key(
-		jso_schema *schema, jso_schema_value *value, jso_string *key);
+		jso_schema *schema, jso_schema_value *value, jso_string *key, size_t num_properties);
 
 jso_rc jso_schema_validation_object_update(jso_schema *schema, jso_schema_value *value,
 		jso_object *instance_object, jso_string *instance_key, jso_value *instance_value);
