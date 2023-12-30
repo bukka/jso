@@ -79,6 +79,11 @@ jso_schema_validation_position *jso_schema_validation_stream_stack_layer_iterato
 	return jso_schema_validation_stack_layer_iterator_next(&stream->stack, iterator);
 }
 
+void jso_schema_validation_stream_stack_layer_remove(jso_schema_validation_stream *stream)
+{
+	jso_schema_validation_stack_layer_remove(&stream->stack);
+}
+
 JSO_API jso_rc jso_schema_validation_stream_init(
 		jso_schema *schema, jso_schema_validation_stream *stream, size_t stack_capacity)
 {
@@ -109,25 +114,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
 		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
-			if (pos->parent != NULL) {
-				jso_schema_value *next_value;
-				if (pos->object_key) { // object
-					next_value = jso_schema_validation_object_find_value(
-							schema, value, pos->object_key);
-				} else { // array
-					next_value = jso_schema_validation_array_find_value(schema, value, pos->index);
-				}
-				if (next_value == NULL) {
-					pos->validation_result = JSO_FAILURE;
-				} else {
-					if (jso_schema_validation_stream_stack_push_basic(stream, next_value, pos)
-							== NULL) {
-						return JSO_FAILURE;
-					}
-					pos->validation_result
-							= jso_schema_validation_composition_check(stream, next_value);
-				}
-			}
+			pos->validation_result = jso_schema_validation_composition_check(stream, value);
 
 		} else {
 			pos->validation_result = JSO_FAILURE;
@@ -157,6 +144,9 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 			return JSO_FAILURE;
 		}
 		pos->object_key = key;
+		if (jso_schema_validation_object_push_values(stream, pos->current_value, key)) {
+			return JSO_FAILURE;
+		}
 	}
 
 	return JSO_SUCCESS;
@@ -214,6 +204,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 			return JSO_FAILURE;
 		}
 	}
+	jso_schema_validation_stream_stack_layer_remove(stream);
 
 	return JSO_SUCCESS;
 }

@@ -58,4 +58,6 @@ void jso_schema_validation_stack_layer_iterator_start(
 jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
 		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
 
+void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack);
+
 #endif /* JSO_SCHEMA_VALIDATION_STACK_H */

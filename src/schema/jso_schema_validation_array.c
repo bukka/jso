@@ -29,10 +29,10 @@
 
 #include "jso.h"
 
-jso_schema_value *jso_schema_validation_array_find_value(
-		jso_schema *schema, jso_schema_value *value, size_t index)
+jso_rc jso_schema_validation_array_push_values(
+		jso_schema_validation_stream *stream, jso_schema_value *value, size_t index)
 {
-	return NULL;
+	return JSO_SUCCESS;
 }
 
 jso_rc jso_schema_validation_array_append(jso_schema *schema, jso_schema_value *value,

@@ -21,16 +21,18 @@
  *
  */
 
+#include "jso_schema_validation_object.h"
+
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
 #include "jso_schema_value.h"
 
 #include "jso.h"
 
-jso_schema_value *jso_schema_validation_object_find_value(
-		jso_schema *schema, jso_schema_value *value, jso_string *key)
+jso_rc jso_schema_validation_object_push_values(
+		jso_schema_validation_stream *stream, jso_schema_value *value, jso_string *key)
 {
-	return NULL;
+	return JSO_SUCCESS;
 }
 
 jso_rc jso_schema_validation_object_key(

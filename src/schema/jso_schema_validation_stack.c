@@ -130,3 +130,15 @@ jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
 	}
 	return pos;
 }
+
+void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack)
+{
+	if (stack->last_separator != NULL) {
+		stack->last_separator = stack->last_separator->parent;
+		if (stack->last_separator == NULL) {
+			stack->size = 0;
+		} else {
+			stack->size = stack->last_separator - stack->positions;
+		}
+	}
+}
