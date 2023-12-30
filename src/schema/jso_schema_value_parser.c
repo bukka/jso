@@ -33,7 +33,7 @@
 static jso_schema_value *jso_schema_value_parse_any(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
-	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, null, TYPE_ANY, true);
+	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, any, TYPE_ANY, true);
 }
 
 static jso_schema_value *jso_schema_value_parse_null(
