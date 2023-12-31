@@ -3590,6 +3590,15 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 
 	jso_schema_init(&schema);
 
+	memset(&any_value, 0, sizeof(jso_schema_value));
+	memset(&null_value, 0, sizeof(jso_schema_value));
+	memset(&bool_value, 0, sizeof(jso_schema_value));
+	memset(&int_value, 0, sizeof(jso_schema_value));
+	memset(&num_value, 0, sizeof(jso_schema_value));
+	memset(&arr_value, 0, sizeof(jso_schema_value));
+	memset(&obj_value, 0, sizeof(jso_schema_value));
+	memset(&objval, 0, sizeof(jso_schema_value));
+
 	memset(&anyval, 0, sizeof(jso_schema_value_any));
 	memset(&nulval, 0, sizeof(jso_schema_value_null));
 	memset(&boolval, 0, sizeof(jso_schema_value_boolean));
@@ -3598,8 +3607,6 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	memset(&strval, 0, sizeof(jso_schema_value_string));
 	memset(&arrval, 0, sizeof(jso_schema_value_array));
 	memset(&objval, 0, sizeof(jso_schema_value_object));
-
-	JSO_SCHEMA_VALUE_DATA_NULL(null_value) = &nulval;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -3623,6 +3630,9 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, &any_value);
+
+	JSO_SCHEMA_VALUE_DATA_NULL(null_value) = &nulval;
+	JSO_SCHEMA_VALUE_FLAGS(null_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
 
 	expect_function_call(__wrap_jso_schema_value_init);
 	expect_value(__wrap_jso_schema_value_init, schema, &schema);
@@ -3651,12 +3661,8 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_value_init, init_keywords, false);
 	will_return(__wrap_jso_schema_value_init, &bool_value);
 
-	expect_function_call(__wrap_jso_schema_array_append);
-	expect_value(__wrap_jso_schema_array_append, arr, &any_of_arr);
-	expect_value(__wrap_jso_schema_array_append, val, &bool_value);
-	will_return(__wrap_jso_schema_array_append, JSO_SUCCESS);
-
 	JSO_SCHEMA_VALUE_DATA_INT(int_value) = &intval;
+	JSO_SCHEMA_VALUE_FLAGS(int_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
 
 	expect_function_call(__wrap_jso_schema_value_init);
 	expect_value(__wrap_jso_schema_value_init, schema, &schema);
@@ -3725,6 +3731,7 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	will_return(__wrap_jso_schema_array_append, JSO_SUCCESS);
 
 	JSO_SCHEMA_VALUE_DATA_NUM(num_value) = &numval;
+	JSO_SCHEMA_VALUE_FLAGS(num_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
 
 	expect_function_call(__wrap_jso_schema_value_init);
 	expect_value(__wrap_jso_schema_value_init, schema, &schema);
@@ -3793,6 +3800,7 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	will_return(__wrap_jso_schema_array_append, JSO_SUCCESS);
 
 	JSO_SCHEMA_VALUE_DATA_STR(str_value) = &strval;
+	JSO_SCHEMA_VALUE_FLAGS(str_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
 
 	expect_function_call(__wrap_jso_schema_value_init);
 	expect_value(__wrap_jso_schema_value_init, schema, &schema);
@@ -3912,12 +3920,8 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
-	expect_function_call(__wrap_jso_schema_array_append);
-	expect_value(__wrap_jso_schema_array_append, arr, &any_of_arr);
-	expect_value(__wrap_jso_schema_array_append, val, &arr_value);
-	will_return(__wrap_jso_schema_array_append, JSO_SUCCESS);
-
 	JSO_SCHEMA_VALUE_DATA_OBJ(obj_value) = &objval;
+	JSO_SCHEMA_VALUE_FLAGS(obj_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
 
 	expect_function_call(__wrap_jso_schema_value_init);
 	expect_value(__wrap_jso_schema_value_init, schema, &schema);

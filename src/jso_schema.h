@@ -412,6 +412,22 @@ typedef struct _jso_schema_keyword {
 #define JSO_SCHEMA_KEYWORD_FLAGS(_kw) _kw.flags
 
 /**
+ * Check present flag for the supplied schema keyword pointer.
+ *
+ * @param _pkw schema keyword pointer
+ * @return JSO_TRUE if keyword is present, otherwise JSO_FALSE
+ */
+#define JSO_SCHEMA_KEYWORD_IS_PRESENT_P(_pkw) (_pkw->flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
+
+/**
+ * Check present flag for the supplied schema keyword.
+ *
+ * @param _kw schema keyword
+ * @return JSO_TRUE if keyword is present, otherwise JSO_FALSE
+ */
+#define JSO_SCHEMA_KEYWORD_IS_PRESENT(_kw) (_kw.flags & JSO_SCHEMA_KEYWORD_FLAG_PRESENT)
+
+/**
  * @brief Common schema feilds without default value.
  */
 #define JSO_SCHEMA_VALUE_COMMON_FIELDS() \
@@ -599,6 +615,11 @@ typedef union _jso_schema_value_data {
 } jso_schema_value_data;
 
 /**
+ * @brief Flag specifying that all value keywords are not set.
+ */
+#define JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY 0x01
+
+/**
  * @brief JsonSchema value data and type.
  */
 struct _jso_schema_value {
@@ -606,6 +627,8 @@ struct _jso_schema_value {
 	jso_schema_value_data data;
 	/** value type */
 	jso_schema_value_type type;
+	/** value flags */
+	jso_uint32 flags;
 };
 
 /**
@@ -783,6 +806,38 @@ struct _jso_schema_value {
  * @return The schema value type of @ref jso_schema_value_type.
  */
 #define JSO_SCHEMA_VALUE_TYPE(_sv) _sv.type
+
+/**
+ * Get schema value flags for the supplied schema value pointer.
+ *
+ * @param _psv schema value pointer
+ * @return The schema value flags
+ */
+#define JSO_SCHEMA_VALUE_FLAGS_P(_psv) _psv->flags
+
+/**
+ * Get schema value flags for the supplied schema value.
+ *
+ * @param _sv schema value
+ * @return The schema value flags
+ */
+#define JSO_SCHEMA_VALUE_FLAGS(_psv) _psv.flags
+
+/**
+ * Check whether not empty flag is set from the supplied schema value pointer.
+ *
+ * @param _psv schema value pointer
+ * @return JSO_TRUE if value is not empty, otherwise JSO_FALSE
+ */
+#define JSO_SCHEMA_VALUE_IS_NOT_EMPTY_P(_psv) (_psv->flags & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY)
+
+/**
+ * Check whether not empty flag is set from the supplied schema value.
+ *
+ * @param _sv schema value
+ * @return JSO_TRUE if value is not empty, otherwise JSO_FALSE
+ */
+#define JSO_SCHEMA_VALUE_IS_NOT_EMPTY(_sv) (_sv.flags & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY)
 
 /**
  * @brief Schema version.

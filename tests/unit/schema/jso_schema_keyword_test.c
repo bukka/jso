@@ -95,8 +95,8 @@ jso_schema_keyword *__wrap_jso_schema_keyword_get_union_of_2_types(jso_schema *s
 
 /* Tests for jso_schema_keyword_set. */
 
-/* Test setting of keyword when all successful. */
-static void test_jso_schema_keyword_set_when_success(void **state)
+/* Test setting of keyword when all successful and value is empty. */
+static void test_jso_schema_keyword_set_when_success_and_empty(void **state)
 {
 	(void) state; /* unused */
 
@@ -106,6 +106,9 @@ static void test_jso_schema_keyword_set_when_success(void **state)
 	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
+
+	memset(&value, 0, sizeof(jso_schema_value));
+	memset(&keyword, 0, sizeof(jso_schema_keyword));
 
 	expect_function_call(__wrap_jso_schema_keyword_get_ex);
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema, &schema);
@@ -124,10 +127,48 @@ static void test_jso_schema_keyword_set_when_success(void **state)
 			&schema, &data, "ukey", &value, &keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, 0);
 
 	assert_int_equal(JSO_SUCCESS, result);
+	assert_int_equal(0, JSO_SCHEMA_VALUE_FLAGS(value) & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY);
+}
+
+/* Test setting of keyword when all successful and value is not empty. */
+static void test_jso_schema_keyword_set_when_success_and_not_empty(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data;
+	jso_schema_value value;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+
+	memset(&value, 0, sizeof(jso_schema_value));
+	memset(&keyword, 0, sizeof(jso_schema_keyword));
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+
+	expect_function_call(__wrap_jso_schema_keyword_get_ex);
+	expect_value(__wrap_jso_schema_keyword_get_ex, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_get_ex, data, &data);
+	expect_string(__wrap_jso_schema_keyword_get_ex, key, "ukey");
+	expect_value(__wrap_jso_schema_keyword_get_ex, parent, &value);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_get_ex, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_keyword_get_ex, error_on_invalid_type, true);
+	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
+	expect_value(__wrap_jso_schema_keyword_get_ex, val, NULL);
+	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_NONE);
+	will_return(__wrap_jso_schema_keyword_get_ex, &keyword);
+
+	jso_rc result = jso_schema_keyword_set(
+			&schema, &data, "ukey", &value, &keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, 0);
+
+	assert_int_equal(JSO_SUCCESS, result);
+	assert_int_equal(JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY,
+			JSO_SCHEMA_VALUE_FLAGS(value) & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY);
 }
 
 /* Test setting of keyword when returned keyword is null. */
-static void test_jso_schema_keyword_set_when_empty(void **state)
+static void test_jso_schema_keyword_set_when_null(void **state)
 {
 	(void) state; /* unused */
 
@@ -190,8 +231,8 @@ static void test_jso_schema_keyword_set_when_error(void **state)
 
 /* Tests for jso_schema_keyword_set_union_of_2_types. */
 
-/* Test setting of keyword with union of 2 types when all successful. */
-static void test_jso_schema_keyword_set_union_of_2_types_when_success(void **state)
+/* Test setting of keyword with union of 2 types when all successful and value empty. */
+static void test_jso_schema_keyword_set_union_of_2_types_when_success_and_empty(void **state)
 {
 	(void) state; /* unused */
 
@@ -201,6 +242,9 @@ static void test_jso_schema_keyword_set_union_of_2_types_when_success(void **sta
 	jso_schema_keyword keyword;
 
 	jso_schema_init(&schema);
+
+	memset(&value, 0, sizeof(jso_schema_value));
+	memset(&keyword, 0, sizeof(jso_schema_keyword));
 
 	expect_function_call(__wrap_jso_schema_keyword_get_union_of_2_types);
 	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, schema, &schema);
@@ -220,10 +264,49 @@ static void test_jso_schema_keyword_set_union_of_2_types_when_success(void **sta
 			&keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0);
 
 	assert_int_equal(JSO_SUCCESS, result);
+	assert_int_equal(0, JSO_SCHEMA_VALUE_FLAGS(value) & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY);
+}
+
+/* Test setting of keyword with union of 2 types when all successful and value is not empty. */
+static void test_jso_schema_keyword_set_union_of_2_types_when_success_and_not_empty(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data;
+	jso_schema_value value;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+
+	memset(&value, 0, sizeof(jso_schema_value));
+	memset(&keyword, 0, sizeof(jso_schema_keyword));
+	JSO_SCHEMA_KEYWORD_FLAGS(keyword) |= JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+
+	expect_function_call(__wrap_jso_schema_keyword_get_union_of_2_types);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, data, &data);
+	expect_string(__wrap_jso_schema_keyword_get_union_of_2_types, key, "ukey");
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, parent, &value);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, keyword_union_type_1,
+			JSO_SCHEMA_KEYWORD_TYPE_INTEGER);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, keyword_union_type_2,
+			JSO_SCHEMA_KEYWORD_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, schema_keyword, &keyword);
+	will_return(__wrap_jso_schema_keyword_get_union_of_2_types, JSO_SCHEMA_ERROR_NONE);
+	will_return(__wrap_jso_schema_keyword_get_union_of_2_types, &keyword);
+
+	jso_rc result = jso_schema_keyword_set_union_of_2_types(&schema, &data, "ukey", &value,
+			&keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0);
+
+	assert_int_equal(JSO_SUCCESS, result);
+	assert_int_equal(JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY,
+			JSO_SCHEMA_VALUE_FLAGS(value) & JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY);
 }
 
 /* Test setting of keyword with union of 2 types when returned keyword is null. */
-static void test_jso_schema_keyword_set_union_of_2_types_when_empty(void **state)
+static void test_jso_schema_keyword_set_union_of_2_types_when_null(void **state)
 {
 	(void) state; /* unused */
 
@@ -309,11 +392,13 @@ static void test_jso_schema_keyword_clear(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_jso_schema_keyword_set_when_success),
-		cmocka_unit_test(test_jso_schema_keyword_set_when_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_when_success_and_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_when_success_and_not_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_when_null),
 		cmocka_unit_test(test_jso_schema_keyword_set_when_error),
-		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_success),
-		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_success_and_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_success_and_not_empty),
+		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_null),
 		cmocka_unit_test(test_jso_schema_keyword_set_union_of_2_types_when_error),
 		cmocka_unit_test(test_jso_schema_keyword_clear),
 	};

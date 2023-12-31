@@ -243,8 +243,14 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 	size_t func_count = sizeof(value_parse_funcs) / sizeof(jso_schema_value_parse_type_func);
 	// create anyOf subschemas for each listed type
 	jso_schema_array *any_of_arr = jso_schema_array_alloc(func_count);
+	if (any_of_arr == NULL) {
+		return NULL;
+	}
 	// create parent common value that will contain subschema for each type
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
+	if (schema_value == NULL) {
+		return NULL;
+	}
 
 	for (int i = 0; i < func_count; i++) {
 		jso_schema_value *schema_type_value = value_parse_funcs[i](schema, data, parent, false);
@@ -253,7 +259,9 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 			jso_schema_value_free(schema_value);
 			return NULL;
 		}
-		JSO_ASSERT_EQ(jso_schema_array_append(any_of_arr, schema_type_value), JSO_SUCCESS);
+		if (JSO_SCHEMA_VALUE_IS_NOT_EMPTY_P(schema_type_value)) {
+			JSO_ASSERT_EQ(jso_schema_array_append(any_of_arr, schema_type_value), JSO_SUCCESS);
+		}
 	}
 
 	// save subschema to the any value
