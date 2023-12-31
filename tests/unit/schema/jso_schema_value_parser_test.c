@@ -4015,6 +4015,94 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	assert_ptr_equal(&any_of_arr, JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(any_of_kw));
 }
 
+/* Test parsing value for missing type when all bool value parsing fails. */
+static void test_jso_schema_value_parse_missing_type_when_bool_parsing_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data;
+	jso_schema_value parent;
+	jso_schema_value any_value, null_value, bool_value;
+	jso_schema_value_any anyval;
+	jso_schema_value_null nulval;
+	jso_schema_value_boolean boolval;
+	jso_schema_array any_of_arr;
+
+	jso_schema_init(&schema);
+
+	memset(&any_value, 0, sizeof(jso_schema_value));
+	memset(&null_value, 0, sizeof(jso_schema_value));
+	memset(&bool_value, 0, sizeof(jso_schema_value));
+	memset(&anyval, 0, sizeof(jso_schema_value_any));
+	memset(&nulval, 0, sizeof(jso_schema_value_null));
+	memset(&boolval, 0, sizeof(jso_schema_value_boolean));
+
+	expect_function_call(__wrap_jso_schema_data_get_value_fast);
+	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
+	expect_string(__wrap_jso_schema_data_get_value_fast, key, "type");
+	expect_value(__wrap_jso_schema_data_get_value_fast, keyword_flags, 0);
+	will_return(__wrap_jso_schema_data_get_value_fast, NULL);
+
+	expect_function_call(__wrap_jso_schema_array_alloc);
+	expect_value(__wrap_jso_schema_array_alloc, size, 7);
+	will_return(__wrap_jso_schema_array_alloc, &any_of_arr);
+
+	JSO_SCHEMA_VALUE_DATA_ANY(any_value) = &anyval;
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "any");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
+	will_return(__wrap_jso_schema_value_init, &any_value);
+
+	JSO_SCHEMA_VALUE_DATA_NULL(null_value) = &nulval;
+	JSO_SCHEMA_VALUE_FLAGS(null_value) |= JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY;
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "null");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_null));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_NULL);
+	expect_value(__wrap_jso_schema_value_init, init_keywords, false);
+	will_return(__wrap_jso_schema_value_init, &null_value);
+
+	expect_function_call(__wrap_jso_schema_array_append);
+	expect_value(__wrap_jso_schema_array_append, arr, &any_of_arr);
+	expect_value(__wrap_jso_schema_array_append, val, &null_value);
+	will_return(__wrap_jso_schema_array_append, JSO_SUCCESS);
+
+	JSO_SCHEMA_VALUE_DATA_BOOL(bool_value) = &boolval;
+
+	expect_function_call(__wrap_jso_schema_value_init);
+	expect_value(__wrap_jso_schema_value_init, schema, &schema);
+	expect_value(__wrap_jso_schema_value_init, data, &data);
+	expect_value(__wrap_jso_schema_value_init, parent, &parent);
+	expect_string(__wrap_jso_schema_value_init, type_name, "boolean");
+	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_boolean));
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_BOOLEAN);
+	expect_value(__wrap_jso_schema_value_init, init_keywords, false);
+	will_return(__wrap_jso_schema_value_init, NULL);
+
+	expect_function_call(__wrap_jso_schema_array_free);
+	expect_value(__wrap_jso_schema_array_free, arr, &any_of_arr);
+
+	expect_function_call(__wrap_jso_schema_value_free);
+	expect_value(__wrap_jso_schema_value_free, value, &any_value);
+	will_return(__wrap_jso_schema_value_free, false);
+
+	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
+
+	assert_null(returned_value);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -4065,6 +4153,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_value_parse_empty_string_type),
 		cmocka_unit_test(test_jso_schema_value_parse_invalid_string_type),
 		cmocka_unit_test(test_jso_schema_value_parse_missing_type_when_all_good),
+		cmocka_unit_test(test_jso_schema_value_parse_missing_type_when_bool_parsing_fails),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
