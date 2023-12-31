@@ -38,6 +38,7 @@ jso_rc jso_schema_validation_object_push_values(
 jso_rc jso_schema_validation_object_key(
 		jso_schema *schema, jso_schema_value *value, jso_string *key, size_t num_properties)
 {
+	// TODO: validate if key is allowed (when additionalProperties=false) and maxProperties based on index
 	return JSO_SUCCESS;
 }
 

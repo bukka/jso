@@ -56,12 +56,6 @@ static inline jso_bool jso_schema_validation_stream_should_terminate(
 	return pos->validation_result == JSO_FAILURE && jso_schema_error_is_fatal(schema);
 }
 
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
-		jso_schema_validation_stream *stream)
-{
-	return jso_schema_validation_stack_pop(&stream->stack);
-}
-
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
 {
 	jso_schema_validation_stack_clear(&stream->stack);
@@ -108,20 +102,15 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 	jso_schema *schema = stream->root_schema;
 
 	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
-	if (jso_schema_validation_stream_stack_push_separator(stream) == NULL) {
-		return JSO_FAILURE;
-	}
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
 		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
 			pos->validation_result = jso_schema_validation_composition_check(stream, value);
-
+			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
+				return JSO_FAILURE;
+			}
 		} else {
 			pos->validation_result = JSO_FAILURE;
-		}
-
-		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
-			return JSO_FAILURE;
 		}
 	}
 
@@ -155,18 +144,37 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
 		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item)
 {
-	// currently there is nothing to validate
+	// currently there is nothing to do
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_end(jso_schema_validation_stream *stream)
 {
-
+	// currently there is nothing to do
 	return JSO_SUCCESS;
 }
 
 JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *stream)
 {
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+	jso_schema *schema = stream->root_schema;
+
+	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
+	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
+		jso_schema_value *value = pos->current_value;
+		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_ARRAY) {
+			pos->validation_result = jso_schema_validation_composition_check(stream, value);
+			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
+				return JSO_FAILURE;
+			}
+			if (jso_schema_validation_array_push_values(stream, pos->current_value, 0)) {
+				return JSO_FAILURE;
+			}
+		} else {
+			pos->validation_result = JSO_FAILURE;
+		}
+	}
 
 	return JSO_SUCCESS;
 }
@@ -174,6 +182,16 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 JSO_API jso_rc jso_schema_validation_stream_array_append(
 		jso_schema_validation_stream *stream, jso_array *instance_array, jso_value *instance_item)
 {
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+
+	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
+	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
+		++pos->index;
+		if (jso_schema_validation_array_push_values(stream, pos->current_value, pos->index)) {
+			return JSO_FAILURE;
+		}
+	}
 
 	return JSO_SUCCESS;
 }
@@ -191,11 +209,12 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	jso_schema_validation_position *pos;
 	jso_schema *schema = stream->root_schema;
 
+	jso_value_type instance_type = JSO_TYPE_P(instance);
+	bool is_instance_arr_or_obj = instance_type == JSO_TYPE_ARRAY || instance_type == JSO_TYPE_OBJECT;
 	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
-		jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
-		if (value_type == JSO_SCHEMA_VALUE_TYPE_OBJECT || value_type == JSO_SCHEMA_VALUE_TYPE_ARRAY
+		if (is_instance_arr_or_obj
 				|| (pos->validation_result = jso_schema_validation_composition_check(stream, value))
 						== JSO_SUCCESS) {
 			pos->validation_result = jso_schema_value_validate(schema, value, instance);
