@@ -31,32 +31,32 @@
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_stack.h"
 
-inline jso_rc jso_schema_validation_stream_stack_init(
+static inline jso_rc jso_schema_validation_stream_stack_init(
 		jso_schema_validation_stream *stream, size_t capacity)
 {
 	return jso_schema_validation_stack_init(&stream->stack, capacity);
 }
 
-inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_basic(
+static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_basic(
 		jso_schema_validation_stream *stream, jso_schema_value *current_value,
 		jso_schema_validation_position *parent)
 {
 	return jso_schema_validation_stack_push_basic(&stream->stack, current_value, parent);
 }
 
-inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_separator(
+static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_separator(
 		jso_schema_validation_stream *stream)
 {
 	return jso_schema_validation_stack_push_separator(&stream->stack);
 }
 
-inline jso_bool jso_schema_validation_stream_should_terminate(
+static inline jso_bool jso_schema_validation_stream_should_terminate(
 		jso_schema *schema, jso_schema_validation_position *pos)
 {
 	return pos->validation_result == JSO_FAILURE && jso_schema_error_is_fatal(schema);
 }
 
-inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
+static inline jso_schema_validation_position *jso_schema_validation_stream_stack_pop(
 		jso_schema_validation_stream *stream)
 {
 	return jso_schema_validation_stack_pop(&stream->stack);
