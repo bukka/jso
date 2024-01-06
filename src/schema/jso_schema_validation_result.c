@@ -1,4 +1,4 @@
-/*
+/*jso_schema_validation_value_callback
  * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -21,35 +21,23 @@
  *
  */
 
-#include "jso_schema_validation_object.h"
-
-#include "jso_schema_error.h"
-#include "jso_schema_keyword.h"
-#include "jso_schema_value.h"
+#include "jso_schema_validation_result.h"
 
 #include "jso.h"
 
-jso_rc jso_schema_validation_object_push_values(
-		jso_schema_validation_stream *stream, jso_schema_value *value, jso_string *key)
+void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 {
-	return JSO_SUCCESS;
-}
-
-jso_rc jso_schema_validation_object_key(
-		jso_schema *schema, jso_schema_value *value, jso_string *key, size_t num_properties)
-{
-	// TODO: validate if key is allowed (when additionalProperties=false) and maxProperties based on
-	// index
-	return JSO_SUCCESS;
-}
-
-jso_rc jso_schema_validation_object_update(jso_schema *schema, jso_schema_value *value,
-		jso_object *instance_object, jso_string *instance_key, jso_value *instance_value)
-{
-	return JSO_SUCCESS;
-}
-
-jso_rc jso_schema_validation_object_end(jso_schema *schema, jso_schema_value *value)
-{
-	return JSO_SUCCESS;
+	// TODO:
+	// - loop through parents and update result
+	// 	 - mainly for failures bul also for for success if `not` present
+	// - special rules should apply for compositions
+	//   - anyOf success should set final result flag
+	//   - think how allOf and oneOf can be finalized
+	//     - how do we know that it is the last one and do we need to know it?
+	//   - not should maybe have some flag that will get set during composition check for position
+	//   and its children
+	// - should we also add some checks whether root_value has final_result set?
+	while (pos) {
+		pos = pos->parent;
+	}
 }

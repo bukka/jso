@@ -94,7 +94,7 @@ jso_schema_validation_position *jso_schema_validation_stack_push_separator(
 	}
 
 	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
-	next->type = JSO_SCHEMA_VALIDATION_POSITION_SENTINEL;
+	next->position_type = JSO_SCHEMA_VALIDATION_POSITION_SENTINEL;
 	next->parent = stack->last_separator;
 	stack->last_separator = next;
 

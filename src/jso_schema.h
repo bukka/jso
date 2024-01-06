@@ -976,6 +976,17 @@ JSO_API void jso_schema_free(jso_schema *schema);
 JSO_API void jso_schema_value_free(jso_schema_value *val);
 
 /**
+ * @brief Schema validation composition type.
+ */
+typedef enum _jso_schema_validation_composition_type {
+	JSO_SCHEMA_VALIDATION_COMPOSITION_NONE = 0,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_ALL,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_ANY,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_ONE,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_NOT,
+} jso_schema_validation_composition_type;
+
+/**
  * @brief Schema validation position type.
  */
 typedef enum _jso_schema_validation_position_type {
@@ -990,16 +1001,20 @@ typedef struct _jso_schema_validation_position jso_schema_validation_position;
  * @brief Check if validation position type is a sentinel
  */
 #define JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(_pos) \
-	(_pos->type == JSO_SCHEMA_VALIDATION_POSITION_SENTINEL)
+	(_pos->position_type == JSO_SCHEMA_VALIDATION_POSITION_SENTINEL)
 
 /**
  * @brief JsonSchema validation position structure used during the stream validation.
  */
 struct _jso_schema_validation_position {
 	/** position type */
-	jso_schema_validation_position_type type;
+	jso_schema_validation_position_type position_type;
+	/** composition type */
+	jso_schema_validation_composition_type composition_type;
 	/** validation result */
 	jso_rc validation_result;
+	/** whether the validation result is final */
+	jso_bool is_final_validation_result;
 	/** schema parent validation position */
 	jso_schema_validation_position *parent;
 	/** schema value currently processed */
@@ -1011,6 +1026,8 @@ struct _jso_schema_validation_position {
 	size_t index;
 	/** start of the current layer */
 	size_t layer_start;
+	/** the position stack depth */
+	jso_uint32 depth;
 };
 
 /**

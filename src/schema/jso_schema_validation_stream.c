@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -29,6 +29,7 @@
 #include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_array.h"
 #include "jso_schema_validation_object.h"
+#include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
 
 static inline jso_rc jso_schema_validation_stream_stack_init(
@@ -219,7 +220,8 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	jso_schema *schema = stream->root_schema;
 
 	jso_value_type instance_type = JSO_TYPE_P(instance);
-	bool is_instance_arr_or_obj = instance_type == JSO_TYPE_ARRAY || instance_type == JSO_TYPE_OBJECT;
+	bool is_instance_arr_or_obj
+			= instance_type == JSO_TYPE_ARRAY || instance_type == JSO_TYPE_OBJECT;
 	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
@@ -231,6 +233,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 			return JSO_FAILURE;
 		}
+		jso_schema_validation_result_propagate(pos);
 	}
 	jso_schema_validation_stream_stack_layer_remove(stream);
 
