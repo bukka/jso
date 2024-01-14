@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -86,6 +86,24 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 	return next;
 }
 
+jso_schema_validation_position *jso_schema_validation_stack_push_composed(
+		jso_schema_validation_stack *stack, jso_schema_value *current_value,
+		jso_schema_validation_position *parent,
+		jso_schema_validation_composition_type composition_type)
+{
+	if (jso_schema_validation_stack_resize_if_needed(stack) == JSO_FAILURE) {
+		return NULL;
+	}
+
+	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
+	next->position_type = JSO_SCHEMA_VALIDATION_POSITION_COMPOSED;
+	next->composition_type = composition_type;
+	next->current_value = current_value;
+	next->parent = parent;
+
+	return next;
+}
+
 jso_schema_validation_position *jso_schema_validation_stack_push_separator(
 		jso_schema_validation_stack *stack)
 {
@@ -126,6 +144,28 @@ jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
 	}
 	jso_schema_validation_position *pos = &stack->positions[++iterator->index];
 	if (JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
+		return NULL;
+	}
+	return pos;
+}
+
+void jso_schema_validation_stack_layer_reverse_iterator_start(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	JSO_ASSERT_GT(stack->size, 0);
+	iterator->finished = false;
+	iterator->start = iterator->index = stack->size;
+}
+
+jso_schema_validation_position *jso_schema_validation_stack_layer_reverse_iterator_next(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	if (iterator->finished) {
+		return NULL;
+	}
+	jso_schema_validation_position *pos = &stack->positions[--iterator->index];
+	if (iterator->index == 0 || JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
+		iterator->finished = true;
 		return NULL;
 	}
 	return pos;

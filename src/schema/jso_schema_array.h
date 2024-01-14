@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -34,5 +34,23 @@
 jso_schema_array *jso_schema_array_alloc(size_t size);
 jso_rc jso_schema_array_append(jso_schema_array *arr, jso_schema_value *val);
 void jso_schema_array_free(jso_schema_array *arr);
+
+/**
+ * @brief Macro to start iteration of the schema array.
+ * @param _arr array
+ * @param _val value pointer
+ */
+#define JSO_SCHEMA_ARRAY_FOREACH(_arr, _val) \
+	do { \
+		for (size_t _i = 0; _i < _arr->len; ++_i) { \
+			_val = _arr->values[_i];
+
+/**
+ * @brief Macro to end iteration of the schema array.
+ */
+#define JSO_SCHEMA_ARRAY_FOREACH_END \
+	} \
+	} \
+	while (0)
 
 #endif /* JSO_SCHEMA_ARRAY_H */

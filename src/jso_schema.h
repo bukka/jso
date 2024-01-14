@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -1021,9 +1021,8 @@ struct _jso_schema_validation_position {
 	jso_schema_value *current_value;
 	/** schema object key if object is being processed */
 	jso_string *object_key;
-	/** schema array index if array is being processed or size of object if object is being
-	 * processed */
-	size_t index;
+	/** count of elements for array / object or number of children done in composition */
+	size_t count;
 	/** start of the current layer */
 	size_t layer_start;
 	/** the position stack depth */

@@ -1,5 +1,5 @@
 /*jso_schema_validation_value_callback
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,19 +25,52 @@
 
 #include "jso.h"
 
+static inline void jso_schema_validation_set_final_result(
+		jso_schema_validation_position *pos, jso_rc result)
+{
+	pos->validation_result = result;
+	pos->is_final_validation_result = true;
+}
+
 void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 {
-	// TODO:
-	// - loop through parents and update result
-	// 	 - mainly for failures bul also for for success if `not` present
-	// - special rules should apply for compositions
-	//   - anyOf success should set final result flag
-	//   - think how allOf and oneOf can be finalized
-	//     - how do we know that it is the last one and do we need to know it?
-	//   - not should maybe have some flag that will get set during composition check for position
-	//   and its children
-	// - should we also add some checks whether root_value has final_result set?
-	while (pos) {
-		pos = pos->parent;
+	jso_schema_validation_position *parent_pos = pos->parent;
+	if (parent_pos->position_type == JSO_SCHEMA_VALIDATION_POSITION_BASIC) {
+		if (pos->validation_result == JSO_FAILURE) {
+			jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+		}
+	} else {
+		JSO_ASSERT_EQ(parent_pos->position_type, JSO_SCHEMA_VALIDATION_POSITION_COMPOSED);
+		switch (parent_pos->composition_type) {
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_ALL:
+				if (pos->validation_result == JSO_FAILURE) {
+					jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+				} else {
+					parent_pos->count++;
+				}
+				break;
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_ANY:
+				if (pos->validation_result == JSO_SUCCESS) {
+					parent_pos->count++;
+					jso_schema_validation_set_final_result(parent_pos, JSO_SUCCESS);
+				}
+				break;
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_ONE:
+				if (pos->validation_result == JSO_SUCCESS) {
+					parent_pos->count++;
+					if (parent_pos->count > 1) {
+						jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+					}
+				}
+				break;
+			default:
+				JSO_ASSERT_EQ(parent_pos->composition_type, JSO_SCHEMA_VALIDATION_COMPOSITION_NOT);
+				if (pos->validation_result == JSO_SUCCESS) {
+					jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+				} else {
+					jso_schema_validation_set_final_result(parent_pos, JSO_SUCCESS);
+				}
+				break;
+		}
 	}
 }

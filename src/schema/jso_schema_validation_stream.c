@@ -31,31 +31,7 @@
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
-
-static inline jso_rc jso_schema_validation_stream_stack_init(
-		jso_schema_validation_stream *stream, size_t capacity)
-{
-	return jso_schema_validation_stack_init(&stream->stack, capacity);
-}
-
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_basic(
-		jso_schema_validation_stream *stream, jso_schema_value *current_value,
-		jso_schema_validation_position *parent)
-{
-	return jso_schema_validation_stack_push_basic(&stream->stack, current_value, parent);
-}
-
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_separator(
-		jso_schema_validation_stream *stream)
-{
-	return jso_schema_validation_stack_push_separator(&stream->stack);
-}
-
-static inline jso_bool jso_schema_validation_stream_should_terminate(
-		jso_schema *schema, jso_schema_validation_position *pos)
-{
-	return pos->validation_result == JSO_FAILURE && jso_schema_error_is_fatal(schema);
-}
+#include "jso_schema_validation_stream.h"
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
 {
@@ -72,6 +48,18 @@ jso_schema_validation_position *jso_schema_validation_stream_stack_layer_iterato
 		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
 {
 	return jso_schema_validation_stack_layer_iterator_next(&stream->stack, iterator);
+}
+
+void jso_schema_validation_stream_stack_layer_reverse_iterator_start(
+		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	jso_schema_validation_stack_layer_reverse_iterator_start(&stream->stack, iterator);
+}
+
+jso_schema_validation_position *jso_schema_validation_stream_stack_layer_reverse_iterator_next(
+		jso_schema_validation_stream *stream, jso_schema_validation_stack_layer_iterator *iterator)
+{
+	return jso_schema_validation_stack_layer_reverse_iterator_next(&stream->stack, iterator);
 }
 
 void jso_schema_validation_stream_stack_layer_remove(jso_schema_validation_stream *stream)
@@ -106,7 +94,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
 		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
-			pos->validation_result = jso_schema_validation_composition_check(stream, value);
+			pos->validation_result = jso_schema_validation_composition_check(stream, pos);
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
@@ -130,9 +118,9 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 		return JSO_FAILURE;
 	}
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
-		++pos->index;
+		++pos->count;
 		pos->validation_result
-				= jso_schema_validation_object_key(schema, pos->current_value, key, pos->index);
+				= jso_schema_validation_object_key(schema, pos->current_value, key, pos->count);
 		if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 			return JSO_FAILURE;
 		}
@@ -171,7 +159,7 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
 		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_ARRAY) {
-			pos->validation_result = jso_schema_validation_composition_check(stream, value);
+			pos->validation_result = jso_schema_validation_composition_check(stream, pos);
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
@@ -197,8 +185,8 @@ JSO_API jso_rc jso_schema_validation_stream_array_append(
 		return JSO_FAILURE;
 	}
 	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
-		++pos->index;
-		if (jso_schema_validation_array_push_values(stream, pos->current_value, pos->index)) {
+		++pos->count;
+		if (jso_schema_validation_array_push_values(stream, pos->current_value, pos->count)) {
 			return JSO_FAILURE;
 		}
 	}
@@ -222,11 +210,12 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	jso_value_type instance_type = JSO_TYPE_P(instance);
 	bool is_instance_arr_or_obj
 			= instance_type == JSO_TYPE_ARRAY || instance_type == JSO_TYPE_OBJECT;
-	jso_schema_validation_stream_stack_layer_iterator_start(stream, &iterator);
-	while ((pos = jso_schema_validation_stream_stack_layer_iterator_next(stream, &iterator))) {
+	jso_schema_validation_stream_stack_layer_reverse_iterator_start(stream, &iterator);
+	while ((pos
+			= jso_schema_validation_stream_stack_layer_reverse_iterator_next(stream, &iterator))) {
 		jso_schema_value *value = pos->current_value;
 		if (is_instance_arr_or_obj
-				|| (pos->validation_result = jso_schema_validation_composition_check(stream, value))
+				|| (pos->validation_result = jso_schema_validation_composition_check(stream, pos))
 						== JSO_SUCCESS) {
 			pos->validation_result = jso_schema_value_validate(schema, value, instance);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,6 +37,7 @@
 typedef struct _jso_schema_validation_stack_layer_iterator {
 	size_t start;
 	size_t index;
+	jso_bool finished;
 } jso_schema_validation_stack_layer_iterator;
 
 jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size_t capacity);
@@ -47,6 +48,11 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_stack *stack, jso_schema_value *current_value,
 		jso_schema_validation_position *parent);
 
+jso_schema_validation_position *jso_schema_validation_stack_push_composed(
+		jso_schema_validation_stack *stack, jso_schema_value *current_value,
+		jso_schema_validation_position *parent,
+		jso_schema_validation_composition_type composition_type);
+
 jso_schema_validation_position *jso_schema_validation_stack_push_separator(
 		jso_schema_validation_stack *stack);
 
@@ -56,6 +62,12 @@ void jso_schema_validation_stack_layer_iterator_start(
 		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
 
 jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
+
+void jso_schema_validation_stack_layer_reverse_iterator_start(
+		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
+
+jso_schema_validation_position *jso_schema_validation_stack_layer_reverse_iterator_next(
 		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator);
 
 void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack);
