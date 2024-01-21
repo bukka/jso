@@ -1033,6 +1033,8 @@ struct _jso_schema_validation_position {
  * @brief JsonSchema validation stack.
  */
 typedef struct _jso_schema_validation_stack {
+	/** root schema */
+	jso_schema *root_schema;
 	/** validation positions */
 	jso_schema_validation_position *positions;
 	/** last separator position */
@@ -1047,11 +1049,11 @@ typedef struct _jso_schema_validation_stack {
  * @brief JsonSchema validation stream structure.
  */
 typedef struct _jso_schema_validation_stream {
-	/** root schema, TODO: move to stack so allocation errors can be reported */
-	jso_schema *root_schema;
 	/** validation stack of positions */
 	jso_schema_validation_stack stack;
 } jso_schema_validation_stream;
+
+#define JSO_STREAM_VALIDATION_STREAM_STACK_P(_stream) (&_stream->stack)
 
 JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance);
 

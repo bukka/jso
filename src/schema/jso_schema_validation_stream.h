@@ -30,35 +30,6 @@
 #define JSO_SCHEMA_VALIDATION_STREAM_H
 
 #include "jso_schema.h"
-#include "jso_schema_validation_stack.h"
-
-static inline jso_rc jso_schema_validation_stream_stack_init(
-		jso_schema_validation_stream *stream, size_t capacity)
-{
-	return jso_schema_validation_stack_init(&stream->stack, capacity);
-}
-
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_basic(
-		jso_schema_validation_stream *stream, jso_schema_value *current_value,
-		jso_schema_validation_position *parent)
-{
-	return jso_schema_validation_stack_push_basic(&stream->stack, current_value, parent);
-}
-
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_composed(
-		jso_schema_validation_stream *stream, jso_schema_value *current_value,
-		jso_schema_validation_position *parent,
-		jso_schema_validation_composition_type composition_type)
-{
-	return jso_schema_validation_stack_push_composed(
-			&stream->stack, current_value, parent, composition_type);
-}
-
-static inline jso_schema_validation_position *jso_schema_validation_stream_stack_push_separator(
-		jso_schema_validation_stream *stream)
-{
-	return jso_schema_validation_stack_push_separator(&stream->stack);
-}
 
 static inline jso_bool jso_schema_validation_stream_should_terminate(
 		jso_schema *schema, jso_schema_validation_position *pos)

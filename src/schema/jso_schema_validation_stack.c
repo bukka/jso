@@ -26,7 +26,8 @@
 #include "jso_schema.h"
 #include "jso_schema_validation_stack.h"
 
-jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size_t capacity)
+jso_rc jso_schema_validation_stack_init(
+		jso_schema *schema, jso_schema_validation_stack *stack, size_t capacity)
 {
 	stack->positions = jso_malloc(capacity * sizeof(jso_schema_validation_position));
 	if (stack->positions == NULL) {

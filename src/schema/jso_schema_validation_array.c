@@ -30,7 +30,7 @@
 #include "jso.h"
 
 jso_rc jso_schema_validation_array_push_values(
-		jso_schema_validation_stream *stream, jso_schema_value *value, size_t index)
+		jso_schema_validation_stack *stack, jso_schema_value *value, size_t index)
 {
 	return JSO_SUCCESS;
 }

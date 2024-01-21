@@ -40,7 +40,8 @@ typedef struct _jso_schema_validation_stack_layer_iterator {
 	jso_bool finished;
 } jso_schema_validation_stack_layer_iterator;
 
-jso_rc jso_schema_validation_stack_init(jso_schema_validation_stack *stack, size_t capacity);
+jso_rc jso_schema_validation_stack_init(
+		jso_schema *schema, jso_schema_validation_stack *stack, size_t capacity);
 
 void jso_schema_validation_stack_clear(jso_schema_validation_stack *stack);
 
