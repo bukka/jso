@@ -33,6 +33,7 @@
 
 jso_schema_array *jso_schema_array_alloc(size_t size);
 jso_rc jso_schema_array_append(jso_schema_array *arr, jso_schema_value *val);
+jso_schema_value *jso_schema_array_get(jso_schema_array *arr, size_t index);
 void jso_schema_array_free(jso_schema_array *arr);
 
 /**

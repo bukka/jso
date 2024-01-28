@@ -22,26 +22,79 @@
  */
 
 #include "jso_schema_validation_array.h"
+#include "jso_schema_validation_stack.h"
 
+#include "jso_schema_array.h"
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
 #include "jso_schema_value.h"
 
 #include "jso.h"
 
+static inline jso_rc jso_schema_validation_array_push_value(jso_schema_validation_stack *stack,
+		jso_schema_value *current_value, jso_schema_validation_position *pos)
+{
+	return jso_schema_validation_stack_push_basic(stack, current_value, pos) == NULL ? JSO_FAILURE
+																					 : JSO_SUCCESS;
+}
+
 jso_rc jso_schema_validation_array_push_values(
-		jso_schema_validation_stack *stack, jso_schema_value *value, size_t index)
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
-	return JSO_SUCCESS;
-}
+	jso_schema *schema = stack->root_schema;
+	jso_schema_value *value = pos->current_value;
+	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
 
-jso_rc jso_schema_validation_array_append(jso_schema *schema, jso_schema_value *value,
-		jso_array *instance_array, jso_value *instance_value)
-{
-	return JSO_SUCCESS;
-}
+	if (pos->is_final_validation_result) {
+		return JSO_SUCCESS;
+	}
 
-jso_rc jso_schema_validation_array_end(jso_schema *schema, jso_schema_value *value)
-{
+	if (JSO_SCHEMA_KW_IS_SET(arrval->max_items)) {
+		jso_uint max_items = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->max_items);
+		size_t arrlen = pos->count;
+		if (arrlen > max_items) {
+			pos->validation_result = JSO_FAILURE;
+			pos->is_final_validation_result = true;
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Array number of items is %zu which is greater than maximum number of items "
+					"%lu",
+					arrlen, max_items);
+			return JSO_FAILURE;
+		}
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(arrval->items)) {
+		if (JSO_SCHEMA_KEYWORD_TYPE(arrval->items) == JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT) {
+			return jso_schema_validation_array_push_value(
+					stack, JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(arrval->items), pos);
+		}
+		JSO_ASSERT_EQ(JSO_SCHEMA_KEYWORD_TYPE(arrval->items),
+				JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+		jso_schema_array *items = JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ(arrval->items);
+		size_t index = pos->count;
+		jso_schema_value *item = jso_schema_array_get(items, index);
+		if (item != NULL) {
+			return jso_schema_validation_array_push_value(stack, item, pos);
+		}
+		if (JSO_SCHEMA_KW_IS_SET(arrval->additional_items)) {
+			if (JSO_SCHEMA_KEYWORD_TYPE(arrval->additional_items)
+					== JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT) {
+				return jso_schema_validation_array_push_value(
+						stack, JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(arrval->additional_items), pos);
+			}
+			JSO_ASSERT_EQ(JSO_SCHEMA_KEYWORD_TYPE(arrval->additional_items),
+					JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+			if (!JSO_SCHEMA_KEYWORD_DATA_BOOL(arrval->additional_items)) {
+				if (index > 0 && jso_schema_array_get(items, index - 1) == NULL) {
+					pos->validation_result = JSO_FAILURE;
+					pos->is_final_validation_result = true;
+					jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+							"Array additional items are not allowed and number of items is lower");
+					return JSO_FAILURE;
+				}
+			}
+		}
+	}
+
 	return JSO_SUCCESS;
 }

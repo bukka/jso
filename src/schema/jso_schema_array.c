@@ -43,6 +43,11 @@ jso_rc jso_schema_array_append(jso_schema_array *arr, jso_schema_value *val)
 	return JSO_FAILURE;
 }
 
+jso_schema_value *jso_schema_array_get(jso_schema_array *arr, size_t index)
+{
+	return index < arr->len ? arr->values[index] : NULL;
+}
+
 void jso_schema_array_free(jso_schema_array *arr)
 {
 	for (size_t i = 0; i < arr->len; i++) {

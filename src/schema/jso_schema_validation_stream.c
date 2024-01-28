@@ -137,7 +137,10 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
-			if (jso_schema_validation_array_push_values(stack, pos->current_value, 0)) {
+			// We do not need to check termination because validation on start should never fail
+			// so it needs to be some termintating error. This needs to be amended if this
+			// assumption changes.
+			if (jso_schema_validation_array_push_values(stack, pos) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 		} else {
@@ -161,8 +164,11 @@ JSO_API jso_rc jso_schema_validation_stream_array_append(
 	}
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		++pos->count;
-		if (jso_schema_validation_array_push_values(stack, pos->current_value, pos->count)) {
-			return JSO_FAILURE;
+		if (jso_schema_validation_array_push_values(stack, pos) == JSO_FAILURE) {
+			if (jso_schema_validation_stream_should_terminate(stack->root_schema, pos)) {
+				return JSO_FAILURE;
+			}
+			jso_schema_validation_result_propagate(pos);
 		}
 	}
 

@@ -268,18 +268,6 @@ jso_rc jso_schema_validation_value_array(
 		}
 	}
 
-	if (JSO_SCHEMA_KW_IS_SET(arrval->max_items)) {
-		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->max_items);
-		size_t arrlen = JSO_ARRAY_LEN(JSO_ARRVAL_P(instance));
-		if (arrlen > kw_uval) {
-			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Array number of items is %zu which is greater than maximum number of items "
-					"%lu",
-					arrlen, kw_uval);
-			return JSO_FAILURE;
-		}
-	}
-
 	// TODO: possibly other keywords validation
 
 	return JSO_SUCCESS;
