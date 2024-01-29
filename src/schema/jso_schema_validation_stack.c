@@ -21,16 +21,20 @@
  *
  */
 
-#include "jso.h"
-
 #include "jso_schema.h"
 #include "jso_schema_validation_stack.h"
+
+#include "jso_schema_error.h"
+
+#include "jso.h"
 
 jso_rc jso_schema_validation_stack_init(
 		jso_schema *schema, jso_schema_validation_stack *stack, size_t capacity)
 {
 	stack->positions = jso_malloc(capacity * sizeof(jso_schema_validation_position));
 	if (stack->positions == NULL) {
+		jso_schema_error_format(
+				schema, JSO_SCHEMA_ERROR_STACK_ALLOC, "Allocating stack positions failed");
 		return JSO_FAILURE;
 	}
 	stack->capacity = capacity;
@@ -55,6 +59,8 @@ static jso_rc jso_schema_validation_stack_resize_if_needed(jso_schema_validation
 	jso_schema_validation_position *positions
 			= jso_realloc(stack->positions, sizeof(jso_schema_validation_position) * new_capacity);
 	if (stack->positions == NULL) {
+		jso_schema_error_format(stack->root_schema, JSO_SCHEMA_ERROR_STACK_ALLOC,
+				"Re-allocating stack positions failed");
 		return JSO_FAILURE;
 	}
 	stack->positions = positions;
