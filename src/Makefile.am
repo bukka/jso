@@ -2,8 +2,9 @@ AM_CFLAGS = -Wall -std=c11
 
 noinst_LIBRARIES = libjso.a
 libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number.c \
-	jso_encoder.c jso_error.c jso_ht.c jso_re.c jso_scanner.c jso_parser.tab.c \
-	parser/jso_parser_hooks_decode.c io/jso_io.c io/jso_io_file.c io/jso_io_memory.c \
+	jso_encoder.c jso_error.c jso_ht.c jso_re.c \
+	jso_parser.tab.c parser/jso_parser_hooks_decode.c jso_scanner.c \
+	io/jso_io.c io/jso_io_file.c io/jso_io_memory.c \
 	schema/jso_schema_array.c schema/jso_schema_data.c schema/jso_schema_error.c  \
 	schema/jso_schema_keyword.c schema/jso_schema_keyword_array.c \
 	schema/jso_schema_keyword_freer.c schema/jso_schema_keyword_object.c \
@@ -37,7 +38,7 @@ include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_
 	jso_io.h io/jso_io_file.h io/jso_io_memory.h
 
 
-jso_scanner.c: jso_scanner.re jso_scanner.h
+jso_scanner.c: jso_scanner.re jso_scanner.h jso_parser.tab.h
 	$(RE2C) -t jso_scanner_defs.h -bci jso_scanner.re > jso_scanner.c
 
 jso_parser.tab.c jso_parser.tab.h: jso_parser.y jso_parser.h
