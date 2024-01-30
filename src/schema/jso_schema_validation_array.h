@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -31,7 +31,10 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_validation_array_push_values(
+jso_rc jso_schema_validation_array_start(
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
+
+jso_rc jso_schema_validation_array_append(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
 
 #endif /* JSO_SCHEMA_VALIDATION_ARRAY_H */
