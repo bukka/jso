@@ -241,7 +241,7 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	size_t func_count = sizeof(value_parse_funcs) / sizeof(jso_schema_value_parse_type_func);
-	// create anyOf subschemas for each listed type
+	// create array for subschemas
 	jso_schema_array *any_of_arr = jso_schema_array_alloc(func_count);
 	if (any_of_arr == NULL) {
 		return NULL;
@@ -249,11 +249,13 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 	// create parent common value that will contain subschema for each type
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
 	if (schema_value == NULL) {
+		jso_schema_array_free(any_of_arr);
 		return NULL;
 	}
-
+	// create anyOf subschemas for each listed type
 	for (int i = 0; i < func_count; i++) {
-		jso_schema_value *schema_type_value = value_parse_funcs[i](schema, data, parent, false);
+		jso_schema_value *schema_type_value
+				= value_parse_funcs[i](schema, data, schema_value, false);
 		if (schema_type_value == NULL) {
 			jso_schema_array_free(any_of_arr);
 			jso_schema_value_free(schema_value);
@@ -282,7 +284,7 @@ jso_schema_value *jso_schema_value_parse(
 	} else if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
 		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val), true);
 	}
-	if (jso_schema_data_check_type(schema, "type", val, JSO_TYPE_STRING, JSO_TYPE_ARRAY, true)
+	if (jso_schema_data_check_type(schema, "type", val, JSO_TYPE_ARRAY, JSO_TYPE_STRING, true)
 			== JSO_FAILURE) {
 		return NULL;
 	}
@@ -294,11 +296,20 @@ jso_schema_value *jso_schema_value_parse(
 		return NULL;
 	}
 
+	// create array for subschemas
+	jso_schema_array *any_of_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
+	if (any_of_arr == NULL) {
+		return NULL;
+	}
+
 	// create parent common value that will contain subschema for each type
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
+	if (schema_value == NULL) {
+		jso_schema_array_free(any_of_arr);
+		return NULL;
+	}
 
 	// create anyOf subschemas for each listed type
-	jso_schema_array *any_of_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
 	jso_value *item;
 	JSO_ARRAY_FOREACH(arr, item)
 	{
