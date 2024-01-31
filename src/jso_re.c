@@ -57,12 +57,12 @@ JSO_API char *jso_re_get_error_message(jso_re_code *code, jso_ctype *buf, size_t
 	return (char *) buf;
 }
 
-JSO_API jso_re_match_data *jse_re_match_data_create(jso_re_code *code)
+JSO_API jso_re_match_data *jso_re_match_data_create(jso_re_code *code)
 {
 	return pcre2_match_data_create_from_pattern(code->re, NULL);
 }
 
-JSO_API void jse_re_match_data_free(jso_re_match_data *match_data)
+JSO_API void jso_re_match_data_free(jso_re_match_data *match_data)
 {
 	pcre2_match_data_free(match_data);
 }

@@ -104,14 +104,14 @@ static inline size_t jso_re_get_error_offset(jso_re_code *code)
  * @param code regular expression for match data
  * @return Created match data or NULL if error.
  */
-JSO_API jso_re_match_data *jse_re_match_data_create(jso_re_code *code);
+JSO_API jso_re_match_data *jso_re_match_data_create(jso_re_code *code);
 
 /**
  * Free match data.
  *
  * @param match_data match data
  */
-JSO_API void jse_re_match_data_free(jso_re_match_data *match_data);
+JSO_API void jso_re_match_data_free(jso_re_match_data *match_data);
 
 /**
  * Match regular expression.

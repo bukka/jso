@@ -22,6 +22,7 @@
  */
 
 #include "jso_schema_validation_array.h"
+#include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
 
 #include "jso_schema_array.h"
@@ -76,7 +77,7 @@ jso_rc jso_schema_validation_array_start(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_validation_array_push_values(
+jso_rc jso_schema_validation_array_append(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
 	jso_schema *schema = stack->root_schema;
@@ -91,8 +92,7 @@ jso_rc jso_schema_validation_array_push_values(
 		jso_uint max_items = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->max_items);
 		size_t arrlen = pos->count;
 		if (arrlen > max_items) {
-			pos->validation_result = JSO_FAILURE;
-			pos->is_final_validation_result = true;
+			jso_schema_validation_set_final_result(pos, JSO_FAILURE);
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Array number of items is %zu which is greater than max number of items %lu",
 					arrlen, max_items);
@@ -117,8 +117,7 @@ jso_rc jso_schema_validation_array_push_values(
 				jso_schema_array *items = JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ(arrval->items);
 				JSO_ASSERT_GT(pos->count, 0);
 				if (jso_schema_array_get(items, pos->count - 1) == NULL) {
-					pos->validation_result = JSO_FAILURE;
-					pos->is_final_validation_result = true;
+					jso_schema_validation_set_final_result(pos, JSO_FAILURE);
 					jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 							"Array additional items are not allowed and number of items is lower");
 					return JSO_FAILURE;

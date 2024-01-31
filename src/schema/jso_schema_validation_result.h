@@ -33,4 +33,11 @@
 
 void jso_schema_validation_result_propagate(jso_schema_validation_position *pos);
 
+static inline void jso_schema_validation_set_final_result(
+		jso_schema_validation_position *pos, jso_rc result)
+{
+	pos->validation_result = result;
+	pos->is_final_validation_result = true;
+}
+
 #endif /* JSO_SCHEMA_VALIDATION_RESULT_H */

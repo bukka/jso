@@ -25,13 +25,6 @@
 
 #include "jso.h"
 
-static inline void jso_schema_validation_set_final_result(
-		jso_schema_validation_position *pos, jso_rc result)
-{
-	pos->validation_result = result;
-	pos->is_final_validation_result = true;
-}
-
 void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 {
 	jso_schema_validation_position *parent_pos = pos->parent;
