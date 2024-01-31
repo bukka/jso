@@ -251,7 +251,8 @@ jso_rc jso_schema_validation_value_string(
 		jso_re_match_data_free(match_data);
 		if (match_result == 0) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"String pattern %s does not match value %s", JSO_RE_CODE_PATTERN(code), JSO_SVAL_P(instance));
+					"String pattern %s does not match value %s", JSO_RE_CODE_PATTERN(code),
+					JSO_SVAL_P(instance));
 			return JSO_FAILURE;
 		}
 	}
@@ -279,7 +280,12 @@ jso_rc jso_schema_validation_value_array(
 		}
 	}
 
-	// TODO: possibly other keywords validation
+	if (JSO_SCHEMA_KW_IS_SET(arrval->unique_items)
+			&& JSO_SCHEMA_KEYWORD_DATA_BOOL(arrval->unique_items)
+			&& !jso_array_is_unique(JSO_ARRVAL_P(instance))) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD, "Array is not unique");
+		return JSO_FAILURE;
+	}
 
 	return JSO_SUCCESS;
 }
