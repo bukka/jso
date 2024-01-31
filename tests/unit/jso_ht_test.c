@@ -161,6 +161,40 @@ static void test_jso_ht_get_by_cstr_key(void **state)
 	jso_ht_free(ht);
 }
 
+/* A test case that checks whether item is in hash table. */
+static void test_jso_ht_has(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+	jso_string *key4 = jso_string_create_from_cstr("no key");
+
+	jso_ht *ht = jso_ht_alloc();
+
+	// get should return false on no value in hash table
+	assert_false(jso_ht_has(ht, key1));
+
+	jso_ht_set(ht, key1, &val1, false);
+	jso_ht_set(ht, key2, &val2, false);
+	jso_ht_set(ht, key3, &val3, false);
+
+	// get should return false on no value in hash table
+	assert_true(jso_ht_has(ht, key2));
+
+	// get should return false on no value in hash table
+	assert_false(jso_ht_has(ht, key4));
+
+	jso_ht_free(ht);
+	jso_string_free(key4);
+}
+
 /* A test case that clones hash table. */
 static void test_jso_ht_clone(void **state)
 {
@@ -277,6 +311,7 @@ int main(void)
 		cmocka_unit_test(test_jso_ht_set),
 		cmocka_unit_test(test_jso_ht_get),
 		cmocka_unit_test(test_jso_ht_get_by_cstr_key),
+		cmocka_unit_test(test_jso_ht_has),
 		cmocka_unit_test(test_jso_ht_clone),
 		cmocka_unit_test(test_jso_ht_resize),
 	};

@@ -171,6 +171,15 @@ JSO_API jso_rc jso_ht_set(jso_ht *ht, jso_string *key, jso_value *value, jso_boo
 JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value);
 
 /**
+ * Check whether key exist in the hash table.
+ *
+ * @param obj object
+ * @param key key of the value
+ * @return @ref JSO_TRUE if key exists, otherwise @ref JSO_FALSE.
+ */
+JSO_API jso_bool jso_ht_has(jso_ht *ht, jso_string *key);
+
+/**
  * Get value from the hash table by C string key.
  *
  * @param ht hash table

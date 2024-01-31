@@ -312,7 +312,20 @@ jso_rc jso_schema_validation_value_object(
 		}
 	}
 
-	// TODO: possibly other keywords validation
+	if (JSO_SCHEMA_KW_IS_SET(objval->required)) {
+		jso_value *item, *prop_value;
+		jso_object *instance_object = JSO_OBJVAL_P(instance);
+		JSO_ARRAY_FOREACH(JSO_SCHEMA_KEYWORD_DATA_ARR_STR(objval->required), item)
+		{
+			if (!jso_object_has(instance_object, JSO_STR_P(item))) {
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+						"Object does not have requier property with key %s", JSO_SVAL_P(item));
+				return JSO_FAILURE;
+			}
+		}
+	}
+
+	// TODO: dependency keyword
 
 	return JSO_SUCCESS;
 }

@@ -145,6 +145,15 @@ JSO_API jso_rc jso_object_add(jso_object *obj, jso_string *key, jso_value *val);
 JSO_API jso_rc jso_object_get(jso_object *obj, jso_string *key, jso_value **val);
 
 /**
+ * Check whether key exist in the object.
+ *
+ * @param obj object
+ * @param key key of the value
+ * @return @ref JSO_TRUE if key exists, otherwise @ref JSO_FALSE.
+ */
+JSO_API jso_bool jso_object_has(jso_object *obj, jso_string *key);
+
+/**
  * Call callback for each value in the object.
  *
  * @param obj object

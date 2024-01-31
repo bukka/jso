@@ -46,6 +46,8 @@
 - draft 6+
 
 ### Validation
+- object dependencies
+- enums
 - unit tests
 - integration tests
 

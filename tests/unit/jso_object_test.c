@@ -117,6 +117,40 @@ static void test_jso_object_get(void **state)
 	jso_string_free(key4);
 }
 
+/* A test case that checks if item is in object. */
+static void test_jso_object_has(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_string *key1 = jso_string_create_from_cstr("key");
+	jso_string *key2 = jso_string_create_from_cstr("second key");
+	jso_string *key3 = jso_string_create_from_cstr("third key");
+	jso_string *key4 = jso_string_create_from_cstr("no key");
+
+	jso_object *obj = jso_object_alloc();
+
+	// get should return false on no value in object
+	assert_false(jso_object_has(obj, key1));
+
+	jso_object_add(obj, key1, &val1);
+	jso_object_add(obj, key2, &val2);
+	jso_object_add(obj, key3, &val3);
+
+	// get should return false on no value in hash table
+	assert_true(jso_object_has(obj, key2));
+
+	// has should return false on no value in hash table
+	assert_false(jso_object_has(obj, key4));
+
+	jso_object_free(obj);
+	jso_string_free(key4);
+}
+
 /* A test case that resizes hash table. */
 static void test_jso_object_resize(void **state)
 {
@@ -343,6 +377,7 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_object_add),
 		cmocka_unit_test(test_jso_object_get),
+		cmocka_unit_test(test_jso_object_has),
 		cmocka_unit_test(test_jso_object_resize),
 		cmocka_unit_test(test_jso_object_apply),
 		cmocka_unit_test(test_jso_object_apply_with_arg),

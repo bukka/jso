@@ -67,6 +67,12 @@ JSO_API jso_rc jso_object_get(jso_object *obj, jso_string *key, jso_value **val)
 	return jso_ht_get(&obj->ht, key, val);
 }
 
+/* check if element in the object exists */
+JSO_API jso_bool jso_object_has(jso_object *obj, jso_string *key)
+{
+	return jso_ht_has(&obj->ht, key);
+}
+
 /* call cbk function for each element in object */
 JSO_API void jso_object_apply(jso_object *obj, jso_object_callback cbk)
 {

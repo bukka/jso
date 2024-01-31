@@ -167,6 +167,8 @@ static jso_schema_value *jso_schema_value_parse_object(
 	JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, properties, value, objval);
 	JSO_SCHEMA_KW_SET_EX(schema, data, patternProperties, value, objval, pattern_properties,
 			TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS);
+	JSO_SCHEMA_KW_SET_WITH_FLAGS(schema, data, required, value, objval, TYPE_ARRAY_OF_STRINGS,
+			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
 	JSO_SCHEMA_KW_SET_WITH_FLAGS(schema, data, dependencies, value, objval,
 			TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 

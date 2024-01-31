@@ -198,6 +198,20 @@ JSO_API jso_rc jso_ht_get(jso_ht *ht, jso_string *key, jso_value **value)
 	return JSO_SUCCESS;
 }
 
+JSO_API jso_bool jso_ht_has(jso_ht *ht, jso_string *key)
+{
+	if (ht->count == 0) {
+		return false;
+	}
+
+	jso_ht_entry *entry = jso_ht_find_entry(ht->entries, ht->capacity, key);
+	if (entry->key == NULL) {
+		return false;
+	}
+
+	return true;
+}
+
 JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
 {
 	if (ht->count == 0) {
