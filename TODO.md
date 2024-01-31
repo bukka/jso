@@ -38,8 +38,7 @@
 ## Schema
 
 ### Parsing
-- patterns
-- any instance type - anyOf, allOf, oneOf, not, definitions
+- enums
 - pointers
   - local - from defintitons
   - external - curl
@@ -47,8 +46,8 @@
 - draft 6+
 
 ### Validation
-- structure / architecture
-- SAX like validating - parser method
+- unit tests
+- integration tests
 
 ## CLI
 - generate help message
@@ -66,7 +65,7 @@
 - other tests
 
 ### Integration
-- Perl Test throug CLI
+- should still use cmocka but for bigger pieces without mocking
 
 ## Build
 - pkg
