@@ -243,7 +243,18 @@ jso_rc jso_schema_validation_value_string(
 		}
 	}
 
-	// TODO: pattern validation
+	if (JSO_SCHEMA_KW_IS_SET(strval->pattern)) {
+		JSO_ASSERT_EQ(JSO_SCHEMA_KEYWORD_TYPE(strval->pattern), JSO_SCHEMA_KEYWORD_TYPE_REGEXP);
+		jso_re_code *code = JSO_SCHEMA_KEYWORD_DATA_RE(strval->pattern);
+		jso_re_match_data *match_data = jso_re_match_data_create(code);
+		int match_result = jso_re_match(JSO_SVAL_P(instance), code, match_data);
+		jso_re_match_data_free(match_data);
+		if (match_result == 0) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"String pattern %s does not match value %s", JSO_RE_CODE_PATTERN(code), JSO_SVAL_P(instance));
+			return JSO_FAILURE;
+		}
+	}
 
 	return JSO_SUCCESS;
 }
@@ -289,19 +300,6 @@ jso_rc jso_schema_validation_value_object(
 		if (objlen < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Object number of properties is %zu which is lower than minimum number of "
-					"properties %lu",
-					objlen, kw_uval);
-			return JSO_FAILURE;
-		}
-	}
-
-	// TODO: move to jso_schema_validation_object_update
-	if (JSO_SCHEMA_KW_IS_SET(objval->max_properties)) {
-		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->max_properties);
-		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
-		if (objlen > kw_uval) {
-			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-					"Object number of properties is %zu which is greater than maximum number of "
 					"properties %lu",
 					objlen, kw_uval);
 			return JSO_FAILURE;

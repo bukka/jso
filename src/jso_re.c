@@ -36,6 +36,7 @@ JSO_API void jso_re_code_free(jso_re_code *code)
 {
 	if (code != NULL) {
 		pcre2_code_free(code->re);
+		jso_string_free(code->pattern);
 		jso_free(code);
 	}
 }
@@ -48,6 +49,7 @@ JSO_API jso_rc jso_re_compile(jso_string *pattern, jso_re_code *code)
 		return JSO_FAILURE;
 	}
 	code->re = re;
+	code->pattern = jso_string_copy(pattern);
 	return JSO_SUCCESS;
 }
 

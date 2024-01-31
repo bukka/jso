@@ -41,11 +41,20 @@
 struct _jso_re_code {
 	/** regular expression code */
 	pcre2_code *re;
+	/** original string pattern */
+	jso_string *pattern;
 	/** error code value */
 	int error_code;
 	/** error code offset */
 	PCRE2_SIZE error_offset;
 };
+
+/**
+ * Get original code pattern.
+ * @param _code regular expression code
+ * @return pattern of type @ref jso_string
+ */
+#define JSO_RE_CODE_PATTERN(_code) _code->pattern
 
 /**
  * @brief Regular expression match data type.
