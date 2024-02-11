@@ -21,6 +21,7 @@
  *
  */
 
+#include "jso_schema_validation_error.h"
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
@@ -101,6 +102,45 @@ jso_rc jso_schema_validation_object_key(
 				"is is not found in properties or matches any pattern property",
 				JSO_STRING_VAL(key));
 		return JSO_FAILURE;
+	}
+
+	return JSO_SUCCESS;
+}
+
+jso_rc jso_schema_validation_object_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+{
+	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
+		return jso_schema_validation_value_type_error(
+				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+	}
+
+	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
+
+	if (JSO_SCHEMA_KW_IS_SET(objval->min_properties)) {
+		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->min_properties);
+		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
+		if (objlen < kw_uval) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Object number of properties is %zu which is lower than minimum number of "
+					"properties %lu",
+					objlen, kw_uval);
+			return JSO_FAILURE;
+		}
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(objval->required)) {
+		jso_value *item;
+		jso_object *instance_object = JSO_OBJVAL_P(instance);
+		JSO_ARRAY_FOREACH(JSO_SCHEMA_KEYWORD_DATA_ARR_STR(objval->required), item)
+		{
+			if (!jso_object_has(instance_object, JSO_STR_P(item))) {
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+						"Object does not have requier property with key %s", JSO_SVAL_P(item));
+				return JSO_FAILURE;
+			}
+		}
+		JSO_ARRAY_FOREACH_END;
 	}
 
 	return JSO_SUCCESS;

@@ -37,4 +37,7 @@ jso_rc jso_schema_validation_array_start(
 jso_rc jso_schema_validation_array_append(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
 
+jso_rc jso_schema_validation_array_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance);
+
 #endif /* JSO_SCHEMA_VALIDATION_ARRAY_H */

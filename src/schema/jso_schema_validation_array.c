@@ -22,6 +22,7 @@
  */
 
 #include "jso_schema_validation_array.h"
+#include "jso_schema_validation_error.h"
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
 
@@ -124,6 +125,36 @@ jso_rc jso_schema_validation_array_append(
 				}
 			}
 		}
+	}
+
+	return JSO_SUCCESS;
+}
+
+jso_rc jso_schema_validation_array_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+{
+	if (JSO_TYPE_P(instance) != JSO_TYPE_ARRAY) {
+		return jso_schema_validation_value_type_error(schema, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
+	}
+
+	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
+
+	if (JSO_SCHEMA_KW_IS_SET(arrval->min_items)) {
+		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->min_items);
+		size_t arrlen = JSO_ARRAY_LEN(JSO_ARRVAL_P(instance));
+		if (arrlen < kw_uval) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Array number of items is %zu which is lower than minimum number of items %lu",
+					arrlen, kw_uval);
+			return JSO_FAILURE;
+		}
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(arrval->unique_items)
+			&& JSO_SCHEMA_KEYWORD_DATA_BOOL(arrval->unique_items)
+			&& !jso_array_is_unique(JSO_ARRVAL_P(instance))) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD, "Array is not unique");
+		return JSO_FAILURE;
 	}
 
 	return JSO_SUCCESS;

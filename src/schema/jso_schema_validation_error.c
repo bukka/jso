@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,20 +21,25 @@
  *
  */
 
-/**
- * @file jso_schema_validation_value.h
- * @brief JsonSchema validation of values.
- */
+#include "jso_schema_error.h"
 
-#ifndef JSO_SCHEMA_VALIDATION_OBJECT_H
-#define JSO_SCHEMA_VALIDATION_OBJECT_H
+#include "jso.h"
 
-#include "jso_schema.h"
+jso_rc jso_schema_validation_value_type_error_ex(jso_schema *schema, jso_value_type expected,
+		jso_value_type expected_alternative, jso_value_type actual)
+{
+	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
+			"Invalid validation type, expected %s or %s but received %s",
+			jso_value_type_to_string(expected), jso_value_type_to_string(expected_alternative),
+			jso_value_type_to_string(actual));
+	return JSO_FAILURE;
+}
 
-jso_rc jso_schema_validation_object_key(
-		jso_schema_validation_stack *stack, jso_schema_validation_position *pos, jso_string *key);
-
-jso_rc jso_schema_validation_object_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance);
-
-#endif /* JSO_SCHEMA_VALIDATION_OBJECT_H */
+jso_rc jso_schema_validation_value_type_error(
+		jso_schema *schema, jso_value_type expected, jso_value_type actual)
+{
+	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
+			"Invalid validation type, expected %s but received %s",
+			jso_value_type_to_string(expected), jso_value_type_to_string(actual));
+	return JSO_FAILURE;
+}

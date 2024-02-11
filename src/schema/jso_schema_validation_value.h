@@ -31,6 +31,9 @@
 
 #include "jso_schema.h"
 
+typedef jso_rc (*jso_schema_validation_value_callback)(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance);
+
 jso_rc jso_schema_validation_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
