@@ -107,14 +107,43 @@ jso_rc jso_schema_validation_object_key(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_validation_object_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack,
+		jso_schema_validation_position *pos, jso_value *instance)
 {
+	jso_schema *schema = stack->root_schema;
+
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
 		return jso_schema_validation_value_type_error(
 				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
 	}
 
+	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(pos->current_value);
+
+	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
+		jso_string *key;
+		jso_value *val;
+		jso_object *dependencies = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->dependencies);
+		JSO_OBJECT_FOREACH(dependencies, key, val)
+		{
+			JSO_ASSERT_EQ(JSO_TYPE_P(val), JSO_TYPE_SCHEMA_VALUE);
+			jso_schema_value *schema_value = JSO_SVVAL_P(val);
+			if (JSO_SCHEMA_VALUE_TYPE_P(schema_value) == JSO_SCHEMA_VALUE_TYPE_ARRAY) {
+
+			} else {
+				if (jso_schema_validation_stack_push_basic(stack, schema_value, pos) == NULL) {
+					return JSO_FAILURE;
+				}
+			}
+		}
+		JSO_OBJECT_FOREACH_END;
+	}
+
+	return JSO_SUCCESS;
+}
+
+jso_rc jso_schema_validation_object_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+{
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->min_properties)) {

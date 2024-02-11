@@ -34,6 +34,9 @@
 jso_rc jso_schema_validation_object_key(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos, jso_string *key);
 
+jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack,
+		jso_schema_validation_position *pos, jso_value *instance);
+
 jso_rc jso_schema_validation_object_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
