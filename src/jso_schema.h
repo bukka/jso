@@ -1045,6 +1045,8 @@ typedef struct _jso_schema_validation_stack {
 	size_t capacity;
 	/** used stack size */
 	size_t size;
+	/** marked position in the stack - used for clearing not needed postions */
+	size_t mark;
 } jso_schema_validation_stack;
 
 /**

@@ -135,6 +135,17 @@ jso_schema_validation_position *jso_schema_validation_stack_pop(jso_schema_valid
 	return &stack->positions[--stack->size];
 }
 
+
+void jso_schema_validation_stack_reset(jso_schema_validation_stack *stack)
+{
+	stack->size = stack->mark;
+}
+
+void jso_schema_validation_stack_mark(jso_schema_validation_stack *stack)
+{
+	stack->mark = stack->size;
+}
+
 void jso_schema_validation_stack_layer_iterator_start(
 		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
 {
