@@ -35,21 +35,27 @@
 - unicode escaping
 - marked buffering
 
+## Pointer
+
+- structure and planning for implementation of generic pointer on any json
+- local - search on jso_value
+- external - fetching through http (curl)
+
 ## Schema
 
 ### Parsing
 - enums
+- integration tests
+- definitions
 - pointers
-  - local - from defintitons
-  - external - curl
 - formats
 - draft 6+
 
 ### Validation
-- object dependencies
 - enums
 - unit tests
 - integration tests
+- stirng unicode length for correct validation
 
 ## CLI
 - generate help message
@@ -62,14 +68,15 @@
 ## Testing
 
 ### Unit
-- setup cmocka
-- schema tests
-- other tests
+- extend coverage
 
 ### Integration
 - should still use cmocka but for bigger pieces without mocking
 
 ## Build
+- test - check
+  - differentiate between integration and unit tests - targets to run only one
+  - gcov support
 - pkg
   - version check
 - bison
