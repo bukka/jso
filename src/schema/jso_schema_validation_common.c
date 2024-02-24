@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,35 +21,37 @@
  *
  */
 
-#include "jso_schema_validation_array.h"
 #include "jso_schema_validation_common.h"
-#include "jso_schema_validation_object.h"
-#include "jso_schema_validation_scalar.h"
-#include "jso_schema_validation_string.h"
-#include "jso_schema_validation_value.h"
 
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
-#include "jso_schema_value.h"
 
 #include "jso.h"
 
-static const jso_schema_validation_value_callback schema_validation_value_callbacks[] = {
-	[JSO_SCHEMA_VALUE_TYPE_NULL] = jso_schema_validation_null_value,
-	[JSO_SCHEMA_VALUE_TYPE_BOOLEAN] = jso_schema_validation_boolean_value,
-	[JSO_SCHEMA_VALUE_TYPE_INTEGER] = jso_schema_validation_integer_value,
-	[JSO_SCHEMA_VALUE_TYPE_NUMBER] = jso_schema_validation_number_value,
-	[JSO_SCHEMA_VALUE_TYPE_STRING] = jso_schema_validation_string_value,
-	[JSO_SCHEMA_VALUE_TYPE_ARRAY] = jso_schema_validation_array_value,
-	[JSO_SCHEMA_VALUE_TYPE_OBJECT] = jso_schema_validation_object_value,
-};
-
-jso_rc jso_schema_validation_value(jso_schema *schema, jso_schema_value *value, jso_value *instance)
+jso_rc jso_schema_validation_common_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
-	if (jso_schema_validation_common_value(schema, value, instance) == JSO_FAILURE) {
-		return JSO_FAILURE;
+
+	jso_schema_value_common *comval = JSO_SCHEMA_VALUE_DATA_COMMON_P(value);
+
+	if (JSO_SCHEMA_KW_IS_SET(comval->enum_elements)) {
+		jso_array *arr = JSO_SCHEMA_KEYWORD_DATA_ARR(comval->enum_elements);
+		jso_value *item;
+		bool found = false;
+		JSO_ARRAY_FOREACH(arr, item)
+		{
+			if (jso_value_equals(instance, item)) {
+				found = true;
+				break;
+			}
+		}
+		JSO_ARRAY_FOREACH_END;
+		if (!found) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Instance value not found in enum values");
+			return JSO_FAILURE;
+		}
 	}
 
-	return schema_validation_value_callbacks[JSO_SCHEMA_VALUE_TYPE_P(value)](
-			schema, value, instance);
+	return JSO_SUCCESS;
 }
