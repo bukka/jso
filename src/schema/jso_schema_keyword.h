@@ -150,6 +150,14 @@
 #define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS(_schema, _data, _key, _value, _value_data) \
 	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(_schema, _data, _key, _value, _value_data, _key)
 
+#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX( \
+		_schema, _data, _key, _value, _value_data, _kw_name) \
+	JSO_SCHEMA_KW_SET_WITH_FLAGS_EX(_schema, _data, _key, _value, _value_data, _kw_name, \
+			TYPE_ARRAY_OF_SCHEMA_OBJECTS, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY)
+
+#define JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE(_schema, _data, _key, _value, _value_data) \
+	JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(_schema, _data, _key, _value, _value_data, _key)
+
 #define JSO_SCHEMA_KW_SET_ARR_EX(_schema, _data, _key, _value, _value_data, _kw_name) \
 	JSO_SCHEMA_KW_SET_EX(_schema, _data, _key, _value, _value_data, _kw_name, TYPE_ARRAY)
 

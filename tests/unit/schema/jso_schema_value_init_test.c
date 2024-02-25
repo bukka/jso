@@ -151,7 +151,7 @@ static void test_jso_schema_value_init_when_all_good_and_keyword_init_enabled(vo
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.all_of);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
 			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
-	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
 	expect_function_call(__wrap_jso_schema_keyword_set);
@@ -162,7 +162,7 @@ static void test_jso_schema_value_init_when_all_good_and_keyword_init_enabled(vo
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.any_of);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
 			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
-	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
 	expect_function_call(__wrap_jso_schema_keyword_set);
@@ -173,7 +173,7 @@ static void test_jso_schema_value_init_when_all_good_and_keyword_init_enabled(vo
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.one_of);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
 			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
-	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
 	expect_function_call(__wrap_jso_schema_keyword_set);

@@ -61,9 +61,9 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		// set other common keywords
 		JSO_SCHEMA_KW_SET_WITH_FLAGS_EX(schema, data, enum, value, value_data, enum_elements,
 				TYPE_ARRAY, JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
-		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, allOf, value, value_data, all_of);
-		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, anyOf, value, value_data, any_of);
-		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_EX(schema, data, oneOf, value, value_data, one_of);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, allOf, value, value_data, all_of);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, anyOf, value, value_data, any_of);
+		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, oneOf, value, value_data, one_of);
 		JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, not, value, value_data);
 		JSO_SCHEMA_KW_SET_OBJ_OF_SCHEMA_OBJS(schema, data, definitions, value, value_data);
 	}
