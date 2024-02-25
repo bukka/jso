@@ -36,320 +36,415 @@
 /**
  * Get a type of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Type @ref jso_value_type.
  */
-#define JSO_TYPE_P(pjv) (pjv)->type
+#define JSO_TYPE_P(_pjv) (_pjv)->type
 
 /**
  * Get an integer value of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Integer value.
  */
-#define JSO_IVAL_P(pjv) (pjv)->data.ival
+#define JSO_IVAL_P(_pjv) (_pjv)->data.ival
 
 /**
  * Get a double value of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Double precision value.
  */
-#define JSO_DVAL_P(pjv) (pjv)->data.dval
+#define JSO_DVAL_P(_pjv) (_pjv)->data.dval
 
 /**
  * Get a string of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_string.
  */
-#define JSO_STR_P(pjv) (pjv)->data.str
+#define JSO_STR_P(_pjv) (_pjv)->data.str
 
 /**
  * Get a string value of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to the string value (characters buffer).
  */
-#define JSO_SVAL_P(pjv) JSO_STRING_VAL(JSO_STR_P(pjv))
+#define JSO_SVAL_P(_pjv) JSO_STRING_VAL(JSO_STR_P(_pjv))
 
 /**
  * Get a string length of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return String length.
  */
-#define JSO_SLEN_P(pjv) JSO_STRING_LEN(JSO_STR_P(pjv))
+#define JSO_SLEN_P(_pjv) JSO_STRING_LEN(JSO_STR_P(_pjv))
 
 /**
  * Get an array of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_array.
  */
-#define JSO_ARRVAL_P(pjv) (pjv)->data.arr
+#define JSO_ARRVAL_P(_pjv) (_pjv)->data.arr
 
 /**
  * Get an object of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_object.
  */
-#define JSO_OBJVAL_P(pjv) (pjv)->data.obj
+#define JSO_OBJVAL_P(_pjv) (_pjv)->data.obj
 
 /**
  * Get an object hash table of the supplied pointer to value.
  *
- * @param pjv variable of @ref jso_value type
+ * @param _pjv variable of @ref jso_value type
  * @return Pointer to @ref jso_ht.
  */
-#define JSO_OBJHVAL_P(pjv) &(pjv)->data.obj->ht
+#define JSO_OBJHVAL_P(_pjv) &(_pjv)->data.obj->ht
 
 /**
  * Get a schema value of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_schema_value.
  */
-#define JSO_SVVAL_P(pjv) (pjv)->data.sobj
+#define JSO_SVVAL_P(_pjv) (_pjv)->data.sobj
 
 /**
  * Get an error of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error or `NULL` if no error.
  */
-#define JSO_EVAL_P(pjv) (pjv)->data.err
+#define JSO_EVAL_P(_pjv) (_pjv)->data.err
 
 /**
  * Get an error location of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error_location.
  * @note This must be called only if the error is set.
  */
-#define JSO_ELOC_P(pjv) (pjv)->data.err->loc
+#define JSO_ELOC_P(_pjv) (_pjv)->data.err->loc
 
 /**
  * Get an error type of the supplied pointer to value.
  *
- * @param pjv pointer to @ref jso_value
+ * @param _pjv pointer to @ref jso_value
  * @return Pointer to @ref jso_error_type.
  * @note This must be called only if the error is set.
  */
-#define JSO_ETYPE_P(pjv) (pjv)->data.err->type
+#define JSO_ETYPE_P(_pjv) (_pjv)->data.err->type
 
 /**
  * Get a type of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Type @ref jso_value_type.
  */
-#define JSO_TYPE(jv) JSO_TYPE_P(&(jv))
+#define JSO_TYPE(_jv) JSO_TYPE_P(&(_jv))
 
 /**
  * Get an integer value of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Integer value.
  */
-#define JSO_IVAL(jv) JSO_IVAL_P(&(jv))
+#define JSO_IVAL(_jv) JSO_IVAL_P(&(_jv))
 
 /**
  * Get a double value of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Double precision value.
  */
-#define JSO_DVAL(jv) JSO_DVAL_P(&(jv))
+#define JSO_DVAL(_jv) JSO_DVAL_P(&(_jv))
 
 /**
  * Get a string of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_string.
  */
-#define JSO_STR(jv) JSO_STR_P(&(jv))
+#define JSO_STR(_jv) JSO_STR_P(&(_jv))
 
 /**
  * Get a string value of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return String value (characters buffer).
  */
-#define JSO_SVAL(jv) JSO_SVAL_P(&(jv))
+#define JSO_SVAL(_jv) JSO_SVAL_P(&(_jv))
 
 /**
  * Get a string length of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return String length.
  */
-#define JSO_SLEN(jv) JSO_SLEN_P(&(jv))
+#define JSO_SLEN(_jv) JSO_SLEN_P(&(_jv))
 
 /**
  * Get an array of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_array.
  */
-#define JSO_ARRVAL(jv) JSO_ARRVAL_P(&(jv))
+#define JSO_ARRVAL(_jv) JSO_ARRVAL_P(&(_jv))
 
 /**
  * Get an object of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_object.
  */
-#define JSO_OBJVAL(jv) JSO_OBJVAL_P(&(jv))
+#define JSO_OBJVAL(_jv) JSO_OBJVAL_P(&(_jv))
 
 /**
  * Get an object hash table of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_ht.
  */
-#define JSO_OBJHVAL(jv) JSO_OBJHVAL_P(&(jv))
+#define JSO_OBJHVAL(_jv) JSO_OBJHVAL_P(&(_jv))
 
 /**
  * Get a schema value of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_schema_value.
  */
-#define JSO_SVVAL(jv) JSO_SVVAL_P(&(jv))
+#define JSO_SVVAL(_jv) JSO_SVVAL_P(&(_jv))
 
 /**
  * Get an error of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error or `NULL` if no error.
  */
-#define JSO_EVAL(jv) JSO_EVAL_P(&(jv))
+#define JSO_EVAL(_jv) JSO_EVAL_P(&(_jv))
 
 /**
  * Get an error location of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error_location .
  * @note This must be called only if the error is set.
  */
-#define JSO_ELOC(jv) JSO_ELOC_P(&(jv))
+#define JSO_ELOC(_jv) JSO_ELOC_P(&(_jv))
 
 /**
  * Get an error type of the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  * @return Pointer to @ref jso_error_type.
  * @note This must be called only if the error is set.
  */
-#define JSO_ETYPE(jv) JSO_ETYPE_P(&(jv))
+#define JSO_ETYPE(_jv) JSO_ETYPE_P(&(_jv))
 
 /**
  * Set error to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param eval error value
+ * @param _jv variable of @ref jso_value type
+ * @param _eval error value
  */
-#define JSO_VALUE_SET_ERROR(jv, eval) \
+#define JSO_VALUE_SET_ERROR(_jv, _eval) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_ERROR; \
-		JSO_EVAL(jv) = eval; \
+		JSO_TYPE(_jv) = JSO_TYPE_ERROR; \
+		JSO_EVAL(_jv) = _eval; \
 	} while (0)
 
 /**
  * Set null to the supplied value.
  *
- * @param jv variable of @ref jso_value type
+ * @param _jv variable of @ref jso_value type
  */
-#define JSO_VALUE_SET_NULL(jv) \
+#define JSO_VALUE_SET_NULL(_jv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_NULL; \
+		JSO_TYPE(_jv) = JSO_TYPE_NULL; \
 	} while (0)
 
 /**
  * Set boolean to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param bv boolean value
+ * @param _jv variable of @ref jso_value type
+ * @param _bv boolean value
  */
-#define JSO_VALUE_SET_BOOL(jv, bv) \
+#define JSO_VALUE_SET_BOOL(_jv, _bv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_BOOL; \
-		JSO_IVAL(jv) = bv; \
+		JSO_TYPE(_jv) = JSO_TYPE_BOOL; \
+		JSO_IVAL(_jv) = _bv; \
 	} while (0)
 
 /**
  * Set an integer value to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param lv integer value
+ * @param _jv variable of @ref jso_value type
+ * @param _lv integer value
  */
-#define JSO_VALUE_SET_INT(jv, lv) \
+#define JSO_VALUE_SET_INT(_jv, _lv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_INT; \
-		JSO_IVAL(jv) = lv; \
+		JSO_TYPE(_jv) = JSO_TYPE_INT; \
+		JSO_IVAL(_jv) = _lv; \
 	} while (0)
 
 /**
  * Set a double floating point number to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param dv double floating point value
+ * @param _jv variable of @ref jso_value type
+ * @param _dv double floating point value
  */
-#define JSO_VALUE_SET_DOUBLE(jv, dv) \
+#define JSO_VALUE_SET_DOUBLE(_jv, _dv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_DOUBLE; \
-		JSO_DVAL(jv) = (dv); \
+		JSO_TYPE(_jv) = JSO_TYPE_DOUBLE; \
+		JSO_DVAL(_jv) = (_dv); \
 	} while (0)
 
 /**
  * Set a string to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param sv string value (character buffer)
+ * @param _jv variable of @ref jso_value type
+ * @param _sv string value (character buffer)
  * @param sl string length
  */
-#define JSO_VALUE_SET_STRING(jv, sv) \
+#define JSO_VALUE_SET_STRING(_jv, _sv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_STRING; \
-		JSO_STR(jv) = sv; \
+		JSO_TYPE(_jv) = JSO_TYPE_STRING; \
+		JSO_STR(_jv) = _sv; \
 	} while (0)
 
 /**
  * Set an array to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param av array
+ * @param _jv variable of @ref jso_value type
+ * @param _av array
  */
-#define JSO_VALUE_SET_ARRAY(jv, av) \
+#define JSO_VALUE_SET_ARRAY(_jv, _av) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_ARRAY; \
-		JSO_ARRVAL(jv) = (av); \
+		JSO_TYPE(_jv) = JSO_TYPE_ARRAY; \
+		JSO_ARRVAL(_jv) = (_av); \
 	} while (0)
 
 /**
  * Set an object to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param ov object
+ * @param _jv variable of @ref jso_value type
+ * @param _ov object
  */
-#define JSO_VALUE_SET_OBJECT(jv, ov) \
+#define JSO_VALUE_SET_OBJECT(_jv, _ov) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_OBJECT; \
-		JSO_OBJVAL(jv) = (ov); \
+		JSO_TYPE(_jv) = JSO_TYPE_OBJECT; \
+		JSO_OBJVAL(_jv) = (_ov); \
 	} while (0)
 
 /**
  * Set a schema value to the supplied value.
  *
- * @param jv variable of @ref jso_value type
- * @param sv schema value
+ * @param _pjv variable of @ref jso_value type
+ * @param _sv schema value
  */
-#define JSO_VALUE_SET_SCHEMA_VALUE(jv, sv) \
+#define JSO_VALUE_SET_SCHEMA_VALUE(_pjv, _sv) \
 	do { \
-		JSO_TYPE(jv) = JSO_TYPE_SCHEMA_VALUE; \
-		JSO_SVVAL(jv) = (sv); \
+		JSO_TYPE(_pjv) = JSO_TYPE_SCHEMA_VALUE; \
+		JSO_SVVAL(_pjv) = (_sv); \
+	} while (0)
+
+/**
+ * Set null to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ */
+#define JSO_VALUE_SET_NULL_P(_pjv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_NULL; \
+	} while (0)
+
+/**
+ * Set boolean to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _bv boolean value
+ */
+#define JSO_VALUE_SET_BOOL_P(_pjv, _bv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_BOOL; \
+		JSO_IVAL_P(_pjv) = _bv; \
+	} while (0)
+
+/**
+ * Set an integer value to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _lv integer value
+ */
+#define JSO_VALUE_SET_INT_P(_pjv, _lv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_INT; \
+		JSO_IVAL_P(_pjv) = _lv; \
+	} while (0)
+
+/**
+ * Set a double floating point number to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _dv double floating point value
+ */
+#define JSO_VALUE_SET_DOUBLE_P(_pjv, _dv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_DOUBLE; \
+		JSO_DVAL_P(_pjv) = (_dv); \
+	} while (0)
+
+/**
+ * Set a string to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _sv string value (character buffer)
+ * @param sl string length
+ */
+#define JSO_VALUE_SET_STRING_P(_pjv, _sv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_STRING; \
+		JSO_STR_P(_pjv) = _sv; \
+	} while (0)
+
+/**
+ * Set an array to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _av array
+ */
+#define JSO_VALUE_SET_ARRAY_P(_pjv, _av) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_ARRAY; \
+		JSO_ARRVAL_P(_pjv) = (_av); \
+	} while (0)
+
+/**
+ * Set an object to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _ov object
+ */
+#define JSO_VALUE_SET_OBJECT_P(_pjv, _ov) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_OBJECT; \
+		JSO_OBJVAL_P(_pjv) = (_ov); \
+	} while (0)
+
+/**
+ * Set a schema value to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _sv schema value
+ */
+#define JSO_VALUE_SET_SCHEMA_VALUE_P(_pjv, _sv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_SCHEMA_VALUE; \
+		JSO_SVVAL_P(_pjv) = (_sv); \
 	} while (0)
 
 /**
