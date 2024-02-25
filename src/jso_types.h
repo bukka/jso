@@ -30,6 +30,7 @@
 #define JSO_TYPES_H
 
 #include <sys/types.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
 
