@@ -654,6 +654,65 @@ static void test_jso_schema_keyword_get_object_of_so_when_resize_fails(void **st
 	assert_null(schema_keyword);
 	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
+			"Allocating object items for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
+	jso_test_clear_schema(&schema);
+}
+
+/* Test getting of object of schema objects if object allocation fails. */
+static void test_jso_schema_keyword_get_object_of_so_when_obj_alloc_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object, sobj1, sobj2;
+	jso_value data, val, ov1, ov2;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+	jso_object_init(&sobj1);
+	jso_object_init(&sobj2);
+
+	JSO_VALUE_SET_OBJECT(ov1, &sobj1);
+	JSO_VALUE_SET_OBJECT(ov2, &sobj2);
+
+	jso_string *kov1 = jso_string_create_from_cstr("o1");
+	jso_string *kov2 = jso_string_create_from_cstr("o2");
+
+	// hash table needs to be set as jso_object_add is mocked
+	jso_ht_set(JSO_OBJECT_HT(&object), kov1, &ov1, true);
+	jso_ht_set(JSO_OBJECT_HT(&object), kov2, &ov2, true);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_object_alloc);
+	will_return(__wrap_jso_object_alloc, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_object_of_schema_objects(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	expect_function_call(__wrap_jso_object_free);
@@ -1196,6 +1255,66 @@ static void test_jso_schema_keyword_get_object_of_so_or_aos_when_resize_fails(vo
 	assert_null(schema_keyword);
 	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
+			"Allocating object items for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
+	jso_test_clear_schema(&schema);
+}
+
+/* Test getting of object of schema objects if allocating object fails. */
+static void test_jso_schema_keyword_get_object_of_so_or_aos_when_obj_alloc_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object, sobj1, sobj2;
+	jso_value data, val, ov1, ov2;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+	jso_object_init(&sobj1);
+	jso_object_init(&sobj2);
+
+	JSO_VALUE_SET_OBJECT(ov1, &sobj1);
+	JSO_VALUE_SET_OBJECT(ov2, &sobj2);
+
+	jso_string *kov1 = jso_string_create_from_cstr("o1");
+	jso_string *kov2 = jso_string_create_from_cstr("o2");
+
+	// hash table needs to be set as jso_object_add is mocked
+	jso_ht_set(JSO_OBJECT_HT(&object), kov1, &ov1, true);
+	jso_ht_set(JSO_OBJECT_HT(&object), kov2, &ov2, true);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_object_alloc);
+	will_return(__wrap_jso_object_alloc, NULL);
+
+	jso_schema_keyword *schema_keyword
+			= jso_schema_keyword_get_object_of_schema_objects_or_array_of_strings(
+					&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	expect_function_call(__wrap_jso_object_free);
@@ -1663,6 +1782,65 @@ static void test_jso_schema_keyword_get_re_object_of_so_when_resize_fails(void *
 	assert_null(schema_keyword);
 	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal(
+			"Allocating object items for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj1);
+
+	expect_function_call(__wrap_jso_object_free);
+	expect_value(__wrap_jso_object_free, obj, &sobj2);
+
+	jso_ht_clear(JSO_OBJECT_HT(&object));
+	jso_test_clear_schema(&schema);
+}
+
+/* Test getting of object of schema objects if object allocation fails. */
+static void test_jso_schema_keyword_get_re_object_of_so_when_obj_alloc_fails(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_object object, sobj1, sobj2;
+	jso_value data, val, ov1, ov2;
+	jso_schema_value parent;
+	jso_schema_keyword keyword;
+
+	jso_schema_init(&schema);
+	jso_object_init(&object);
+	jso_object_init(&sobj1);
+	jso_object_init(&sobj2);
+
+	JSO_VALUE_SET_OBJECT(ov1, &sobj1);
+	JSO_VALUE_SET_OBJECT(ov2, &sobj2);
+
+	jso_string *kov1 = jso_string_create_from_cstr("o1");
+	jso_string *kov2 = jso_string_create_from_cstr("o2");
+
+	// hash table needs to be set as jso_object_add is mocked
+	jso_ht_set(JSO_OBJECT_HT(&object), kov1, &ov1, true);
+	jso_ht_set(JSO_OBJECT_HT(&object), kov2, &ov2, true);
+
+	JSO_VALUE_SET_OBJECT(val, &object);
+
+	expect_function_call(__wrap_jso_schema_data_get);
+	expect_value(__wrap_jso_schema_data_get, schema, &schema);
+	expect_value(__wrap_jso_schema_data_get, data, &data);
+	expect_string(__wrap_jso_schema_data_get, key, "sokey");
+	expect_value(__wrap_jso_schema_data_get, type, JSO_TYPE_OBJECT);
+	expect_value(__wrap_jso_schema_data_get, keyword_flags, 0);
+	expect_value(__wrap_jso_schema_data_get, error_on_invalid_type, JSO_TRUE);
+	expect_value(__wrap_jso_schema_data_get, val, &val);
+	will_return(__wrap_jso_schema_data_get, &val);
+
+	expect_function_call(__wrap_jso_object_alloc);
+	will_return(__wrap_jso_object_alloc, NULL);
+
+	jso_schema_keyword *schema_keyword = jso_schema_keyword_get_regexp_object_of_schema_objects(
+			&schema, &data, "sokey", JSO_TRUE, 0, &keyword, &val, &parent);
+
+	assert_null(schema_keyword);
+	assert_int_equal(JSO_SCHEMA_ERROR_KEYWORD_ALLOC, JSO_SCHEMA_ERROR_TYPE(&schema));
+	assert_string_equal(
 			"Allocating object for keyword sokey failed", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
 	expect_function_call(__wrap_jso_object_free);
@@ -1772,6 +1950,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_all_ok),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_parse_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_resize_fails),
+		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_obj_alloc_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_data_not_found),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_when_item_not_object),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_all_objs_ok),
@@ -1779,12 +1958,14 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_arr_of_str_invalid),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_parse_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_resize_fails),
+		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_obj_alloc_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_data_not_found),
 		cmocka_unit_test(test_jso_schema_keyword_get_object_of_so_or_aos_when_item_not_object),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_all_ok),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_re_invalid),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_parse_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_resize_fails),
+		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_obj_alloc_fails),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_data_not_found),
 		cmocka_unit_test(test_jso_schema_keyword_get_re_object_of_so_when_item_not_object),
 		cmocka_unit_test(test_jso_schema_keyword_free_object),

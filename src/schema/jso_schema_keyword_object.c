@@ -81,9 +81,14 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 	jso_value *item;
 	jso_object *obj = JSO_OBJVAL_P(val);
 	jso_object *schema_obj = jso_object_alloc();
-	if (jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj)) == JSO_FAILURE) {
+	if (schema_obj == NULL) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
 				"Allocating object for keyword %s failed", key);
+		return NULL;
+	}
+	if (jso_object_resize(schema_obj, JSO_OBJECT_COUNT(obj)) == JSO_FAILURE) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_KEYWORD_ALLOC,
+				"Allocating object items for keyword %s failed", key);
 		jso_object_free(schema_obj);
 		return NULL;
 	}
