@@ -93,11 +93,11 @@ void jso_builder_init(jso_builder *builder)
 
 void jso_builder_clear(jso_builder *builder)
 {
-	jso_builder_value *current = builder->first;
-	while (builder->current != NULL) {
-		current = builder->current;
-		builder->current = builder->current->next;
-		jso_free(current);
+	jso_builder_value *builder_value = builder->first;
+	while (builder_value != NULL) {
+		jso_builder_value *current_builder_value = builder_value;
+		builder_value = builder_value->next;
+		jso_free(current_builder_value);
 	}
 }
 
@@ -208,7 +208,7 @@ jso_rc jso_builder_array_add_array_start(jso_builder *builder)
 		return JSO_FAILURE;
 	}
 
-	return jso_array_append(JSO_ARRVAL(builder->current->val), &builder->current->prev->val);
+	return jso_array_append(JSO_ARRVAL(builder->current->prev->val), &builder->current->val);
 }
 
 jso_rc jso_builder_array_add_object_start(jso_builder *builder)
@@ -218,12 +218,12 @@ jso_rc jso_builder_array_add_object_start(jso_builder *builder)
 		return JSO_FAILURE;
 	}
 
-	return jso_array_append(JSO_ARRVAL(builder->current->val), &builder->current->prev->val);
+	return jso_array_append(JSO_ARRVAL(builder->current->prev->val), &builder->current->val);
 }
 
 jso_rc jso_builder_array_end(jso_builder *builder)
 {
-	if (jso_builder_value_is_not_array(builder) || builder->current->prev == NULL) {
+	if (jso_builder_value_is_not_array(builder) || builder->current == NULL) {
 		return JSO_FAILURE;
 	}
 
@@ -330,7 +330,7 @@ jso_rc jso_builder_object_add_array_start(jso_builder *builder, const char *key)
 
 	jso_string *skey = jso_string_create_from_cstr(key);
 
-	return jso_object_add(JSO_OBJVAL(builder->current->val), skey, &builder->current->prev->val);
+	return jso_object_add(JSO_OBJVAL(builder->current->prev->val), skey, &builder->current->val);
 }
 
 jso_rc jso_builder_object_add_object_start(jso_builder *builder, const char *key)
@@ -342,12 +342,12 @@ jso_rc jso_builder_object_add_object_start(jso_builder *builder, const char *key
 
 	jso_string *skey = jso_string_create_from_cstr(key);
 
-	return jso_object_add(JSO_OBJVAL(builder->current->val), skey, &builder->current->prev->val);
+	return jso_object_add(JSO_OBJVAL(builder->current->prev->val), skey, &builder->current->val);
 }
 
 jso_rc jso_builder_object_end(jso_builder *builder)
 {
-	if (jso_builder_value_is_not_object(builder) || builder->current->prev == NULL) {
+	if (jso_builder_value_is_not_object(builder) || builder->current == NULL) {
 		return JSO_FAILURE;
 	}
 

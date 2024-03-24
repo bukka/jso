@@ -104,7 +104,6 @@ static void test_jso_builder_array(void **state)
 				break;
 			case 6:
 				assert_int_equal(JSO_TYPE_ARRAY, JSO_TYPE_P(item));
-				assert_true(JSO_IVAL_P(item));
 				jso_value *inner_item;
 				size_t j = 0;
 				JSO_ARRAY_FOREACH(JSO_ARRVAL_P(item), inner_item)
@@ -131,12 +130,105 @@ static void test_jso_builder_array(void **state)
 		}
 	}
 	JSO_ARRAY_FOREACH_END;
+
+	jso_value_free(value);
+	jso_builder_clear(&builder);
+}
+
+/* A test case that tests various object building. */
+static void test_jso_builder_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	assert_null(jso_builder_get_value(&builder));
+
+	jso_string *str = jso_string_create_from_cstr("str");
+
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_start(&builder));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_bool(&builder, "bt", true));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_bool(&builder, "bf", false));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_int(&builder, "ival", 5));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_double(&builder, "dbl", 3.2));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_cstr(&builder, "cstr", "test"));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_string(&builder, "str", str));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_object_start(&builder, "obj"));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_int(&builder, "oi", 10));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_add_array_start(&builder, "oa"));
+
+	// object cannot be added in object
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_bool(&builder, "b1", false));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_int(&builder, "b2", 5));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_double(&builder, "b3", 3.2));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_cstr(&builder, "b4", "test"));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_string(&builder, "b5", str));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_object_start(&builder, "b6"));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_add_array_start(&builder, "b7"));
+	assert_int_equal(JSO_FAILURE, jso_builder_object_end(&builder));
+
+	assert_int_equal(JSO_SUCCESS, jso_builder_array_end(&builder));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_end(&builder));
+	assert_int_equal(JSO_SUCCESS, jso_builder_object_end(&builder));
+	// already in root so it should fail
+	assert_int_equal(JSO_FAILURE, jso_builder_object_end(&builder));
+
+	jso_value *value = jso_builder_get_value(&builder);
+	assert_non_null(value);
+	assert_int_equal(JSO_TYPE_OBJECT, JSO_TYPE_P(value));
+	jso_object *obj = JSO_OBJVAL_P(value);
+	jso_ht *ht = JSO_OBJECT_HT(obj);
+	assert_int_equal(7, JSO_OBJECT_COUNT(obj));
+
+	jso_value *item;
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "bt", &item));
+	assert_int_equal(JSO_TYPE_BOOL, JSO_TYPE_P(item));
+	assert_true(JSO_IVAL_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "bf", &item));
+	assert_int_equal(JSO_TYPE_BOOL, JSO_TYPE_P(item));
+	assert_false(JSO_IVAL_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "ival", &item));
+	assert_int_equal(JSO_TYPE_INT, JSO_TYPE_P(item));
+	assert_int_equal(5, JSO_IVAL_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "dbl", &item));
+	assert_int_equal(JSO_TYPE_DOUBLE, JSO_TYPE_P(item));
+	assert_int_equal(3.2, JSO_DVAL_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "cstr", &item));
+	assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));
+	assert_string_equal("test", JSO_SVAL_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "str", &item));
+	assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));
+	assert_ptr_equal(str, JSO_STR_P(item));
+
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "obj", &item));
+	assert_int_equal(JSO_TYPE_OBJECT, JSO_TYPE_P(item));
+	jso_value *inner_item;
+	jso_object *inner_obj = JSO_OBJVAL_P(item);
+	jso_ht *inner_ht = JSO_OBJECT_HT(inner_obj);
+	assert_int_equal(2, JSO_OBJECT_COUNT(inner_obj));
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(inner_ht, "oi", &inner_item));
+	assert_int_equal(JSO_TYPE_INT, JSO_TYPE_P(inner_item));
+	assert_int_equal(10, JSO_IVAL_P(inner_item));
+	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(inner_ht, "oa", &inner_item));
+	assert_int_equal(JSO_TYPE_ARRAY, JSO_TYPE_P(inner_item));
+	assert_int_equal(0, JSO_ARRAY_LEN(JSO_ARRVAL_P(inner_item)));
+
+	jso_value_free(value);
+	jso_builder_clear(&builder);
 }
 
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_builder_array),
+		cmocka_unit_test(test_jso_builder_object),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

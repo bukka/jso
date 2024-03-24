@@ -275,7 +275,7 @@ jso_rc jso_builder_object_end(jso_builder *builder);
  */
 static inline jso_value *jso_builder_get_value(jso_builder *builder)
 {
-	return builder->current == NULL ? NULL : &builder->current->val;
+	return builder->first == NULL ? NULL : &builder->first->val;
 }
 
 #endif /* JSO_BUILDER_H */
