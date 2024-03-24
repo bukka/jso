@@ -223,7 +223,7 @@ jso_rc jso_builder_array_add_object_start(jso_builder *builder)
 
 jso_rc jso_builder_array_end(jso_builder *builder)
 {
-	if (jso_builder_value_is_not_array(builder)) {
+	if (jso_builder_value_is_not_array(builder) || builder->current->prev == NULL) {
 		return JSO_FAILURE;
 	}
 
@@ -347,7 +347,7 @@ jso_rc jso_builder_object_add_object_start(jso_builder *builder, const char *key
 
 jso_rc jso_builder_object_end(jso_builder *builder)
 {
-	if (jso_builder_value_is_not_object(builder)) {
+	if (jso_builder_value_is_not_object(builder) || builder->current->prev == NULL) {
 		return JSO_FAILURE;
 	}
 
