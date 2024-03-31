@@ -65,18 +65,31 @@ JSO_API void jso_pointer_cache_free(jso_pointer_cache *jpc);
 JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc);
 
 /**
- * Clear JSO pointer (delete all items).
+ * Add pointer result to the URI.
  *
  * @param jpc JSO pointer cache
+ * @param uri JSO pointer URI
+ * @param value JSO pointer value
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API void jso_pointer_cache_add(
-		jso_pointer_cache *jpc, jso_string *uri, jso_string *fragment, jso_value *value);
+JSO_API jso_rc jso_pointer_cache_add(jso_pointer_cache *jpc, jso_string *uri, jso_value *value);
+
+/**
+ * Return pointer result.
+ *
+ * @param jpc JSO pointer cache
+ * @param uri JSO pointer URI
+ * @param value JSO pointer value
+ * @return @ref JSO_SUCCESS on success (if found), otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value *value);
 
 /**
  * @brief Pointer structure
  */
 typedef struct _jso_pointer {
 	jso_string *uri;
+	size_t base_uri_len;
 	jso_string *tokens;
 	size_t tokens_count;
 	jso_pointer_cache *cache;
@@ -85,20 +98,21 @@ typedef struct _jso_pointer {
 /**
  * Allocate new JSO pointer.
  *
- * @param value Raw string value
+ * @param uri JSO pointer URI
  * @param cache Pointer cache
  * @return New initialized JSO pointer.
  */
-JSO_API jso_pointer *jso_pointer_alloc(jso_string *value, jso_pointer_cache *cache);
+JSO_API jso_pointer *jso_pointer_alloc(jso_string *uri, jso_pointer_cache *cache);
 
 /**
  * Initialize JSO pointer.
  *
  * @param jp JSO pointer
- * @param value Raw string value
+ * @param uri JSO pointer URI
  * @param cache Pointer cache
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_pointer_init(jso_pointer *jp, jso_string *value, jso_pointer_cache *cache);
+JSO_API jso_rc jso_pointer_init(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache);
 
 /**
  * Free JSO pointer.
