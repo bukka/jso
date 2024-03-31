@@ -41,10 +41,26 @@
 - local - search on jso_value
 - external - fetching through http (curl)
 
+## Pointer
+
+- creation
+  - URI converted to base and pointer (store index of the pointer start)
+  - tokenize the pointer fragment
+  - add also mixed creation for base and current path
+- evaluation
+  - find data for the token
+    - 1. search cache iteratively (probably canonicalized version and then absolute)
+    - 2. check the uri and either search current doc and external data
+- external data fetching - curl
+
 ## Schema
 
 ### Parsing
-- enums
+- storing 2 schema paths to value (cannonical and absolute from root)
+  - id / @id should reset the canonical path and gets stored to the cache
+- ref parsing
+  - create pointer (needs to provide canonical)
+  - pointer should be evaluated (special handling for recursion - we should set current path to the pointer)
 - integration tests
 - definitions
 - pointers
@@ -52,7 +68,6 @@
 - draft 6+
 
 ### Validation
-- enums
 - unit tests
 - integration tests
 - stirng unicode length for correct validation
