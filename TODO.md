@@ -35,23 +35,26 @@
 - unicode escaping
 - marked buffering
 
-## Pointer
-
-- structure and planning for implementation of generic pointer on any json
-- local - search on jso_value
-- external - fetching through http (curl)
 
 ## Pointer
 
 - creation
-  - URI converted to base and pointer (store index of the pointer start)
-  - tokenize the pointer fragment
-  - add also mixed creation for base and current path
+  - URI converted to base URI (e.g. @id in case of JsonSchema) and pointer (e.g. @ref in case of JsonSchema)
+    - pointer should be implemented by storing index of the pointer start
+  - add also mixed creation for base and pointer only
+  - tokenize the pointer
+    - path type - each token will be union of string and int (for array index)
 - evaluation
   - find data for the token
-    - 1. search cache iteratively (probably canonicalized version and then absolute)
-    - 2. check the uri and either search current doc and external data
-- external data fetching - curl
+    - 1. search cache iteratively for each path part (first canonicalized version and then absolute). If just partial match is found, then set it as target and find value by suffix point (skip to 3)
+    - 2. check if the uri is external, then fetch it, parse json to jso value (in the future it might be skipped and can be pointer parsed directly - special parser method for pointer) and use it as a target, otherwise use current doc as target
+    - 3. find value by going through the target data by tokens
+    - 4. if value found, cache it and return it, otherwise return error (it should differentiate between not found and other error types - introduce some sort of error handling like for schema)
+- external data fetching
+  - generic client interface
+  - curl implementation of the interface
+- pointer parser method - it will save only the pointer result - the rest will be just validated
+
 
 ## Schema
 
@@ -60,12 +63,14 @@
   - id / @id should reset the canonical path and gets stored to the cache
 - ref parsing
   - create pointer (needs to provide canonical)
-  - pointer should be evaluated (special handling for recursion - we should set current path to the pointer)
+  - if normal ref, pointer should be evaluated (special handling for recursion - we should set current path to the pointer)
+  - for dynamic ref, pointer should be evaluated later and recursion handled
+- draft 6+
+- update and extend unit tests
 - integration tests
 - definitions
 - pointers
 - formats
-- draft 6+
 
 ### Validation
 - unit tests
