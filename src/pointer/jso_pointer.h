@@ -32,40 +32,43 @@
 #include "jso_types.h"
 #include "jso_ht.h"
 
+/**
+ * @brief JSO pointer cache
+ */
 typedef struct _jso_pointer_cache {
 	jso_ht data;
 } jso_pointer_cache;
 
 /**
- * Allocate new JSO pointer.
+ * Allocate new JSO pointer cache.
  *
- * @return New initialized JSO pointer.
+ * @return New initialized JSO pointer cache.
  */
 JSO_API jso_pointer_cache *jso_pointer_cache_alloc();
 
 /**
- * Initialize JSO pointer.
+ * Initialize JSO pointer cache.
  *
  * @param jpc JSO pointer cache
  */
 JSO_API void jso_pointer_cache_init(jso_pointer_cache *jpc);
 
 /**
- * Free JSO pointer.
+ * Free JSO pointer cache.
  *
  * @param jpc JSO pointer cache
  */
 JSO_API void jso_pointer_cache_free(jso_pointer_cache *jpc);
 
 /**
- * Clear JSO pointer (delete all items).
+ * Clear JSO pointer cache (delete all items).
  *
  * @param jpc JSO pointer cache
  */
 JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc);
 
 /**
- * Add pointer result to the URI.
+ * Add pointer result with the URI to the cache.
  *
  * @param jpc JSO pointer cache
  * @param uri JSO pointer URI
