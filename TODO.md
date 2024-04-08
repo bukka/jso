@@ -1,5 +1,15 @@
 # TODO list
 
+## DSA
+
+### List
+- Copy and rename current array implementation to list
+
+### Array
+- Change to sequential array
+- Add API for random (indexed) access
+
+
 ## Scanner
 
 ### JS scanning
@@ -44,6 +54,7 @@
   - add also mixed creation for base and pointer only
   - tokenize the pointer
     - path type - each token will be union of string and int (for array index)
+    - decode each string token ~0 -> ~, ~1 -> /
 - evaluation
   - find data for the token
     - 1. search cache iteratively for each path part (first canonicalized version and then absolute). If just partial match is found, then set it as target and find value by suffix point (skip to 3)
@@ -59,12 +70,15 @@
 ## Schema
 
 ### Parsing
-- storing 2 schema paths to value (cannonical and absolute from root)
+- storing path to value value
+  - it should be cannonical one and maybe absolute from root as weel if needed
   - id / @id should reset the canonical path and gets stored to the cache
 - ref parsing
-  - create pointer (needs to provide canonical)
-  - if normal ref, pointer should be evaluated (special handling for recursion - we should set current path to the pointer)
-  - for dynamic ref, pointer should be evaluated later and recursion handled
+  - create pointer (needs to provide canonical URI)
+  - if normal ref, pointer should be resolved during compilation (schema creation)
+  - for dynamic ref, pointer should be resolved during validation
+  - special handling for recursion
+    - pointer cache should have a special flag in the jso_value that should distinguish between started or finished resolving
 - draft 6+
 - update and extend unit tests
 - integration tests

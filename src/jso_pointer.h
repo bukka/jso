@@ -68,14 +68,15 @@ JSO_API void jso_pointer_cache_free(jso_pointer_cache *jpc);
 JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc);
 
 /**
- * Add pointer result with the URI to the cache.
+ * Set pointer result with the URI to the cache.
  *
  * @param jpc JSO pointer cache
  * @param uri JSO pointer URI
  * @param value JSO pointer value
+ * @param free_old whether to free old value if value for URI alrady exists.
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_pointer_cache_add(jso_pointer_cache *jpc, jso_string *uri, jso_value *value);
+JSO_API jso_rc jso_pointer_cache_set(jso_pointer_cache *jpc, jso_string *uri, jso_value *value, jso_bool free_old);
 
 /**
  * Return pointer result.
@@ -87,8 +88,28 @@ JSO_API jso_rc jso_pointer_cache_add(jso_pointer_cache *jpc, jso_string *uri, js
  */
 JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value *value);
 
+
 /**
- * @brief Pointer structure
+ * @brief Pointer error type.
+ */
+typedef enum _jso_pointer_error_type {
+	JSO_POINTER_ERROR_NONE = 0,
+	JSO_POINTER_ERROR_NOT_FOUND,
+	JSO_POINTER_ERROR_INVALID,
+} jso_pointer_error_type;
+
+/**
+ * @brief Pointer error.
+ */
+typedef struct _jso_pointer_error {
+	/** error message */
+	char *message;
+	/** error type */
+	jso_pointer_error_type type;
+} jso_pointer_error;
+
+/**
+ * @brief Pointer structure.
  */
 typedef struct _jso_pointer {
 	jso_string *uri;
@@ -96,7 +117,33 @@ typedef struct _jso_pointer {
 	jso_string *tokens;
 	size_t tokens_count;
 	jso_pointer_cache *cache;
+	jso_pointer_error error;
 } jso_pointer;
+
+/**
+ * Get pointer error type.
+ *
+ * @param _pointer shema of type @ref jso_pointer
+ */
+#define JSO_POINTER_ERROR_TYPE(_pointer) (_pointer)->error.type
+
+/**
+ * Get pointer error message.
+ *
+ * @param _pointer shema of type @ref jso_pointer
+ */
+#define JSO_POINTER_ERROR_MESSAGE(_pointer) (_pointer)->error.message
+
+/**
+ * Check if pointer error is set.
+ *
+ * @param pointer pointer of type @ref jso_pointer
+ * @return JSO_TRUE if error set, otherwise JSO_FALSE
+ */
+static inline bool jso_pointer_error_is_set(jso_pointer *pointer)
+{
+	return JSO_POINTER_ERROR_TYPE(pointer) != JSO_POINTER_ERROR_NONE;
+}
 
 /**
  * Allocate new JSO pointer.
@@ -116,6 +163,26 @@ JSO_API jso_pointer *jso_pointer_alloc(jso_string *uri, jso_pointer_cache *cache
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_pointer_init(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache);
+
+/**
+ * Initialize JSO pointer.
+ *
+ * @param jp JSO pointer
+ * @param uri JSO pointer URI
+ * @param cache Pointer cache
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_pointer_init(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache);
+
+/**
+ * Resolve 
+ * 
+ * @param jp JSO pointer
+ * @param doc Document to search value in.
+ * @param value Resolved value if the resolving was successful
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE. 
+ */
+JSO_API jso_rc jso_pointer_resolve(jso_pointer *jp, jso_value *doc, jso_value **value);
 
 /**
  * Free JSO pointer.
