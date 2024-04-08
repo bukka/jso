@@ -26,30 +26,31 @@
 
 JSO_API jso_pointer_cache *jso_pointer_cache_alloc()
 {
-    return jso_calloc(1, sizeof(jso_pointer_cache));
+	return jso_calloc(1, sizeof(jso_pointer_cache));
 }
 
 JSO_API void jso_pointer_cache_init(jso_pointer_cache *jpc)
 {
-    memset(jpc, 0, sizeof(jso_pointer_cache));
+	memset(jpc, 0, sizeof(jso_pointer_cache));
 }
 
 JSO_API void jso_pointer_cache_free(jso_pointer_cache *jpc)
 {
-    jso_ht_free(&(jpc->data));
+	jso_ht_free(&(jpc->data));
 }
 
 JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc)
 {
-    jso_ht_clear(&(jpc->data));
+	jso_ht_clear(&(jpc->data));
 }
 
-JSO_API jso_rc jso_pointer_cache_set(jso_pointer_cache *jpc, jso_string *uri, jso_value *value, jso_bool free_old)
+JSO_API jso_rc jso_pointer_cache_set(
+		jso_pointer_cache *jpc, jso_string *uri, jso_value *value, jso_bool free_old)
 {
-    return jso_ht_set(&(jpc->data), uri, value, free_old);
+	return jso_ht_set(&(jpc->data), uri, value, free_old);
 }
 
 JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value **value)
 {
-    return jso_ht_get(&(jpc->data), uri, value);
+	return jso_ht_get(&(jpc->data), uri, value);
 }

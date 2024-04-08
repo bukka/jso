@@ -20,3 +20,50 @@
  * DEALINGS IN THE SOFTWARE.
  *
  */
+
+#include "jso_pointer.h"
+#include "jso.h"
+
+static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache)
+{
+	jp->cache = cache;
+	jp->uri = jso_string_copy(uri);
+	// TODO: implement tokenization
+
+	return JSO_SUCCESS;
+}
+
+JSO_API jso_pointer *jso_pointer_alloc(jso_string *uri, jso_pointer_cache *cache)
+{
+	jso_pointer *jp = jso_calloc(1, sizeof(jso_pointer));
+	if (jp == NULL || jso_pointer_compile(jp, uri, cache) == JSO_FAILURE) {
+		return NULL;
+	}
+	return jp;
+}
+
+JSO_API jso_rc jso_pointer_init(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache)
+{
+	memset(jp, 0, sizeof(jso_pointer));
+	return jso_pointer_compile(jp, uri, cache);
+}
+
+JSO_API jso_rc jso_pointer_resolve(jso_pointer *jp, jso_value *doc, jso_value **value)
+{
+	// TODO: Implement resolving
+	return JSO_SUCCESS;
+}
+
+JSO_API void jso_pointer_free(jso_pointer *jp)
+{
+	jso_pointer_clear(jp);
+	jso_free(jp);
+}
+
+JSO_API void jso_pointer_clear(jso_pointer *jp)
+{
+	for (size_t i = 0; i < jp->tokens_count; i++) {
+		jso_string_free(jp->tokens[i]);
+	}
+	jso_string_free(jp->uri);
+}
