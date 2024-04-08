@@ -83,10 +83,10 @@ JSO_API jso_rc jso_pointer_cache_set(jso_pointer_cache *jpc, jso_string *uri, js
  *
  * @param jpc JSO pointer cache
  * @param uri JSO pointer URI
- * @param value JSO pointer value
+ * @param value Cached JSO pointer value
  * @return @ref JSO_SUCCESS on success (if found), otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value *value);
+JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value **value);
 
 
 /**
