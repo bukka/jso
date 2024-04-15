@@ -95,7 +95,9 @@ JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, js
 typedef enum _jso_pointer_error_type {
 	JSO_POINTER_ERROR_NONE = 0,
 	JSO_POINTER_ERROR_NOT_FOUND,
-	JSO_POINTER_ERROR_INVALID,
+	JSO_POINTER_ERROR_INVALID_FORMAT,
+	JSO_POINTER_ERROR_INVALID_ESCAPE,
+	JSO_POINTER_ERROR_ALLOC,
 } jso_pointer_error_type;
 
 /**

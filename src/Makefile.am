@@ -5,7 +5,7 @@ libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number
 	jso_builder.c jso_encoder.c jso_error.c jso_ht.c jso_re.c \
 	jso_parser.tab.c parser/jso_parser_hooks_decode.c jso_scanner.c \
 	io/jso_io.c io/jso_io_file.c io/jso_io_memory.c \
-	pointer/jso_pointer_cache.c pointer/jso_pointer.c \
+	pointer/jso_pointer_cache.c pointer/jso_pointer_error.c pointer/jso_pointer.c \
 	schema/jso_schema_array.c schema/jso_schema_data.c schema/jso_schema_error.c  \
 	schema/jso_schema_keyword.c schema/jso_schema_keyword_array.c \
 	schema/jso_schema_keyword_freer.c schema/jso_schema_keyword_object.c \
@@ -29,7 +29,8 @@ jso_LDADD = libjso.a
 include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_dtoa.h \
 	jso_bitset.h jso_builder.h jso_number.h jso_error.h jso_encoder.h jso_ht.h \
 	jso_parser.h jso_parser.tab.h jso_parser_hooks.h jso_mm.h parser/jso_parser_hooks_decode.h \
-	jso_scanner.h jso_string.h jso_io.h io/jso_io_file.h io/jso_io_memory.h jso_pointer.h \
+	jso_scanner.h jso_string.h jso_io.h io/jso_io_file.h io/jso_io_memory.h \
+	jso_pointer.h pointer/jso_pointer_error.h \
 	jso_schema.h schema/jso_schema_array.h schema/jso_schema_data.h schema/jso_schema_error.h  \
 	schema/jso_schema_keyword.h schema/jso_schema_keyword_array.h \
 	schema/jso_schema_keyword_freer.h schema/jso_schema_keyword_object.h \
