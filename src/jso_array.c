@@ -120,6 +120,22 @@ JSO_API jso_rc jso_array_pop(jso_array *arr)
 	return JSO_SUCCESS;
 }
 
+/* get array element at the supplied index */
+JSO_API jso_rc jso_array_index(jso_array *arr, size_t index, jso_value **value)
+{
+	if (arr->len == 0 || index >= arr->len) {
+		return JSO_FAILURE;
+	}
+	jso_array_element *el = arr->head;
+	JSO_ASSERT_NOT_NULL(el);
+	for (size_t i = 0; i < index; i++) {
+		el = el->next;
+		JSO_ASSERT_NOT_NULL(el);
+	}
+	*value = &el->val;
+	return JSO_SUCCESS;
+}
+
 /* call cbk function for each element in array */
 JSO_API void jso_array_apply(jso_array *arr, jso_array_callback cbk)
 {

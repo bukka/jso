@@ -106,6 +106,36 @@ static void test_jso_array_pop(void **state)
 	jso_array_free(arr);
 }
 
+/* A test case for array index. */
+static void test_jso_array_index(void **state)
+{
+	(void) state; /* unused */
+
+	jso_value val1, val2, val3, *val;
+	JSO_VALUE_SET_INT(val1, 1);
+	JSO_VALUE_SET_INT(val2, 2);
+	JSO_VALUE_SET_INT(val3, 3);
+
+	jso_array *arr = jso_array_alloc();
+	assert_int_equal(JSO_FAILURE, jso_array_index(arr, 0, &val));
+
+	jso_array_append(arr, &val1);
+	jso_array_append(arr, &val2);
+	jso_array_append(arr, &val3);
+
+	assert_int_equal(JSO_FAILURE, jso_array_index(arr, 3, &val));
+	assert_int_equal(JSO_FAILURE, jso_array_index(arr, 6, &val));
+
+	assert_int_equal(JSO_SUCCESS, jso_array_index(arr, 0, &val));
+	assert_int_equal(1, JSO_IVAL_P(val));
+	assert_int_equal(JSO_SUCCESS, jso_array_index(arr, 1, &val));
+	assert_int_equal(2, JSO_IVAL_P(val));
+	assert_int_equal(JSO_SUCCESS, jso_array_index(arr, 2, &val));
+	assert_int_equal(3, JSO_IVAL_P(val));
+
+	jso_array_free(arr);
+}
+
 /* A test case that tests applying function for all array items. */
 static void jso_test_array_apply_callback(size_t idx, jso_value *val)
 {
@@ -280,6 +310,7 @@ int main(void)
 		cmocka_unit_test(test_jso_array_append),
 		cmocka_unit_test(test_jso_array_push),
 		cmocka_unit_test(test_jso_array_pop),
+		cmocka_unit_test(test_jso_array_index),
 		cmocka_unit_test(test_jso_array_apply),
 		cmocka_unit_test(test_jso_array_apply_with_args),
 		cmocka_unit_test(test_jso_array_equals),

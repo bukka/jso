@@ -146,6 +146,16 @@ JSO_API jso_rc jso_array_push(jso_array *arr, jso_value *val);
 JSO_API jso_rc jso_array_pop(jso_array *arr);
 
 /**
+ * Get value at the array index.
+ *
+ * @param arr array
+ * @param index array index
+ * @param value returned value
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_array_index(jso_array *arr, size_t index, jso_value **value);
+
+/**
  * Call callback for each value in the array.
  *
  * @param arr array
