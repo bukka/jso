@@ -68,8 +68,23 @@ static inline jso_string *jso_pointer_create_token(
 static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri, jso_pointer_cache *cache)
 {
 	jp->cache = cache;
-	jp->uri = jso_string_copy(uri);
-	// TODO: check cache and return from there if found
+	jso_pointer *cached_pointer;
+	if (jso_pointer_cache_get(cache, uri, &cached_pointer) == JSO_SUCCESS) {
+		size_t tokens_count = cached_pointer->tokens_count;
+		jp->tokens = jso_calloc(tokens_count, sizeof(jso_string *));
+		if (jp->tokens == NULL) {
+			jso_pointer_error_set(
+					jp, JSO_POINTER_ERROR_ALLOC, "JsonPointer tokens allocation failed");
+			return JSO_FAILURE;
+		}
+		jp->tokens_count = tokens_count;
+		for (size_t i = 0; i < tokens_count; ++i) {
+			jp->tokens[i] = jso_string_copy(cached_pointer->tokens[i]);
+		}
+		jp->uri = jso_string_copy(uri);
+		return JSO_SUCCESS;
+	}
+
 	jso_ctype *end, *start, *pos, *next;
 	pos = start = JSO_STRING_VAL(uri);
 	size_t uri_len = JSO_STRING_LEN(uri);
@@ -100,6 +115,7 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri, jso_pointer_
 		jso_pointer_error_set(jp, JSO_POINTER_ERROR_ALLOC, "JsonPointer tokens allocation failed");
 		return JSO_FAILURE;
 	}
+	jp->uri = jso_string_copy(uri);
 	jp->tokens_count = tokens_count;
 	jso_string *token;
 	pos = start + 1;
@@ -110,6 +126,8 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri, jso_pointer_
 		JSO_ASSERT_NOT_NULL(next);
 		token = jso_pointer_create_token(jp, pos, next);
 		if (token == NULL) {
+			jp->tokens_count = i;
+			jso_pointer_clear(jp);
 			return JSO_FAILURE;
 		}
 		jp->tokens[i] = token;
@@ -117,11 +135,16 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri, jso_pointer_
 	}
 	token = jso_pointer_create_token(jp, pos, end);
 	if (token == NULL) {
+		jp->tokens_count = i;
+		jso_pointer_clear(jp);
 		return JSO_FAILURE;
 	}
 	jp->tokens[i] = token;
 
-	// TODO: save cache
+	if (jso_pointer_cache_set(cache, uri, jp, true) == JSO_FAILURE) {
+		jso_pointer_clear(jp);
+		return JSO_FAILURE;
+	}
 
 	return JSO_SUCCESS;
 }

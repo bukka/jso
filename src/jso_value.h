@@ -106,6 +106,14 @@
 #define JSO_OBJHVAL_P(_pjv) &(_pjv)->data.obj->ht
 
 /**
+ * Get a JsonPointer of the supplied pointer to value.
+ *
+ * @param _pjv variable of @ref jso_value type
+ * @return Pointer to @ref jso_pointer.
+ */
+#define JSO_PTRVAL_P(_pjv) (_pjv)->data.ptr
+
+/**
  * Get a schema value of the supplied pointer to value.
  *
  * @param _pjv pointer to @ref jso_value
@@ -210,6 +218,14 @@
  * @return Pointer to @ref jso_ht.
  */
 #define JSO_OBJHVAL(_jv) JSO_OBJHVAL_P(&(_jv))
+
+/**
+ * Get a JsonPointer of the supplied value.
+ *
+ * @param _jv variable of @ref jso_value type
+ * @return Pointer to @ref jso_pointer.
+ */
+#define JSO_PTRVAL(_jv) JSO_PTRVAL_P(&(_jv))
 
 /**
  * Get a schema value of the supplied value.
@@ -341,6 +357,18 @@
 	} while (0)
 
 /**
+ * Set a pointer to the supplied value.
+ *
+ * @param _jv variable of @ref jso_value type
+ * @param _pv pointer
+ */
+#define JSO_VALUE_SET_POINTER(_jv, _pv) \
+	do { \
+		JSO_TYPE(_jv) = JSO_TYPE_POINTER; \
+		JSO_PTRVAL(_jv) = (_pv); \
+	} while (0)
+
+/**
  * Set a schema value to the supplied value.
  *
  * @param _pjv variable of @ref jso_value type
@@ -433,6 +461,18 @@
 	do { \
 		JSO_TYPE_P(_pjv) = JSO_TYPE_OBJECT; \
 		JSO_OBJVAL_P(_pjv) = (_ov); \
+	} while (0)
+
+/**
+ * Set a pointer (JsonPointer) to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _pv pointer
+ */
+#define JSO_VALUE_SET_POINTER_P(_pjv, _pv) \
+	do { \
+		JSO_TYPE_P(_pjv) = JSO_TYPE_POINTER; \
+		JSO_PTRVAL_P(_pjv) = (_pv); \
 	} while (0)
 
 /**

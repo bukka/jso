@@ -24,6 +24,7 @@
 #include "jso.h"
 #include "jso_array.h"
 #include "jso_object.h"
+#include "jso_pointer.h"
 #include "jso_string.h"
 #include "jso_schema.h"
 
@@ -45,6 +46,9 @@ JSO_API void jso_value_free(jso_value *val)
 			break;
 		case JSO_TYPE_OBJECT:
 			jso_object_free(JSO_OBJVAL_P(val));
+			break;
+		case JSO_TYPE_POINTER:
+			jso_pointer_free(JSO_PTRVAL_P(val));
 			break;
 		case JSO_TYPE_SCHEMA_VALUE:
 			jso_schema_value_free(JSO_SVVAL_P(val));
@@ -194,6 +198,14 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 				jso_object_apply_with_arg(JSO_OBJVAL_P(val), jso_value_dump_object_callback, &arg);
 			}
 			break;
+		case JSO_TYPE_POINTER:
+			if (!JSO_PTRVAL_P(val)) {
+				JSO_IO_PRINTF(io, "ERROR: Pointer allocation failed\n");
+			} else {
+				jso_pointer *ptr = JSO_PTRVAL_P(val);
+				JSO_IO_PRINTF(io, "POINTER: %s\n", JSO_STRING_VAL(ptr->uri));
+			}
+			break;
 		case JSO_TYPE_ERROR:
 			jso_value_print_error(val, io);
 			break;
@@ -208,8 +220,8 @@ JSO_API void jso_value_dump(jso_value *val, jso_io *io)
 	jso_value_dump_ex(val, io, 0);
 }
 
-static const char *type_names[]
-		= { "error", "null", "bool", "int", "double", "string", "array", "object", "schema" };
+static const char *type_names[] = { "error", "null", "bool", "int", "double", "string", "array",
+	"object", "pointer", "schema" };
 
 JSO_API const char *jso_value_type_to_string(jso_value_type type)
 {

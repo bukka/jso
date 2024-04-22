@@ -111,6 +111,11 @@ typedef struct _jso_object jso_object;
 typedef struct _jso_re_code jso_re_code;
 
 /**
+ * @brief Pointer type.
+ */
+typedef struct _jso_pointer jso_pointer;
+
+/**
  * @brief Schema value type.
  */
 typedef struct _jso_schema_value jso_schema_value;
@@ -135,8 +140,10 @@ typedef enum {
 	JSO_TYPE_ARRAY = 6,
 	/** object value type */
 	JSO_TYPE_OBJECT = 7,
+	/** pointer type */
+	JSO_TYPE_POINTER = 8,
 	/** schema object value type */
-	JSO_TYPE_SCHEMA_VALUE = 8,
+	JSO_TYPE_SCHEMA_VALUE = 9,
 } jso_value_type;
 
 /**
@@ -205,6 +212,8 @@ typedef union _jso_value_data {
 	jso_array *arr;
 	/** object value (reference) */
 	jso_object *obj;
+	/** pointer (reference) */
+	jso_pointer *ptr;
 	/** json schema object (reference) */
 	jso_schema_value *sobj;
 	/** error value (reference) */

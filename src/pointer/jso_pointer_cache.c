@@ -45,12 +45,23 @@ JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc)
 }
 
 JSO_API jso_rc jso_pointer_cache_set(
-		jso_pointer_cache *jpc, jso_string *uri, jso_value *value, jso_bool free_old)
+		jso_pointer_cache *jpc, jso_string *uri, jso_pointer *jp, jso_bool free_old)
 {
-	return jso_ht_set(&(jpc->data), uri, value, free_old);
+	jso_value value;
+	JSO_VALUE_SET_POINTER(value, jp);
+
+	return jso_ht_set(&(jpc->data), uri, &value, free_old);
 }
 
-JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value **value)
+JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_pointer **jp)
 {
-	return jso_ht_get(&(jpc->data), uri, value);
+	jso_value *value;
+
+	if (jso_ht_get(&(jpc->data), uri, &value) == JSO_SUCCESS) {
+		JSO_ASSERT_EQ(JSO_TYPE_POINTER, JSO_TYPE_P(value));
+		*jp = JSO_PTRVAL_P(value);
+		return JSO_SUCCESS;
+	}
+
+	return JSO_FAILURE;
 }

@@ -72,22 +72,22 @@ JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc);
  *
  * @param jpc JSO pointer cache
  * @param uri JSO pointer URI
- * @param value JSO pointer value
+ * @param jp JSO pointer
  * @param free_old whether to free old value if value for URI alrady exists.
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_pointer_cache_set(
-		jso_pointer_cache *jpc, jso_string *uri, jso_value *value, jso_bool free_old);
+		jso_pointer_cache *jpc, jso_string *uri, jso_pointer *jp, jso_bool free_old);
 
 /**
  * Return pointer result.
  *
  * @param jpc JSO pointer cache
  * @param uri JSO pointer URI
- * @param value Cached JSO pointer value
+ * @param jp Cached JSO pointer
  * @return @ref JSO_SUCCESS on success (if found), otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_value **value);
+JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_pointer **jp);
 
 /**
  * @brief Pointer error type.
