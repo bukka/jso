@@ -197,8 +197,8 @@ static inline bool jso_string_equals_to_cstr(jso_string *str, const char *cstr)
 static inline jso_rc jso_string_to_int(jso_string *str, jso_int *result)
 {
 	char *endptr;
-	long val = strtol(JSO_STRING_VAL(str), &endptr, 10);
-	if (endptr != JSO_STRING_VAL(str) + JSO_STRING_LEN(str)) {
+	long val = strtol((char *) JSO_STRING_VAL(str), &endptr, 10);
+	if (endptr != (char *) (JSO_STRING_VAL(str) + JSO_STRING_LEN(str))) {
 		return JSO_FAILURE;
 	}
 	*result = val;

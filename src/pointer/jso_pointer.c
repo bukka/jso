@@ -154,14 +154,6 @@ jso_rc jso_pointer_search(jso_pointer *jp, size_t token_pos, jso_value *doc_pos,
 	jso_string *token = jp->tokens[token_pos];
 	jso_value_type doc_pos_type = JSO_TYPE_P(doc_pos);
 	jso_value *next;
-	if (doc_pos_type == JSO_TYPE_OBJECT) {
-		if (jso_object_get(JSO_OBJVAL_P(doc_pos), token, next) == JSO_FAILURE) {
-			return JSO_FAILURE;
-		}
-		return jso_pointer_search(jp, token_pos + 1, next, value);
-	} else if (doc_pos_type == JSO_TYPE_ARRAY) {
-	}
-
 	switch (JSO_TYPE_P(doc_pos)) {
 		case JSO_TYPE_OBJECT:
 			if (jso_object_get(JSO_OBJVAL_P(doc_pos), token, &next) == JSO_FAILURE) {
@@ -171,7 +163,7 @@ jso_rc jso_pointer_search(jso_pointer *jp, size_t token_pos, jso_value *doc_pos,
 			}
 			return jso_pointer_search(jp, token_pos + 1, next, value);
 
-		case JSO_TYPE_ARRAY:
+		case JSO_TYPE_ARRAY: {
 			jso_int index;
 			if (jso_string_to_int(token, &index) == JSO_FAILURE) {
 				jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_ARRAY_INDEX,
@@ -188,6 +180,7 @@ jso_rc jso_pointer_search(jso_pointer *jp, size_t token_pos, jso_value *doc_pos,
 				return JSO_FAILURE;
 			}
 			return jso_pointer_search(jp, token_pos + 1, next, value);
+		}
 
 		case JSO_TYPE_BOOL:
 		case JSO_TYPE_DOUBLE:
