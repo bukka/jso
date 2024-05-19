@@ -147,7 +147,62 @@ JSO_API jso_pointer *jso_pointer_create(jso_string *uri, jso_pointer_cache *cach
 
 jso_rc jso_pointer_search(jso_pointer *jp, size_t token_pos, jso_value *doc_pos, jso_value **value)
 {
-	// TODO: implement
+	if (token_pos == jp->tokens_count) {
+		*value = doc_pos;
+		return JSO_SUCCESS;
+	}
+	jso_string *token = jp->tokens[token_pos];
+	jso_value_type doc_pos_type = JSO_TYPE_P(doc_pos);
+	jso_value *next;
+	if (doc_pos_type == JSO_TYPE_OBJECT) {
+		if (jso_object_get(JSO_OBJVAL_P(doc_pos), token, next) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+		return jso_pointer_search(jp, token_pos + 1, next, value);
+	} else if (doc_pos_type == JSO_TYPE_ARRAY) {
+	}
+
+	switch (JSO_TYPE_P(doc_pos)) {
+		case JSO_TYPE_OBJECT:
+			if (jso_object_get(JSO_OBJVAL_P(doc_pos), token, &next) == JSO_FAILURE) {
+				jso_pointer_error_set(
+						jp, JSO_POINTER_ERROR_NOT_FOUND, "JsonPointer value not found in object");
+				return JSO_FAILURE;
+			}
+			return jso_pointer_search(jp, token_pos + 1, next, value);
+
+		case JSO_TYPE_ARRAY:
+			jso_int index;
+			if (jso_string_to_int(token, &index) == JSO_FAILURE) {
+				jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_ARRAY_INDEX,
+						"JsonPointer array index is not a number");
+				return JSO_FAILURE;
+			}
+			if (index < 0) {
+				jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_ARRAY_INDEX,
+						"JsonPointer array index cannot be negative");
+			}
+			if (jso_array_index(JSO_ARRVAL_P(doc_pos), (size_t) index, &next) == JSO_FAILURE) {
+				jso_pointer_error_set(
+						jp, JSO_POINTER_ERROR_NOT_FOUND, "JsonPointer value not found in array");
+				return JSO_FAILURE;
+			}
+			return jso_pointer_search(jp, token_pos + 1, next, value);
+
+		case JSO_TYPE_BOOL:
+		case JSO_TYPE_DOUBLE:
+		case JSO_TYPE_INT:
+		case JSO_TYPE_STRING:
+		case JSO_TYPE_NULL:
+			jso_pointer_error_set(jp, JSO_POINTER_ERROR_NOT_FOUND,
+					"JsonPointer scalar value not in the leave token");
+			return JSO_FAILURE;
+		default:
+			jso_pointer_error_set(
+					jp, JSO_POINTER_ERROR_INVALID_VALUE, "JsonPointer value is not supported");
+			return JSO_FAILURE;
+			break;
+	}
 	return JSO_FAILURE;
 }
 
@@ -157,10 +212,13 @@ JSO_API jso_rc jso_pointer_resolve(
 	if (jso_ht_get(value_cache, jp->uri, value) == JSO_SUCCESS) {
 		return JSO_SUCCESS;
 	}
-
-	if (jso_pointer_search(jp, 0, doc, value) == JSO_SUCCESS
-			&& jso_ht_set(value_cache, jp->uri, *value, false) == JSO_SUCCESS) {
-		return JSO_SUCCESS;
+	if (jso_pointer_search(jp, 0, doc, value) == JSO_FAILURE) {
+		return JSO_FAILURE;
+	}
+	if (jso_ht_set(value_cache, jp->uri, *value, false) == JSO_FAILURE) {
+		jso_pointer_error_set(
+				jp, JSO_POINTER_ERROR_ALLOC, "JsonPointer value caching allocation failed");
+		return JSO_FAILURE;
 	}
 
 	return JSO_SUCCESS;
