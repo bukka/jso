@@ -145,7 +145,8 @@ JSO_API jso_pointer *jso_pointer_create(jso_string *uri, jso_pointer_cache *cach
 	return jp;
 }
 
-jso_rc jso_pointer_search(jso_pointer *jp, size_t token_pos, jso_value *doc_pos, jso_value **value)
+static jso_rc jso_pointer_search(
+		jso_pointer *jp, size_t token_pos, jso_value *doc_pos, jso_value **value)
 {
 	if (token_pos == jp->tokens_count) {
 		*value = doc_pos;

@@ -70,8 +70,8 @@
 ## Schema
 
 ### Parsing
-- storing path to value value
-  - it should be cannonical one and maybe absolute from root as weel if needed
+- storing path to value
+  - it should be cannonical one and maybe absolute from root as we'l if needed
   - id / @id should reset the canonical path and gets stored to the cache
 - ref parsing
   - create pointer (needs to provide canonical URI)
