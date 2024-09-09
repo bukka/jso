@@ -27,6 +27,7 @@
 #include "jso_schema_keyword.h"
 #include "jso_schema_keyword_freer.h"
 #include "jso_schema_value.h"
+#include "jso_schema_uri.h"
 
 #include "jso.h"
 
@@ -57,6 +58,22 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		// set metadata keywords
 		JSO_SCHEMA_KW_SET_STR(schema, data, description, value, value_data);
 		JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
+
+		// id keyword
+		JSO_SCHEMA_KW_SET_STR(schema, data, id, value, value_data);
+
+		if (JSO_SCHEMA_KW_IS_SET(value_data->id)) {
+			jso_schema_uri_set(&value->base_uri, JSO_SCHEMA_KEYWORD_DATA_STR(value_data->id));
+		} else {
+			jso_schema_uri_copy(&value->base_uri, &parent->base_uri);
+		}
+
+		// reference
+		JSO_SCHEMA_KW_SET_STR_EX(schema, data, $ref, value, value_data, ref);
+		if (JSO_SCHEMA_KW_IS_SET(value_data->ref)) {
+			// TODO: add logic to create ref and check if there is only one data element -> set
+			// JSO_SCHEMA_VALUE_FLAG_REF_ONLY
+		}
 
 		// set other common keywords
 		JSO_SCHEMA_KW_SET_WITH_FLAGS_EX(schema, data, enum, value, value_data, enum_elements,

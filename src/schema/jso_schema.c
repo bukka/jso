@@ -52,15 +52,6 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		return JSO_FAILURE;
 	}
 
-	// Parse ID.
-	jso_string *id = jso_schema_data_get_str(schema, data, "id");
-	if (jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
-	}
-	if (id) {
-		schema->id = jso_string_copy(id);
-	}
-
 	// Parse root value.
 	jso_schema_value *root = jso_schema_value_parse(schema, data, NULL);
 	if (root == NULL) {
@@ -68,13 +59,16 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 	}
 	schema->root = root;
 
+	// Save document
+	JSO_VALUE_SET_OBJECT(schema->doc, jso_object_copy(JSO_OBJVAL_P(data)));
+
 	return JSO_SUCCESS;
 }
 
 static inline void jso_schema_empty(jso_schema *schema)
 {
 	jso_schema_value_free(schema->root);
-	jso_string_free(schema->id);
+	jso_value_free(&schema->doc);
 	jso_schema_error_free(schema);
 }
 

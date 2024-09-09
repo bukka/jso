@@ -47,6 +47,33 @@ typedef struct _jso_schema_array {
 } jso_schema_array;
 
 /**
+ * @brief Schema reference type.
+ */
+typedef struct _jso_schema_reference jso_schema_reference;
+
+/**
+ * @brief Schema reference type.
+ */
+typedef struct _jso_schema_uri {
+	/** uri string */
+	jso_string *uri;
+	/** position of the fragment if the URI contains the fragment */
+	size_t fragment_start;
+} jso_schema_uri;
+
+/**
+ * @brief Schema reference type.
+ */
+typedef struct _jso_schema_reference {
+	/** reference uri */
+	jso_schema_uri uri;
+	/** result value */
+	jso_schema_value *result;
+	/** main schema holding result cache and doc */
+	jso_schema *schema;
+};
+
+/**
  * @brief JsonSchema keyword data.
  *
  * The current size of the data is equal to the largest element which is pointer
@@ -103,6 +130,8 @@ typedef enum {
 	JSO_SCHEMA_KEYWORD_TYPE_STRING,
 	/** regular expression keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_REGEXP,
+	/** reference keyword type */
+	JSO_SCHEMA_KEYWORD_TYPE_REF,
 	/** string array keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_ARRAY,
 	/** string array keyword type */
@@ -435,6 +464,10 @@ typedef struct _jso_schema_keyword {
 	jso_schema_value *parent; \
 	/** regural expression if used by patternProperties */ \
 	jso_re_code *re; \
+	/** id keyword */ \
+	jso_schema_keyword id; \
+	/** ref keyword */ \
+	jso_schema_keyword ref; \
 	/** enum keyword */ \
 	jso_schema_keyword enum_elements; \
 	/** allOf keyword */ \
@@ -620,6 +653,11 @@ typedef union _jso_schema_value_data {
 #define JSO_SCHEMA_VALUE_FLAG_NOT_EMPTY 0x01
 
 /**
+ * @brief Flag specifying that only reference is set.
+ */
+#define JSO_SCHEMA_VALUE_FLAG_REF_ONLY 0x02
+
+/**
  * @brief JsonSchema value data and type.
  */
 struct _jso_schema_value {
@@ -629,6 +667,10 @@ struct _jso_schema_value {
 	jso_schema_value_type type;
 	/** value flags */
 	jso_uint32 flags;
+	/** base URI */
+	jso_schema_uri base_uri;
+	/* reference */
+	jso_schema_reference *ref;
 };
 
 /**
@@ -883,8 +925,10 @@ typedef struct _jso_schema_error {
 typedef struct _jso_schema {
 	/** root value */
 	jso_schema_value *root;
-	/** schema ID */
-	jso_string *id;
+	/** schema instance */
+	jso_value doc;
+	/** schema ref results cache */
+	jso_ht refs_cache;
 	/** schema version */
 	jso_schema_version version;
 	/** schema error */
