@@ -61,11 +61,15 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 
 		// id keyword
 		JSO_SCHEMA_KW_SET_STR(schema, data, id, value, value_data);
-
 		if (JSO_SCHEMA_KW_IS_SET(value_data->id)) {
-			jso_schema_uri_set(&value->base_uri, JSO_SCHEMA_KEYWORD_DATA_STR(value_data->id));
-		} else {
-			jso_schema_uri_copy(&value->base_uri, &parent->base_uri);
+			if (jso_schema_uri_set(
+						schema, &value->base_uri, JSO_SCHEMA_KEYWORD_DATA_STR(value_data->id))
+					== JSO_FAILURE) {
+				return NULL;
+			}
+		} else if (jso_schema_uri_inherit(schema, &value->base_uri, &parent->base_uri)
+				== JSO_FAILURE) {
+			return NULL;
 		}
 
 		// reference

@@ -130,8 +130,6 @@ typedef enum {
 	JSO_SCHEMA_KEYWORD_TYPE_STRING,
 	/** regular expression keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_REGEXP,
-	/** reference keyword type */
-	JSO_SCHEMA_KEYWORD_TYPE_REF,
 	/** string array keyword type */
 	JSO_SCHEMA_KEYWORD_TYPE_ARRAY,
 	/** string array keyword type */

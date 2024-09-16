@@ -23,9 +23,14 @@
 
 #include "jso_schema_uri.h"
 
-jso_rc jso_schema_uri_set(
-		jso_schema_uri *current_uri, jso_schema_uri *base_uri, jso_string *new_uri)
+jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri, jso_string *new_uri)
 {
 	// TODO: implement logic for setting id for the base_uri
+	return JSO_SUCCESS;
+}
+
+jso_rc jso_schema_uri_inherit(jso_schema *schema, jso_schema_uri *dest_uri, jso_schema_uri *src_uri)
+{
+	// TODO: implement logic for copying the base_uri
 	return JSO_SUCCESS;
 }

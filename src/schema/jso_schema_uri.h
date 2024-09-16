@@ -31,8 +31,9 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_uri_set(jso_schema_uri *current_uri, jso_string *new_uri);
+jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri, jso_string *new_uri);
 
-jso_rc jso_schema_uri_copy(jso_schema_uri *dest_uri, jso_schema_uri *src_uri);
+jso_rc jso_schema_uri_inherit(
+		jso_schema *schema, jso_schema_uri *dest_uri, jso_schema_uri *src_uri);
 
 #endif /* JSO_SCHEMA_URI_H */
