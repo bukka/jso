@@ -27,6 +27,7 @@
 #include "jso_schema_keyword.h"
 #include "jso_schema_keyword_freer.h"
 #include "jso_schema_value.h"
+#include "jso_schema_reference.h"
 #include "jso_schema_uri.h"
 
 #include "jso.h"
@@ -75,7 +76,12 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		// reference
 		JSO_SCHEMA_KW_SET_STR_EX(schema, data, $ref, value, value_data, ref);
 		if (JSO_SCHEMA_KW_IS_SET(value_data->ref)) {
-			// TODO: add logic to create ref and check if there is only one data element -> set
+			jso_schema_reference *ref = jso_schema_reference_create(
+					JSO_SCHEMA_KEYWORD_DATA_STR(value_data->ref), &value->base_uri, schema);
+			if (ref == NULL) {
+				return NULL;
+			}
+			// TODO: add logic for evaluation and check if there is only one data element -> set
 			// JSO_SCHEMA_VALUE_FLAG_REF_ONLY
 		}
 

@@ -913,8 +913,8 @@ typedef struct _jso_schema {
 	jso_schema_value *root;
 	/** schema instance */
 	jso_value doc;
-	/** schema ref results cache */
-	jso_ht refs_cache;
+	/** schema cache for dereferenced URIs */
+	jso_ht uri_deref_cache;
 	/** schema version */
 	jso_schema_version version;
 	/** schema error */

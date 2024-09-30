@@ -32,7 +32,8 @@
 #include "jso_schema.h"
 #include "jso_schema_uri.h"
 
-jso_schema_reference *jso_schema_reference_create(jso_string *uri, jso_schema *schema);
+jso_schema_reference *jso_schema_reference_create(
+		jso_string *ref_uri, jso_schema_uri *base_uri, jso_schema *schema);
 
 void jso_schema_reference_free(jso_schema_reference *ref);
 

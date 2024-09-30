@@ -23,3 +23,18 @@
 
 #include "jso_schema_reference.h"
 #include "jso_pointer.h"
+
+jso_schema_reference *jso_schema_reference_create(
+		jso_string *ref_uri, jso_schema_uri *base_uri, jso_schema *schema)
+{
+	return NULL;
+}
+
+void jso_schema_reference_free(jso_schema_reference *ref)
+{
+}
+
+jso_rc jso_schema_reference_resolve(jso_schema_reference *jp, jso_value *doc, jso_value **value)
+{
+	return JSO_SUCCESS;
+}
