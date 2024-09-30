@@ -65,12 +65,12 @@ static inline jso_string *jso_pointer_create_token(
 	return token;
 }
 
-static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri)
+static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *pointer_value)
 {
 	jso_ctype *end, *start, *pos, *next;
-	pos = start = JSO_STRING_VAL(uri);
-	size_t uri_len = JSO_STRING_LEN(uri);
-	if (uri_len == 0) {
+	pos = start = JSO_STRING_VAL(pointer_value);
+	size_t pointer_len = JSO_STRING_LEN(pointer_value);
+	if (pointer_len == 0) {
 		jso_pointer_error_set(
 				jp, JSO_POINTER_ERROR_INVALID_FORMAT, "JsonPointer cannot be an empty string");
 		return JSO_FAILURE;
@@ -82,7 +82,7 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri)
 	}
 	++pos;
 	size_t tokens_count = 1;
-	end = start + uri_len;
+	end = start + pointer_len;
 	// First, get number of tokens.
 	while ((next = memchr(pos, '/', end - pos)) != NULL) {
 		tokens_count++;
@@ -97,7 +97,7 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri)
 		jso_pointer_error_set(jp, JSO_POINTER_ERROR_ALLOC, "JsonPointer tokens allocation failed");
 		return JSO_FAILURE;
 	}
-	jp->uri = jso_string_copy(uri);
+	jp->pointer_value = jso_string_copy(pointer_value);
 	jp->tokens_count = tokens_count;
 	jso_string *token;
 	pos = start + 1;
@@ -124,21 +124,10 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *uri)
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_pointer *jso_pointer_create(jso_string *uri, jso_pointer_cache *cache)
+JSO_API jso_pointer *jso_pointer_create(jso_string *pointer_value)
 {
-	jso_pointer *cached_pointer;
-	if (jso_pointer_cache_get(cache, uri, &cached_pointer) == JSO_SUCCESS) {
-		++JSO_POINTER_REFCOUNT(cached_pointer);
-		return cached_pointer;
-	}
-
 	jso_pointer *jp = jso_calloc(1, sizeof(jso_pointer));
-	if (jp == NULL || jso_pointer_compile(jp, uri) == JSO_FAILURE) {
-		return NULL;
-	}
-
-	if (jso_pointer_cache_set(cache, uri, jp, true) == JSO_FAILURE) {
-		jso_pointer_free(jp);
+	if (jp == NULL || jso_pointer_compile(jp, pointer_value) == JSO_FAILURE) {
 		return NULL;
 	}
 
@@ -153,7 +142,6 @@ static jso_rc jso_pointer_search(
 		return JSO_SUCCESS;
 	}
 	jso_string *token = jp->tokens[token_pos];
-	jso_value_type doc_pos_type = JSO_TYPE_P(doc_pos);
 	jso_value *next;
 	switch (JSO_TYPE_P(doc_pos)) {
 		case JSO_TYPE_OBJECT:
@@ -203,19 +191,7 @@ static jso_rc jso_pointer_search(
 JSO_API jso_rc jso_pointer_resolve(
 		jso_pointer *jp, jso_value *doc, jso_value **value, jso_ht *value_cache)
 {
-	if (jso_ht_get(value_cache, jp->uri, value) == JSO_SUCCESS) {
-		return JSO_SUCCESS;
-	}
-	if (jso_pointer_search(jp, 0, doc, value) == JSO_FAILURE) {
-		return JSO_FAILURE;
-	}
-	if (jso_ht_set(value_cache, jp->uri, *value, false) == JSO_FAILURE) {
-		jso_pointer_error_set(
-				jp, JSO_POINTER_ERROR_ALLOC, "JsonPointer value caching allocation failed");
-		return JSO_FAILURE;
-	}
-
-	return JSO_SUCCESS;
+	return jso_pointer_search(jp, 0, doc, value);
 }
 
 JSO_API void jso_pointer_free(jso_pointer *jp)
@@ -230,7 +206,7 @@ JSO_API void jso_pointer_free(jso_pointer *jp)
 			jso_string_free(jp->tokens[i]);
 		}
 		jso_pointer_error_free(jp);
-		jso_string_free(jp->uri);
+		jso_string_free(jp->pointer_value);
 		jso_free(jp);
 	}
 }

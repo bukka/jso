@@ -33,63 +33,6 @@
 #include "jso_ht.h"
 
 /**
- * @brief JSO pointer cache
- */
-typedef struct _jso_pointer_cache {
-	jso_ht data;
-} jso_pointer_cache;
-
-/**
- * Allocate new JSO pointer cache.
- *
- * @return New initialized JSO pointer cache.
- */
-JSO_API jso_pointer_cache *jso_pointer_cache_alloc();
-
-/**
- * Initialize JSO pointer cache.
- *
- * @param jpc JSO pointer cache
- */
-JSO_API void jso_pointer_cache_init(jso_pointer_cache *jpc);
-
-/**
- * Free JSO pointer cache.
- *
- * @param jpc JSO pointer cache
- */
-JSO_API void jso_pointer_cache_free(jso_pointer_cache *jpc);
-
-/**
- * Clear JSO pointer cache (delete all items).
- *
- * @param jpc JSO pointer cache
- */
-JSO_API void jso_pointer_cache_clear(jso_pointer_cache *jpc);
-
-/**
- * Set pointer result with the URI to the cache.
- *
- * @param jpc JSO pointer cache
- * @param uri JSO pointer URI
- * @param jp JSO pointer
- * @param free_old whether to free old value if value for URI alrady exists.
- * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
- */
-JSO_API jso_rc jso_pointer_cache_set(
-		jso_pointer_cache *jpc, jso_string *uri, jso_pointer *jp, jso_bool free_old);
-
-/**
- * Return pointer result.
- *
- * @param jpc JSO pointer cache
- * @param uri JSO pointer URI
- * @param jp Cached JSO pointer if found
- * @return @ref JSO_SUCCESS on success (if found), otherwise @ref JSO_FAILURE.
- */
-JSO_API jso_rc jso_pointer_cache_get(jso_pointer_cache *jpc, jso_string *uri, jso_pointer **jp);
-
-/**
  * @brief Pointer error type.
  */
 typedef enum _jso_pointer_error_type {
@@ -116,10 +59,8 @@ typedef struct _jso_pointer_error {
  * @brief Pointer structure.
  */
 typedef struct _jso_pointer {
-	/** URI including the host, base path and the pointer */
-	jso_string *uri;
-	/** base non pointer part of the URI*/
-	size_t base_uri_len;
+	/** pointer string value */
+	jso_string *pointer_value;
 	/** tokenized pointer reference */
 	jso_string **tokens;
 	/** number of tokens */
@@ -166,13 +107,12 @@ static inline bool jso_pointer_error_is_set(jso_pointer *pointer)
 }
 
 /**
- * Allocate new JSO pointer.
+ * Create a new JSO pointer.
  *
- * @param uri JSO pointer URI
- * @param cache Pointer cache
+ * @param pointer_value Pointer string value
  * @return New initialized JSO pointer.
  */
-JSO_API jso_pointer *jso_pointer_create(jso_string *uri, jso_pointer_cache *cache);
+JSO_API jso_pointer *jso_pointer_create(jso_string *pointer_value);
 
 /**
  * Resolve

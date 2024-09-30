@@ -62,18 +62,6 @@ typedef struct _jso_schema_uri {
 } jso_schema_uri;
 
 /**
- * @brief Schema reference type.
- */
-typedef struct _jso_schema_reference {
-	/** reference uri */
-	jso_schema_uri uri;
-	/** result value */
-	jso_schema_value *result;
-	/** main schema holding result cache and doc */
-	jso_schema *schema;
-};
-
-/**
  * @brief JsonSchema keyword data.
  *
  * The current size of the data is equal to the largest element which is pointer
@@ -1018,6 +1006,18 @@ JSO_API void jso_schema_free(jso_schema *schema);
  * @param val scheam value
  */
 JSO_API void jso_schema_value_free(jso_schema_value *val);
+
+/**
+ * @brief Schema reference type.
+ */
+struct _jso_schema_reference {
+	/** reference uri */
+	jso_schema_uri uri;
+	/** result value */
+	jso_schema_value *result;
+	/** main schema holding result cache and doc */
+	jso_schema *schema;
+};
 
 /**
  * @brief Schema validation composition type.

@@ -203,7 +203,7 @@ JSO_API void jso_value_dump_ex(jso_value *val, jso_io *io, jso_uint indent)
 				JSO_IO_PRINTF(io, "ERROR: Pointer allocation failed\n");
 			} else {
 				jso_pointer *ptr = JSO_PTRVAL_P(val);
-				JSO_IO_PRINTF(io, "POINTER: %s\n", JSO_STRING_VAL(ptr->uri));
+				JSO_IO_PRINTF(io, "POINTER: %s\n", JSO_STRING_VAL(ptr->pointer_value));
 			}
 			break;
 		case JSO_TYPE_ERROR:

@@ -5,7 +5,7 @@ libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number
 	jso_builder.c jso_encoder.c jso_error.c jso_ht.c jso_re.c \
 	jso_parser.tab.c parser/jso_parser_hooks_decode.c jso_scanner.c \
 	io/jso_io.c io/jso_io_file.c io/jso_io_memory.c \
-	pointer/jso_pointer_cache.c pointer/jso_pointer_error.c pointer/jso_pointer.c \
+	pointer/jso_pointer_error.c pointer/jso_pointer.c \
 	schema/jso_schema_array.c schema/jso_schema_data.c schema/jso_schema_error.c  \
 	schema/jso_schema_keyword.c schema/jso_schema_keyword_array.c \
 	schema/jso_schema_keyword_freer.c schema/jso_schema_keyword_object.c \
