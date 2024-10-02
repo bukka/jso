@@ -57,8 +57,12 @@ typedef struct _jso_schema_reference jso_schema_reference;
 typedef struct _jso_schema_uri {
 	/** uri string */
 	jso_string *uri;
+	/** position of the host if the URI contains the path */
+	ssize_t host_start;
+	/** position of the path if the URI contains the path */
+	ssize_t path_start;
 	/** position of the fragment if the URI contains the fragment */
-	size_t fragment_start;
+	ssize_t fragment_start;
 } jso_schema_uri;
 
 /**
@@ -885,6 +889,8 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_ROOT_DATA_TYPE,
 	JSO_SCHEMA_ERROR_STACK_ALLOC,
 	JSO_SCHEMA_ERROR_TYPE_INVALID,
+	JSO_SCHEMA_ERROR_URI_ALLOC,
+	JSO_SCHEMA_ERROR_URI_INVALID,
 	JSO_SCHEMA_ERROR_VALIDATION_ALLOC,
 	JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 	JSO_SCHEMA_ERROR_VALIDATION_TYPE,

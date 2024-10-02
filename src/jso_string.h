@@ -238,4 +238,59 @@ static inline jso_uint32 jso_string_get_hash(jso_string *str)
 	return JSO_STRING_HASH(str);
 }
 
+/**
+ * @brief Value representing not found string position
+ */
+#define JSO_STRING_POS_NOT_FOUND -1
+
+/**
+ * Return position of the character first occurrence in the string.
+ *
+ * @param str string
+ * @param ch character to find
+ * @param offset offset to start the search from
+ * @return Position of the character in the string or @ref JSO_STRING_POS_NOT_FOUND.
+ */
+static inline ssize_t jso_string_find_char_pos(jso_string *str, char ch, size_t offset)
+{
+	jso_ctype *pch = memchr(JSO_STRING_VAL(str) + offset, (int) ch, str->len);
+	return pch == NULL ? JSO_STRING_POS_NOT_FOUND : pch - JSO_STRING_VAL(str);
+}
+
+/**
+ * Concat prefixes of the strings.
+ *
+ * @param s1 the fists string
+ * @param s1_len the fists string length of the prefix
+ * @param s2 the second string
+ * @param s2_len the second string length of the prefix
+ * @return New string containing concatenated string prefixes or NULL on error.
+ */
+static inline jso_string *jso_string_concat_prefixes(
+		jso_string *s1, size_t s1_len, jso_string *s2, size_t s2_len)
+{
+	size_t len = s1_len + s2_len;
+	jso_string *str = jso_string_alloc(len);
+	if (str == NULL) {
+		return str;
+	}
+	memcpy(JSO_STRING_VAL(str), JSO_STRING_VAL(s1), s1_len);
+	memcpy(&JSO_STRING_VAL(str)[s1_len], JSO_STRING_VAL(s2), s2_len);
+	JSO_STRING_VAL(str)[len] = '\0';
+	JSO_STRING_LEN(str) = len;
+	return str;
+}
+
+/**
+ * Concat two strings.
+ *
+ * @param s1 the fists string
+ * @param s2 the second string
+ * @return New string containing concatenated string prefixes or NULL on error.
+ */
+static inline jso_string *jso_string_concat(jso_string *s1, jso_string *s2)
+{
+	return jso_string_concat_prefixes(s1, JSO_STRING_LEN(s1), s2, JSO_STRING_LEN(s2));
+}
+
 #endif /* JSO_STRING_H */

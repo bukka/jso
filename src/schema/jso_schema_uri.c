@@ -21,16 +21,94 @@
  *
  */
 
+#include "jso_schema_error.h"
 #include "jso_schema_uri.h"
 
-jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri, jso_string *new_uri)
+#include "jso.h"
+
+// Parse URI - currently very lax (this will need to be made much stricker)
+jso_rc jso_schema_uri_parse(jso_schema *schema, jso_schema_uri *uri, jso_string *uri_value)
 {
-	// TODO: implement logic for setting id for the base_uri
+	ssize_t path_start;
+	ssize_t colon_pos = jso_string_find_char_pos(uri_value, ':', 0);
+	if (colon_pos > 0 && JSO_STRING_LEN(uri_value) > 4 && colon_pos < JSO_STRING_LEN(uri_value) - 3
+			&& JSO_STRING_VAL(uri_value)[colon_pos + 1] == '/'
+			&& JSO_STRING_VAL(uri_value)[colon_pos + 2] == '/') {
+		uri->host_start = colon_pos + 3;
+		path_start = jso_string_find_char_pos(uri_value, '/', 0);
+	} else {
+		uri->host_start = JSO_STRING_POS_NOT_FOUND;
+		path_start = 0;
+	}
+	uri->path_start = path_start;
+	uri->fragment_start = jso_string_find_char_pos(uri_value, '#', path_start > 0 ? path_start : 0);
+	uri->uri = jso_string_copy(uri_value);
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_uri_inherit(jso_schema *schema, jso_schema_uri *dest_uri, jso_schema_uri *src_uri)
+static jso_rc jso_schema_uri_merge(jso_schema *schema, jso_schema_uri *current_uri,
+		jso_schema_uri *parent_uri, size_t parent_uri_prefix_len)
 {
-	// TODO: implement logic for copying the base_uri
+	jso_string *concat_str = jso_string_concat_prefixes(parent_uri->uri, parent_uri_prefix_len,
+			current_uri->uri, JSO_STRING_LEN(current_uri->uri));
+	if (concat_str == NULL) {
+		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_URI_ALLOC,
+				"Allocation of URI concatenation result failed");
+		return JSO_FAILURE;
+	}
+	jso_string_free(current_uri->uri);
+	current_uri->uri = concat_str;
+	return JSO_SUCCESS;
+}
+
+jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri,
+		jso_schema_uri *parent_uri, jso_string *new_uri)
+{
+	if (jso_schema_uri_parse(schema, current_uri, new_uri) == JSO_FAILURE) {
+		return JSO_FAILURE;
+	}
+	// if new_uri is absolute, we are done
+	if (current_uri->host_start > 0) {
+		return JSO_SUCCESS;
+	}
+	// if current URI is just fragment, we append it to parent uri (excluding its fragment if there
+	// is any)
+	if (current_uri->fragment_start == 0) {
+		size_t parent_uri_prefix_len = parent_uri->fragment_start >= 0
+				? parent_uri->fragment_start
+				: JSO_STRING_LEN(parent_uri->uri);
+		return jso_schema_uri_merge(schema, current_uri, parent_uri, parent_uri_prefix_len);
+	}
+	// at this stage there must be path set, otherwise something went wrong
+	JSO_ASSERT_GE(current_uri->path_start, 0);
+	// if the path is absolute, we use just host from parent URI and use the rest from currrent URI
+	if (JSO_STRING_VAL(current_uri->uri)[current_uri->path_start] == '/') {
+		size_t parent_uri_prefix_len = parent_uri->path_start >= 0
+				? parent_uri->path_start
+				: JSO_STRING_LEN(parent_uri->uri);
+		return jso_schema_uri_merge(schema, current_uri, parent_uri, parent_uri_prefix_len);
+	}
+	// current URI path is relative
+	// if there is no path for parent, we just merge the whole parent URI with the current URI
+	if (parent_uri->path_start < 0) {
+		return jso_schema_uri_merge(
+				schema, current_uri, parent_uri, JSO_STRING_LEN(parent_uri->uri));
+	}
+	// now we have relative current URI and some parent URI so we find last slash and append current
+	// URI to it
+	size_t last_slash = parent_uri->path_start;
+	for (ssize_t pos = last_slash; pos >= 0;
+			pos = jso_string_find_char_pos(parent_uri->uri, '/', pos)) {
+		last_slash = (size_t) pos;
+	}
+	return jso_schema_uri_merge(schema, current_uri, parent_uri, last_slash);
+}
+
+jso_rc jso_schema_uri_inherit(
+		jso_schema *schema, jso_schema_uri *current_uri, jso_schema_uri *parent_uri)
+{
+	current_uri->uri = jso_string_copy(parent_uri->uri);
+	current_uri->path_start = parent_uri->path_start;
+	current_uri->fragment_start = parent_uri->fragment_start;
 	return JSO_SUCCESS;
 }
