@@ -77,7 +77,7 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		JSO_SCHEMA_KW_SET_STR_EX(schema, data, $ref, value, value_data, ref);
 		if (JSO_SCHEMA_KW_IS_SET(value_data->ref)) {
 			jso_schema_reference *ref = jso_schema_reference_create(
-					JSO_SCHEMA_KEYWORD_DATA_STR(value_data->ref), &value->base_uri, schema);
+					schema, JSO_SCHEMA_KEYWORD_DATA_STR(value_data->ref), &value->base_uri);
 			if (ref == NULL) {
 				return NULL;
 			}

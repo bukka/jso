@@ -112,3 +112,8 @@ jso_rc jso_schema_uri_inherit(
 	current_uri->fragment_start = parent_uri->fragment_start;
 	return JSO_SUCCESS;
 }
+
+void jso_schema_uri_clear(jso_schema_uri *uri)
+{
+	jso_string_free(uri->uri);
+}

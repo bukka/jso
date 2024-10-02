@@ -39,4 +39,6 @@ jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri,
 jso_rc jso_schema_uri_inherit(
 		jso_schema *schema, jso_schema_uri *current_uri, jso_schema_uri *parent_uri);
 
+void jso_schema_uri_clear(jso_schema_uri *uri);
+
 #endif /* JSO_SCHEMA_URI_H */

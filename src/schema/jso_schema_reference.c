@@ -21,20 +21,38 @@
  *
  */
 
+#include "jso_schema_error.h"
 #include "jso_schema_reference.h"
+
 #include "jso_pointer.h"
+#include "jso.h"
 
 jso_schema_reference *jso_schema_reference_create(
-		jso_string *ref_uri, jso_schema_uri *base_uri, jso_schema *schema)
+		jso_schema *schema, jso_string *ref_uri, jso_schema_uri *base_uri)
 {
-	return NULL;
+	jso_schema_reference *ref = jso_calloc(1, sizeof(jso_schema_reference));
+	if (ref == NULL) {
+		jso_schema_error_format(
+				schema, JSO_SCHEMA_ERROR_REFERENCE_ALLOC, "Allocation of schema reference failed");
+		return NULL;
+	}
+	if (jso_schema_uri_set(schema, &ref->uri, base_uri, ref_uri) == JSO_FAILURE) {
+		jso_free(ref);
+		return NULL;
+	}
+	ref->schema = schema;
+	return ref;
 }
 
 void jso_schema_reference_free(jso_schema_reference *ref)
 {
+	// TODO: change ref count because of caching
+	jso_schema_uri_clear(&ref->uri);
+	jso_free(ref);
 }
 
 jso_rc jso_schema_reference_resolve(jso_schema_reference *jp, jso_value *doc, jso_value **value)
 {
+	// TODO: check cache and then do resolving if not found and save result to cache
 	return JSO_SUCCESS;
 }

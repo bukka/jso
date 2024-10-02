@@ -22,6 +22,8 @@
  */
 
 #include "jso_schema_keyword_freer.h"
+#include "jso_schema_reference.h"
+#include "jso_schema_uri.h"
 #include "jso_schema_value.h"
 
 #include "jso.h"
@@ -132,6 +134,8 @@ void jso_schema_value_free(jso_schema_value *val)
 	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_ANY) {
 		return;
 	}
+	jso_schema_reference_free(val->ref);
+	jso_schema_uri_clear(&val->base_uri);
 	jso_schema_value_free_common(val);
 	schema_value_free_callbacks[JSO_SCHEMA_VALUE_TYPE_P(val)](val);
 	JSO_SCHEMA_VALUE_TYPE_P(val) = 0;
