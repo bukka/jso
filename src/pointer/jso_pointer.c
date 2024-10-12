@@ -188,8 +188,7 @@ static jso_rc jso_pointer_search(
 	return JSO_FAILURE;
 }
 
-JSO_API jso_rc jso_pointer_resolve(
-		jso_pointer *jp, jso_value *doc, jso_value **value, jso_ht *value_cache)
+JSO_API jso_rc jso_pointer_resolve(jso_pointer *jp, jso_value *doc, jso_value **value)
 {
 	return jso_pointer_search(jp, 0, doc, value);
 }

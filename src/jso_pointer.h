@@ -120,11 +120,9 @@ JSO_API jso_pointer *jso_pointer_create(jso_string *pointer_value);
  * @param jp JSO pointer
  * @param doc Document to search value in.
  * @param value Referenced value if the resolving was successful
- * @param value_cache Cache of referenced values if the resolving was successful
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
-JSO_API jso_rc jso_pointer_resolve(
-		jso_pointer *jp, jso_value *doc, jso_value **value, jso_ht *value_cache);
+JSO_API jso_rc jso_pointer_resolve(jso_pointer *jp, jso_value *doc, jso_value **value);
 
 /**
  * Free JSO pointer.

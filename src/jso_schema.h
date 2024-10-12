@@ -887,6 +887,8 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_KEYWORD_REQUIRED,
 	JSO_SCHEMA_ERROR_KEYWORD_TYPE,
 	JSO_SCHEMA_ERROR_REFERENCE_ALLOC,
+	JSO_SCHEMA_ERROR_REFERENCE_RESOLVE,
+	JSO_SCHEMA_ERROR_REFERENCE_EXTERNAL,
 	JSO_SCHEMA_ERROR_ROOT_DATA_TYPE,
 	JSO_SCHEMA_ERROR_STACK_ALLOC,
 	JSO_SCHEMA_ERROR_TYPE_INVALID,
@@ -1025,7 +1027,19 @@ struct _jso_schema_reference {
 	jso_schema_value *result;
 	/** main schema holding result cache and doc */
 	jso_schema *schema;
+	/** parent value of the reference */
+	jso_schema_value *parent;
+	/** reference count */
+	jso_uint32 refcount;
 };
+
+/**
+ * Get reference count of the supplied schema reference.
+ *
+ * @param _ref pointer to @ref jso_schema_reference
+ * @return References count value.
+ */
+#define JSO_SCHEMA_REFERENCE_REFCOUNT(_ref) (_ref)->refcount
 
 /**
  * @brief Schema validation composition type.

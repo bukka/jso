@@ -117,3 +117,22 @@ void jso_schema_uri_clear(jso_schema_uri *uri)
 {
 	jso_string_free(uri->uri);
 }
+
+bool jso_schema_uri_base_equal(jso_schema_uri *base_uri, jso_schema_uri *current_uri)
+{
+	if (current_uri->fragment_start == 0) {
+		return true;
+	}
+	if (base_uri->fragment_start == 0) {
+		return false;
+	}
+	size_t base_prefix_len = base_uri->fragment_start > 0 ? base_uri->fragment_start
+														  : JSO_STRING_LEN(base_uri->uri);
+	size_t current_uri_len = current_uri->fragment_start > 0 ? current_uri->fragment_start
+															 : JSO_STRING_LEN(current_uri->uri);
+	if (base_prefix_len != current_uri_len) {
+		return false;
+	}
+
+	return jso_string_prefix_equals(base_uri->uri, current_uri->uri, base_prefix_len);
+}

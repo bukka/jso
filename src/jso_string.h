@@ -175,6 +175,20 @@ static inline bool jso_string_equals(jso_string *s1, jso_string *s2)
 }
 
 /**
+ * Check wheter two strings are equal.
+ *
+ * @param s1 first string
+ * @param s2 second string
+ * @return True if strings are equal, otherwise false.
+ */
+static inline bool jso_string_prefix_equals(jso_string *s1, jso_string *s2, size_t prefix_len)
+{
+	return s1 == s2
+			|| (JSO_STRING_LEN(s1) >= prefix_len && JSO_STRING_LEN(s2) >= prefix_len
+					&& !memcmp(JSO_STRING_VAL(s1), JSO_STRING_VAL(s2), prefix_len));
+}
+
+/**
  * Check wheter a string is equal to C string.
  *
  * @param str string to compare
@@ -291,6 +305,33 @@ static inline jso_string *jso_string_concat_prefixes(
 static inline jso_string *jso_string_concat(jso_string *s1, jso_string *s2)
 {
 	return jso_string_concat_prefixes(s1, JSO_STRING_LEN(s1), s2, JSO_STRING_LEN(s2));
+}
+
+/**
+ * Create substring from the string.
+ *
+ * @param str the main string
+ * @param offset offset from the start of the main string to copy
+ * @param len lenght to copy from the main string
+ * @return New substring.
+ */
+static inline jso_string *jso_string_substring(jso_string *str, size_t offset, size_t len)
+{
+	if (offset == 0 && len == JSO_STRING_LEN(str)) {
+		return jso_string_copy(str);
+	}
+	if (len + offset > JSO_STRING_LEN(str)) {
+		return NULL;
+	}
+	jso_string *substr = jso_string_alloc(len);
+	if (substr == NULL) {
+		return NULL;
+	}
+	JSO_STRING_LEN(substr) = len;
+	memcpy(JSO_STRING_VAL(substr), JSO_STRING_VAL(str) + offset, len);
+	JSO_STRING_VAL(substr)[len] = '\0';
+
+	return substr;
 }
 
 #endif /* JSO_STRING_H */
