@@ -61,7 +61,7 @@ jso_rc jso_schema_validation_object_key(
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->properties)) {
 		jso_value *result;
-		jso_object *props = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->max_properties);
+		jso_object *props = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->properties);
 		if (jso_object_get(props, key, &result) == JSO_SUCCESS) {
 			JSO_ASSERT_EQ(JSO_TYPE_P(result), JSO_TYPE_SCHEMA_VALUE);
 			if (jso_schema_validation_stack_push_basic(stack, JSO_SVVAL_P(result), pos) == NULL) {
@@ -74,7 +74,8 @@ jso_rc jso_schema_validation_object_key(
 	if (JSO_SCHEMA_KW_IS_SET(objval->pattern_properties)) {
 		jso_string *key;
 		jso_value *val;
-		jso_object *pattern_props = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->max_properties);
+		jso_object *pattern_props
+				= JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->pattern_properties);
 		JSO_OBJECT_FOREACH(pattern_props, key, val)
 		{
 			JSO_ASSERT_EQ(JSO_TYPE_P(val), JSO_TYPE_SCHEMA_VALUE);

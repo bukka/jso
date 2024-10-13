@@ -26,6 +26,7 @@
 
 #include "jso_schema_array.h"
 #include "jso_schema_keyword.h"
+#include "jso_schema_reference.h"
 #include "jso_schema_value.h"
 
 #include "jso.h"
@@ -55,10 +56,6 @@ static inline jso_rc jso_schema_validation_composition_push_keyword_schema_objec
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
 		jso_schema_keyword *keyword, jso_schema_validation_composition_type composition_type)
 {
-	if (!JSO_SCHEMA_KEYWORD_IS_PRESENT_P(keyword)) {
-		return JSO_SUCCESS;
-	}
-
 	return jso_schema_validation_composition_push_keyword_schema_objects_ex(
 			stack, pos, keyword, composition_type);
 }
@@ -82,7 +79,29 @@ static inline jso_rc jso_schema_validation_composition_push_keyword_schema_objec
 jso_rc jso_schema_validation_composition_check(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
-	jso_schema_value_common *data = JSO_SCHEMA_VALUE_DATA_COMMON_P(pos->current_value);
+	jso_schema_value *current_value = pos->current_value;
+	jso_schema_value_common *data = JSO_SCHEMA_VALUE_DATA_COMMON_P(current_value);
+
+	jso_schema_reference *ref = JSO_SCHEMA_VALUE_REF_P(current_value);
+	if (ref != NULL) {
+		jso_schema_value *result = JSO_SCHEMA_REFERENCE_RESULT(ref);
+		// result could be a NULL for $dynamicRef
+		if (result == NULL) {
+			if (jso_schema_reference_resolve(ref, stack->root_schema->root) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+			result = JSO_SCHEMA_REFERENCE_RESULT(ref);
+			JSO_ASSERT_NOT_NULL(result);
+		}
+		if (jso_schema_validation_stack_push_composed(
+					stack, result, pos, JSO_SCHEMA_VALIDATION_COMPOSITION_REF)
+				== JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+		if (JSO_SCHEMA_VALUE_FLAGS_P(current_value) | JSO_SCHEMA_VALUE_FLAG_REF_ONLY) {
+			return JSO_SUCCESS;
+		}
+	}
 
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
 				stack, pos, &data->all_of, JSO_SCHEMA_VALIDATION_COMPOSITION_ALL)

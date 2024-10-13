@@ -840,6 +840,22 @@ struct _jso_schema_value {
 #define JSO_SCHEMA_VALUE_TYPE(_sv) _sv.type
 
 /**
+ * Get schema value reference for the supplied schema value pointer.
+ *
+ * @param _psv schema value pointer
+ * @return The schema value reference of @ref jso_schema_reference.
+ */
+#define JSO_SCHEMA_VALUE_REF_P(_psv) _psv->ref
+
+/**
+ * Get schema value reference for the supplied schema value.
+ *
+ * @param _sv schema value
+ * @return The schema value reference of @ref jso_schema_reference.
+ */
+#define JSO_SCHEMA_VALUE_REF(_sv) _sv.ref
+
+/**
  * Get schema value flags for the supplied schema value pointer.
  *
  * @param _psv schema value pointer
@@ -1042,6 +1058,14 @@ struct _jso_schema_reference {
 #define JSO_SCHEMA_REFERENCE_REFCOUNT(_ref) (_ref)->refcount
 
 /**
+ * Get resolved result of the supplied schema reference.
+ *
+ * @param _ref pointer to @ref jso_schema_reference
+ * @return Resolved result schema value.
+ */
+#define JSO_SCHEMA_REFERENCE_RESULT(_ref) (_ref)->result
+
+/**
  * @brief Schema validation composition type.
  */
 typedef enum _jso_schema_validation_composition_type {
@@ -1050,6 +1074,7 @@ typedef enum _jso_schema_validation_composition_type {
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ANY,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ONE,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_NOT,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_REF,
 } jso_schema_validation_composition_type;
 
 /**

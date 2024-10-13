@@ -35,6 +35,9 @@ void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 	} else {
 		JSO_ASSERT_EQ(parent_pos->position_type, JSO_SCHEMA_VALIDATION_POSITION_COMPOSED);
 		switch (parent_pos->composition_type) {
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_REF:
+				jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
+				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ALL:
 				if (pos->validation_result == JSO_FAILURE) {
 					jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
