@@ -87,7 +87,7 @@ jso_rc jso_schema_validation_composition_check(
 		jso_schema_value *result = JSO_SCHEMA_REFERENCE_RESULT(ref);
 		// result could be a NULL for $dynamicRef
 		if (result == NULL) {
-			if (jso_schema_reference_resolve(ref, stack->root_schema->root) == JSO_FAILURE) {
+			if (jso_schema_reference_resolve(ref, &stack->root_schema->doc) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 			result = JSO_SCHEMA_REFERENCE_RESULT(ref);
@@ -95,7 +95,7 @@ jso_rc jso_schema_validation_composition_check(
 		}
 		if (jso_schema_validation_stack_push_composed(
 					stack, result, pos, JSO_SCHEMA_VALIDATION_COMPOSITION_REF)
-				== JSO_FAILURE) {
+				== NULL) {
 			return JSO_FAILURE;
 		}
 		if (JSO_SCHEMA_VALUE_FLAGS_P(current_value) | JSO_SCHEMA_VALUE_FLAG_REF_ONLY) {
