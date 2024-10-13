@@ -99,6 +99,7 @@ void jso_builder_clear(jso_builder *builder)
 		builder_value = builder_value->next;
 		jso_free(current_builder_value);
 	}
+	jso_builder_init(builder);
 }
 
 jso_rc jso_builder_array_start(jso_builder *builder)
