@@ -46,6 +46,20 @@ void __wrap_jso_schema_keyword_free(jso_schema_keyword *keyword)
 	check_expected_ptr(keyword);
 }
 
+/* Wrapper for jso_schema_reference_free. */
+void __wrap_jso_schema_reference_free(jso_schema_reference *ref)
+{
+	function_called();
+	check_expected_ptr(ref);
+}
+
+/* Wrapper for jso_schema_uri_clear. */
+void __wrap_jso_schema_uri_clear(jso_schema_uri *uri)
+{
+	function_called();
+	check_expected_ptr(uri);
+}
+
 /* Tests for jso_schema_value_parse. */
 
 /* Test helpers */
@@ -89,6 +103,12 @@ static void test_jso_schema_value_free_null(void **state)
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_NULL;
 
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
+
 	jso_test_expect_free_common((jso_schema_value_common *) nulval);
 
 	jso_schema_value_free(&value);
@@ -105,6 +125,12 @@ static void test_jso_schema_value_free_boolean(void **state)
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_BOOLEAN;
 
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
+
 	jso_test_expect_free_common((jso_schema_value_common *) boolval);
 
 	jso_schema_value_free(&value);
@@ -120,6 +146,12 @@ static void test_jso_schema_value_free_integer(void **state)
 	value.data.intval = intval;
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_INTEGER;
+
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
 
 	jso_test_expect_free_common((jso_schema_value_common *) intval);
 	JSO_TEST_SCHEMA_FREE_KW(intval, exclusive_maximum);
@@ -142,6 +174,12 @@ static void test_jso_schema_value_free_string(void **state)
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_STRING;
 
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
+
 	jso_test_expect_free_common((jso_schema_value_common *) strval);
 	JSO_TEST_SCHEMA_FREE_KW(strval, min_length);
 	JSO_TEST_SCHEMA_FREE_KW(strval, max_length);
@@ -160,6 +198,12 @@ static void test_jso_schema_value_free_array(void **state)
 	value.data.arrval = arrval;
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_ARRAY;
+
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
 
 	jso_test_expect_free_common((jso_schema_value_common *) arrval);
 	JSO_TEST_SCHEMA_FREE_KW(arrval, additional_items);
@@ -181,6 +225,12 @@ static void test_jso_schema_value_free_object(void **state)
 	value.data.objval = objval;
 
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
 
 	jso_test_expect_free_common((jso_schema_value_common *) objval);
 	JSO_TEST_SCHEMA_FREE_KW(objval, additional_properties);

@@ -49,7 +49,7 @@ schema_jso_schema_keyword_types_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_keyword_union_test_LDFLAGS = -Wl,--wrap=jso_schema_data_get_value_fast,--wrap=jso_schema_data_type_error,--wrap=jso_schema_keyword_get_ex,--wrap=jso_schema_keyword_get_types
 schema_jso_schema_keyword_union_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_value_allocator_test_LDADD = -lcmocka ../../src/libjso.a
-schema_jso_schema_value_freer_test_LDFLAGS =  -Wl,--wrap=jso_re_code_free,--wrap=jso_schema_keyword_free
+schema_jso_schema_value_freer_test_LDFLAGS =  -Wl,--wrap=jso_re_code_free,--wrap=jso_schema_keyword_free,--wrap=jso_schema_reference_free,--wrap=jso_schema_uri_clear
 schema_jso_schema_value_freer_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_value_init_test_LDFLAGS = -Wl,--wrap=jso_schema_keyword_set,--wrap=jso_schema_value_alloc,--wrap=jso_schema_value_data_alloc,--wrap=jso_schema_value_free
 schema_jso_schema_value_init_test_LDADD = -lcmocka ../../src/libjso.a
