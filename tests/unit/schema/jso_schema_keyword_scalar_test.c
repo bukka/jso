@@ -84,6 +84,15 @@ void __wrap_jso_value_free(jso_value *val)
 	check_expected_ptr(val);
 }
 
+/* Helper funcitons */
+static void jso_test_clear_schema(jso_schema *schema)
+{
+	expect_function_call(__wrap_jso_value_free);
+	expect_value(__wrap_jso_value_free, val, &schema->doc);
+	jso_schema_clear(schema);
+}
+
+
 /* Tests for jso_schema_keyword_get_any. */
 
 /* Test getting any keyword when all successful. */
@@ -138,7 +147,7 @@ static void test_jso_schema_keyword_get_any_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_null. */
@@ -202,7 +211,7 @@ static void test_jso_schema_keyword_get_null_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_bool. */
@@ -267,7 +276,7 @@ static void test_jso_schema_keyword_get_bool_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_int. */
@@ -358,7 +367,7 @@ static void test_jso_schema_keyword_get_int_when_near_double(void **state)
 	assert_int_equal(JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword));
 	assert_int_equal(3, JSO_SCHEMA_KEYWORD_DATA_INT_P(schema_keyword));
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting integer keyword when double that is not near to integer value provided. */
@@ -408,7 +417,7 @@ static void test_jso_schema_keyword_get_int_when_distant_double(void **state)
 	assert_string_equal(
 			"Integer fraction is not zero for keyword ikey", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting integer keyword when not int or double provided. */
@@ -481,7 +490,7 @@ static void test_jso_schema_keyword_get_int_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_uint. */
@@ -622,7 +631,7 @@ static void test_jso_schema_keyword_get_uint_when_distant_double(void **state)
 	assert_string_equal(
 			"Integer fraction is not zero for keyword uikey", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting unsigned integer keyword when not int or double provided. */
@@ -670,7 +679,7 @@ static void test_jso_schema_keyword_get_uint_when_not_int_or_double(void **state
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting unsigned integer keyword when integer value negative. */
@@ -711,7 +720,7 @@ static void test_jso_schema_keyword_get_uint_when_int_negative(void **state)
 	assert_string_equal("Value for for keyword uikey must be equal or greater than 0",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting unsigned integer keyword when integer is zero and not zero flag supplied. */
@@ -762,7 +771,7 @@ static void test_jso_schema_keyword_get_uint_when_int_zero_not_allowed(void **st
 	assert_string_equal("Value for for keyword uikey must be greater than 0",
 			JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test getting unsigned integer keyword when no schema data present. */
@@ -789,7 +798,7 @@ static void test_jso_schema_keyword_get_uint_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_number. */
@@ -951,7 +960,7 @@ static void test_jso_schema_keyword_get_number_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Tests for jso_schema_keyword_get_string. */
@@ -1017,7 +1026,7 @@ static void test_jso_schema_keyword_get_string_when_no_data(void **state)
 
 	assert_null(schema_keyword);
 
-	jso_schema_clear(&schema);
+	jso_test_clear_schema(&schema);
 }
 
 /* Test for jso_schema_keyword_free_any. */
