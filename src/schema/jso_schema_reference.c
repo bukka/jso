@@ -49,6 +49,9 @@ jso_schema_reference *jso_schema_reference_create(
 
 void jso_schema_reference_free(jso_schema_reference *ref)
 {
+	if (ref == NULL) {
+		return;
+	}
 	if (JSO_SCHEMA_REFERENCE_REFCOUNT(ref) > 0) {
 		--JSO_SCHEMA_REFERENCE_REFCOUNT(ref);
 	} else {
