@@ -24,11 +24,13 @@ ar-lib
 autoscan.log
 autom4te.cache/
 config.guess
+config.guess~
 config.h
 config.h.in*
 config.log
 config.status
 config.sub
+config.sub~
 configure.scan
 configure
 configure~
@@ -55,3 +57,5 @@ jso.includes
 nbproject/
 # VS Code
 .vscode/
+# Idea
+.idea/
