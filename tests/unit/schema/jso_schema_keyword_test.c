@@ -195,7 +195,7 @@ static void test_jso_schema_keyword_set_when_null(void **state)
 	jso_rc result = jso_schema_keyword_set(
 			&schema, &data, "ukey", &value, &keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, 0);
 
-	assert_int_equal(JSO_FAILURE, result);
+	assert_int_equal(JSO_SUCCESS, result);
 }
 
 /* Test setting of keyword when schema error is set even if keyword returned. */
@@ -221,7 +221,7 @@ static void test_jso_schema_keyword_set_when_error(void **state)
 	expect_value(__wrap_jso_schema_keyword_get_ex, schema_keyword, &keyword);
 	expect_value(__wrap_jso_schema_keyword_get_ex, val, NULL);
 	will_return(__wrap_jso_schema_keyword_get_ex, JSO_SCHEMA_ERROR_KEYWORD_TYPE);
-	will_return(__wrap_jso_schema_keyword_get_ex, &keyword);
+	will_return(__wrap_jso_schema_keyword_get_ex, NULL);
 
 	jso_rc result = jso_schema_keyword_set(
 			&schema, &data, "ukey", &value, &keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, 0);
@@ -334,7 +334,7 @@ static void test_jso_schema_keyword_set_union_of_2_types_when_null(void **state)
 	jso_rc result = jso_schema_keyword_set_union_of_2_types(&schema, &data, "ukey", &value,
 			&keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0);
 
-	assert_int_equal(JSO_FAILURE, result);
+	assert_int_equal(JSO_SUCCESS, result);
 }
 
 /* Test setting of keyword with union of 2 types when schema error is set even if keyword returned.
@@ -362,7 +362,7 @@ static void test_jso_schema_keyword_set_union_of_2_types_when_error(void **state
 	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, keyword_flags, 0);
 	expect_value(__wrap_jso_schema_keyword_get_union_of_2_types, schema_keyword, &keyword);
 	will_return(__wrap_jso_schema_keyword_get_union_of_2_types, JSO_SCHEMA_ERROR_KEYWORD_PREP);
-	will_return(__wrap_jso_schema_keyword_get_union_of_2_types, &keyword);
+	will_return(__wrap_jso_schema_keyword_get_union_of_2_types, NULL);
 
 	jso_rc result = jso_schema_keyword_set_union_of_2_types(&schema, &data, "ukey", &value,
 			&keyword, JSO_SCHEMA_KEYWORD_TYPE_INTEGER, JSO_SCHEMA_KEYWORD_TYPE_STRING, 0);

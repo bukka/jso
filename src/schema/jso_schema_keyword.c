@@ -32,8 +32,8 @@
 static inline jso_rc jso_schema_keyword_check(
 		jso_schema *schema, jso_schema_keyword *keyword, jso_schema_value *value)
 {
-	if (keyword == NULL || jso_schema_error_is_set(schema)) {
-		return JSO_FAILURE;
+	if (keyword == NULL) {
+		return jso_schema_error_is_set(schema) ? JSO_FAILURE : JSO_SUCCESS;
 	}
 
 	if (!JSO_SCHEMA_VALUE_IS_NOT_EMPTY_P(value) && JSO_SCHEMA_KEYWORD_IS_PRESENT_P(keyword)) {
