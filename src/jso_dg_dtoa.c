@@ -151,7 +151,7 @@
  *	in pow5mult, ensures lazy evaluation of only one copy of high
  *	powers of 5; omitting this lock would introduce a small
  *	probability of wasting memory, but would otherwise be harmless.)
- *	You must also invoke freedtoa(s) to free the value s returned by
+ *	You must also invoke jso_dg_freedtoa(s) to free the value s returned by
  *	dtoa.  You may do so whether or not MULTIPLE_THREADS is #defined.
  * #define NO_IEEE_Scale to disable new (Feb. 1997) logic in strtod that
  *	avoids underflows on inputs whose result does not underflow.
@@ -3613,7 +3613,7 @@ nrv_alloc(const char *s, char **rve, int n)
 	return rv;
 	}
 
-/* freedtoa(s) must be used to free values s returned by dtoa
+/* jso_dg_freedtoa(s) must be used to free values s returned by dtoa
  * when MULTIPLE_THREADS is #defined.  It should be used in all cases,
  * but for consistency with earlier versions of dtoa, it is optional
  * when MULTIPLE_THREADS is not defined.
@@ -3621,9 +3621,9 @@ nrv_alloc(const char *s, char **rve, int n)
 
  void
 #ifdef KR_headers
-freedtoa(s) char *s;
+jso_dg_freedtoa(s) char *s;
 #else
-freedtoa(char *s)
+jso_dg_freedtoa(char *s)
 #endif
 {
 	Bigint *b = (Bigint *)((int *)s - 1);
@@ -3748,7 +3748,7 @@ jso_dg_dtoa
 
 #ifndef MULTIPLE_THREADS
 	if (dtoa_result) {
-		freedtoa(dtoa_result);
+		jso_dg_freedtoa(dtoa_result);
 		dtoa_result = 0;
 		}
 #endif

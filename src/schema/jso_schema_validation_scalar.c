@@ -33,7 +33,7 @@
 
 #include <math.h>
 
-jso_rc jso_schema_validation_value_null(
+jso_rc jso_schema_validation_null_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_NULL) {
@@ -53,7 +53,7 @@ jso_rc jso_schema_validation_boolean_value(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_validation_value_integer(
+jso_rc jso_schema_validation_integer_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_int inst_ival;
@@ -119,7 +119,7 @@ jso_rc jso_schema_validation_value_integer(
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_validation_value_number(
+jso_rc jso_schema_validation_number_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_number inst_num;

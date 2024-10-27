@@ -32,6 +32,7 @@
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
 #include "jso_schema_validation_stream.h"
+#include "jso_schema_validation_value.h"
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream)
 {
@@ -205,7 +206,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	while ((pos = jso_schema_validation_stack_layer_reverse_iterator_next(stack, &iterator))) {
 		if (!pos->is_final_validation_result) {
 			jso_schema_value *value = pos->current_value;
-			pos->validation_result = jso_schema_value_validate(schema, value, instance);
+			pos->validation_result = jso_schema_validation_value(schema, value, instance);
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
