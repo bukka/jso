@@ -47,7 +47,7 @@ static void test_jso_schema_bool(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_int_equal(
-			JSO_SUCCESS, jso_schema_parse(&schema, jso_builder_get_value(builder.current)));
+			JSO_SUCCESS, jso_schema_parse(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
 	jso_value instance;
