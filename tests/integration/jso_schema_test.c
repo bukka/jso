@@ -28,11 +28,19 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <setjmp.h>
 #include <cmocka.h>
 
+#define assert_jso_schema_result_success(_rc) \
+	if (_rc == JSO_FAILURE) { \
+		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
+				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
+	} \
+	assert_int_equal(JSO_SUCCESS, _rc)
+
 /* A test for simple boolean value. */
-static void test_jso_schema_bool(void **state)
+static void test_jso_schema_boolean(void **state)
 {
 	(void) state; /* unused */
 
@@ -41,19 +49,18 @@ static void test_jso_schema_bool(void **state)
 
 	// build schema
 	jso_builder_object_start(&builder);
-	jso_builder_object_add_cstr(&builder, "type", "bool");
+	jso_builder_object_add_cstr(&builder, "type", "boolean");
 	jso_builder_object_end(&builder);
 
 	jso_schema schema;
 	jso_schema_init(&schema);
-	assert_int_equal(
-			JSO_SUCCESS, jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
 	jso_value instance;
 
 	JSO_VALUE_SET_BOOL(instance, true);
-	assert_int_equal(JSO_SUCCESS, jso_schema_validate(&schema, &instance));
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
 
 	jso_value_free(&instance);
 	jso_schema_clear(&schema);
@@ -62,7 +69,7 @@ static void test_jso_schema_bool(void **state)
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_jso_schema_bool),
+		cmocka_unit_test(test_jso_schema_boolean),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
