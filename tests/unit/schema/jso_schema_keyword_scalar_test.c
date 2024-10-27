@@ -92,7 +92,6 @@ static void jso_test_clear_schema(jso_schema *schema)
 	jso_schema_clear(schema);
 }
 
-
 /* Tests for jso_schema_keyword_get_any. */
 
 /* Test getting any keyword when all successful. */
