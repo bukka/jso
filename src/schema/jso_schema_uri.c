@@ -107,9 +107,11 @@ jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri,
 jso_rc jso_schema_uri_inherit(
 		jso_schema *schema, jso_schema_uri *current_uri, jso_schema_uri *parent_uri)
 {
-	current_uri->uri = jso_string_copy(parent_uri->uri);
-	current_uri->path_start = parent_uri->path_start;
-	current_uri->fragment_start = parent_uri->fragment_start;
+	if (parent_uri->uri) {
+		current_uri->uri = jso_string_copy(parent_uri->uri);
+		current_uri->path_start = parent_uri->path_start;
+		current_uri->fragment_start = parent_uri->fragment_start;
+	}
 	return JSO_SUCCESS;
 }
 
