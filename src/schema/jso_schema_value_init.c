@@ -68,8 +68,9 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 					== JSO_FAILURE) {
 				return NULL;
 			}
-		} else if (parent != NULL && jso_schema_uri_inherit(schema, &value->base_uri, &parent->base_uri)
-				== JSO_FAILURE) {
+		} else if (parent != NULL
+				&& jso_schema_uri_inherit(schema, &value->base_uri, &parent->base_uri)
+						== JSO_FAILURE) {
 			return NULL;
 		}
 

@@ -71,7 +71,7 @@ static jso_rc jso_schema_validation_stack_resize_if_needed(jso_schema_validation
 static inline jso_schema_validation_position *jso_schema_validation_stack_next(
 		jso_schema_validation_stack *stack)
 {
-	jso_schema_validation_position *position = &stack->positions[stack->size];
+	jso_schema_validation_position *position = &stack->positions[stack->size++];
 	// clear position before use
 	memset(position, 0, sizeof(jso_schema_validation_position));
 
@@ -181,9 +181,10 @@ jso_schema_validation_position *jso_schema_validation_stack_layer_reverse_iterat
 		return NULL;
 	}
 	jso_schema_validation_position *pos = &stack->positions[--iterator->index];
-	if (iterator->index == 0 || JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
+	bool is_sentinel = JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos);
+	if (is_sentinel || iterator->index == 0) {
 		iterator->finished = true;
-		return NULL;
+		return is_sentinel ? NULL : pos;
 	}
 	return pos;
 }

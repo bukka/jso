@@ -28,6 +28,10 @@
 void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 {
 	jso_schema_validation_position *parent_pos = pos->parent;
+	if (parent_pos == NULL) {
+		pos->is_final_validation_result = true;
+		return;
+	}
 	if (parent_pos->position_type == JSO_SCHEMA_VALIDATION_POSITION_BASIC) {
 		if (pos->validation_result == JSO_FAILURE) {
 			jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);

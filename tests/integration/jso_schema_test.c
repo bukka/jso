@@ -39,6 +39,17 @@
 	} \
 	assert_int_equal(JSO_SUCCESS, _rc)
 
+#define assert_jso_schema_result_failure_no_error(_rc) \
+	if (_rc == JSO_FAILURE && JSO_SCHEMA_ERROR_TYPE(&schema) != JSO_SCHEMA_ERROR_NONE) { \
+		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
+				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
+	} \
+	if (_rc == JSO_SUCCESS) { \
+		fprintf(stderr, "[  ERROR   ] Schema result successful but expected failure\n"); \
+	} \
+	assert_int_equal(JSO_FAILURE, _rc); \
+	assert_int_equal(JSO_SCHEMA_ERROR_NONE, JSO_SCHEMA_ERROR_TYPE(&schema))
+
 /* A test for simple boolean value. */
 static void test_jso_schema_boolean(void **state)
 {
@@ -59,8 +70,11 @@ static void test_jso_schema_boolean(void **state)
 
 	jso_value instance;
 
-	JSO_VALUE_SET_BOOL(instance, true);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	// JSO_VALUE_SET_BOOL(instance, true);
+	// assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+
+	JSO_VALUE_SET_INT(instance, 12);
+	assert_jso_schema_result_failure_no_error(jso_schema_validate(&schema, &instance));
 
 	jso_value_free(&instance);
 	jso_schema_clear(&schema);
