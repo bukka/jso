@@ -48,6 +48,13 @@ void jso_schema_validation_stack_clear(jso_schema_validation_stack *stack)
 	jso_free(stack->positions);
 }
 
+jso_schema_validation_position *jso_schema_validation_stack_root_position(
+		const jso_schema_validation_stack *stack)
+{
+	JSO_ASSERT_GT(stack->capacity, 0);
+	return &stack->positions[0];
+}
+
 static jso_rc jso_schema_validation_stack_resize_if_needed(jso_schema_validation_stack *stack)
 {
 	size_t capacity = stack->capacity;

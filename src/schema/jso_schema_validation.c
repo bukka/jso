@@ -92,7 +92,11 @@ JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance)
 
 	jso_schema_validation_stream_init(schema, &stream, 32);
 
-	const jso_rc rc = jso_schema_validate_instance(&stream, instance);
+	jso_rc rc = jso_schema_validate_instance(&stream, instance);
+	if (rc == JSO_FAILURE) {
+		return JSO_FAILURE;
+	}
+	rc = jso_schema_validation_stream_final_result(&stream);
 
 	jso_schema_validation_stream_clear(&stream);
 

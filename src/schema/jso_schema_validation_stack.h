@@ -45,6 +45,9 @@ jso_rc jso_schema_validation_stack_init(
 
 void jso_schema_validation_stack_clear(jso_schema_validation_stack *stack);
 
+jso_schema_validation_position *jso_schema_validation_stack_root_position(
+		const jso_schema_validation_stack *stack);
+
 jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 		jso_schema_validation_stack *stack, jso_schema_value *current_value,
 		jso_schema_validation_position *parent);

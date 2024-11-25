@@ -70,8 +70,8 @@ static void test_jso_schema_boolean(void **state)
 
 	jso_value instance;
 
-	// JSO_VALUE_SET_BOOL(instance, true);
-	// assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	JSO_VALUE_SET_BOOL(instance, true);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
 
 	JSO_VALUE_SET_INT(instance, 12);
 	assert_jso_schema_result_failure_no_error(jso_schema_validate(&schema, &instance));

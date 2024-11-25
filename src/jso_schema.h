@@ -1175,4 +1175,6 @@ JSO_API jso_rc jso_schema_validation_stream_array_end(jso_schema_validation_stre
 JSO_API jso_rc jso_schema_validation_stream_value(
 		jso_schema_validation_stream *stream, jso_value *value);
 
+JSO_API jso_rc jso_schema_validation_stream_final_result(jso_schema_validation_stream *stream);
+
 #endif /* JSO_SCHEMA_H */
