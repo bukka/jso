@@ -282,6 +282,7 @@ JSO_API void jso_cli_options_init_pre(jso_cli_options *options)
 	options->is = NULL;
 	options->os = jso_io_file_open_stream(stdout);
 	options->es = jso_io_file_open_stream(stderr);
+	options->schema = NULL;
 }
 
 JSO_API void jso_cli_options_init_post(jso_cli_options *options)
