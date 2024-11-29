@@ -40,6 +40,8 @@ jso_rc jso_schema_validation_stack_init(
 	stack->root_schema = schema;
 	stack->capacity = capacity;
 	stack->size = 0;
+	stack->last_separator = NULL;
+	stack->depth = 0;
 
 	return JSO_SUCCESS;
 }
@@ -97,6 +99,10 @@ jso_schema_validation_position *jso_schema_validation_stack_push_basic(
 	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
 	next->current_value = current_value;
 	next->parent = parent;
+	next->depth = stack->depth;
+	if (stack->last_separator != NULL) {
+		next->layer_start = stack->last_separator - stack->positions + 1;
+	}
 
 	return next;
 }
@@ -115,6 +121,10 @@ jso_schema_validation_position *jso_schema_validation_stack_push_composed(
 	next->composition_type = composition_type;
 	next->current_value = current_value;
 	next->parent = parent;
+	next->depth = stack->depth;
+	if (stack->last_separator != NULL) {
+		next->layer_start = stack->last_separator - stack->positions + 1;
+	}
 
 	return next;
 }
@@ -130,6 +140,7 @@ jso_schema_validation_position *jso_schema_validation_stack_push_separator(
 	next->position_type = JSO_SCHEMA_VALIDATION_POSITION_SENTINEL;
 	next->parent = stack->last_separator;
 	stack->last_separator = next;
+	stack->depth++;
 
 	return next;
 }
@@ -164,10 +175,10 @@ void jso_schema_validation_stack_layer_iterator_start(
 jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
 		jso_schema_validation_stack *stack, jso_schema_validation_stack_layer_iterator *iterator)
 {
-	if (iterator->index + 1 >= stack->size) {
+	if (iterator->index >= stack->size) {
 		return NULL;
 	}
-	jso_schema_validation_position *pos = &stack->positions[++iterator->index];
+	jso_schema_validation_position *pos = &stack->positions[iterator->index++];
 	if (JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
 		return NULL;
 	}
@@ -202,9 +213,13 @@ void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack
 	if (stack->last_separator != NULL) {
 		stack->last_separator = stack->last_separator->parent;
 		if (stack->last_separator == NULL) {
-			stack->size = 0;
+			// back to root
+			stack->size = stack->depth = 1;
 		} else {
 			stack->size = stack->last_separator - stack->positions;
+			stack->depth--;
 		}
+	} else {
+		stack->size = stack->depth = 0;
 	}
 }

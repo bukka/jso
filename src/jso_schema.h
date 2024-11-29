@@ -1143,6 +1143,8 @@ typedef struct _jso_schema_validation_stack {
 	jso_schema_validation_position *positions;
 	/** last separator position */
 	jso_schema_validation_position *last_separator;
+	/** the current stack depth */
+	jso_uint32 depth;
 	/** allocated capacity */
 	size_t capacity;
 	/** used stack size */

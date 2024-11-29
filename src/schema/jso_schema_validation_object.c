@@ -113,12 +113,6 @@ jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack
 {
 	jso_schema *schema = stack->root_schema;
 
-	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
-		jso_schema_validation_set_final_result(pos, JSO_FAILURE);
-		return jso_schema_validation_value_type_error(
-				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
-	}
-
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
@@ -160,6 +154,11 @@ jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack
 jso_rc jso_schema_validation_object_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
+	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
+		return jso_schema_validation_value_type_error(
+				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+	}
+
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->min_properties)) {
