@@ -997,9 +997,9 @@ static inline bool jso_schema_error_is_fatal(jso_schema *schema)
 static inline bool jso_schema_error_is_validation(jso_schema *schema)
 {
 	jso_schema_error_type type = JSO_SCHEMA_ERROR_TYPE(schema);
-	return (type == JSO_SCHEMA_ERROR_VALIDATION_KEYWORD || type == JSO_SCHEMA_ERROR_VALIDATION_TYPE);
+	return (type == JSO_SCHEMA_ERROR_VALIDATION_KEYWORD
+			|| type == JSO_SCHEMA_ERROR_VALIDATION_TYPE);
 }
-
 
 /**
  * Allocate new schema.

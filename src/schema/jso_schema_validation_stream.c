@@ -221,7 +221,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 JSO_API jso_rc jso_schema_validation_stream_final_result(jso_schema_validation_stream *stream)
 {
 	jso_schema_validation_position *pos = jso_schema_validation_stack_root_position(
-		JSO_STREAM_VALIDATION_STREAM_STACK_P(stream));
+			JSO_STREAM_VALIDATION_STREAM_STACK_P(stream));
 
 	if (!pos->is_final_validation_result) {
 		return JSO_FAILURE;

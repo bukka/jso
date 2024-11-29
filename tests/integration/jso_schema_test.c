@@ -144,7 +144,7 @@ static void test_jso_schema_string_with_pattern(void **state)
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_add_cstr(&builder, "pattern", "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$");
-	
+
 	jso_builder_object_end(&builder);
 
 	jso_schema schema;

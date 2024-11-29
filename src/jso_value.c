@@ -66,7 +66,6 @@ JSO_API void jso_value_free(jso_value *val)
 	jso_value_clear(val);
 }
 
-
 /* ERROR */
 
 /* return error description if val is error */
