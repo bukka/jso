@@ -67,7 +67,7 @@ jso_rc jso_schema_validation_string_value(
 		jso_re_match_data *match_data = jso_re_match_data_create(code);
 		int match_result = jso_re_match(JSO_STR_P(instance), code, match_data);
 		jso_re_match_data_free(match_data);
-		if (match_result == 0) {
+		if (match_result <= 0) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"String pattern %s does not match value %s", JSO_RE_CODE_PATTERN(code),
 					JSO_SVAL_P(instance));

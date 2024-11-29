@@ -488,9 +488,17 @@
 	} while (0)
 
 /**
- * Free @ref jso_value instance.
+ * Clear @ref jso_value instance.
  *
  * @param val instance of @ref jso_value
+ */
+JSO_API void jso_value_clear(jso_value *val);
+
+/**
+ * Clear @ref jso_value instance.
+ *
+ * @param val instance of @ref jso_value
+ * @deprecated Use jso_value_clear
  */
 JSO_API void jso_value_free(jso_value *val);
 

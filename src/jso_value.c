@@ -35,7 +35,7 @@
 /* FREEING */
 
 /* free jso value */
-JSO_API void jso_value_free(jso_value *val)
+JSO_API void jso_value_clear(jso_value *val)
 {
 	switch (JSO_TYPE_P(val)) {
 		case JSO_TYPE_STRING:
@@ -60,6 +60,12 @@ JSO_API void jso_value_free(jso_value *val)
 			break;
 	}
 }
+
+JSO_API void jso_value_free(jso_value *val)
+{
+	jso_value_clear(val);
+}
+
 
 /* ERROR */
 

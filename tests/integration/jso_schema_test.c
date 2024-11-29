@@ -80,7 +80,101 @@ static void test_jso_schema_boolean(void **state)
 	JSO_VALUE_SET_INT(instance, 12);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 
-	jso_value_free(&instance);
+	jso_value_clear(&instance);
+	jso_schema_clear(&schema);
+}
+
+/* A test for a simple string value limited with max and min length. */
+static void test_jso_schema_string_with_lengths(void **state)
+{
+	(void) state; /* unused */
+
+	jso_rc rc;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_add_int(&builder, "minLength", 4);
+	jso_builder_object_add_int(&builder, "maxLength", 6);
+
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+	jso_string *sv;
+
+	sv = jso_string_create_from_cstr("valid");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("too long");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("sho");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 5);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a simple string value with regular expression pattern. */
+static void test_jso_schema_string_with_pattern(void **state)
+{
+	(void) state; /* unused */
+
+	jso_rc rc;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_add_cstr(&builder, "pattern", "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$");
+	
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+	jso_string *sv;
+
+	sv = jso_string_create_from_cstr("555-1212");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("(888)555-1212");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("(888)555-1212 ext. 532");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("(800)FLOWERS");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
 	jso_schema_clear(&schema);
 }
 
@@ -88,6 +182,8 @@ int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_schema_boolean),
+		cmocka_unit_test(test_jso_schema_string_with_lengths),
+		cmocka_unit_test(test_jso_schema_string_with_pattern),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
