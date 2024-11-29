@@ -37,6 +37,7 @@ jso_rc jso_schema_validation_stack_init(
 				schema, JSO_SCHEMA_ERROR_STACK_ALLOC, "Allocating stack positions failed");
 		return JSO_FAILURE;
 	}
+	stack->root_schema = schema;
 	stack->capacity = capacity;
 	stack->size = 0;
 
