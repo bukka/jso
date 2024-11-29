@@ -43,7 +43,7 @@
 
 #define assert_jso_schema_validation_failure(_call) \
 	rc = _call; \
-	if (rc == JSO_FAILURE && JSO_SCHEMA_ERROR_TYPE(&schema) != JSO_SCHEMA_ERROR_NONE) { \
+	if (rc == JSO_FAILURE && !jso_schema_error_is_validation(&schema)) { \
 		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
 				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
 	} \
@@ -178,12 +178,60 @@ static void test_jso_schema_string_with_pattern(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for a simple integer type. */
+static void test_jso_schema_integer(void **state)
+{
+	(void) state; /* unused */
+
+	jso_rc rc;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+	jso_string *sv;
+
+	JSO_VALUE_SET_INT(instance, 14);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_DOUBLE(instance, 14.0);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_DOUBLE(instance, 14.2);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_BOOL(instance, true);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("200");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_schema_boolean),
 		cmocka_unit_test(test_jso_schema_string_with_lengths),
 		cmocka_unit_test(test_jso_schema_string_with_pattern),
+		cmocka_unit_test(test_jso_schema_integer),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

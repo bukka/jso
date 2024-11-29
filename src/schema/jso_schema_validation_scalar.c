@@ -57,11 +57,11 @@ jso_rc jso_schema_validation_integer_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_int inst_ival;
+	jso_value_type inst_type = JSO_TYPE_P(instance);
 
-	if (JSO_TYPE_P(instance) == JSO_TYPE_INT) {
+	if (inst_type == JSO_TYPE_INT) {
 		inst_ival = JSO_IVAL_P(instance);
-	}
-	if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
+	} else if (inst_type == JSO_TYPE_DOUBLE) {
 		if (nearbyint(JSO_DVAL_P(instance)) != JSO_DVAL_P(instance)) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 					"Double integer type cannot have decimal point");
