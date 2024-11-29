@@ -312,7 +312,44 @@ static void test_jso_schema_number_range(void **state)
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
-	JSO_VALUE_SET_BOOL(instance, -1);
+	JSO_VALUE_SET_INT(instance, -1);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a simple null type. */
+static void test_jso_schema_null(void **state)
+{
+	(void) state; /* unused */
+
+	jso_rc rc;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "null");
+
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+
+	JSO_VALUE_SET_NULL(instance);
+	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 100);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_BOOL(instance, true);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
@@ -328,6 +365,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_integer),
 		cmocka_unit_test(test_jso_schema_number_multiple),
 		cmocka_unit_test(test_jso_schema_number_range),
+		cmocka_unit_test(test_jso_schema_null),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
