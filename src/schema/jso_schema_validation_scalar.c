@@ -123,12 +123,12 @@ jso_rc jso_schema_validation_number_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_number inst_num;
+	jso_value_type inst_type = JSO_TYPE_P(instance);
 
-	if (JSO_TYPE_P(instance) == JSO_TYPE_INT) {
+	if (inst_type == JSO_TYPE_INT) {
 		inst_num.ival = JSO_IVAL_P(instance);
 		inst_num.is_int = true;
-	}
-	if (JSO_TYPE_P(instance) == JSO_TYPE_DOUBLE) {
+	} else if (inst_type == JSO_TYPE_DOUBLE) {
 		inst_num.dval = JSO_DVAL_P(instance);
 		inst_num.is_int = false;
 	} else {
@@ -183,7 +183,7 @@ jso_rc jso_schema_validation_number_value(
 		jso_number kw_num;
 		JSO_ASSERT_EQ(
 				jso_schema_keyword_convert_to_number(&numval->multiple_of, &kw_num), JSO_SUCCESS);
-		if (jso_number_is_multiple_of(&inst_num, &kw_num)) {
+		if (!jso_number_is_multiple_of(&inst_num, &kw_num)) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %s is is not multiple of keyword value",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num));
