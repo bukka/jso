@@ -25,88 +25,79 @@
 
 #include "jso.h"
 
-jso_schema_validation_result jso_schema_validate_instance(
-		jso_schema_validation_stream *stream, jso_value *instance)
+jso_rc jso_schema_validate_instance(jso_schema_validation_stream *stream, jso_value *instance)
 {
 	jso_value *val;
-	jso_schema_validation_result res;
 
 	switch (JSO_TYPE_P(instance)) {
 		case JSO_TYPE_ARRAY:
-			if ((res = jso_schema_validation_stream_array_start(stream))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
 			jso_array *array = JSO_ARRVAL_P(instance);
 			JSO_ARRAY_FOREACH(array, val)
 			{
-				if ((res = jso_schema_validate_instance(stream, val))
-						!= JSO_SCHEMA_VALIDATION_VALID) {
-					return res;
+				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
-				if ((res = jso_schema_validation_stream_array_append(stream, array, val))
-						!= JSO_SCHEMA_VALIDATION_VALID) {
-					return res;
+				if (jso_schema_validation_stream_array_append(stream, array, val) == JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
 			}
 			JSO_ARRAY_FOREACH_END;
-			if ((res = jso_schema_validation_stream_array_end(stream))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_array_end(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
-			if ((res = jso_schema_validation_stream_value(stream, instance))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
 			break;
 		case JSO_TYPE_OBJECT: {
 			jso_string *key;
-			if ((res = jso_schema_validation_stream_object_start(stream))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_object_start(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
 			jso_object *object = JSO_OBJVAL_P(instance);
 			JSO_OBJECT_FOREACH(object, key, val)
 			{
-				if ((res = jso_schema_validation_stream_object_key(stream, key))
-						!= JSO_SCHEMA_VALIDATION_VALID) {
-					return res;
+				if (jso_schema_validation_stream_object_key(stream, key) == JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
-				if ((res = jso_schema_validate_instance(stream, val))
-						!= JSO_SCHEMA_VALIDATION_VALID) {
-					return res;
+				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
-				if ((res = jso_schema_validation_stream_object_update(stream, object, key, val))
-						!= JSO_SCHEMA_VALIDATION_VALID) {
-					return res;
+				if (jso_schema_validation_stream_object_update(stream, object, key, val)
+						== JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
 			}
 			JSO_OBJECT_FOREACH_END;
-			if ((res = jso_schema_validation_stream_object_end(stream))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_object_end(stream) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
-			if ((res = jso_schema_validation_stream_value(stream, instance))
-					!= JSO_SCHEMA_VALIDATION_VALID) {
-				return res;
+			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
+				return JSO_FAILURE;
 			}
 		} break;
 		default:
 			return jso_schema_validation_stream_value(stream, instance);
 	}
 
-	return JSO_SCHEMA_VALIDATION_VALID;
+	return JSO_SUCCESS;
 }
 
 JSO_API jso_schema_validation_result jso_schema_validate(jso_schema *schema, jso_value *instance)
 {
+	jso_schema_validation_result result;
 	jso_schema_validation_stream stream;
 
-	jso_schema_validation_stream_init(schema, &stream, 32);
+	if (jso_schema_validation_stream_init(schema, &stream, 32) == JSO_FAILURE) {
+		return JSO_SCHEMA_VALIDATION_ERROR;
+	}
 
-	jso_schema_validation_result result = jso_schema_validate_instance(&stream, instance);
-
-	if (result == JSO_SCHEMA_VALIDATION_VALID) {
+	if (jso_schema_validate_instance(&stream, instance) == JSO_FAILURE) {
+		result = JSO_SCHEMA_VALIDATION_ERROR;
+	} else {
 		result = jso_schema_validation_stream_final_result(&stream);
 	}
 

@@ -1085,7 +1085,6 @@ typedef enum _jso_schema_validation_result {
 	JSO_SCHEMA_VALIDATION_VALID = 0,
 	JSO_SCHEMA_VALIDATION_INVALID,
 	JSO_SCHEMA_VALIDATION_ERROR,
-	JSO_SCHEMA_VALIDATION_UNKNOWN,
 } jso_schema_validation_result;
 
 /**
@@ -1180,32 +1179,26 @@ JSO_API jso_rc jso_schema_validation_stream_init(
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_object_start(
-		jso_schema_validation_stream *stream);
+JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *stream);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_object_key(
+JSO_API jso_rc jso_schema_validation_stream_object_key(
 		jso_schema_validation_stream *stream, jso_string *str);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_object_update(
-		jso_schema_validation_stream *stream, jso_object *instance_object, jso_string *instance_key,
-		jso_value *instance_item);
+JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
+		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_object_end(
-		jso_schema_validation_stream *stream);
+JSO_API jso_rc jso_schema_validation_stream_object_end(jso_schema_validation_stream *stream);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_array_start(
-		jso_schema_validation_stream *stream);
+JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *stream);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_array_append(
+JSO_API jso_rc jso_schema_validation_stream_array_append(
 		jso_schema_validation_stream *stream, jso_array *instance_array, jso_value *instance_item);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_array_end(
-		jso_schema_validation_stream *stream);
+JSO_API jso_rc jso_schema_validation_stream_array_end(jso_schema_validation_stream *stream);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_value(
+JSO_API jso_rc jso_schema_validation_stream_value(
 		jso_schema_validation_stream *stream, jso_value *value);
 
-JSO_API jso_schema_validation_result jso_schema_validation_stream_final_result(
-		jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_final_result(jso_schema_validation_stream *stream);
 
 #endif /* JSO_SCHEMA_H */

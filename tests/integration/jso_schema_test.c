@@ -58,7 +58,7 @@
 		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
 				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
 	} else if (result == JSO_SCHEMA_VALIDATION_VALID) { \
-		fprintf(stderr, "[  ERROR   ] Schema result successful but expected failure\n"); \
+		fprintf(stderr, "[  ERROR   ] Schema validation valid but expected invalid\n"); \
 	} \
 	assert_int_equal(JSO_SCHEMA_VALIDATION_INVALID, result); \
 	assert_true(jso_schema_error_is_validation(&schema))
@@ -425,8 +425,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_string_with_pattern),
 		cmocka_unit_test(test_jso_schema_integer),
 		cmocka_unit_test(test_jso_schema_number_multiple),
-		cmocka_unit_test(test_jso_schema_number_range),
-		cmocka_unit_test(test_jso_schema_null),
+		cmocka_unit_test(test_jso_schema_number_range), cmocka_unit_test(test_jso_schema_null),
 		cmocka_unit_test(test_jso_schema_object_properties),
 	};
 
