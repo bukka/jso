@@ -449,13 +449,13 @@ static void test_jso_schema_object_pattern_props(void **state)
 	// build schema
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
-	// properties
+	// pattern properties
 	jso_builder_object_add_object_start(&builder, "patternProperties");
-	// number property
+	// string properties
 	jso_builder_object_add_object_start(&builder, "^S_");
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_end(&builder);
-	// street_name property
+	// integer properties
 	jso_builder_object_add_object_start(&builder, "^I_");
 	jso_builder_object_add_cstr(&builder, "type", "integer");
 	jso_builder_object_end(&builder);
@@ -604,6 +604,81 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an object type with all properties with non overlapping types. */
+static void test_jso_schema_object_all_props_non_overlap(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// properties
+	jso_builder_object_add_object_start(&builder, "properties");
+	// number property
+	jso_builder_object_add_object_start(&builder, "builtin");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	// end properties
+	jso_builder_object_end(&builder);
+	// pattern properties
+	jso_builder_object_add_object_start(&builder, "patternProperties");
+	// string properties
+	jso_builder_object_add_object_start(&builder, "^S_");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// integer properties
+	jso_builder_object_add_object_start(&builder, "^I_");
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+	jso_builder_object_end(&builder);
+	// end pattern properties
+	jso_builder_object_end(&builder);
+	// additional properties
+	jso_builder_object_add_object_start(&builder, "additionalProperties");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// end root
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "builtin", 10);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with pattern property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "I_val", 10);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with extra string property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "keyword", "value");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with extra property that is not string
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "keyword", 10);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -618,6 +693,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_pattern_props),
 		cmocka_unit_test(test_jso_schema_object_additional_props_false),
 		cmocka_unit_test(test_jso_schema_object_additional_props_type),
+		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
