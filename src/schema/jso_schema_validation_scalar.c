@@ -33,27 +33,27 @@
 
 #include <math.h>
 
-jso_rc jso_schema_validation_null_value(
+jso_schema_validation_result jso_schema_validation_null_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_NULL) {
 		return jso_schema_validation_value_type_error(schema, JSO_TYPE_NULL, JSO_TYPE_P(instance));
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_rc jso_schema_validation_boolean_value(
+jso_schema_validation_result jso_schema_validation_boolean_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_BOOL) {
 		return jso_schema_validation_value_type_error(schema, JSO_TYPE_BOOL, JSO_TYPE_P(instance));
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_rc jso_schema_validation_integer_value(
+jso_schema_validation_result jso_schema_validation_integer_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_int inst_ival;
@@ -65,7 +65,7 @@ jso_rc jso_schema_validation_integer_value(
 		if (nearbyint(JSO_DVAL_P(instance)) != JSO_DVAL_P(instance)) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 					"Double integer type cannot have decimal point");
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		inst_ival = (jso_int) JSO_DVAL_P(instance);
 	} else {
@@ -80,14 +80,14 @@ jso_rc jso_schema_validation_integer_value(
 		if (inst_ival < kw_ival) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %ld is lower than minimum value %ld", inst_ival, kw_ival);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_minimum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(intval->exclusive_minimum)
 				&& inst_ival == kw_ival) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %ld is equal to exclusive minimum", inst_ival);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -96,14 +96,14 @@ jso_rc jso_schema_validation_integer_value(
 		if (inst_ival > kw_ival) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %ld is greater than maximum value %ld", inst_ival, kw_ival);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_maximum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(intval->exclusive_maximum)
 				&& inst_ival == kw_ival) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %ld is equal to exclusive maximum", inst_ival);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -112,14 +112,14 @@ jso_rc jso_schema_validation_integer_value(
 		if (inst_ival % kw_ival != 0) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %d is is not multiple of %d", inst_ival, kw_ival);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_rc jso_schema_validation_number_value(
+jso_schema_validation_result jso_schema_validation_number_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	jso_number inst_num;
@@ -147,7 +147,7 @@ jso_rc jso_schema_validation_number_value(
 					"Value %s is lower than minimum value %s",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num),
 					jso_number_cstr_from_number(&kw_num_str, &kw_num));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_minimum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(numval->exclusive_minimum)
@@ -155,7 +155,7 @@ jso_rc jso_schema_validation_number_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %s is equal to exclusive minimum",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -167,7 +167,7 @@ jso_rc jso_schema_validation_number_value(
 					"Value %s is greater than maximum value %s",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num),
 					jso_number_cstr_from_number(&kw_num_str, &kw_num));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_maximum)
 				&& JSO_SCHEMA_KEYWORD_DATA_BOOL(numval->exclusive_maximum)
@@ -175,7 +175,7 @@ jso_rc jso_schema_validation_number_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %s is equal to exclusive maximum",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -187,9 +187,9 @@ jso_rc jso_schema_validation_number_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Value %s is is not multiple of keyword value",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }

@@ -25,21 +25,21 @@
 
 #include "jso.h"
 
-jso_rc jso_schema_validation_value_type_error_ex(jso_schema *schema, jso_value_type expected,
-		jso_value_type expected_alternative, jso_value_type actual)
+jso_schema_validation_result jso_schema_validation_value_type_error_ex(jso_schema *schema,
+		jso_value_type expected, jso_value_type expected_alternative, jso_value_type actual)
 {
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 			"Invalid validation type, expected %s or %s but received %s",
 			jso_value_type_to_string(expected), jso_value_type_to_string(expected_alternative),
 			jso_value_type_to_string(actual));
-	return JSO_FAILURE;
+	return JSO_SCHEMA_VALIDATION_INVALID;
 }
 
-jso_rc jso_schema_validation_value_type_error(
+jso_schema_validation_result jso_schema_validation_value_type_error(
 		jso_schema *schema, jso_value_type expected, jso_value_type actual)
 {
 	jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 			"Invalid validation type, expected %s but received %s",
 			jso_value_type_to_string(expected), jso_value_type_to_string(actual));
-	return JSO_FAILURE;
+	return JSO_SCHEMA_VALIDATION_INVALID;
 }

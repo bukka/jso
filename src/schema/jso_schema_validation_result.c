@@ -33,8 +33,8 @@ void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 		return;
 	}
 	if (parent_pos->position_type == JSO_SCHEMA_VALIDATION_POSITION_BASIC) {
-		if (pos->validation_result == JSO_FAILURE) {
-			jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+		if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
+			jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
 		}
 	} else {
 		JSO_ASSERT_EQ(parent_pos->position_type, JSO_SCHEMA_VALIDATION_POSITION_COMPOSED);
@@ -43,32 +43,34 @@ void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 				jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
 				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ALL:
-				if (pos->validation_result == JSO_FAILURE) {
-					jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+				if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
+					jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
 				} else {
 					parent_pos->count++;
 				}
 				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ANY:
-				if (pos->validation_result == JSO_SUCCESS) {
+				if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 					parent_pos->count++;
-					jso_schema_validation_set_final_result(parent_pos, JSO_SUCCESS);
+					jso_schema_validation_set_final_result(parent_pos, JSO_SCHEMA_VALIDATION_VALID);
 				}
 				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ONE:
-				if (pos->validation_result == JSO_SUCCESS) {
+				if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 					parent_pos->count++;
 					if (parent_pos->count > 1) {
-						jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+						jso_schema_validation_set_final_result(
+								parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 					}
 				}
 				break;
 			default:
 				JSO_ASSERT_EQ(parent_pos->composition_type, JSO_SCHEMA_VALIDATION_COMPOSITION_NOT);
-				if (pos->validation_result == JSO_SUCCESS) {
-					jso_schema_validation_set_final_result(parent_pos, JSO_FAILURE);
+				if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
+					jso_schema_validation_set_final_result(
+							parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 				} else {
-					jso_schema_validation_set_final_result(parent_pos, JSO_SUCCESS);
+					jso_schema_validation_set_final_result(parent_pos, JSO_SCHEMA_VALIDATION_VALID);
 				}
 				break;
 		}

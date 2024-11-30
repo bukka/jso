@@ -76,7 +76,7 @@ static inline jso_rc jso_schema_validation_composition_push_keyword_schema_objec
 	return JSO_SUCCESS;
 }
 
-jso_rc jso_schema_validation_composition_check(
+jso_schema_validation_result jso_schema_validation_composition_check(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
 	jso_schema_value *current_value = pos->current_value;
@@ -88,7 +88,7 @@ jso_rc jso_schema_validation_composition_check(
 		// result could be a NULL for $dynamicRef
 		if (result == NULL) {
 			if (jso_schema_reference_resolve(ref, &stack->root_schema->doc) == JSO_FAILURE) {
-				return JSO_FAILURE;
+				return JSO_SCHEMA_VALIDATION_ERROR;
 			}
 			result = JSO_SCHEMA_REFERENCE_RESULT(ref);
 			JSO_ASSERT_NOT_NULL(result);
@@ -96,33 +96,33 @@ jso_rc jso_schema_validation_composition_check(
 		if (jso_schema_validation_stack_push_composed(
 					stack, result, pos, JSO_SCHEMA_VALIDATION_COMPOSITION_REF)
 				== NULL) {
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_ERROR;
 		}
 		if (JSO_SCHEMA_VALUE_FLAGS_P(current_value) | JSO_SCHEMA_VALUE_FLAG_REF_ONLY) {
-			return JSO_SUCCESS;
+			return JSO_SCHEMA_VALIDATION_VALID;
 		}
 	}
 
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
 				stack, pos, &data->all_of, JSO_SCHEMA_VALIDATION_COMPOSITION_ALL)
 			== JSO_FAILURE) {
-		return JSO_FAILURE;
+		return JSO_SCHEMA_VALIDATION_ERROR;
 	}
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
 				stack, pos, &data->any_of, JSO_SCHEMA_VALIDATION_COMPOSITION_ANY)
 			== JSO_FAILURE) {
-		return JSO_FAILURE;
+		return JSO_SCHEMA_VALIDATION_ERROR;
 	}
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
 				stack, pos, &data->one_of, JSO_SCHEMA_VALIDATION_COMPOSITION_ONE)
 			== JSO_FAILURE) {
-		return JSO_FAILURE;
+		return JSO_SCHEMA_VALIDATION_ERROR;
 	}
 	if (jso_schema_validation_composition_push_keyword_schema_object(
 				stack, pos, &data->not, JSO_SCHEMA_VALIDATION_COMPOSITION_NOT)
 			== JSO_FAILURE) {
-		return JSO_FAILURE;
+		return JSO_SCHEMA_VALIDATION_ERROR;
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }

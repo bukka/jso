@@ -28,7 +28,7 @@
 
 #include "jso.h"
 
-jso_rc jso_schema_validation_common_value(
+jso_schema_validation_result jso_schema_validation_common_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 
@@ -49,9 +49,9 @@ jso_rc jso_schema_validation_common_value(
 		if (!found) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Instance value not found in enum values");
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }

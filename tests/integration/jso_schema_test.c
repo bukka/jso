@@ -33,24 +33,34 @@
 #include <cmocka.h>
 
 #define assert_jso_schema_result_success(_call) \
-	rc = _call; \
-	if (rc == JSO_FAILURE) { \
+	{ \
+		jso_rc rc = _call; \
+		if (rc == JSO_FAILURE) { \
+			fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
+					JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
+		} \
+		assert_int_equal(JSO_SUCCESS, rc); \
+	} \
+	assert_int_equal(JSO_SCHEMA_ERROR_NONE, JSO_SCHEMA_ERROR_TYPE(&schema))
+
+#define assert_jso_schema_validation_success(_call) \
+	result = _call; \
+	if (result != JSO_SCHEMA_VALIDATION_VALID) { \
 		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
 				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
 	} \
-	assert_int_equal(JSO_SUCCESS, rc); \
+	assert_int_equal(JSO_SCHEMA_VALIDATION_VALID, result); \
 	assert_int_equal(JSO_SCHEMA_ERROR_NONE, JSO_SCHEMA_ERROR_TYPE(&schema))
 
 #define assert_jso_schema_validation_failure(_call) \
-	rc = _call; \
-	if (rc == JSO_FAILURE && !jso_schema_error_is_validation(&schema)) { \
+	result = _call; \
+	if (result == JSO_SCHEMA_VALIDATION_ERROR) { \
 		fprintf(stderr, "[  ERROR   ] Schema error message: %s\n", \
 				JSO_SCHEMA_ERROR_MESSAGE(&schema)); \
-	} \
-	if (rc == JSO_SUCCESS) { \
+	} else if (result == JSO_SCHEMA_VALIDATION_VALID) { \
 		fprintf(stderr, "[  ERROR   ] Schema result successful but expected failure\n"); \
 	} \
-	assert_int_equal(JSO_FAILURE, rc); \
+	assert_int_equal(JSO_SCHEMA_VALIDATION_INVALID, result); \
 	assert_true(jso_schema_error_is_validation(&schema))
 
 /* A test for simple boolean value. */
@@ -58,7 +68,7 @@ static void test_jso_schema_boolean(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -75,7 +85,7 @@ static void test_jso_schema_boolean(void **state)
 	jso_value instance;
 
 	JSO_VALUE_SET_BOOL(instance, true);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 
 	JSO_VALUE_SET_INT(instance, 12);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
@@ -89,7 +99,7 @@ static void test_jso_schema_string_with_lengths(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -111,7 +121,7 @@ static void test_jso_schema_string_with_lengths(void **state)
 
 	sv = jso_string_create_from_cstr("valid");
 	JSO_VALUE_SET_STRING(instance, sv);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	sv = jso_string_create_from_cstr("too long");
@@ -136,7 +146,7 @@ static void test_jso_schema_string_with_pattern(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -157,12 +167,12 @@ static void test_jso_schema_string_with_pattern(void **state)
 
 	sv = jso_string_create_from_cstr("555-1212");
 	JSO_VALUE_SET_STRING(instance, sv);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	sv = jso_string_create_from_cstr("(888)555-1212");
 	JSO_VALUE_SET_STRING(instance, sv);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	sv = jso_string_create_from_cstr("(888)555-1212 ext. 532");
@@ -183,7 +193,7 @@ static void test_jso_schema_integer(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -202,11 +212,11 @@ static void test_jso_schema_integer(void **state)
 	jso_string *sv;
 
 	JSO_VALUE_SET_INT(instance, 14);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_DOUBLE(instance, 14.0);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_DOUBLE(instance, 14.2);
@@ -230,7 +240,7 @@ static void test_jso_schema_number_multiple(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -249,15 +259,15 @@ static void test_jso_schema_number_multiple(void **state)
 	jso_value instance;
 
 	JSO_VALUE_SET_INT(instance, 0);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 10);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 20);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 23);
@@ -276,7 +286,7 @@ static void test_jso_schema_number_range(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -297,15 +307,15 @@ static void test_jso_schema_number_range(void **state)
 	jso_value instance;
 
 	JSO_VALUE_SET_INT(instance, 0);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 10);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 99);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 100);
@@ -324,7 +334,7 @@ static void test_jso_schema_null(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -342,7 +352,7 @@ static void test_jso_schema_null(void **state)
 	jso_value instance;
 
 	JSO_VALUE_SET_NULL(instance);
-	assert_jso_schema_result_success(jso_schema_validate(&schema, &instance));
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
 	JSO_VALUE_SET_INT(instance, 100);
@@ -361,7 +371,7 @@ static void test_jso_schema_object_properties(void **state)
 {
 	(void) state; /* unused */
 
-	jso_rc rc;
+	jso_schema_validation_result result;
 	jso_builder builder;
 	jso_builder_init(&builder);
 
@@ -392,7 +402,8 @@ static void test_jso_schema_object_properties(void **state)
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "number", 10);
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
-	assert_jso_schema_result_success(jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
 	JSO_VALUE_SET_INT(instance, 100);

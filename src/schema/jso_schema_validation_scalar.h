@@ -31,16 +31,16 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_validation_null_value(
+jso_schema_validation_result jso_schema_validation_null_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
-jso_rc jso_schema_validation_boolean_value(
+jso_schema_validation_result jso_schema_validation_boolean_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
-jso_rc jso_schema_validation_integer_value(
+jso_schema_validation_result jso_schema_validation_integer_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
-jso_rc jso_schema_validation_number_value(
+jso_schema_validation_result jso_schema_validation_number_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_SCALAR_H */

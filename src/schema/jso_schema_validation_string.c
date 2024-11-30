@@ -31,7 +31,7 @@
 #include "jso.h"
 #include "jso_re.h"
 
-jso_rc jso_schema_validation_string_value(
+jso_schema_validation_result jso_schema_validation_string_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_STRING) {
@@ -47,7 +47,7 @@ jso_rc jso_schema_validation_string_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"String length %zu is lower than minimum length %lu", JSO_SLEN_P(instance),
 					kw_uval);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -57,7 +57,7 @@ jso_rc jso_schema_validation_string_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"String length %zu is greater than maximum length %lu", JSO_SLEN_P(instance),
 					kw_uval);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -71,9 +71,9 @@ jso_rc jso_schema_validation_string_value(
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"String pattern %s does not match value %s", JSO_RE_CODE_PATTERN(code),
 					JSO_SVAL_P(instance));
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }

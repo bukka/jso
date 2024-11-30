@@ -34,7 +34,7 @@
 static inline jso_bool jso_schema_validation_stream_should_terminate(
 		jso_schema *schema, jso_schema_validation_position *pos)
 {
-	return pos->validation_result == JSO_FAILURE && jso_schema_error_is_fatal(schema);
+	return pos->validation_result == JSO_SCHEMA_VALIDATION_ERROR;
 }
 
 #endif /* JSO_SCHEMA_VALIDATION_STACK_H */

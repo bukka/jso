@@ -31,7 +31,7 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_validation_common_value(
+jso_schema_validation_result jso_schema_validation_common_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_COMMON_H */

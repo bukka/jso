@@ -44,10 +44,13 @@ static const jso_schema_validation_value_callback schema_validation_value_callba
 	[JSO_SCHEMA_VALUE_TYPE_OBJECT] = jso_schema_validation_object_value,
 };
 
-jso_rc jso_schema_validation_value(jso_schema *schema, jso_schema_value *value, jso_value *instance)
+jso_schema_validation_result jso_schema_validation_value(
+		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
-	if (jso_schema_validation_common_value(schema, value, instance) == JSO_FAILURE) {
-		return JSO_FAILURE;
+	jso_schema_validation_result result
+			= jso_schema_validation_common_value(schema, value, instance);
+	if (result != JSO_SCHEMA_VALIDATION_VALID) {
+		return result;
 	}
 
 	return schema_validation_value_callbacks[JSO_SCHEMA_VALUE_TYPE_P(value)](

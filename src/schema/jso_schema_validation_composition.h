@@ -31,7 +31,7 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_validation_composition_check(
+jso_schema_validation_result jso_schema_validation_composition_check(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
 
 #endif /* JSO_SCHEMA_VALIDATION_COMPOSITION_H */

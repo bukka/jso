@@ -33,11 +33,11 @@
 #include "jso_re.h"
 #include "jso.h"
 
-jso_rc jso_schema_validation_object_key(
+jso_schema_validation_result jso_schema_validation_object_key(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos, jso_string *key)
 {
 	if (pos->is_final_validation_result) {
-		return JSO_SUCCESS;
+		return JSO_SCHEMA_VALIDATION_VALID;
 	}
 
 	jso_schema *schema = stack->root_schema;
@@ -48,12 +48,12 @@ jso_rc jso_schema_validation_object_key(
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->max_properties);
 		size_t objlen = pos->count;
 		if (objlen > kw_uval) {
-			jso_schema_validation_set_final_result(pos, JSO_FAILURE);
+			jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Object number of properties is %zu which is greater than maximum number of "
 					"properties %lu",
 					objlen, kw_uval);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -65,7 +65,7 @@ jso_rc jso_schema_validation_object_key(
 		if (jso_object_get(props, key, &result) == JSO_SUCCESS) {
 			JSO_ASSERT_EQ(JSO_TYPE_P(result), JSO_TYPE_SCHEMA_VALUE);
 			if (jso_schema_validation_stack_push_basic(stack, JSO_SVVAL_P(result), pos) == NULL) {
-				return JSO_FAILURE;
+				return JSO_SCHEMA_VALIDATION_ERROR;
 			}
 			found = true;
 		}
@@ -87,7 +87,7 @@ jso_rc jso_schema_validation_object_key(
 			jso_re_match_data_free(match_data);
 			if (match_result > 0) {
 				if (jso_schema_validation_stack_push_basic(stack, schema_value, pos) == NULL) {
-					return JSO_FAILURE;
+					return JSO_SCHEMA_VALIDATION_ERROR;
 				}
 				found = true;
 			}
@@ -97,19 +97,20 @@ jso_rc jso_schema_validation_object_key(
 
 	if (!found && JSO_SCHEMA_KW_IS_SET(objval->additional_properties)
 			&& !JSO_SCHEMA_KEYWORD_DATA_BOOL(objval->additional_properties)) {
-		jso_schema_validation_set_final_result(pos, JSO_FAILURE);
+		jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 				"Object does not allow additional properties but added property with key %s which "
 				"is is not found in properties or matches any pattern property",
 				JSO_STRING_VAL(key));
-		return JSO_FAILURE;
+		return JSO_SCHEMA_VALIDATION_INVALID;
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack,
-		jso_schema_validation_position *pos, jso_value *instance)
+jso_schema_validation_result jso_schema_validation_object_pre_value(
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
+		jso_value *instance)
 {
 	jso_schema *schema = stack->root_schema;
 
@@ -129,29 +130,29 @@ jso_rc jso_schema_validation_object_pre_value(jso_schema_validation_stack *stack
 				{
 					JSO_ASSERT_EQ(JSO_TYPE_P(item), JSO_TYPE_STRING);
 					if (!jso_object_has(instance_obj, JSO_STR_P(item))) {
-						jso_schema_validation_set_final_result(pos, JSO_FAILURE);
+						jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
 						jso_schema_validation_stack_reset(stack);
 						jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 								"Object key %s is required by dependency %s but it is not present",
 								JSO_SVAL_P(item), JSO_STRING_VAL(key));
-						return JSO_FAILURE;
+						return JSO_SCHEMA_VALIDATION_INVALID;
 					}
 				}
 				JSO_ARRAY_FOREACH_END;
 			} else {
 				JSO_ASSERT_EQ(JSO_TYPE_P(val), JSO_TYPE_SCHEMA_VALUE);
 				if (jso_schema_validation_stack_push_basic(stack, JSO_SVVAL_P(val), pos) == NULL) {
-					return JSO_FAILURE;
+					return JSO_SCHEMA_VALIDATION_ERROR;
 				}
 			}
 		}
 		JSO_OBJECT_FOREACH_END;
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_rc jso_schema_validation_object_value(
+jso_schema_validation_result jso_schema_validation_object_value(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
@@ -169,7 +170,7 @@ jso_rc jso_schema_validation_object_value(
 					"Object number of properties is %zu which is lower than minimum number of "
 					"properties %lu",
 					objlen, kw_uval);
-			return JSO_FAILURE;
+			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
 
@@ -181,11 +182,11 @@ jso_rc jso_schema_validation_object_value(
 			if (!jso_object_has(instance_object, JSO_STR_P(item))) {
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 						"Object does not have requier property with key %s", JSO_SVAL_P(item));
-				return JSO_FAILURE;
+				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}
 		JSO_ARRAY_FOREACH_END;
 	}
 
-	return JSO_SUCCESS;
+	return JSO_SCHEMA_VALIDATION_VALID;
 }

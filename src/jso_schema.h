@@ -1079,6 +1079,16 @@ struct _jso_schema_reference {
 #define JSO_SCHEMA_REFERENCE_RESULT(_ref) (_ref)->result
 
 /**
+ * @brief Schema validation result
+ */
+typedef enum _jso_schema_validation_result {
+	JSO_SCHEMA_VALIDATION_VALID = 0,
+	JSO_SCHEMA_VALIDATION_INVALID,
+	JSO_SCHEMA_VALIDATION_ERROR,
+	JSO_SCHEMA_VALIDATION_UNKNOWN,
+} jso_schema_validation_result;
+
+/**
  * @brief Schema validation composition type.
  */
 typedef enum _jso_schema_validation_composition_type {
@@ -1116,7 +1126,7 @@ struct _jso_schema_validation_position {
 	/** composition type */
 	jso_schema_validation_composition_type composition_type;
 	/** validation result */
-	jso_rc validation_result;
+	jso_schema_validation_result validation_result;
 	/** whether the validation result is final */
 	jso_bool is_final_validation_result;
 	/** schema parent validation position */
@@ -1163,33 +1173,39 @@ typedef struct _jso_schema_validation_stream {
 
 #define JSO_STREAM_VALIDATION_STREAM_STACK_P(_stream) (&_stream->stack)
 
-JSO_API jso_rc jso_schema_validate(jso_schema *schema, jso_value *instance);
+JSO_API jso_schema_validation_result jso_schema_validate(jso_schema *schema, jso_value *instance);
 
 JSO_API jso_rc jso_schema_validation_stream_init(
 		jso_schema *schema, jso_schema_validation_stream *stream, size_t positions_capacity);
 
 JSO_API void jso_schema_validation_stream_clear(jso_schema_validation_stream *stream);
 
-JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_object_start(
+		jso_schema_validation_stream *stream);
 
-JSO_API jso_rc jso_schema_validation_stream_object_key(
+JSO_API jso_schema_validation_result jso_schema_validation_stream_object_key(
 		jso_schema_validation_stream *stream, jso_string *str);
 
-JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
-		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_object_update(
+		jso_schema_validation_stream *stream, jso_object *instance_object, jso_string *instance_key,
+		jso_value *instance_item);
 
-JSO_API jso_rc jso_schema_validation_stream_object_end(jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_object_end(
+		jso_schema_validation_stream *stream);
 
-JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_array_start(
+		jso_schema_validation_stream *stream);
 
-JSO_API jso_rc jso_schema_validation_stream_array_append(
+JSO_API jso_schema_validation_result jso_schema_validation_stream_array_append(
 		jso_schema_validation_stream *stream, jso_array *instance_array, jso_value *instance_item);
 
-JSO_API jso_rc jso_schema_validation_stream_array_end(jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_array_end(
+		jso_schema_validation_stream *stream);
 
-JSO_API jso_rc jso_schema_validation_stream_value(
+JSO_API jso_schema_validation_result jso_schema_validation_stream_value(
 		jso_schema_validation_stream *stream, jso_value *value);
 
-JSO_API jso_rc jso_schema_validation_stream_final_result(jso_schema_validation_stream *stream);
+JSO_API jso_schema_validation_result jso_schema_validation_stream_final_result(
+		jso_schema_validation_stream *stream);
 
 #endif /* JSO_SCHEMA_H */
