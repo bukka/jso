@@ -367,7 +367,7 @@ static void test_jso_schema_null(void **state)
 }
 
 /* A test for an object type with properties. */
-static void test_jso_schema_object_properties(void **state)
+static void test_jso_schema_object_props(void **state)
 {
 	(void) state; /* unused */
 
@@ -399,6 +399,7 @@ static void test_jso_schema_object_properties(void **state)
 
 	jso_value instance;
 
+	// valid
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "number", 10);
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
@@ -406,6 +407,7 @@ static void test_jso_schema_object_properties(void **state)
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
+	// invalid number type
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "number", "10");
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
@@ -413,13 +415,64 @@ static void test_jso_schema_object_properties(void **state)
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
+	// not an object
 	JSO_VALUE_SET_INT(instance, 100);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
+	// not an object
 	JSO_VALUE_SET_BOOL(instance, true);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
+
+/* A test for an object type with pattern properties. */
+static void test_jso_schema_object_pattern_props(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// properties
+	jso_builder_object_add_object_start(&builder, "patternProperties");
+	// number property
+	jso_builder_object_add_object_start(&builder, "^S_");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// street_name property
+	jso_builder_object_add_object_start(&builder, "^I_");
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+	jso_builder_object_end(&builder);
+	// end properties and root object
+	jso_builder_object_end(&builder);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "I_val", 10);
+	jso_builder_object_add_cstr(&builder, "S_val", "Pennsylvania");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "I_val", "10");
+	jso_builder_object_add_cstr(&builder, "S_val", "Pennsylvania");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -434,7 +487,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_number_multiple),
 		cmocka_unit_test(test_jso_schema_number_range),
 		cmocka_unit_test(test_jso_schema_null),
-		cmocka_unit_test(test_jso_schema_object_properties),
+		cmocka_unit_test(test_jso_schema_object_props),
+		cmocka_unit_test(test_jso_schema_object_pattern_props),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

@@ -72,14 +72,14 @@ jso_schema_validation_result jso_schema_validation_object_key(
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->pattern_properties)) {
-		jso_string *key;
-		jso_value *val;
+		jso_string *pkey;
+		jso_value *pval;
 		jso_object *pattern_props
 				= JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->pattern_properties);
-		JSO_OBJECT_FOREACH(pattern_props, key, val)
+		JSO_OBJECT_FOREACH(pattern_props, pkey, pval)
 		{
-			JSO_ASSERT_EQ(JSO_TYPE_P(val), JSO_TYPE_SCHEMA_VALUE);
-			jso_schema_value *schema_value = JSO_SVVAL_P(val);
+			JSO_ASSERT_EQ(JSO_TYPE_P(pval), JSO_TYPE_SCHEMA_VALUE);
+			jso_schema_value *schema_value = JSO_SVVAL_P(pval);
 			jso_re_code *code = JSO_SCHEMA_VALUE_REGEXP_P(schema_value);
 			JSO_ASSERT_NOT_NULL(code);
 			jso_re_match_data *match_data = jso_re_match_data_create(code);
@@ -93,6 +93,7 @@ jso_schema_validation_result jso_schema_validation_object_key(
 			}
 		}
 		JSO_OBJECT_FOREACH_END;
+		JSO_USE(pkey);
 	}
 
 	if (!found && JSO_SCHEMA_KW_IS_SET(objval->additional_properties)
