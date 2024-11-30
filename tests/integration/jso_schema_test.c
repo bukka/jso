@@ -401,7 +401,13 @@ static void test_jso_schema_object_props(void **state)
 
 	jso_value instance;
 
-	// valid
+	// valid with no props
+	jso_builder_object_start(&builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with all props
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "number", 10);
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
@@ -828,6 +834,65 @@ static void test_jso_schema_object_size(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an array type with items. */
+static void test_jso_schema_array_items(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid empty array
+	jso_builder_array_start(&builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with number items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 0);
+	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_add_int(&builder, 2);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_int(&builder, 4);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with one string item between number items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 0);
+	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_add_cstr(&builder, "2");
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_int(&builder, 4);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with empty object
+	jso_builder_object_start(&builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -845,6 +910,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 		cmocka_unit_test(test_jso_schema_object_required_props),
 		cmocka_unit_test(test_jso_schema_object_size),
+		cmocka_unit_test(test_jso_schema_array_items),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
