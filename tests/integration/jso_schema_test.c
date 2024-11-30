@@ -23,6 +23,7 @@
 
 #include "../../src/jso_builder.h"
 #include "../../src/jso_schema.h"
+#include "../../src/schema/jso_schema_error.h"
 #include "../../src/jso.h"
 
 #include <stdarg.h>
@@ -61,7 +62,8 @@
 		fprintf(stderr, "[  ERROR   ] Schema validation valid but expected invalid\n"); \
 	} \
 	assert_int_equal(JSO_SCHEMA_VALIDATION_INVALID, result); \
-	assert_true(jso_schema_error_is_validation(&schema))
+	assert_true(jso_schema_error_is_validation(&schema)); \
+	jso_schema_error_free(&schema)
 
 /* A test for simple boolean value. */
 static void test_jso_schema_boolean(void **state)
@@ -762,6 +764,70 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an object type with size requirements. */
+static void test_jso_schema_object_size(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	jso_builder_object_add_int(&builder, "minProperties", 2);
+	jso_builder_object_add_int(&builder, "maxProperties", 3);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with empty object
+	jso_builder_object_start(&builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with 1 property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "a", 0);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with 2 properties
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "a", 0);
+	jso_builder_object_add_int(&builder, "b", 1);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// // valid with 3 properties
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "a", 0);
+	jso_builder_object_add_int(&builder, "b", 1);
+	jso_builder_object_add_int(&builder, "c", 2);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with 4 properties
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "a", 0);
+	jso_builder_object_add_int(&builder, "b", 1);
+	jso_builder_object_add_int(&builder, "c", 2);
+	jso_builder_object_add_int(&builder, "d", 3);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -778,6 +844,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_additional_props_type),
 		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 		cmocka_unit_test(test_jso_schema_object_required_props),
+		cmocka_unit_test(test_jso_schema_object_size),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
