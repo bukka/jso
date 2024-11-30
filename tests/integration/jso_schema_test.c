@@ -406,6 +406,13 @@ static void test_jso_schema_object_properties(void **state)
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "number", "10");
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
 	JSO_VALUE_SET_INT(instance, 100);
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
@@ -425,7 +432,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_string_with_pattern),
 		cmocka_unit_test(test_jso_schema_integer),
 		cmocka_unit_test(test_jso_schema_number_multiple),
-		cmocka_unit_test(test_jso_schema_number_range), cmocka_unit_test(test_jso_schema_null),
+		cmocka_unit_test(test_jso_schema_number_range),
+		cmocka_unit_test(test_jso_schema_null),
 		cmocka_unit_test(test_jso_schema_object_properties),
 	};
 
