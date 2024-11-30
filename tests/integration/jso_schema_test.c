@@ -407,6 +407,15 @@ static void test_jso_schema_object_props(void **state)
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear(&builder);
 
+	// valid with extra property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	jso_builder_object_add_cstr(&builder, "city", "Prague");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
 	// invalid number type
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "number", "10");
@@ -427,7 +436,6 @@ static void test_jso_schema_object_props(void **state)
 
 	jso_schema_clear(&schema);
 }
-
 
 /* A test for an object type with pattern properties. */
 static void test_jso_schema_object_pattern_props(void **state)
@@ -477,6 +485,125 @@ static void test_jso_schema_object_pattern_props(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an object type with additional properties with false value. */
+static void test_jso_schema_object_additional_props_false(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// properties
+	jso_builder_object_add_object_start(&builder, "properties");
+	// number property
+	jso_builder_object_add_object_start(&builder, "number");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	// street_name property
+	jso_builder_object_add_object_start(&builder, "street_name");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// end properties
+	jso_builder_object_end(&builder);
+	// additional properties
+	jso_builder_object_add_bool(&builder, "additionalProperties", false);
+	// end root
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with extra property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	jso_builder_object_add_cstr(&builder, "city", "Prague");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for an object type with additional properties with type. */
+static void test_jso_schema_object_additional_props_type(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// properties
+	jso_builder_object_add_object_start(&builder, "properties");
+	// number property
+	jso_builder_object_add_object_start(&builder, "number");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	// street_name property
+	jso_builder_object_add_object_start(&builder, "street_name");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// end properties
+	jso_builder_object_end(&builder);
+	// additional properties
+	jso_builder_object_add_object_start(&builder, "additionalProperties");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// end root
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with extra string property
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	jso_builder_object_add_cstr(&builder, "city", "Prague");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with extra property that is not string
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "number", 10);
+	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
+	jso_builder_object_add_int(&builder, "age", 18);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -489,6 +616,8 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_null),
 		cmocka_unit_test(test_jso_schema_object_props),
 		cmocka_unit_test(test_jso_schema_object_pattern_props),
+		cmocka_unit_test(test_jso_schema_object_additional_props_false),
+		cmocka_unit_test(test_jso_schema_object_additional_props_type),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

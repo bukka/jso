@@ -96,14 +96,27 @@ jso_schema_validation_result jso_schema_validation_object_key(
 		JSO_USE(pkey);
 	}
 
-	if (!found && JSO_SCHEMA_KW_IS_SET(objval->additional_properties)
-			&& !JSO_SCHEMA_KEYWORD_DATA_BOOL(objval->additional_properties)) {
-		jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
-		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-				"Object does not allow additional properties but added property with key %s which "
-				"is is not found in properties or matches any pattern property",
-				JSO_STRING_VAL(key));
-		return JSO_SCHEMA_VALIDATION_INVALID;
+	if (!found && JSO_SCHEMA_KW_IS_SET(objval->additional_properties)) {
+		if (JSO_SCHEMA_KEYWORD_TYPE(objval->additional_properties)
+				== JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT) {
+			if (jso_schema_validation_stack_push_basic(stack,
+						JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(objval->additional_properties), pos)
+					== NULL) {
+				return JSO_SCHEMA_VALIDATION_ERROR;
+			}
+		} else {
+			JSO_ASSERT_EQ(JSO_SCHEMA_KEYWORD_TYPE(objval->additional_properties),
+					JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
+			if (!JSO_SCHEMA_KEYWORD_DATA_BOOL(objval->additional_properties)) {
+				jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
+				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+						"Object does not allow additional properties but added property with key "
+						"%s which "
+						"is is not found in properties or matches any pattern property",
+						JSO_STRING_VAL(key));
+				return JSO_SCHEMA_VALIDATION_INVALID;
+			}
+		}
 	}
 
 	return JSO_SCHEMA_VALIDATION_VALID;
