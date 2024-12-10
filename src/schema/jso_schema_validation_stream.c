@@ -198,7 +198,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 					}
 					jso_schema_validation_result_propagate(pos);
 				}
-			} else {
+			} else if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 				pos->validation_result = jso_schema_validation_composition_check(stack, pos);
 				if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 					return JSO_FAILURE;
