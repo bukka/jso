@@ -140,7 +140,7 @@ static jso_schema_value *jso_schema_value_parse_array(
 	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(value);
 
 	JSO_SCHEMA_KW_SET_UNION_EX(schema, data, additionalItems, value, arrval, additional_items,
-			TYPE_BOOLEAN, TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			TYPE_BOOLEAN, TYPE_SCHEMA_OBJECT);
 	JSO_SCHEMA_KW_SET_UNION(
 			schema, data, items, value, arrval, TYPE_SCHEMA_OBJECT, TYPE_ARRAY_OF_SCHEMA_OBJECTS);
 	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, uniqueItems, value, arrval, unique_items);

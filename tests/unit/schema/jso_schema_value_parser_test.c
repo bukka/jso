@@ -2340,7 +2340,7 @@ static void test_jso_schema_value_parse_type_array_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
@@ -2440,7 +2440,7 @@ static void test_jso_schema_value_parse_type_array_when_min_items_setting_fails(
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
@@ -2544,7 +2544,7 @@ static void test_jso_schema_value_parse_type_array_when_max_items_setting_fails(
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
@@ -2637,7 +2637,7 @@ static void test_jso_schema_value_parse_type_array_when_unique_items_setting_fai
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
@@ -2719,7 +2719,7 @@ static void test_jso_schema_value_parse_type_array_when_items_setting_fails(void
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
@@ -2791,7 +2791,7 @@ static void test_jso_schema_value_parse_type_array_when_addition_items_setting_f
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_FAILURE);
 
@@ -3892,7 +3892,7 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_1,
 			JSO_SCHEMA_KEYWORD_TYPE_BOOLEAN);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_union_type_2,
-			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+			JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
 	expect_value(__wrap_jso_schema_keyword_set_union_of_2_types, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set_union_of_2_types, JSO_SUCCESS);
 
