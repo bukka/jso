@@ -893,6 +893,85 @@ static void test_jso_schema_array_items(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an array tuple - items with different types. */
+static void test_jso_schema_array_tuple(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_array_start(&builder, "items");
+	// first item number
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	// second item string
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// third item boolean
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "boolean");
+	jso_builder_object_end(&builder);
+	// end
+	jso_builder_array_end(&builder);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid empty array
+	jso_builder_array_start(&builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with all items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_cstr(&builder, "street");
+	jso_builder_array_add_bool(&builder, true);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with not all items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_cstr(&builder, "street");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with last item type incorrect
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_cstr(&builder, "street");
+	jso_builder_array_add_cstr(&builder, "street2");
+	jso_builder_array_add_bool(&builder, true);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid with first item type incorrect
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_cstr(&builder, "street");
+	jso_builder_array_add_cstr(&builder, "street2");
+	jso_builder_array_add_bool(&builder, true);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -911,6 +990,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_required_props),
 		cmocka_unit_test(test_jso_schema_object_size),
 		cmocka_unit_test(test_jso_schema_array_items),
+		cmocka_unit_test(test_jso_schema_array_tuple),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
