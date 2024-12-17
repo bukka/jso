@@ -1202,6 +1202,57 @@ static void test_jso_schema_array_length(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an array uniqueness. */
+static void test_jso_schema_array_unique(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_bool(&builder, "uniqueItems", true);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid for empty array
+	jso_builder_array_start(&builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// valid with 2 items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_add_int(&builder, 2);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_int(&builder, 4);
+	jso_builder_array_add_int(&builder, 5);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	// invalid for not unique items
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_add_int(&builder, 2);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_int(&builder, 3);
+	jso_builder_array_add_int(&builder, 4);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -1224,6 +1275,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_array_additional_false),
 		cmocka_unit_test(test_jso_schema_array_additional_string),
 		cmocka_unit_test(test_jso_schema_array_length),
+		cmocka_unit_test(test_jso_schema_array_unique),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
