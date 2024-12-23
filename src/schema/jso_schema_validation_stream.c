@@ -161,13 +161,14 @@ JSO_API jso_rc jso_schema_validation_stream_array_append(
 	if (jso_schema_validation_stack_push_separator(stack) == NULL) {
 		return JSO_FAILURE;
 	}
+	jso_schema *schema = stack->root_schema;
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		++pos->count;
 		if (jso_schema_validation_array_append(stack, pos) != JSO_SCHEMA_VALIDATION_VALID) {
-			if (jso_schema_validation_stream_should_terminate(stack->root_schema, pos)) {
+			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
-			jso_schema_validation_result_propagate(pos);
+			jso_schema_validation_result_propagate(schema, pos);
 		}
 	}
 
@@ -199,7 +200,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 						if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 							return JSO_FAILURE;
 						}
-						jso_schema_validation_result_propagate(pos);
+						jso_schema_validation_result_propagate(schema, pos);
 					}
 				} else {
 					pos->validation_result = jso_schema_validation_composition_check(stack, pos);
@@ -222,7 +223,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 				}
 			}
 		}
-		jso_schema_validation_result_propagate(pos);
+		jso_schema_validation_result_propagate(schema, pos);
 	}
 	jso_schema_validation_stack_layer_remove(stack);
 

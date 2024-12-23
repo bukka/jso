@@ -104,6 +104,11 @@ jso_schema_validation_result jso_schema_validation_composition_check(
 	}
 
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
+				stack, pos, &data->typed_of, JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED)
+			== JSO_FAILURE) {
+		return JSO_SCHEMA_VALIDATION_ERROR;
+	}
+	if (jso_schema_validation_composition_push_keyword_schema_objects(
 				stack, pos, &data->all_of, JSO_SCHEMA_VALIDATION_COMPOSITION_ALL)
 			== JSO_FAILURE) {
 		return JSO_SCHEMA_VALIDATION_ERROR;

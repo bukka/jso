@@ -34,9 +34,10 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 	jso_schema_value_common *comval = JSO_SCHEMA_VALUE_DATA_COMMON_P(value);
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->any_of)) {
-		if (!pos->any_of_valid && JSO_ARRAY_LEN(JSO_SCHEMA_KEYWORD_DATA_ARR(comval->any_of)) > 0) {
+		if (!pos->any_of_valid) {
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
+		jso_schema_error_free(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->one_of)) {

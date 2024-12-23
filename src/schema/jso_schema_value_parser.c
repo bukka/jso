@@ -244,14 +244,14 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 {
 	size_t func_count = sizeof(value_parse_funcs) / sizeof(jso_schema_value_parse_type_func);
 	// create array for subschemas
-	jso_schema_array *any_of_arr = jso_schema_array_alloc(func_count);
-	if (any_of_arr == NULL) {
+	jso_schema_array *typed_of_arr = jso_schema_array_alloc(func_count);
+	if (typed_of_arr == NULL) {
 		return NULL;
 	}
 	// create parent common value that will contain subschema for each type
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
 	if (schema_value == NULL) {
-		jso_schema_array_free(any_of_arr);
+		jso_schema_array_free(typed_of_arr);
 		return NULL;
 	}
 	// create anyOf subschemas for each listed type
@@ -259,19 +259,19 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 		jso_schema_value *schema_type_value
 				= value_parse_funcs[i](schema, data, schema_value, false);
 		if (schema_type_value == NULL) {
-			jso_schema_array_free(any_of_arr);
+			jso_schema_array_free(typed_of_arr);
 			jso_schema_value_free(schema_value);
 			return NULL;
 		}
 		if (JSO_SCHEMA_VALUE_IS_NOT_EMPTY_P(schema_type_value)) {
-			JSO_ASSERT_EQ(jso_schema_array_append(any_of_arr, schema_type_value), JSO_SUCCESS);
+			JSO_ASSERT_EQ(jso_schema_array_append(typed_of_arr, schema_type_value), JSO_SUCCESS);
 		}
 	}
 
-	// save subschema to the any value
-	jso_schema_keyword *any_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->any_of;
-	JSO_SCHEMA_KEYWORD_FLAGS_P(any_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
-	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(any_of_kw) = any_of_arr;
+	// save subschema to the typed_of value
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->typed_of;
+	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;
 
 	return schema_value;
 }
@@ -299,15 +299,15 @@ jso_schema_value *jso_schema_value_parse(
 	}
 
 	// create array for subschemas
-	jso_schema_array *any_of_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
-	if (any_of_arr == NULL) {
+	jso_schema_array *typed_of_arr = jso_schema_array_alloc(JSO_ARRAY_LEN(arr));
+	if (typed_of_arr == NULL) {
 		return NULL;
 	}
 
 	// create parent common value that will contain subschema for each type
 	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
 	if (schema_value == NULL) {
-		jso_schema_array_free(any_of_arr);
+		jso_schema_array_free(typed_of_arr);
 		return NULL;
 	}
 
@@ -319,18 +319,18 @@ jso_schema_value *jso_schema_value_parse(
 		jso_schema_value *schema_type_value = jso_schema_value_parse_by_string_type(
 				schema, data, schema_value, JSO_STR_P(item), false);
 		if (schema_type_value == NULL) {
-			jso_schema_array_free(any_of_arr);
+			jso_schema_array_free(typed_of_arr);
 			jso_schema_value_free(schema_value);
 			return NULL;
 		}
-		jso_schema_array_append(any_of_arr, schema_type_value);
+		jso_schema_array_append(typed_of_arr, schema_type_value);
 	}
 	JSO_ARRAY_FOREACH_END;
 
-	// save subschema to the
-	jso_schema_keyword *any_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->any_of;
-	JSO_SCHEMA_KEYWORD_FLAGS_P(any_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
-	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(any_of_kw) = any_of_arr;
+	// save subschema to the typed of virtual keyword
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->typed_of;
+	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;
 
 	return schema_value;
 }

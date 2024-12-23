@@ -460,6 +460,8 @@ typedef struct _jso_schema_keyword {
 	jso_schema_keyword ref; \
 	/** enum keyword */ \
 	jso_schema_keyword enum_elements; \
+	/** multiple type virtual composition keyword */ \
+	jso_schema_keyword typed_of; \
 	/** allOf keyword */ \
 	jso_schema_keyword all_of; \
 	/** anyOf keyword */ \
@@ -1092,6 +1094,7 @@ typedef enum _jso_schema_validation_result {
  */
 typedef enum _jso_schema_validation_composition_type {
 	JSO_SCHEMA_VALIDATION_COMPOSITION_NONE = 0,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ALL,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ANY,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ONE,

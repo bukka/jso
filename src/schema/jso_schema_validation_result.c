@@ -24,8 +24,9 @@
 #include "jso_schema_validation_result.h"
 
 #include "jso.h"
+#include "jso_schema_error.h"
 
-void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
+void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_validation_position *pos)
 {
 	jso_schema_validation_position *parent_pos = pos->parent;
 	if (parent_pos == NULL) {
@@ -44,6 +45,16 @@ void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 		switch (pos->composition_type) {
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_REF:
 				jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
+				break;
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED:
+				// Typed composition ignores failures for invalid type because it is not applicable
+				if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
+					if (JSO_SCHEMA_ERROR_TYPE(schema) == JSO_SCHEMA_ERROR_VALIDATION_TYPE) {
+						jso_schema_error_free(schema);
+					} else {
+						jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
+					}
+				}
 				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ALL:
 				if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
@@ -71,7 +82,7 @@ void jso_schema_validation_result_propagate(jso_schema_validation_position *pos)
 					jso_schema_validation_set_final_result(
 							parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 				} else {
-					jso_schema_validation_set_final_result(parent_pos, JSO_SCHEMA_VALIDATION_VALID);
+					jso_schema_error_free(schema);
 				}
 				break;
 		}

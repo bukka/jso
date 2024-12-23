@@ -31,7 +31,8 @@
 
 #include "jso_schema.h"
 
-void jso_schema_validation_result_propagate(jso_schema_validation_position *pos);
+void jso_schema_validation_result_propagate(
+		jso_schema *schema, jso_schema_validation_position *pos);
 
 static inline void jso_schema_validation_set_final_result(
 		jso_schema_validation_position *pos, jso_schema_validation_result result)
