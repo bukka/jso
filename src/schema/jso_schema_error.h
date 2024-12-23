@@ -40,4 +40,9 @@ jso_rc jso_schema_error_format(
 
 void jso_schema_error_free(jso_schema *schema);
 
+static inline void jso_schema_error_reset(jso_schema *schema)
+{
+	JSO_SCHEMA_ERROR_TYPE(schema) = JSO_SCHEMA_ERROR_NONE;
+}
+
 #endif /* JSO_SCHEMA_ERROR_H */

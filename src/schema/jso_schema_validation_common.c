@@ -35,15 +35,20 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->any_of)) {
 		if (!pos->any_of_valid) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
+					"No anyOf subschema was valid");
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
-		jso_schema_error_free(schema);
+		jso_schema_error_reset(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->one_of)) {
 		if (!pos->one_of_valid) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
+					"No oneOf subschema was valid");
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
+		jso_schema_error_reset(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->enum_elements)) {

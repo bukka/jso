@@ -30,14 +30,18 @@
 
 jso_rc jso_schema_error_set(jso_schema *schema, jso_schema_error_type type, const char *message)
 {
-	size_t message_len = strlen(message);
-	char *new_message = jso_malloc(message_len + 1);
-	if (new_message == NULL) {
-		return JSO_FAILURE;
-	}
-	memcpy(new_message, message, message_len + 1);
+	size_t message_len = strlen(message) + 1;
+	JSO_ASSERT_LE(message_len, JSO_SCHEMA_ERROR_FORMAT_SIZE);
 
-	JSO_SCHEMA_ERROR_MESSAGE(schema) = new_message;
+	if (JSO_SCHEMA_ERROR_MESSAGE(schema) == NULL) {
+		char *new_message = jso_malloc(JSO_SCHEMA_ERROR_FORMAT_SIZE + 1);
+		if (new_message == NULL) {
+			return JSO_FAILURE;
+		}
+		JSO_SCHEMA_ERROR_MESSAGE(schema) = new_message;
+	}
+
+	memcpy(JSO_SCHEMA_ERROR_MESSAGE(schema), message, message_len);
 	JSO_SCHEMA_ERROR_TYPE(schema) = type;
 
 	return JSO_SUCCESS;
@@ -66,9 +70,9 @@ jso_rc jso_schema_error_format(
 
 void jso_schema_error_free(jso_schema *schema)
 {
-	if (schema->error.message) {
-		jso_free(schema->error.message);
-		schema->error.message = NULL;
+	if (JSO_SCHEMA_ERROR_MESSAGE(schema)) {
+		jso_free(JSO_SCHEMA_ERROR_MESSAGE(schema));
+		JSO_SCHEMA_ERROR_MESSAGE(schema) = NULL;
 	}
-	schema->error.type = JSO_SCHEMA_ERROR_NONE;
+	jso_schema_error_reset(schema);
 }
