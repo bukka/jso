@@ -213,15 +213,16 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 	jso_schema_validation_stack_layer_reverse_iterator_start(stack, &iterator);
 	while ((pos = jso_schema_validation_stack_layer_reverse_iterator_next(stack, &iterator))) {
 		if (!pos->is_final_validation_result) {
-			jso_schema_value *value = pos->current_value;
-			if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
-				pos->validation_result = jso_schema_validation_value(schema, value, instance);
+			if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
+					&& (pos->composition_type != JSO_SCHEMA_VALIDATION_COMPOSITION_ANY
+							|| !pos->parent->any_of_valid)) {
+				pos->validation_result = jso_schema_validation_value(schema, pos, instance);
 				if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 					return JSO_FAILURE;
 				}
 			}
-			jso_schema_validation_result_propagate(pos);
 		}
+		jso_schema_validation_result_propagate(pos);
 	}
 	jso_schema_validation_stack_layer_remove(stack);
 

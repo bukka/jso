@@ -35,6 +35,6 @@ typedef jso_schema_validation_result (*jso_schema_validation_value_callback)(
 		jso_schema *schema, jso_schema_value *value, jso_value *instance);
 
 jso_schema_validation_result jso_schema_validation_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance);
+		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_VALUE_H */

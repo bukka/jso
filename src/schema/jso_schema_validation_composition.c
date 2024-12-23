@@ -26,8 +26,8 @@
 
 #include "jso_schema_array.h"
 #include "jso_schema_keyword.h"
+#include "jso_schema_error.h"
 #include "jso_schema_reference.h"
-#include "jso_schema_value.h"
 
 #include "jso.h"
 

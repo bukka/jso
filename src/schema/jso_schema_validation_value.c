@@ -22,15 +22,12 @@
  */
 
 #include "jso_schema_validation_array.h"
+#include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_common.h"
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_scalar.h"
 #include "jso_schema_validation_string.h"
 #include "jso_schema_validation_value.h"
-
-#include "jso_schema_error.h"
-#include "jso_schema_keyword.h"
-#include "jso_schema_value.h"
 
 #include "jso.h"
 
@@ -45,19 +42,18 @@ static const jso_schema_validation_value_callback schema_validation_value_callba
 };
 
 jso_schema_validation_result jso_schema_validation_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
 {
-	jso_schema_validation_result result
-			= jso_schema_validation_common_value(schema, value, instance);
+	jso_schema_value *value = pos->current_value;
+	jso_schema_validation_result result = jso_schema_validation_common_value(schema, pos, value, instance);
 	if (result != JSO_SCHEMA_VALIDATION_VALID) {
 		return result;
 	}
 
 	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
 	if (value_type == JSO_SCHEMA_VALUE_TYPE_ANY) {
-		return result;
+		return JSO_SCHEMA_VALIDATION_VALID;
 	}
 
-	return schema_validation_value_callbacks[value_type](
-			schema, value, instance);
+	return schema_validation_value_callbacks[value_type](schema, value, instance);
 }

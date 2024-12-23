@@ -1134,10 +1134,14 @@ struct _jso_schema_validation_position {
 	jso_schema_value *current_value;
 	/** schema object key if object is being processed */
 	jso_string *object_key;
-	/** count of elements for array / object or number of children done in composition */
-	size_t count;
 	/** start of the current layer */
 	size_t layer_start;
+	/** count of elements for array / object */
+	size_t count;
+	/** check whether oneOf composition already valid for one child */
+	jso_bool one_of_valid;
+	/** check whether anyOf composition already valid for one child */
+	jso_bool any_of_valid;
 	/** the position stack depth */
 	jso_uint32 depth;
 };
