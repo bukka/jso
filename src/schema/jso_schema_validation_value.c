@@ -53,6 +53,11 @@ jso_schema_validation_result jso_schema_validation_value(
 		return result;
 	}
 
-	return schema_validation_value_callbacks[JSO_SCHEMA_VALUE_TYPE_P(value)](
+	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
+	if (value_type == JSO_SCHEMA_VALUE_TYPE_ANY) {
+		return result;
+	}
+
+	return schema_validation_value_callbacks[value_type](
 			schema, value, instance);
 }
