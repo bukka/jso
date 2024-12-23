@@ -79,8 +79,10 @@ void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_valid
 				}
 				break;
 			default:
-				JSO_ASSERT_EQ(parent_pos->composition_type, JSO_SCHEMA_VALIDATION_COMPOSITION_NOT);
+				JSO_ASSERT_EQ(pos->composition_type, JSO_SCHEMA_VALIDATION_COMPOSITION_NOT);
 				if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
+					jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
+								"Negated valid validation");
 					jso_schema_validation_set_final_result(
 							parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 				} else {

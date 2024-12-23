@@ -29,61 +29,50 @@ jso_rc jso_schema_validate_instance(jso_schema_validation_stream *stream, jso_va
 {
 	jso_value *val;
 
-	switch (JSO_TYPE_P(instance)) {
-		case JSO_TYPE_ARRAY:
-			if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
+	if (JSO_TYPE_P(instance) == JSO_TYPE_ARRAY) {
+		if (jso_schema_validation_stream_array_start(stream) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+		jso_array *array = JSO_ARRVAL_P(instance);
+		JSO_ARRAY_FOREACH(array, val)
+		{
+			if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			jso_array *array = JSO_ARRVAL_P(instance);
-			JSO_ARRAY_FOREACH(array, val)
-			{
-				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-				if (jso_schema_validation_stream_array_append(stream, array, val) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-			}
-			JSO_ARRAY_FOREACH_END;
-			if (jso_schema_validation_stream_array_end(stream) == JSO_FAILURE) {
+			if (jso_schema_validation_stream_array_append(stream, array, val) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
+		}
+		JSO_ARRAY_FOREACH_END;
+		if (jso_schema_validation_stream_array_end(stream) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+	} else if (JSO_TYPE_P(instance) == JSO_TYPE_OBJECT) {
+		jso_string *key;
+		if (jso_schema_validation_stream_object_start(stream) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+		jso_object *object = JSO_OBJVAL_P(instance);
+		JSO_OBJECT_FOREACH(object, key, val)
+		{
+			if (jso_schema_validation_stream_object_key(stream, key) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			break;
-		case JSO_TYPE_OBJECT: {
-			jso_string *key;
-			if (jso_schema_validation_stream_object_start(stream) == JSO_FAILURE) {
+			if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
-			jso_object *object = JSO_OBJVAL_P(instance);
-			JSO_OBJECT_FOREACH(object, key, val)
-			{
-				if (jso_schema_validation_stream_object_key(stream, key) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-				if (jso_schema_validate_instance(stream, val) == JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-				if (jso_schema_validation_stream_object_update(stream, object, key, val)
-						== JSO_FAILURE) {
-					return JSO_FAILURE;
-				}
-			}
-			JSO_OBJECT_FOREACH_END;
-			if (jso_schema_validation_stream_object_end(stream) == JSO_FAILURE) {
+			if (jso_schema_validation_stream_object_update(stream, object, key, val)
+					== JSO_FAILURE) {
 				return JSO_FAILURE;
-			}
-			if (jso_schema_validation_stream_value(stream, instance) == JSO_FAILURE) {
-				return JSO_FAILURE;
-			}
-		} break;
-		default:
-			return jso_schema_validation_stream_value(stream, instance);
+					}
+		}
+		JSO_OBJECT_FOREACH_END;
+		if (jso_schema_validation_stream_object_end(stream) == JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
 	}
 
-	return JSO_SUCCESS;
+	return jso_schema_validation_stream_value(stream, instance);
 }
 
 JSO_API jso_schema_validation_result jso_schema_validate(jso_schema *schema, jso_value *instance)

@@ -123,38 +123,19 @@ jso_schema_validation_result jso_schema_validation_object_key(
 }
 
 jso_schema_validation_result jso_schema_validation_object_pre_value(
-		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance)
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
-	jso_schema *schema = stack->root_schema;
-
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
 		jso_string *key;
 		jso_value *val;
 		jso_object *dependencies = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->dependencies);
-		jso_object *instance_obj = JSO_OBJVAL_P(instance);
 		jso_schema_validation_stack_mark(stack);
 		JSO_OBJECT_FOREACH(dependencies, key, val)
 		{
-			if (JSO_TYPE_P(val) == JSO_TYPE_ARRAY) {
-				jso_value *item;
-				JSO_ARRAY_FOREACH(JSO_ARRVAL_P(val), item)
-				{
-					JSO_ASSERT_EQ(JSO_TYPE_P(item), JSO_TYPE_STRING);
-					if (!jso_object_has(instance_obj, JSO_STR_P(item))) {
-						jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
-						jso_schema_validation_stack_reset(stack);
-						jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
-								"Object key %s is required by dependency %s but it is not present",
-								JSO_SVAL_P(item), JSO_STRING_VAL(key));
-						return JSO_SCHEMA_VALIDATION_INVALID;
-					}
-				}
-				JSO_ARRAY_FOREACH_END;
-			} else {
-				JSO_ASSERT_EQ(JSO_TYPE_P(val), JSO_TYPE_SCHEMA_VALUE);
+			JSO_USE(key);
+			if (JSO_TYPE_P(val) == JSO_TYPE_SCHEMA_VALUE) {
 				if (jso_schema_validation_stack_push_basic(stack, JSO_SVVAL_P(val), pos) == NULL) {
 					return JSO_SCHEMA_VALIDATION_ERROR;
 				}
@@ -175,6 +156,31 @@ jso_schema_validation_result jso_schema_validation_object_value(
 	}
 
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
+
+	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
+		jso_string *key;
+		jso_value *val;
+		jso_object *dependencies = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->dependencies);
+		jso_object *instance_obj = JSO_OBJVAL_P(instance);
+		JSO_OBJECT_FOREACH(dependencies, key, val)
+		{
+			if (JSO_TYPE_P(val) == JSO_TYPE_ARRAY) {
+				jso_value *item;
+				JSO_ARRAY_FOREACH(JSO_ARRVAL_P(val), item)
+				{
+					JSO_ASSERT_EQ(JSO_TYPE_P(item), JSO_TYPE_STRING);
+					if (!jso_object_has(instance_obj, JSO_STR_P(item))) {
+						jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+								"Object key %s is required by dependency %s but it is not present",
+								JSO_SVAL_P(item), JSO_STRING_VAL(key));
+						return JSO_SCHEMA_VALIDATION_INVALID;
+					}
+				}
+				JSO_ARRAY_FOREACH_END;
+			}
+		}
+		JSO_OBJECT_FOREACH_END;
+	}
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->min_properties)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->min_properties);

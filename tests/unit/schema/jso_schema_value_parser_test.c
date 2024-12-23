@@ -3648,7 +3648,7 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, &any_value);
 
@@ -4089,7 +4089,7 @@ static void test_jso_schema_value_parse_missing_type_when_bool_parsing_fails(voi
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, &any_value);
 
@@ -4177,7 +4177,7 @@ static void test_jso_schema_value_parse_missing_type_when_any_init_fails(void **
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, NULL);
 
@@ -4292,7 +4292,7 @@ static void test_jso_schema_value_parse_array_type_when_all_ok(void **state)
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, &any_value);
 
@@ -4521,7 +4521,7 @@ static void test_jso_schema_value_parse_array_type_when_int_parsing_fails(void *
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, &any_value);
 
@@ -4643,7 +4643,7 @@ static void test_jso_schema_value_parse_array_type_when_any_init_fails(void **st
 	expect_value(__wrap_jso_schema_value_init, parent, &parent);
 	expect_string(__wrap_jso_schema_value_init, type_name, "any");
 	expect_value(__wrap_jso_schema_value_init, value_size, sizeof(jso_schema_value_any));
-	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_ANY);
+	expect_value(__wrap_jso_schema_value_init, value_type, JSO_SCHEMA_VALUE_TYPE_MIXED);
 	expect_value(__wrap_jso_schema_value_init, init_keywords, true);
 	will_return(__wrap_jso_schema_value_init, NULL);
 

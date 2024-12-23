@@ -52,7 +52,7 @@ jso_schema_validation_result jso_schema_validation_value(
 	}
 
 	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
-	if (value_type == JSO_SCHEMA_VALUE_TYPE_ANY) {
+	if (value_type == JSO_SCHEMA_VALUE_TYPE_MIXED) {
 		return JSO_SCHEMA_VALIDATION_VALID;
 	}
 

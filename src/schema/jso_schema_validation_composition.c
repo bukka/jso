@@ -76,7 +76,7 @@ static inline jso_rc jso_schema_validation_composition_push_keyword_schema_objec
 	return JSO_SUCCESS;
 }
 
-jso_schema_validation_result jso_schema_validation_composition_check(
+jso_schema_validation_result jso_schema_validation_composition_push(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
 {
 	jso_schema_value *current_value = pos->current_value;

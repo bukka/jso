@@ -37,4 +37,11 @@ typedef jso_schema_validation_result (*jso_schema_validation_value_callback)(
 jso_schema_validation_result jso_schema_validation_value(
 		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance);
 
+static jso_bool inline jso_schema_value_is_type_of(
+		jso_schema_value *value, jso_schema_value_type type)
+{
+	return JSO_SCHEMA_VALUE_TYPE_P(value) == type
+			|| JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_MIXED;
+}
+
 #endif /* JSO_SCHEMA_VALIDATION_VALUE_H */

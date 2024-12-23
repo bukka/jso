@@ -131,7 +131,7 @@ static const jso_schema_value_free_callback schema_value_free_callbacks[] = {
 
 void jso_schema_value_free(jso_schema_value *val)
 {
-	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_ANY) {
+	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_MIXED) {
 		return;
 	}
 	jso_schema_reference_free(val->ref);

@@ -87,7 +87,7 @@ static void test_jso_schema_value_free_any(void **state)
 
 	jso_schema_value value;
 
-	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_ANY;
+	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_MIXED;
 
 	jso_schema_value_free(&value);
 }

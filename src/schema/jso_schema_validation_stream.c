@@ -66,9 +66,8 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 	jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		jso_schema_value *value = pos->current_value;
-		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
-			pos->validation_result = jso_schema_validation_composition_check(stack, pos);
-			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
+		if (jso_schema_value_is_type_of(value, JSO_SCHEMA_VALUE_TYPE_OBJECT)) {
+			if (jso_schema_validation_composition_check(stack, pos) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 		} else {
@@ -127,23 +126,36 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 	jso_schema *schema = stack->root_schema;
 
 	jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
-	if (jso_schema_validation_stack_push_separator(stack) == NULL) {
-		return JSO_FAILURE;
-	}
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		jso_schema_value *value = pos->current_value;
-		if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_ARRAY) {
-			pos->validation_result = jso_schema_validation_composition_check(stack, pos);
-			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
-				return JSO_FAILURE;
-			}
-			jso_schema_validation_result result = jso_schema_validation_array_start(stack, pos);
-			if (result == JSO_SCHEMA_VALIDATION_ERROR) {
+		if (jso_schema_value_is_type_of(value, JSO_SCHEMA_VALUE_TYPE_ARRAY)) {
+			if (jso_schema_validation_composition_check(stack, pos) == JSO_FAILURE) {
 				return JSO_FAILURE;
 			}
 		} else {
 			pos->validation_result = jso_schema_validation_value_type_error(
 					schema, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
+			jso_schema_validation_result_propagate(schema, pos);
+		}
+	}
+
+	jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
+	if (jso_schema_validation_stack_push_separator(stack) == NULL) {
+		return JSO_FAILURE;
+	}
+	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
+		if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
+			jso_schema_value *value = pos->current_value;
+			if (JSO_SCHEMA_VALUE_TYPE_P(value) == JSO_SCHEMA_VALUE_TYPE_ARRAY) {
+				jso_schema_validation_result result = jso_schema_validation_array_start(stack, pos);
+				if (result == JSO_SCHEMA_VALIDATION_ERROR) {
+					return JSO_FAILURE;
+				}
+			} else if (JSO_SCHEMA_VALUE_TYPE_P(value) != JSO_SCHEMA_VALUE_TYPE_MIXED) {
+				pos->validation_result = jso_schema_validation_value_type_error(
+						schema, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
+				jso_schema_validation_result_propagate(schema, pos);
+			}
 		}
 	}
 
@@ -195,18 +207,15 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 		while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 			if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 				if (instance_type == JSO_TYPE_OBJECT) {
-					if (jso_schema_validation_object_pre_value(stack, pos, instance)
+					if (jso_schema_validation_object_pre_value(stack, pos)
 							!= JSO_SCHEMA_VALIDATION_VALID) {
 						if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 							return JSO_FAILURE;
 						}
 						jso_schema_validation_result_propagate(schema, pos);
 					}
-				} else {
-					pos->validation_result = jso_schema_validation_composition_check(stack, pos);
-					if (jso_schema_validation_stream_should_terminate(schema, pos)) {
-						return JSO_FAILURE;
-					}
+				} else if (jso_schema_validation_composition_check(stack, pos) == JSO_FAILURE) {
+					return JSO_FAILURE;
 				}
 			}
 		}

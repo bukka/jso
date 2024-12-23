@@ -595,7 +595,7 @@ typedef struct _jso_schema_value_object {
  */
 typedef enum {
 	/** any value type */
-	JSO_SCHEMA_VALUE_TYPE_ANY = 0,
+	JSO_SCHEMA_VALUE_TYPE_MIXED = 0,
 	/** null value type */
 	JSO_SCHEMA_VALUE_TYPE_NULL,
 	/** boolean value type */

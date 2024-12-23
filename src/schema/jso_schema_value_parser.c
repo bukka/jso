@@ -30,10 +30,10 @@
 
 #include "jso.h"
 
-static jso_schema_value *jso_schema_value_parse_any(
+static jso_schema_value *jso_schema_value_parse_mixed(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
-	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, any, TYPE_ANY, true);
+	return JSO_SCHEMA_VALUE_INIT(schema, data, parent, any, TYPE_MIXED, true);
 }
 
 static jso_schema_value *jso_schema_value_parse_null(
@@ -239,7 +239,7 @@ static jso_schema_value *jso_schema_value_parse_by_string_type(jso_schema *schem
 	return NULL;
 }
 
-static jso_schema_value *jso_schema_value_parse_any_type(
+static jso_schema_value *jso_schema_value_parse_mixed_type(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
 	size_t func_count = sizeof(value_parse_funcs) / sizeof(jso_schema_value_parse_type_func);
@@ -249,7 +249,7 @@ static jso_schema_value *jso_schema_value_parse_any_type(
 		return NULL;
 	}
 	// create parent common value that will contain subschema for each type
-	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
+	jso_schema_value *schema_value = jso_schema_value_parse_mixed(schema, data, parent);
 	if (schema_value == NULL) {
 		jso_schema_array_free(typed_of_arr);
 		return NULL;
@@ -282,7 +282,7 @@ jso_schema_value *jso_schema_value_parse(
 	jso_value *val = jso_schema_data_get_value_fast(schema, data, "type", 0);
 
 	if (val == NULL) {
-		return jso_schema_value_parse_any_type(schema, data, parent);
+		return jso_schema_value_parse_mixed_type(schema, data, parent);
 	} else if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
 		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val), true);
 	}
@@ -305,7 +305,7 @@ jso_schema_value *jso_schema_value_parse(
 	}
 
 	// create parent common value that will contain subschema for each type
-	jso_schema_value *schema_value = jso_schema_value_parse_any(schema, data, parent);
+	jso_schema_value *schema_value = jso_schema_value_parse_mixed(schema, data, parent);
 	if (schema_value == NULL) {
 		jso_schema_array_free(typed_of_arr);
 		return NULL;

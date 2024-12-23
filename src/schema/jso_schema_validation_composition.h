@@ -29,9 +29,20 @@
 #ifndef JSO_SCHEMA_VALIDATION_COMPOSITION_H
 #define JSO_SCHEMA_VALIDATION_COMPOSITION_H
 
+#include "jso_schema_validation_stream.h"
 #include "jso_schema.h"
 
-jso_schema_validation_result jso_schema_validation_composition_check(
+jso_schema_validation_result jso_schema_validation_composition_push(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
+
+static inline jso_rc jso_schema_validation_composition_check(
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos)
+{
+	pos->validation_result = jso_schema_validation_composition_push(stack, pos);
+	if (jso_schema_validation_stream_should_terminate(stack->root_schema, pos)) {
+		return JSO_FAILURE;
+	}
+	return JSO_SUCCESS;
+}
 
 #endif /* JSO_SCHEMA_VALIDATION_COMPOSITION_H */
