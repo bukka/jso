@@ -254,7 +254,7 @@ static jso_schema_value *jso_schema_value_parse_mixed_type(
 		jso_schema_array_free(typed_of_arr);
 		return NULL;
 	}
-	// create anyOf subschemas for each listed type
+	// create virtual typed subschemas for each listed type
 	for (int i = 0; i < func_count; i++) {
 		jso_schema_value *schema_type_value
 				= value_parse_funcs[i](schema, data, schema_value, false);
@@ -265,12 +265,15 @@ static jso_schema_value *jso_schema_value_parse_mixed_type(
 		}
 		if (JSO_SCHEMA_VALUE_IS_NOT_EMPTY_P(schema_type_value)) {
 			JSO_ASSERT_EQ(jso_schema_array_append(typed_of_arr, schema_type_value), JSO_SUCCESS);
+		} else {
+			jso_schema_value_free(schema_type_value);
 		}
 	}
 
 	// save subschema to the typed_of value
 	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->typed_of;
 	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;
 
 	return schema_value;
@@ -330,6 +333,7 @@ jso_schema_value *jso_schema_value_parse(
 	// save subschema to the typed of virtual keyword
 	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->typed_of;
 	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+	JSO_SCHEMA_KEYWORD_TYPE_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;
 
 	return schema_value;

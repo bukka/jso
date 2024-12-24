@@ -220,8 +220,7 @@ static void test_jso_builder_object(void **state)
 	assert_int_equal(JSO_TYPE_ARRAY, JSO_TYPE_P(inner_item));
 	assert_int_equal(0, JSO_ARRAY_LEN(JSO_ARRVAL_P(inner_item)));
 
-	jso_value_free(value);
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 }
 
 int main(void)

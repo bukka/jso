@@ -93,7 +93,8 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 	}
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		++pos->count;
-		if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
+		if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
+				&& JSO_SCHEMA_VALUE_TYPE_P(pos->current_value) == JSO_SCHEMA_VALUE_TYPE_OBJECT) {
 			pos->validation_result = jso_schema_validation_object_key(stack, pos, key);
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
@@ -176,7 +177,8 @@ JSO_API jso_rc jso_schema_validation_stream_array_append(
 	jso_schema *schema = stack->root_schema;
 	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 		++pos->count;
-		if (jso_schema_validation_array_append(stack, pos) != JSO_SCHEMA_VALIDATION_VALID) {
+		if (JSO_SCHEMA_VALUE_TYPE_P(pos->current_value) == JSO_SCHEMA_VALUE_TYPE_ARRAY
+				&& jso_schema_validation_array_append(stack, pos) != JSO_SCHEMA_VALIDATION_VALID) {
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}

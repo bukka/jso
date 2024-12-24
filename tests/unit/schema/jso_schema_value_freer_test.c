@@ -72,6 +72,7 @@ static void jso_test_expect_free_common(jso_schema_value_common *value)
 	JSO_TEST_SCHEMA_FREE_KW(value, default_value);
 	JSO_TEST_SCHEMA_FREE_KW(value, title);
 	JSO_TEST_SCHEMA_FREE_KW(value, description);
+	JSO_TEST_SCHEMA_FREE_KW(value, typed_of);
 	JSO_TEST_SCHEMA_FREE_KW(value, all_of);
 	JSO_TEST_SCHEMA_FREE_KW(value, any_of);
 	JSO_TEST_SCHEMA_FREE_KW(value, one_of);
@@ -81,19 +82,31 @@ static void jso_test_expect_free_common(jso_schema_value_common *value)
 }
 
 /* Test freeing any value. */
-static void test_jso_schema_value_free_any(void **state)
+static void test_jso_schema_value_clear_mixed(void **state)
 {
 	(void) state; /* unused */
 
 	jso_schema_value value;
 
+
+	jso_schema_value_common *comval = jso_calloc(1, sizeof(jso_schema_value_common));
+	value.data.comval = comval;
+
 	JSO_SCHEMA_VALUE_TYPE(value) = JSO_SCHEMA_VALUE_TYPE_MIXED;
 
-	jso_schema_value_free(&value);
+	expect_function_call(__wrap_jso_schema_reference_free);
+	expect_value(__wrap_jso_schema_reference_free, ref, value.ref);
+
+	expect_function_call(__wrap_jso_schema_uri_clear);
+	expect_value(__wrap_jso_schema_uri_clear, uri, &value.base_uri);
+
+	jso_test_expect_free_common(comval);
+
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing null value. */
-static void test_jso_schema_value_free_null(void **state)
+static void test_jso_schema_value_clear_null(void **state)
 {
 	(void) state; /* unused */
 
@@ -111,11 +124,11 @@ static void test_jso_schema_value_free_null(void **state)
 
 	jso_test_expect_free_common((jso_schema_value_common *) nulval);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing boolean value. */
-static void test_jso_schema_value_free_boolean(void **state)
+static void test_jso_schema_value_clear_boolean(void **state)
 {
 	(void) state; /* unused */
 
@@ -133,11 +146,11 @@ static void test_jso_schema_value_free_boolean(void **state)
 
 	jso_test_expect_free_common((jso_schema_value_common *) boolval);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing integer value. */
-static void test_jso_schema_value_free_integer(void **state)
+static void test_jso_schema_value_clear_integer(void **state)
 {
 	(void) state; /* unused */
 
@@ -160,11 +173,11 @@ static void test_jso_schema_value_free_integer(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(intval, minimum);
 	JSO_TEST_SCHEMA_FREE_KW(intval, multiple_of);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing string value. */
-static void test_jso_schema_value_free_string(void **state)
+static void test_jso_schema_value_clear_string(void **state)
 {
 	(void) state; /* unused */
 
@@ -185,11 +198,11 @@ static void test_jso_schema_value_free_string(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(strval, max_length);
 	JSO_TEST_SCHEMA_FREE_KW(strval, pattern);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing array value. */
-static void test_jso_schema_value_free_array(void **state)
+static void test_jso_schema_value_clear_array(void **state)
 {
 	(void) state; /* unused */
 
@@ -212,11 +225,11 @@ static void test_jso_schema_value_free_array(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(arrval, min_items);
 	JSO_TEST_SCHEMA_FREE_KW(arrval, unique_items);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 /* Test freeing object value. */
-static void test_jso_schema_value_free_object(void **state)
+static void test_jso_schema_value_clear_object(void **state)
 {
 	(void) state; /* unused */
 
@@ -241,19 +254,19 @@ static void test_jso_schema_value_free_object(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(objval, pattern_properties);
 	JSO_TEST_SCHEMA_FREE_KW(objval, dependencies);
 
-	jso_schema_value_free(&value);
+	jso_schema_value_clear(&value);
 }
 
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(test_jso_schema_value_free_any),
-		cmocka_unit_test(test_jso_schema_value_free_null),
-		cmocka_unit_test(test_jso_schema_value_free_boolean),
-		cmocka_unit_test(test_jso_schema_value_free_integer),
-		cmocka_unit_test(test_jso_schema_value_free_string),
-		cmocka_unit_test(test_jso_schema_value_free_array),
-		cmocka_unit_test(test_jso_schema_value_free_object),
+		cmocka_unit_test(test_jso_schema_value_clear_mixed),
+		cmocka_unit_test(test_jso_schema_value_clear_null),
+		cmocka_unit_test(test_jso_schema_value_clear_boolean),
+		cmocka_unit_test(test_jso_schema_value_clear_integer),
+		cmocka_unit_test(test_jso_schema_value_clear_string),
+		cmocka_unit_test(test_jso_schema_value_clear_array),
+		cmocka_unit_test(test_jso_schema_value_clear_object),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

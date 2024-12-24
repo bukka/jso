@@ -82,7 +82,7 @@ static void test_jso_schema_boolean(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -116,7 +116,7 @@ static void test_jso_schema_string_with_lengths(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -162,7 +162,7 @@ static void test_jso_schema_string_with_pattern(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -208,7 +208,7 @@ static void test_jso_schema_integer(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -256,7 +256,7 @@ static void test_jso_schema_number_multiple(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -304,7 +304,7 @@ static void test_jso_schema_number_range(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -349,7 +349,7 @@ static void test_jso_schema_null(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -397,7 +397,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -405,7 +405,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_builder_object_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all props
 	jso_builder_object_start(&builder);
@@ -413,7 +413,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with extra property
 	jso_builder_object_start(&builder);
@@ -422,7 +422,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_builder_object_add_cstr(&builder, "city", "Prague");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid number type
 	jso_builder_object_start(&builder);
@@ -430,7 +430,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// not an object
 	JSO_VALUE_SET_INT(instance, 100);
@@ -474,21 +474,21 @@ static void test_jso_schema_object_pattern_props(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "I_val", 10);
 	jso_builder_object_add_cstr(&builder, "S_val", "Pennsylvania");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "I_val", "10");
 	jso_builder_object_add_cstr(&builder, "S_val", "Pennsylvania");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -525,7 +525,7 @@ static void test_jso_schema_object_additional_props_false(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid
 	jso_builder_object_start(&builder);
@@ -533,7 +533,7 @@ static void test_jso_schema_object_additional_props_false(void **state)
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with extra property
 	jso_builder_object_start(&builder);
@@ -542,7 +542,7 @@ static void test_jso_schema_object_additional_props_false(void **state)
 	jso_builder_object_add_cstr(&builder, "city", "Prague");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -581,7 +581,7 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid
 	jso_builder_object_start(&builder);
@@ -589,7 +589,7 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_builder_object_add_cstr(&builder, "street_name", "Pennsylvania");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with extra string property
 	jso_builder_object_start(&builder);
@@ -598,7 +598,7 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_builder_object_add_cstr(&builder, "city", "Prague");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with extra property that is not string
 	jso_builder_object_start(&builder);
@@ -607,7 +607,7 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_builder_object_add_int(&builder, "age", 18);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -654,35 +654,35 @@ static void test_jso_schema_object_all_props_non_overlap(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with property
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "builtin", 10);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with pattern property
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "I_val", 10);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with extra string property
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "keyword", "value");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with extra property that is not string
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "keyword", 10);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -730,7 +730,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all required properties
 	jso_builder_object_start(&builder);
@@ -738,7 +738,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_builder_object_add_cstr(&builder, "email", "bill@stratford-upon-avon.co.uk");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all required and extra properties
 	jso_builder_object_start(&builder);
@@ -748,7 +748,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_builder_object_add_cstr(&builder, "authorship", "in question");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with missing email
 	jso_builder_object_start(&builder);
@@ -756,7 +756,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_builder_object_add_cstr(&builder, "address", "Henley Street, Stratford-upon-Avon");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with null email
 	jso_builder_object_start(&builder);
@@ -765,7 +765,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_builder_object_add_null(&builder, "email");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -789,20 +789,20 @@ static void test_jso_schema_object_size(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with empty object
 	jso_builder_object_start(&builder);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with 1 property
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "a", 0);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with 2 properties
 	jso_builder_object_start(&builder);
@@ -810,7 +810,7 @@ static void test_jso_schema_object_size(void **state)
 	jso_builder_object_add_int(&builder, "b", 1);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// // valid with 3 properties
 	jso_builder_object_start(&builder);
@@ -819,7 +819,7 @@ static void test_jso_schema_object_size(void **state)
 	jso_builder_object_add_int(&builder, "c", 2);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with 4 properties
 	jso_builder_object_start(&builder);
@@ -829,7 +829,7 @@ static void test_jso_schema_object_size(void **state)
 	jso_builder_object_add_int(&builder, "d", 3);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -854,13 +854,13 @@ static void test_jso_schema_array_items(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with number items
 	jso_builder_array_start(&builder);
@@ -871,7 +871,7 @@ static void test_jso_schema_array_items(void **state)
 	jso_builder_array_add_int(&builder, 4);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with one string item between number items
 	jso_builder_array_start(&builder);
@@ -882,13 +882,13 @@ static void test_jso_schema_array_items(void **state)
 	jso_builder_array_add_int(&builder, 4);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with empty object
 	jso_builder_object_start(&builder);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -925,13 +925,13 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all items
 	jso_builder_array_start(&builder);
@@ -940,7 +940,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with not all items
 	jso_builder_array_start(&builder);
@@ -948,7 +948,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_array_add_cstr(&builder, "street");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with more items
 	jso_builder_array_start(&builder);
@@ -958,7 +958,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_array_add_cstr(&builder, "street");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with last item type incorrect
 	jso_builder_array_start(&builder);
@@ -968,7 +968,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with first item type incorrect
 	jso_builder_array_start(&builder);
@@ -977,7 +977,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1015,13 +1015,13 @@ static void test_jso_schema_array_additional_false(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all items
 	jso_builder_array_start(&builder);
@@ -1030,7 +1030,7 @@ static void test_jso_schema_array_additional_false(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with not all items
 	jso_builder_array_start(&builder);
@@ -1038,7 +1038,7 @@ static void test_jso_schema_array_additional_false(void **state)
 	jso_builder_array_add_cstr(&builder, "street");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with more items
 	jso_builder_array_start(&builder);
@@ -1048,7 +1048,7 @@ static void test_jso_schema_array_additional_false(void **state)
 	jso_builder_array_add_cstr(&builder, "street");
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1089,13 +1089,13 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with all items
 	jso_builder_array_start(&builder);
@@ -1104,7 +1104,7 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with not all items
 	jso_builder_array_start(&builder);
@@ -1112,7 +1112,7 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_builder_array_add_cstr(&builder, "street");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with more string items
 	jso_builder_array_start(&builder);
@@ -1123,7 +1123,7 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_builder_array_add_cstr(&builder, "street3");
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with more items where there is not only string
 	jso_builder_array_start(&builder);
@@ -1133,7 +1133,7 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_builder_array_add_bool(&builder, true);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1157,20 +1157,20 @@ static void test_jso_schema_array_length(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with 0 items
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with 1 item
 	jso_builder_array_start(&builder);
 	jso_builder_array_add_int(&builder, 1);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with 2 items
 	jso_builder_array_start(&builder);
@@ -1178,7 +1178,7 @@ static void test_jso_schema_array_length(void **state)
 	jso_builder_array_add_int(&builder, 2);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with 3 items
 	jso_builder_array_start(&builder);
@@ -1187,7 +1187,7 @@ static void test_jso_schema_array_length(void **state)
 	jso_builder_array_add_int(&builder, 3);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid with 4 item
 	jso_builder_array_start(&builder);
@@ -1197,7 +1197,7 @@ static void test_jso_schema_array_length(void **state)
 	jso_builder_array_add_int(&builder, 4);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1220,13 +1220,13 @@ static void test_jso_schema_array_unique(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid for empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid with 2 items
 	jso_builder_array_start(&builder);
@@ -1237,7 +1237,7 @@ static void test_jso_schema_array_unique(void **state)
 	jso_builder_array_add_int(&builder, 5);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// invalid for not unique items
 	jso_builder_array_start(&builder);
@@ -1248,7 +1248,7 @@ static void test_jso_schema_array_unique(void **state)
 	jso_builder_array_add_int(&builder, 4);
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1273,7 +1273,7 @@ static void test_jso_schema_enum_anytype_strings(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -1322,7 +1322,7 @@ static void test_jso_schema_enum_anytype_mixed(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -1374,7 +1374,7 @@ static void test_jso_schema_all_of_basic(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -1414,7 +1414,7 @@ static void test_jso_schema_all_of_illogical(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -1455,7 +1455,7 @@ static void test_jso_schema_any_of_basic(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 	jso_string *sv;
@@ -1505,7 +1505,7 @@ static void test_jso_schema_one_of_basic(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -1547,7 +1547,7 @@ static void test_jso_schema_one_of_factored(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	jso_value instance;
 
@@ -1587,27 +1587,28 @@ static void test_jso_schema_not_basic(void **state)
 	jso_schema schema;
 	jso_schema_init(&schema);
 	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid for empty array
 	jso_builder_array_start(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid for array
 	jso_builder_array_start(&builder);
 	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_end(&builder);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid for object
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_int(&builder, "val", 1);
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
-	jso_builder_clear(&builder);
+	jso_builder_clear_all(&builder);
 
 	// valid for number
 	jso_value instance;

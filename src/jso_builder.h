@@ -70,6 +70,13 @@ void jso_builder_init(jso_builder *builder);
 void jso_builder_clear(jso_builder *builder);
 
 /**
+ * Clear and free all builder values included the built value.
+ *
+ * @param builder builder handle
+ */
+void jso_builder_clear_all(jso_builder *builder);
+
+/**
  * Start array.
  *
  * This can be called only after initializing the builder when no

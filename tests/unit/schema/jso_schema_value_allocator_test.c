@@ -45,7 +45,7 @@ static void test_jso_schema_value_allocate(void **state)
 
 	assert_non_null(value);
 
-	jso_schema_value_free(value);
+	jso_free(value);
 }
 
 /* Tests for jso_schema_value_allocate. */

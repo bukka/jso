@@ -102,6 +102,12 @@ void jso_builder_clear(jso_builder *builder)
 	jso_builder_init(builder);
 }
 
+void jso_builder_clear_all(jso_builder *builder)
+{
+	jso_value_free(jso_builder_get_value(builder));
+	jso_builder_clear(builder);
+}
+
 jso_rc jso_builder_array_start(jso_builder *builder)
 {
 	if (jso_builder_start(builder) == JSO_FAILURE

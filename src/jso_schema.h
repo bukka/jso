@@ -1044,6 +1044,13 @@ JSO_API void jso_schema_clear(jso_schema *schema);
 JSO_API void jso_schema_free(jso_schema *schema);
 
 /**
+ * Clear schema value.
+ *
+ * @param val scheam value
+ */
+JSO_API void jso_schema_value_clear(jso_schema_value *val);
+
+/**
  * Free schema value.
  *
  * @param val scheam value

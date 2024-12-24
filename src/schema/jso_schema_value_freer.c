@@ -39,6 +39,7 @@ static void jso_schema_value_free_common(jso_schema_value *val)
 	jso_schema_keyword_free(&comval->default_value);
 	jso_schema_keyword_free(&comval->title);
 	jso_schema_keyword_free(&comval->description);
+	jso_schema_keyword_free(&comval->typed_of);
 	jso_schema_keyword_free(&comval->all_of);
 	jso_schema_keyword_free(&comval->any_of);
 	jso_schema_keyword_free(&comval->one_of);
@@ -129,14 +130,24 @@ static const jso_schema_value_free_callback schema_value_free_callbacks[] = {
 	[JSO_SCHEMA_VALUE_TYPE_OBJECT] = jso_schema_value_free_object,
 };
 
-void jso_schema_value_free(jso_schema_value *val)
+void jso_schema_value_clear(jso_schema_value *val)
 {
-	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_MIXED) {
+	if (val == NULL) {
 		return;
 	}
 	jso_schema_reference_free(val->ref);
 	jso_schema_uri_clear(&val->base_uri);
 	jso_schema_value_free_common(val);
-	schema_value_free_callbacks[JSO_SCHEMA_VALUE_TYPE_P(val)](val);
-	JSO_SCHEMA_VALUE_TYPE_P(val) = 0;
+	if (JSO_SCHEMA_VALUE_TYPE_P(val) != JSO_SCHEMA_VALUE_TYPE_MIXED) {
+		schema_value_free_callbacks[JSO_SCHEMA_VALUE_TYPE_P(val)](val);
+		JSO_SCHEMA_VALUE_TYPE_P(val) = 0;
+	} else {
+		jso_free(JSO_SCHEMA_VALUE_DATA_COMMON_P(val));
+	}
+}
+
+void jso_schema_value_free(jso_schema_value *val)
+{
+	jso_schema_value_clear(val);
+	jso_free(val);
 }
