@@ -1392,6 +1392,45 @@ static void test_jso_schema_all_of_basic(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for a basic allOf schema composition. */
+static void test_jso_schema_all_of_illogical(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_array_start(&builder, "allOf");
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+	jso_string *sv;
+
+	sv = jso_string_create_from_cstr("no way");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 1);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for a basic anyOf schema composition. */
 static void test_jso_schema_any_of_basic(void **state)
 {
@@ -1485,6 +1524,51 @@ static void test_jso_schema_one_of_basic(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for a factored oneOf schema composition. */
+static void test_jso_schema_one_of_factored(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_add_array_start(&builder, "oneOf");
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_int(&builder, "multipleOf", 5);
+	jso_builder_object_end(&builder);
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_int(&builder, "multipleOf", 3);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear(&builder);
+
+	jso_value instance;
+
+	JSO_VALUE_SET_INT(instance, 10);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+
+	JSO_VALUE_SET_INT(instance, 9);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+
+	JSO_VALUE_SET_INT(instance, 2);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+
+	JSO_VALUE_SET_INT(instance, 15);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+
+	JSO_VALUE_SET_BOOL(instance, true);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for a basic not schema composition. */
 static void test_jso_schema_not_basic(void **state)
 {
@@ -1566,8 +1650,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_enum_anytype_strings),
 		cmocka_unit_test(test_jso_schema_enum_anytype_mixed),
 		cmocka_unit_test(test_jso_schema_all_of_basic),
+		cmocka_unit_test(test_jso_schema_all_of_illogical),
 		cmocka_unit_test(test_jso_schema_any_of_basic),
 		cmocka_unit_test(test_jso_schema_one_of_basic),
+		cmocka_unit_test(test_jso_schema_one_of_factored),
 		cmocka_unit_test(test_jso_schema_not_basic),
 	};
 
