@@ -64,7 +64,7 @@ jso_rc jso_schema_validate_instance(jso_schema_validation_stream *stream, jso_va
 			if (jso_schema_validation_stream_object_update(stream, object, key, val)
 					== JSO_FAILURE) {
 				return JSO_FAILURE;
-					}
+			}
 		}
 		JSO_OBJECT_FOREACH_END;
 		if (jso_schema_validation_stream_object_end(stream) == JSO_FAILURE) {

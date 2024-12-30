@@ -209,8 +209,9 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 		while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
 			if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 				if (instance_type == JSO_TYPE_OBJECT) {
-					if (jso_schema_validation_object_pre_value(stack, pos)
-							!= JSO_SCHEMA_VALIDATION_VALID) {
+					if (JSO_SCHEMA_VALUE_TYPE_P(pos->current_value) == JSO_SCHEMA_VALUE_TYPE_OBJECT
+							&& jso_schema_validation_object_pre_value(stack, pos)
+									!= JSO_SCHEMA_VALIDATION_VALID) {
 						if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 							return JSO_FAILURE;
 						}

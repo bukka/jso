@@ -88,7 +88,6 @@ static void test_jso_schema_value_clear_mixed(void **state)
 
 	jso_schema_value value;
 
-
 	jso_schema_value_common *comval = jso_calloc(1, sizeof(jso_schema_value_common));
 	value.data.comval = comval;
 

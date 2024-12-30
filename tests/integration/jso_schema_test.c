@@ -328,6 +328,10 @@ static void test_jso_schema_number_range(void **state)
 	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
+	JSO_VALUE_SET_DOUBLE(instance, -10);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
 	jso_schema_clear(&schema);
 }
 
@@ -830,6 +834,60 @@ static void test_jso_schema_object_size(void **state)
 	assert_jso_schema_validation_failure(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for an object type with array property. */
+static void test_jso_schema_object_with_array(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// Build schema
+	jso_builder_object_start(&builder);
+
+	// object
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "fields");
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder); // items
+	jso_builder_object_end(&builder); // root
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder instance_builder;
+
+	// Valid instance
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_array_start(&instance_builder, "fields");
+	jso_builder_array_add_double(&instance_builder, 50);
+	jso_builder_array_end(&instance_builder);
+	jso_builder_object_end(&instance_builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
+
+	// Invalid instance
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_array_start(&instance_builder, "fields");
+	jso_builder_array_add_cstr(&instance_builder, "data");
+	jso_builder_array_end(&instance_builder);
+	jso_builder_object_end(&instance_builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
 
 	jso_schema_clear(&schema);
 }
@@ -1625,6 +1683,163 @@ static void test_jso_schema_not_basic(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for more advance schema defined as:
+  allOf:
+  - type: object
+	properties:
+	  name:
+		type: string
+		minLength: 3
+	  age:
+		type: integer
+		minimum: 18
+	  items:
+		type: array
+		items:
+		  type: number
+		minItems: 1
+	required:
+	  - name
+	  - age
+	  - items
+  - anyOf:
+	  - properties:
+		  name:
+			enum: [Admin]
+	  - properties:
+		  age:
+			maximum: 25
+  - not:
+	  properties:
+		items:
+		  items:
+			type: number
+			minimum: 100
+ */
+static void test_jso_schema_composed_mix(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// Build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_array_start(&builder, "allOf");
+
+	// allOf: must be an object with specific properties
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "name");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_add_int(&builder, "minLength", 3);
+	jso_builder_object_end(&builder); // name
+	jso_builder_object_add_object_start(&builder, "age");
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+	jso_builder_object_add_int(&builder, "minimum", 18);
+	jso_builder_object_end(&builder); // age
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder); // items
+	jso_builder_object_add_int(&builder, "minItems", 1);
+	jso_builder_object_end(&builder); // items property
+	jso_builder_object_end(&builder); // properties
+	jso_builder_object_add_array_start(&builder, "required");
+	jso_builder_array_add_cstr(&builder, "name");
+	jso_builder_array_add_cstr(&builder, "age");
+	jso_builder_array_add_cstr(&builder, "items");
+	jso_builder_array_end(&builder); // required
+	jso_builder_object_end(&builder);
+
+	// anyOf: name must be "Admin" or age must be below 25
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_array_start(&builder, "anyOf");
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "name");
+	jso_builder_object_add_array_start(&builder, "enum");
+	jso_builder_array_add_cstr(&builder, "Admin");
+	jso_builder_array_end(&builder); // enum
+	jso_builder_object_end(&builder); // name
+	jso_builder_object_end(&builder); // properties
+	jso_builder_object_end(&builder); // name condition
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "age");
+	jso_builder_object_add_int(&builder, "maximum", 25);
+	jso_builder_object_end(&builder); // age
+	jso_builder_object_end(&builder); // properties
+	jso_builder_object_end(&builder); // age condition
+	jso_builder_array_end(&builder); // anyOf
+	jso_builder_object_end(&builder);
+
+	// not: items array should not contain a number greater than 100
+	jso_builder_array_add_object_start(&builder);
+	jso_builder_object_add_object_start(&builder, "not");
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_object_start(&builder, "items");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_add_int(&builder, "minimum", 100);
+	jso_builder_object_end(&builder); // items rule
+	jso_builder_object_end(&builder); // items
+	jso_builder_object_end(&builder); // properties
+	jso_builder_object_end(&builder); // not
+	jso_builder_object_end(&builder);
+
+	jso_builder_array_end(&builder); // allOf
+	jso_builder_object_end(&builder); // root
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder instance_builder;
+
+	// Valid instance
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_cstr(&instance_builder, "name", "Admin");
+	jso_builder_object_add_int(&instance_builder, "age", 20);
+	jso_builder_object_add_array_start(&instance_builder, "items");
+	jso_builder_array_add_double(&instance_builder, 50);
+	jso_builder_array_end(&instance_builder);
+	jso_builder_object_end(&instance_builder);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
+
+	// Invalid instance: items contain a number > 100
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_cstr(&instance_builder, "name", "User");
+	jso_builder_object_add_int(&instance_builder, "age", 30);
+	jso_builder_object_add_array_start(&instance_builder, "items");
+	jso_builder_array_add_double(&instance_builder, 150);
+	jso_builder_array_end(&instance_builder);
+	jso_builder_object_end(&instance_builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
+
+	// Invalid instance: missing required property
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_cstr(&instance_builder, "name", "User");
+	jso_builder_object_add_int(&instance_builder, "age", 20);
+	jso_builder_object_end(&instance_builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -1642,6 +1857,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 		cmocka_unit_test(test_jso_schema_object_required_props),
 		cmocka_unit_test(test_jso_schema_object_size),
+		cmocka_unit_test(test_jso_schema_object_with_array),
 		cmocka_unit_test(test_jso_schema_array_items),
 		cmocka_unit_test(test_jso_schema_array_tuple),
 		cmocka_unit_test(test_jso_schema_array_additional_false),
@@ -1656,6 +1872,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_one_of_basic),
 		cmocka_unit_test(test_jso_schema_one_of_factored),
 		cmocka_unit_test(test_jso_schema_not_basic),
+		cmocka_unit_test(test_jso_schema_composed_mix),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

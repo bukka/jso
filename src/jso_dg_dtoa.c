@@ -188,11 +188,13 @@
 
 // clang-format off
 
+#include "jso_types.h"
+
 #ifndef Long
-#define Long long
+#define Long int32_t
 #endif
 #ifndef ULong
-typedef unsigned Long ULong;
+#define ULong uint32_t
 #endif
 
 #ifdef DEBUG
@@ -3752,7 +3754,6 @@ jso_dg_dtoa
 		dtoa_result = 0;
 		}
 #endif
-
 	u.d = dd;
 	if (word0(&u) & Sign_bit) {
 		/* set sign for everything, including 0's and NaNs */
