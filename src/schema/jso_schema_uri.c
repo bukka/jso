@@ -67,8 +67,8 @@ jso_rc jso_schema_uri_set(jso_schema *schema, jso_schema_uri *current_uri,
 	if (jso_schema_uri_parse(schema, current_uri, new_uri) == JSO_FAILURE) {
 		return JSO_FAILURE;
 	}
-	// if new_uri is absolute, we are done
-	if (current_uri->host_start > 0) {
+	// if there is no parent URI (root) or new_uri is absolute, we are done
+	if (parent_uri == NULL || current_uri->host_start > 0) {
 		return JSO_SUCCESS;
 	}
 	// if current URI is just fragment, we append it to parent uri (excluding its fragment if there
