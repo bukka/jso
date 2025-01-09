@@ -1840,6 +1840,60 @@ static void test_jso_schema_composed_mix(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for a basic schema with $refs and $defs. */
+static void test_jso_schema_refs_with_defs(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "id", "/schemas/address");
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "first_name");
+	jso_builder_object_add_cstr(&builder, "$refs", "$defs/name");
+	jso_builder_object_end(&builder); // first_name
+	jso_builder_object_add_object_start(&builder, "last_name");
+	jso_builder_object_add_cstr(&builder, "$refs", "$defs/name");
+	jso_builder_object_end(&builder); // last_name
+	jso_builder_object_end(&builder); // properties
+	jso_builder_object_add_object_start(&builder, "$defs");
+	jso_builder_object_add_object_start(&builder, "name");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder); // name
+	jso_builder_object_end(&builder); // $degs
+	jso_builder_object_end(&builder); // root
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "first_name", "John");
+	jso_builder_object_add_cstr(&builder, "last_name", "Jones");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+	
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "first_name", "John");
+	jso_builder_object_add_int(&builder, "last_name", 3);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+	JSO_VALUE_SET_INT(instance, 15);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+
+	jso_schema_clear(&schema);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
@@ -1873,6 +1927,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_one_of_factored),
 		cmocka_unit_test(test_jso_schema_not_basic),
 		cmocka_unit_test(test_jso_schema_composed_mix),
+		cmocka_unit_test(test_jso_schema_refs_with_defs),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
