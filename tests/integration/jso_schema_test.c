@@ -1840,7 +1840,7 @@ static void test_jso_schema_composed_mix(void **state)
 	jso_schema_clear(&schema);
 }
 
-/* A test for a basic schema with $refs and $defs. */
+/* A test for a basic schema with $refs and definitions. */
 static void test_jso_schema_refs_with_defs(void **state)
 {
 	(void) state; /* unused */
@@ -1861,7 +1861,7 @@ static void test_jso_schema_refs_with_defs(void **state)
 	jso_builder_object_add_cstr(&builder, "$refs", "$defs/name");
 	jso_builder_object_end(&builder); // last_name
 	jso_builder_object_end(&builder); // properties
-	jso_builder_object_add_object_start(&builder, "$defs");
+	jso_builder_object_add_object_start(&builder, "definitions");
 	jso_builder_object_add_object_start(&builder, "name");
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_end(&builder); // name
