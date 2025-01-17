@@ -50,7 +50,7 @@ static void test_jso_pointer_create_simple(void **state)
 	jso_pointer_free(pointer);
 }
 
-/* A test for creating a pointer with single escapes. */
+/* A test for creating a pointer with single escape. */
 static void test_jso_pointer_create_with_valid_simple_escapes(void **state)
 {
 	(void) state; /* unused */
@@ -71,7 +71,7 @@ static void test_jso_pointer_create_with_valid_simple_escapes(void **state)
 	jso_pointer_free(pointer);
 }
 
-/* A test for creating a pointer with single escapes. */
+/* A test for creating a pointer with mixed escapes. */
 static void test_jso_pointer_create_with_valid_mixed_escapes(void **state)
 {
 	(void) state; /* unused */
@@ -91,12 +91,44 @@ static void test_jso_pointer_create_with_valid_mixed_escapes(void **state)
 	jso_pointer_free(pointer);
 }
 
+/* A test for creating a pointer with invalid escape number. */
+static void test_jso_pointer_create_with_invalid_escape_number(void **state)
+{
+	(void) state; /* unused */
+
+	jso_string *str = jso_string_create_from_cstr("/invalid~4/end");
+	jso_pointer *pointer = jso_pointer_create(str);
+
+	assert_non_null(pointer);
+	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_INVALID_FORMAT);
+
+	jso_string_free(str);
+	jso_pointer_free(pointer);
+}
+
+/* A test for creating a pointer with invalid escape number. */
+static void test_jso_pointer_create_with_invalid_escape_end(void **state)
+{
+	(void) state; /* unused */
+
+	jso_string *str = jso_string_create_from_cstr("/invalid~/end");
+	jso_pointer *pointer = jso_pointer_create(str);
+
+	assert_non_null(pointer);
+	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_INVALID_FORMAT);
+
+	jso_string_free(str);
+	jso_pointer_free(pointer);
+}
+
 int main(void)
 {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_pointer_create_simple),
 		cmocka_unit_test(test_jso_pointer_create_with_valid_simple_escapes),
 		cmocka_unit_test(test_jso_pointer_create_with_valid_mixed_escapes),
+		cmocka_unit_test(test_jso_pointer_create_with_invalid_escape_number),
+		cmocka_unit_test(test_jso_pointer_create_with_invalid_escape_end),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

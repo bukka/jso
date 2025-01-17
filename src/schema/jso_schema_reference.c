@@ -102,6 +102,11 @@ jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_value *doc)
 				schema, JSO_SCHEMA_ERROR_REFERENCE_ALLOC, "Reference pointer allocation failed");
 		return JSO_FAILURE;
 	}
+	if (JSO_POINTER_ERROR_TYPE(jp) != JSO_POINTER_ERROR_NONE) {
+		// TODO: proper pointer to reference mapping
+		jso_schema_error_format(
+				schema, JSO_SCHEMA_ERROR_REFERENCE_POINTER, JSO_POINTER_ERROR_MESSAGE(jp));
+	}
 
 	jso_rc jp_result = jso_pointer_resolve(jp, doc, &result);
 	jso_pointer_free(jp);

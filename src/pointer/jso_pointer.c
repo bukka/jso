@@ -31,7 +31,7 @@ static inline jso_string *jso_pointer_create_token(
 	size_t len = end - start;
 	jso_ctype *escape1 = memchr(start, '~', len);
 	if (escape1 == NULL) {
-		return jso_string_create_from_cstr_len((const char *)start, len);
+		return jso_string_create_from_cstr_len((const char *) start, len);
 	}
 	// handle escape logic
 	jso_ctype *src = start;
@@ -135,9 +135,13 @@ static jso_rc jso_pointer_compile(jso_pointer *jp, jso_string *pointer_value)
 JSO_API jso_pointer *jso_pointer_create(jso_string *pointer_value)
 {
 	jso_pointer *jp = jso_calloc(1, sizeof(jso_pointer));
-	if (jp == NULL || jso_pointer_compile(jp, pointer_value) == JSO_FAILURE) {
+	if (jp == NULL) {
 		return NULL;
 	}
+
+	// Currently the return value is ignored as it should return even invalid pointer as
+	// it contains the error.
+	(void) jso_pointer_compile(jp, pointer_value);
 
 	return jp;
 }
