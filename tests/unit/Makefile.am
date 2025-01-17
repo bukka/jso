@@ -1,6 +1,7 @@
 AM_CFLAGS = -Wall -std=c11 -I$(top_srcdir)/src
 
 check_PROGRAMS = jso_array_test jso_builder_test jso_ht_test jso_object_test jso_string_test \
+    pointer/jso_pointer_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_freer_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
@@ -11,6 +12,7 @@ check_PROGRAMS = jso_array_test jso_builder_test jso_ht_test jso_object_test jso
     schema/jso_schema_value_parser_test
 
 TESTS = jso_array_test jso_builder_test jso_ht_test jso_object_test jso_string_test \
+    pointer/jso_pointer_test \
     schema/jso_schema_array_test schema/jso_schema_data_test schema/jso_schema_error_test \
     schema/jso_schema_keyword_array_test schema/jso_schema_keyword_freer_test \
     schema/jso_schema_keyword_object_test schema/jso_schema_keyword_regexp_test \
@@ -26,6 +28,7 @@ jso_builder_test_LDADD = -lcmocka ../../src/libjso.a
 jso_ht_test_LDADD = -lcmocka ../../src/libjso.a
 jso_object_test_LDADD = -lcmocka ../../src/libjso.a
 jso_string_test_LDADD = -lcmocka ../../src/libjso.a
+pointer_jso_pointer_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_array_test_LDADD = -lcmocka ../../src/libjso.a
 schema_jso_schema_array_test_LDFLAGS = -Wl,--wrap=jso_schema_value_free
 schema_jso_schema_data_test_LDADD = -lcmocka ../../src/libjso.a

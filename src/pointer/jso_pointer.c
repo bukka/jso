@@ -29,38 +29,46 @@ static inline jso_string *jso_pointer_create_token(
 		jso_pointer *jp, jso_ctype *start, jso_ctype *end)
 {
 	size_t len = end - start;
-	jso_string *token = jso_string_alloc(len);
-	jso_ctype *escape1, *escape2;
-	size_t token_len = len;
+	jso_ctype *escape1 = memchr(start, '~', len);
+	if (escape1 == NULL) {
+		return jso_string_create_from_cstr_len((const char *)start, len);
+	}
+	// handle escape logic
 	jso_ctype *src = start;
+	jso_string *token = jso_string_alloc(len);
+	jso_ctype *escape2;
+	size_t token_len = len, copied = 0, part_len = 0;
 	jso_ctype *dest = JSO_STRING_VAL(token);
-	while ((escape1 = memchr(src, '~', len)) != NULL) {
+	do {
 		if (escape1 == end) {
 			jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_FORMAT,
 					"JsonPointer escape character ~ cannot be at the end of pointer");
 			return NULL;
 		}
 		escape2 = escape1 + 1;
-		if (*escape2 != '1') {
-			memcpy(dest, src, escape2 - src);
-		} else if (*escape2 != '2') {
-			memcpy(dest, src, escape1 - src);
-			dest[escape1 - src] = '/';
+		if (*escape2 == '0') {
+			part_len = escape2 - src;
+			memcpy(dest, src, part_len);
+		} else if (*escape2 == '1') {
+			part_len = escape1 - src;
+			memcpy(dest, src, part_len);
+			dest[part_len++] = '/';
 		} else {
 			jso_pointer_error_format(jp, JSO_POINTER_ERROR_INVALID_FORMAT,
 					"JsonPointer escape character ~ followed by '%c' character", *escape2);
 			return NULL;
 		}
+		copied += part_len;
 		token_len--;
-		dest = escape2 + 1;
+		dest += part_len;
 		if (escape2 == end) {
 			break;
 		}
 		src += escape2 - src + 1;
-	}
+	} while (token_len > copied && (escape1 = memchr(src, '~', token_len - copied)) != NULL);
 	JSO_STRING_LEN(token) = token_len;
-	if (src != end) {
-		memcpy(dest, src, escape1 - src);
+	if (token_len > copied) {
+		memcpy(dest, src, token_len - copied);
 	}
 	return token;
 }
@@ -204,6 +212,7 @@ JSO_API void jso_pointer_free(jso_pointer *jp)
 		for (size_t i = 0; i < jp->tokens_count; i++) {
 			jso_string_free(jp->tokens[i]);
 		}
+		jso_free(jp->tokens);
 		jso_pointer_error_free(jp);
 		jso_string_free(jp->pointer_value);
 		jso_free(jp);
