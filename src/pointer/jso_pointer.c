@@ -43,6 +43,7 @@ static inline jso_string *jso_pointer_create_token(
 		if (escape1 == end) {
 			jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_FORMAT,
 					"JsonPointer escape character ~ cannot be at the end of pointer");
+			jso_string_free(token);
 			return NULL;
 		}
 		escape2 = escape1 + 1;
@@ -56,6 +57,7 @@ static inline jso_string *jso_pointer_create_token(
 		} else {
 			jso_pointer_error_format(jp, JSO_POINTER_ERROR_INVALID_FORMAT,
 					"JsonPointer escape character ~ followed by '%c' character", *escape2);
+			jso_string_free(token);
 			return NULL;
 		}
 		copied += part_len;
