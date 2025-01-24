@@ -26,8 +26,7 @@
 
 #include "jso.h"
 
-// Parse URI - currently very lax (this will need to be made much stricker)
-jso_rc jso_schema_uri_parse(jso_schema *schema, jso_schema_uri *uri, jso_string *uri_value)
+static void jso_schema_uri_parse_internal(jso_schema_uri *uri, jso_string *uri_value)
 {
 	ssize_t path_start;
 	ssize_t colon_pos = jso_string_find_char_pos(uri_value, ':', 0);
@@ -36,12 +35,18 @@ jso_rc jso_schema_uri_parse(jso_schema *schema, jso_schema_uri *uri, jso_string 
 			&& JSO_STRING_VAL(uri_value)[colon_pos + 2] == '/') {
 		uri->host_start = colon_pos + 3;
 		path_start = jso_string_find_char_pos(uri_value, '/', 0);
-	} else {
-		uri->host_start = JSO_STRING_POS_NOT_FOUND;
-		path_start = 0;
-	}
+			} else {
+				uri->host_start = JSO_STRING_POS_NOT_FOUND;
+				path_start = 0;
+			}
 	uri->path_start = path_start;
 	uri->fragment_start = jso_string_find_char_pos(uri_value, '#', path_start > 0 ? path_start : 0);
+}
+
+// Parse URI - currently very lax (this will need to be made much stricker)
+jso_rc jso_schema_uri_parse(jso_schema *schema, jso_schema_uri *uri, jso_string *uri_value)
+{
+	jso_schema_uri_parse_internal(uri, uri_value);
 	uri->uri = jso_string_copy(uri_value);
 	return JSO_SUCCESS;
 }
@@ -57,7 +62,9 @@ static jso_rc jso_schema_uri_merge(jso_schema *schema, jso_schema_uri *current_u
 		return JSO_FAILURE;
 	}
 	jso_string_free(current_uri->uri);
+	jso_schema_uri_parse_internal(current_uri, concat_str);
 	current_uri->uri = concat_str;
+
 	return JSO_SUCCESS;
 }
 

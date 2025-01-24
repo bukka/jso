@@ -95,7 +95,7 @@ jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_schema_uri *b
 	}
 
 	jso_string *jp_str
-			= jso_string_substring(uri_str, frag_start, JSO_STRING_LEN(uri_str) - frag_start);
+			= jso_string_substring(uri_str, frag_start + 1, JSO_STRING_LEN(uri_str) - frag_start - 1);
 	if (jp_str == NULL) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_REFERENCE_ALLOC,
 				"Reference string pointer allocation failed");
