@@ -83,7 +83,8 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 			if (ref == NULL) {
 				return NULL;
 			}
-			if (jso_schema_reference_resolve(ref, &schema->doc) == JSO_FAILURE) {
+			if (jso_schema_reference_resolve(ref, &value->base_uri, NULL, &schema->doc)
+					== JSO_FAILURE) {
 				jso_schema_reference_free(ref);
 				return NULL;
 			}

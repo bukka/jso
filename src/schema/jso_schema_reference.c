@@ -60,7 +60,8 @@ void jso_schema_reference_free(jso_schema_reference *ref)
 	}
 }
 
-jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_value *doc)
+jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_schema_uri *base_uri,
+		jso_schema_value *root_value, jso_value *doc)
 {
 	if (ref->result != NULL) {
 		return JSO_SUCCESS;
@@ -75,7 +76,7 @@ jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_value *doc)
 		return JSO_SUCCESS;
 	}
 
-	if (!jso_schema_uri_base_equal(&ref->schema->root->base_uri, &ref->uri)) {
+	if (!jso_schema_uri_base_equal(base_uri, &ref->uri)) {
 		// TODO: add support for external reference fetching (optional)
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_REFERENCE_EXTERNAL,
 				"External references are not currently supported");
@@ -85,7 +86,12 @@ jso_rc jso_schema_reference_resolve(jso_schema_reference *ref, jso_value *doc)
 	ssize_t frag_start = JSO_SCHEMA_URI_FRAGMENT_START(ref->uri);
 	// if fragment is not set or fragment is the last character of URI, use schema root value
 	if (frag_start < 0 || frag_start + 1 == JSO_STRING_LEN(uri_str)) {
-		ref->result = schema->root;
+		if (root_value == NULL) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_REFERENCE_RECURSIVE,
+				"Recursive references are not allowed for $ref");
+			return JSO_FAILURE;
+		}
+		ref->result = root_value;
 	}
 
 	jso_string *jp_str

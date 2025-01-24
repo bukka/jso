@@ -69,10 +69,13 @@ void __wrap_jso_schema_reference_free(jso_schema_reference *ref)
 }
 
 /* Wrapper for jso_schema_reference_resolve. */
-jso_rc __wrap_jso_schema_reference_resolve(jso_schema_reference *ref, jso_value *doc)
+jso_rc __wrap_jso_schema_reference_resolve(jso_schema_reference *ref, jso_schema_uri *base_uri,
+		jso_schema_value *root_value, jso_value *doc)
 {
 	function_called();
 	check_expected_ptr(ref);
+	check_expected_ptr(base_uri);
+	check_expected_ptr(root_value);
 	check_expected_ptr(doc);
 
 	return mock_type(jso_rc);
@@ -387,6 +390,8 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(voi
 
 	expect_function_call(__wrap_jso_schema_reference_resolve);
 	expect_value(__wrap_jso_schema_reference_resolve, ref, &ref);
+	expect_value(__wrap_jso_schema_reference_resolve, base_uri, &value.base_uri);
+	expect_value(__wrap_jso_schema_reference_resolve, root_value, NULL);
 	expect_value(__wrap_jso_schema_reference_resolve, doc, &schema.doc);
 	will_return(__wrap_jso_schema_reference_resolve, JSO_SUCCESS);
 
@@ -561,6 +566,8 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_ref_only_set(
 
 	expect_function_call(__wrap_jso_schema_reference_resolve);
 	expect_value(__wrap_jso_schema_reference_resolve, ref, &ref);
+	expect_value(__wrap_jso_schema_reference_resolve, base_uri, &value.base_uri);
+	expect_value(__wrap_jso_schema_reference_resolve, root_value, NULL);
 	expect_value(__wrap_jso_schema_reference_resolve, doc, &schema.doc);
 	will_return(__wrap_jso_schema_reference_resolve, JSO_SUCCESS);
 
@@ -701,6 +708,8 @@ static void test_jso_schema_value_init_when_ref_resolve_fails(void **state)
 
 	expect_function_call(__wrap_jso_schema_reference_resolve);
 	expect_value(__wrap_jso_schema_reference_resolve, ref, &ref);
+	expect_value(__wrap_jso_schema_reference_resolve, base_uri, &value.base_uri);
+	expect_value(__wrap_jso_schema_reference_resolve, root_value, NULL);
 	expect_value(__wrap_jso_schema_reference_resolve, doc, &schema.doc);
 	will_return(__wrap_jso_schema_reference_resolve, JSO_FAILURE);
 

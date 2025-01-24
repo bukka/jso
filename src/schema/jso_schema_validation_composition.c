@@ -87,7 +87,10 @@ jso_schema_validation_result jso_schema_validation_composition_push(
 		jso_schema_value *result = JSO_SCHEMA_REFERENCE_RESULT(ref);
 		// result could be a NULL for $dynamicRef
 		if (result == NULL) {
-			if (jso_schema_reference_resolve(ref, &stack->root_schema->doc) == JSO_FAILURE) {
+			jso_schema *schema = stack->root_schema;
+			if (jso_schema_reference_resolve(
+						ref, &schema->root->base_uri, schema->root, &schema->doc)
+					== JSO_FAILURE) {
 				return JSO_SCHEMA_VALIDATION_ERROR;
 			}
 			result = JSO_SCHEMA_REFERENCE_RESULT(ref);
