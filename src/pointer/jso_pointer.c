@@ -175,7 +175,7 @@ static jso_rc jso_pointer_search(
 				jso_pointer_error_set(jp, JSO_POINTER_ERROR_INVALID_ARRAY_INDEX,
 						"JsonPointer array index cannot be negative");
 			}
-			if (jso_array_index(JSO_ARRVAL_P(doc_pos), (size_t) index, &next) == JSO_FAILURE) {
+			if (jso_array_index(JSO_ARRVAL_P(doc_pos), index, &next) == JSO_FAILURE) {
 				jso_pointer_error_set(
 						jp, JSO_POINTER_ERROR_NOT_FOUND, "JsonPointer value not found in array");
 				return JSO_FAILURE;

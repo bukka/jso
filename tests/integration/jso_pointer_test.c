@@ -21,8 +21,8 @@
  *
  */
 
-#include "../../../src/jso_pointer.h"
-#include "../../../src/jso.h"
+#include "../../src/jso_pointer.h"
+#include "../../src/jso.h"
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -108,6 +108,21 @@ static void test_jso_pointer_create_with_invalid_escape_number(void **state)
 
 /* A test for creating a pointer with invalid escape number. */
 static void test_jso_pointer_create_with_invalid_escape_end(void **state)
+{
+	(void) state; /* unused */
+
+	jso_string *str = jso_string_create_from_cstr("/invalid~/end");
+	jso_pointer *pointer = jso_pointer_create(str);
+
+	assert_non_null(pointer);
+	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_INVALID_FORMAT);
+
+	jso_string_free(str);
+	jso_pointer_free(pointer);
+}
+
+/* A test evaluating object. */
+static void test_jso_pointer_evaluate_object(void **state)
 {
 	(void) state; /* unused */
 
