@@ -65,6 +65,10 @@
 	assert_true(jso_schema_error_is_validation(&schema)); \
 	jso_schema_error_free(&schema)
 
+#define jso_schema_test_start_schema_object(_builder) \
+	jso_builder_object_start(_builder); \
+	jso_builder_object_add_cstr(_builder, "$schema", JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_04)
+
 /* A test for simple boolean value. */
 static void test_jso_schema_boolean(void **state)
 {
@@ -75,7 +79,7 @@ static void test_jso_schema_boolean(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "boolean");
 	jso_builder_object_end(&builder);
 
@@ -106,7 +110,7 @@ static void test_jso_schema_string_with_lengths(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_add_int(&builder, "minLength", 4);
 	jso_builder_object_add_int(&builder, "maxLength", 6);
@@ -153,7 +157,7 @@ static void test_jso_schema_string_with_pattern(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_add_cstr(&builder, "pattern", "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$");
 
@@ -200,7 +204,7 @@ static void test_jso_schema_integer(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "integer");
 
 	jso_builder_object_end(&builder);
@@ -247,7 +251,7 @@ static void test_jso_schema_number_multiple(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "number");
 	jso_builder_object_add_int(&builder, "multipleOf", 10);
 
@@ -293,7 +297,7 @@ static void test_jso_schema_number_range(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "number");
 	jso_builder_object_add_int(&builder, "minimum", 0);
 	jso_builder_object_add_int(&builder, "maximum", 100);
@@ -345,7 +349,7 @@ static void test_jso_schema_null(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "null");
 
 	jso_builder_object_end(&builder);
@@ -382,7 +386,7 @@ static void test_jso_schema_object_props(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// properties
 	jso_builder_object_add_object_start(&builder, "properties");
@@ -459,7 +463,7 @@ static void test_jso_schema_object_pattern_props(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// pattern properties
 	jso_builder_object_add_object_start(&builder, "patternProperties");
@@ -507,7 +511,7 @@ static void test_jso_schema_object_additional_props_false(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// properties
 	jso_builder_object_add_object_start(&builder, "properties");
@@ -561,7 +565,7 @@ static void test_jso_schema_object_additional_props_type(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// properties
 	jso_builder_object_add_object_start(&builder, "properties");
@@ -626,7 +630,7 @@ static void test_jso_schema_object_all_props_non_overlap(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// properties
 	jso_builder_object_add_object_start(&builder, "properties");
@@ -701,7 +705,7 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	// properties
 	jso_builder_object_add_object_start(&builder, "properties");
@@ -784,7 +788,7 @@ static void test_jso_schema_object_size(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	jso_builder_object_add_int(&builder, "minProperties", 2);
 	jso_builder_object_add_int(&builder, "maxProperties", 3);
@@ -847,8 +851,8 @@ static void test_jso_schema_object_with_array(void **state)
 	jso_builder builder;
 	jso_builder_init(&builder);
 
-	// Build schema
-	jso_builder_object_start(&builder);
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
 
 	// object
 	jso_builder_object_add_cstr(&builder, "type", "object");
@@ -902,7 +906,7 @@ static void test_jso_schema_array_items(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_object_start(&builder, "items");
 	jso_builder_object_add_cstr(&builder, "type", "number");
@@ -961,7 +965,7 @@ static void test_jso_schema_array_tuple(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_array_start(&builder, "items");
 	// first item number
@@ -1050,7 +1054,7 @@ static void test_jso_schema_array_additional_false(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_array_start(&builder, "items");
 	// first item number
@@ -1121,7 +1125,7 @@ static void test_jso_schema_array_additional_string(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_array_start(&builder, "items");
 	// first item number
@@ -1206,7 +1210,7 @@ static void test_jso_schema_array_length(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_int(&builder, "minItems", 2);
 	jso_builder_object_add_int(&builder, "maxItems", 3);
@@ -1270,7 +1274,7 @@ static void test_jso_schema_array_unique(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "array");
 	jso_builder_object_add_bool(&builder, "uniqueItems", true);
 	jso_builder_object_end(&builder);
@@ -1321,7 +1325,7 @@ static void test_jso_schema_type_array(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "type");
 	jso_builder_array_add_cstr(&builder, "string");
 	jso_builder_array_add_cstr(&builder, "boolean");
@@ -1384,7 +1388,7 @@ static void test_jso_schema_enum_anytype_strings(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "enum");
 	jso_builder_array_add_cstr(&builder, "red");
 	jso_builder_array_add_cstr(&builder, "green");
@@ -1431,7 +1435,7 @@ static void test_jso_schema_enum_anytype_mixed(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "enum");
 	jso_builder_array_add_cstr(&builder, "on");
 	jso_builder_array_add_cstr(&builder, "true");
@@ -1483,7 +1487,7 @@ static void test_jso_schema_all_of_basic(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "allOf");
 	jso_builder_array_add_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
@@ -1523,7 +1527,7 @@ static void test_jso_schema_all_of_illogical(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "allOf");
 	jso_builder_array_add_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
@@ -1562,7 +1566,7 @@ static void test_jso_schema_any_of_basic(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "anyOf");
 	jso_builder_array_add_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "string");
@@ -1612,7 +1616,7 @@ static void test_jso_schema_one_of_basic(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "oneOf");
 	jso_builder_array_add_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "number");
@@ -1655,7 +1659,7 @@ static void test_jso_schema_one_of_factored(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "type", "number");
 	jso_builder_object_add_array_start(&builder, "oneOf");
 	jso_builder_array_add_object_start(&builder);
@@ -1700,7 +1704,7 @@ static void test_jso_schema_not_basic(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_object_start(&builder, "not");
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_end(&builder);
@@ -1787,8 +1791,8 @@ static void test_jso_schema_composed_mix(void **state)
 	jso_builder builder;
 	jso_builder_init(&builder);
 
-	// Build schema
-	jso_builder_object_start(&builder);
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_array_start(&builder, "allOf");
 
 	// allOf: must be an object with specific properties
@@ -1913,7 +1917,7 @@ static void test_jso_schema_refs_with_defs(void **state)
 	jso_builder_init(&builder);
 
 	// build schema
-	jso_builder_object_start(&builder);
+	jso_schema_test_start_schema_object(&builder);
 	jso_builder_object_add_cstr(&builder, "id", "/schemas/address");
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	jso_builder_object_add_object_start(&builder, "properties");

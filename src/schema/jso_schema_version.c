@@ -23,19 +23,50 @@
 
 #include "jso_schema_data.h"
 #include "jso_schema_error.h"
+#include "jso_schema_version.h"
 
 #include "jso.h"
 
-jso_rc jso_schema_version_set(jso_schema *schema, jso_value *data)
+jso_rc jso_schema_version_set(
+		jso_schema *schema, jso_value *data, jso_schema_version default_version)
 {
 	jso_string *version = jso_schema_data_get_str(schema, data, "$schema");
 
-	if (version == NULL || jso_string_equals_to_cstr(version, "http://json-schema.org/schema#")
-			|| jso_string_equals_to_cstr(version, "http://json-schema.org/draft-04/schema#")) {
+	if (version == NULL) {
+		if (default_version == JSO_SCHEMA_VERSION_NONE) {
+			return jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VERSION,
+					"The $schema field is omitted and no default version is set");
+		}
+		schema->version = default_version;
+		return JSO_SUCCESS;
+	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_04)) {
 		schema->version = JSO_SCHEMA_VERSION_DRAFT_04;
 		return JSO_SUCCESS;
 	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_06)) {
+		schema->version = JSO_SCHEMA_VERSION_DRAFT_06;
+		return JSO_SUCCESS;
+	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_07)) {
+		return jso_schema_error_set(
+				schema, JSO_SCHEMA_ERROR_VERSION, "Draft 7 is not yet supported");
+	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2019_09)) {
+		return jso_schema_error_set(
+				schema, JSO_SCHEMA_ERROR_VERSION, "Draft 2019-09 is not yet supported");
+	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2020_12)) {
+		return jso_schema_error_set(
+				schema, JSO_SCHEMA_ERROR_VERSION, "Draft 2020-12 is not yet supported");
+	}
+	if (jso_string_equals_to_cstr(version, JSO_SCHEMA_VERSION_IDENTIFIER_DEPRECATED_LATEST)) {
+		return jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VERSION,
+				"The identified %s is not supported as it is deprecated by spec",
+				JSO_SCHEMA_VERSION_IDENTIFIER_DEPRECATED_LATEST);
+	}
 
-	return jso_schema_error_set(
-			schema, JSO_SCHEMA_ERROR_VERSION, "Only draft 4 is currently supported");
+	return jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VERSION,
+			"Unknown $schema %s, only drafts 4 and 6 are currently supported",
+			JSO_STRING_VAL(version));
 }

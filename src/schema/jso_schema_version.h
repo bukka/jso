@@ -31,6 +31,7 @@
 
 #include "jso_schema.h"
 
-jso_rc jso_schema_version_set(jso_schema *schema, jso_value *data);
+jso_rc jso_schema_version_set(
+		jso_schema *schema, jso_value *data, jso_schema_version default_version);
 
 #endif /* JSO_SCHEMA_VALUE_H */

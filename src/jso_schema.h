@@ -894,7 +894,24 @@ struct _jso_schema_value {
 /**
  * @brief Schema version.
  */
-typedef enum _jso_schema_version { JSO_SCHEMA_VERSION_DRAFT_04 } jso_schema_version;
+typedef enum _jso_schema_version {
+	JSO_SCHEMA_VERSION_NONE = 0,
+	JSO_SCHEMA_VERSION_DRAFT_04,
+	JSO_SCHEMA_VERSION_DRAFT_06,
+} jso_schema_version;
+
+/** @brief Schema latest identified (should not be used, just for better error reporting) */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DEPRECATED_LATEST "http://json-schema.org/schema#"
+/** @brief Draft 4 identifier */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_04 "http://json-schema.org/draft-04/schema#"
+/** @brief Draft 4 identifier */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_06 "http://json-schema.org/draft-06/schema#"
+/** @brief Draft 4 identifier */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_07 "http://json-schema.org/draft-07/schema#"
+/** @brief Draft 4 identifier */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2019_09 "https://json-schema.org/draft/2019-09/schema"
+/** @brief Draft 4 identifier */
+#define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2020_12 "https://json-schema.org/draft/2020-12/schema"
 
 /**
  * @brief Schema error type.
@@ -1023,6 +1040,17 @@ JSO_API jso_schema *jso_schema_alloc();
  * @param schema schema to initialize
  */
 JSO_API void jso_schema_init(jso_schema *schema);
+
+/**
+ * Parse data to set up the schema.
+ *
+ * @param schema schema to parse data to
+ * @param data source data
+ * @param default_version version to use if $schema is not present
+ * @return JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_schema_parse_ex(
+		jso_schema *schema, jso_value *data, jso_schema_version default_version);
 
 /**
  * Parse data to set up the schema.
