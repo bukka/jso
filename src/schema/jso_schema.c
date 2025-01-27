@@ -52,6 +52,9 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 		return JSO_FAILURE;
 	}
 
+	// Save document
+	JSO_VALUE_SET_OBJECT(schema->doc, jso_object_copy(JSO_OBJVAL_P(data)));
+
 	// Parse root value.
 	jso_schema_value *root = jso_schema_value_parse(schema, data, NULL);
 	if (root == NULL) {
@@ -59,8 +62,6 @@ JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 	}
 	schema->root = root;
 
-	// Save document
-	JSO_VALUE_SET_OBJECT(schema->doc, jso_object_copy(JSO_OBJVAL_P(data)));
 
 	return JSO_SUCCESS;
 }

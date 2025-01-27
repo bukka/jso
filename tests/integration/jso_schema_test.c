@@ -1855,17 +1855,17 @@ static void test_jso_schema_refs_with_defs(void **state)
 	jso_builder_object_add_cstr(&builder, "type", "object");
 	jso_builder_object_add_object_start(&builder, "properties");
 	jso_builder_object_add_object_start(&builder, "first_name");
-	jso_builder_object_add_cstr(&builder, "$refs", "$defs/name");
+	jso_builder_object_add_cstr(&builder, "$ref", "#/definitions/name");
 	jso_builder_object_end(&builder); // first_name
 	jso_builder_object_add_object_start(&builder, "last_name");
-	jso_builder_object_add_cstr(&builder, "$refs", "$defs/name");
+	jso_builder_object_add_cstr(&builder, "$ref", "#/definitions/name");
 	jso_builder_object_end(&builder); // last_name
 	jso_builder_object_end(&builder); // properties
 	jso_builder_object_add_object_start(&builder, "definitions");
 	jso_builder_object_add_object_start(&builder, "name");
 	jso_builder_object_add_cstr(&builder, "type", "string");
 	jso_builder_object_end(&builder); // name
-	jso_builder_object_end(&builder); // $degs
+	jso_builder_object_end(&builder); // definitions
 	jso_builder_object_end(&builder); // root
 
 	jso_schema schema;
@@ -1879,7 +1879,7 @@ static void test_jso_schema_refs_with_defs(void **state)
 	assert_jso_schema_validation_success(
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear_all(&builder);
-	
+
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "first_name", "John");
 	jso_builder_object_add_int(&builder, "last_name", 3);
