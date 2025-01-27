@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -37,6 +37,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 		if (!pos->any_of_valid) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
 					"No anyOf subschema was valid");
+			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		jso_schema_error_reset(schema);
@@ -46,6 +47,17 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 		if (!pos->one_of_valid) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
 					"No oneOf subschema was valid");
+			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;
+			return JSO_SCHEMA_VALIDATION_INVALID;
+		}
+		jso_schema_error_reset(schema);
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(comval->type_list)) {
+		if (!pos->type_valid) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
+					"Value is not any of the listed types");
+			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 		jso_schema_error_reset(schema);
@@ -66,6 +78,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 		if (!found) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Instance value not found in enum values");
+			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}

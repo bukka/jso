@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -38,6 +38,6 @@ jso_schema_validation_result jso_schema_validation_array_append(
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos);
 
 jso_schema_validation_result jso_schema_validation_array_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance);
+		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_ARRAY_H */

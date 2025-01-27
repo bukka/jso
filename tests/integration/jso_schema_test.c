@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -1311,6 +1311,69 @@ static void test_jso_schema_array_unique(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an array of type. */
+static void test_jso_schema_type_array(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_array_start(&builder, "type");
+	jso_builder_array_add_cstr(&builder, "string");
+	jso_builder_array_add_cstr(&builder, "boolean");
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+	jso_string *sv;
+
+	sv = jso_string_create_from_cstr("red");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	sv = jso_string_create_from_cstr("blue");
+	JSO_VALUE_SET_STRING(instance, sv);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_BOOL(instance, true);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_NULL(instance);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 5);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_int(&builder, 1);
+	jso_builder_array_add_int(&builder, 2);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_int(&builder, "k1", 1);
+	jso_builder_object_add_int(&builder, "k2", 2);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for an enum without type specified and using single type (string) values. */
 static void test_jso_schema_enum_anytype_strings(void **state)
 {
@@ -1918,6 +1981,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_array_additional_string),
 		cmocka_unit_test(test_jso_schema_array_length),
 		cmocka_unit_test(test_jso_schema_array_unique),
+		cmocka_unit_test(test_jso_schema_type_array),
 		cmocka_unit_test(test_jso_schema_enum_anytype_strings),
 		cmocka_unit_test(test_jso_schema_enum_anytype_mixed),
 		cmocka_unit_test(test_jso_schema_all_of_basic),

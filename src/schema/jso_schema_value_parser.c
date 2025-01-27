@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -25,7 +25,6 @@
 #include "jso_schema_data.h"
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
-#include "jso_schema_keyword_freer.h"
 #include "jso_schema_value.h"
 
 #include "jso.h"
@@ -271,7 +270,7 @@ static jso_schema_value *jso_schema_value_parse_mixed_type(
 	}
 
 	// save subschema to the typed_of value
-	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->typed_of;
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY_P(schema_value)->type_any;
 	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;
@@ -331,7 +330,7 @@ jso_schema_value *jso_schema_value_parse(
 	JSO_ARRAY_FOREACH_END;
 
 	// save subschema to the typed of virtual keyword
-	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->typed_of;
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_COMMON_P(schema_value)->type_list;
 	JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 	JSO_SCHEMA_KEYWORD_TYPE_P(typed_of_kw) = JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS;
 	JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw) = typed_of_arr;

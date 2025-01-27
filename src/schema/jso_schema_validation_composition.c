@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -107,7 +107,12 @@ jso_schema_validation_result jso_schema_validation_composition_push(
 	}
 
 	if (jso_schema_validation_composition_push_keyword_schema_objects(
-				stack, pos, &data->typed_of, JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED)
+				stack, pos, &data->type_any, JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_ANY)
+			== JSO_FAILURE) {
+		return JSO_SCHEMA_VALIDATION_ERROR;
+	}
+	if (jso_schema_validation_composition_push_keyword_schema_objects(
+				stack, pos, &data->type_list, JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_LIST)
 			== JSO_FAILURE) {
 		return JSO_SCHEMA_VALIDATION_ERROR;
 	}

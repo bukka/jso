@@ -1,5 +1,5 @@
 /*jso_schema_validation_value_callback
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -30,7 +30,6 @@ void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_valid
 {
 	jso_schema_validation_position *parent_pos = pos->parent;
 	if (parent_pos == NULL) {
-		pos->is_final_validation_result = true;
 		return;
 	}
 	if (parent_pos->is_final_validation_result) {
@@ -46,14 +45,28 @@ void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_valid
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_REF:
 				jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
 				break;
-			case JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED:
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_ANY:
 				// Typed composition ignores failures for invalid type because it is not applicable
 				if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
-					if (JSO_SCHEMA_ERROR_TYPE(schema) == JSO_SCHEMA_ERROR_VALIDATION_TYPE) {
+					if (pos->validation_invalid_reason
+							== JSO_SCHEMA_VALIDATION_INVALID_REASON_TYPE) {
 						jso_schema_error_reset(schema);
 					} else {
 						jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
 					}
+				}
+				break;
+			case JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_LIST:
+				// Typed composition ignores failures for invalid type because it is not applicable
+				if (pos->validation_result != JSO_SCHEMA_VALIDATION_VALID) {
+					if (pos->validation_invalid_reason
+							== JSO_SCHEMA_VALIDATION_INVALID_REASON_TYPE) {
+						jso_schema_error_reset(schema);
+					} else {
+						jso_schema_validation_set_final_result(parent_pos, pos->validation_result);
+					}
+				} else {
+					parent_pos->type_valid = true;
 				}
 				break;
 			case JSO_SCHEMA_VALIDATION_COMPOSITION_ALL:
@@ -71,6 +84,8 @@ void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_valid
 					if (parent_pos->one_of_valid) {
 						jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
 								"More than one oneOf subschema was valid");
+						pos->validation_invalid_reason
+								= JSO_SCHEMA_VALIDATION_INVALID_REASON_COMPOSITION;
 						jso_schema_validation_set_final_result(
 								parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 					} else {
@@ -83,6 +98,8 @@ void jso_schema_validation_result_propagate(jso_schema *schema, jso_schema_valid
 				if (pos->validation_result == JSO_SCHEMA_VALIDATION_VALID) {
 					jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
 							"Negated valid validation");
+					pos->validation_invalid_reason
+							= JSO_SCHEMA_VALIDATION_INVALID_REASON_COMPOSITION;
 					jso_schema_validation_set_final_result(
 							parent_pos, JSO_SCHEMA_VALIDATION_INVALID);
 				} else {

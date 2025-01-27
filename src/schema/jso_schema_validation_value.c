@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -56,5 +56,5 @@ jso_schema_validation_result jso_schema_validation_value(
 		return JSO_SCHEMA_VALIDATION_VALID;
 	}
 
-	return schema_validation_value_callbacks[value_type](schema, value, instance);
+	return schema_validation_value_callbacks[value_type](schema, pos, instance);
 }

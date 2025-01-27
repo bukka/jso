@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -460,8 +460,10 @@ typedef struct _jso_schema_keyword {
 	jso_schema_keyword ref; \
 	/** enum keyword */ \
 	jso_schema_keyword enum_elements; \
-	/** multiple type virtual composition keyword */ \
-	jso_schema_keyword typed_of; \
+	/** any type virtual composition keyword */ \
+	jso_schema_keyword type_any; \
+	/** type list virtual composition keyword */ \
+	jso_schema_keyword type_list; \
 	/** allOf keyword */ \
 	jso_schema_keyword all_of; \
 	/** anyOf keyword */ \
@@ -1101,11 +1103,23 @@ typedef enum _jso_schema_validation_result {
 } jso_schema_validation_result;
 
 /**
+ * @brief Schema validation result
+ */
+typedef enum _jso_schema_validation_invalid_reason {
+	JSO_SCHEMA_VALIDATION_INVALID_REASON_NONE = 0,
+	JSO_SCHEMA_VALIDATION_INVALID_REASON_TYPE,
+	JSO_SCHEMA_VALIDATION_INVALID_REASON_VALUE,
+	JSO_SCHEMA_VALIDATION_INVALID_REASON_COMPOSITION,
+	JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD,
+} jso_schema_validation_invalid_reason;
+
+/**
  * @brief Schema validation composition type.
  */
 typedef enum _jso_schema_validation_composition_type {
 	JSO_SCHEMA_VALIDATION_COMPOSITION_NONE = 0,
-	JSO_SCHEMA_VALIDATION_COMPOSITION_TYPED,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_ANY,
+	JSO_SCHEMA_VALIDATION_COMPOSITION_TYPE_LIST,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ALL,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ANY,
 	JSO_SCHEMA_VALIDATION_COMPOSITION_ONE,
@@ -1140,6 +1154,8 @@ struct _jso_schema_validation_position {
 	jso_schema_validation_composition_type composition_type;
 	/** validation result */
 	jso_schema_validation_result validation_result;
+	/** validation result */
+	jso_schema_validation_result validation_invalid_reason;
 	/** whether the validation result is final */
 	jso_bool is_final_validation_result;
 	/** schema parent validation position */
@@ -1153,9 +1169,13 @@ struct _jso_schema_validation_position {
 	/** count of elements for array / object */
 	size_t count;
 	/** check whether oneOf composition already valid for one child */
-	jso_bool one_of_valid;
+	jso_uint32 one_of_valid : 1;
 	/** check whether anyOf composition already valid for one child */
-	jso_bool any_of_valid;
+	jso_uint32 any_of_valid : 1;
+	/** check whether any selected type is valid which is used for type list */
+	jso_uint32 type_valid : 1;
+	/** reserved for other flags */
+	jso_uint32 reserved : 29;
 	/** the position stack depth */
 	jso_uint32 depth;
 };

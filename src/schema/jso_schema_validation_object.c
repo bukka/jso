@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -53,6 +53,8 @@ jso_schema_validation_result jso_schema_validation_object_key(
 					"Object number of properties is %zu which is greater than maximum number of "
 					"properties %lu",
 					objlen, kw_uval);
+			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -114,6 +116,8 @@ jso_schema_validation_result jso_schema_validation_object_key(
 						"%s which "
 						"is is not found in properties or matches any pattern property",
 						JSO_STRING_VAL(key));
+				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+				;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}
@@ -148,14 +152,14 @@ jso_schema_validation_result jso_schema_validation_object_pre_value(
 }
 
 jso_schema_validation_result jso_schema_validation_object_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
 		return jso_schema_validation_value_type_error(
-				schema, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
 	}
 
-	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
+	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
 		jso_string *key;
@@ -173,6 +177,9 @@ jso_schema_validation_result jso_schema_validation_object_value(
 						jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 								"Object key %s is required by dependency %s but it is not present",
 								JSO_SVAL_P(item), JSO_STRING_VAL(key));
+						pos->validation_invalid_reason
+								= JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+						;
 						return JSO_SCHEMA_VALIDATION_INVALID;
 					}
 				}
@@ -190,6 +197,8 @@ jso_schema_validation_result jso_schema_validation_object_value(
 					"Object number of properties is %zu which is lower than minimum number of "
 					"properties %lu",
 					objlen, kw_uval);
+			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -202,6 +211,8 @@ jso_schema_validation_result jso_schema_validation_object_value(
 			if (!jso_object_has(instance_object, JSO_STR_P(item))) {
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 						"Object does not have requier property with key %s", JSO_SVAL_P(item));
+				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+				;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}

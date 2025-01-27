@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -32,14 +32,14 @@
 #include "jso_re.h"
 
 jso_schema_validation_result jso_schema_validation_string_value(
-		jso_schema *schema, jso_schema_value *value, jso_value *instance)
+		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_STRING) {
 		return jso_schema_validation_value_type_error(
-				schema, JSO_TYPE_STRING, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_STRING, JSO_TYPE_P(instance));
 	}
 
-	jso_schema_value_string *strval = JSO_SCHEMA_VALUE_DATA_STR_P(value);
+	jso_schema_value_string *strval = JSO_SCHEMA_VALUE_DATA_STR_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(strval->min_length)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(strval->min_length);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -139,6 +139,7 @@ jso_schema_validation_position *jso_schema_validation_stack_push_separator(
 	jso_schema_validation_position *next = jso_schema_validation_stack_next(stack);
 	next->position_type = JSO_SCHEMA_VALIDATION_POSITION_SENTINEL;
 	next->parent = stack->last_separator;
+	next->layer_start = stack->size - 1;
 	stack->last_separator = next;
 	stack->depth++;
 
@@ -178,10 +179,11 @@ jso_schema_validation_position *jso_schema_validation_stack_layer_iterator_next(
 	if (iterator->index >= stack->size) {
 		return NULL;
 	}
-	jso_schema_validation_position *pos = &stack->positions[iterator->index++];
+	jso_schema_validation_position *pos = &stack->positions[iterator->index];
 	if (JSO_SCHEMA_VALIDATION_POSITION_IS_SENTINEL(pos)) {
 		return NULL;
 	}
+	iterator->index++;
 	return pos;
 }
 

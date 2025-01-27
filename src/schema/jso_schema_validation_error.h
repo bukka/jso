@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -32,9 +32,10 @@
 #include "jso_schema.h"
 
 jso_schema_validation_result jso_schema_validation_value_type_error_ex(jso_schema *schema,
-		jso_value_type expected, jso_value_type expected_alternative, jso_value_type actual);
+		jso_schema_validation_position *pos, jso_value_type expected,
+		jso_value_type expected_alternative, jso_value_type actual);
 
-jso_schema_validation_result jso_schema_validation_value_type_error(
-		jso_schema *schema, jso_value_type expected, jso_value_type actual);
+jso_schema_validation_result jso_schema_validation_value_type_error(jso_schema *schema,
+		jso_schema_validation_position *pos, jso_value_type expected, jso_value_type actual);
 
 #endif /* JSO_SCHEMA_VALIDATION_ERROR_H */

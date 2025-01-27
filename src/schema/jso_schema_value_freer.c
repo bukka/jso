@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -39,7 +39,8 @@ static void jso_schema_value_free_common(jso_schema_value *val)
 	jso_schema_keyword_free(&comval->default_value);
 	jso_schema_keyword_free(&comval->title);
 	jso_schema_keyword_free(&comval->description);
-	jso_schema_keyword_free(&comval->typed_of);
+	jso_schema_keyword_free(&comval->type_any);
+	jso_schema_keyword_free(&comval->type_list);
 	jso_schema_keyword_free(&comval->all_of);
 	jso_schema_keyword_free(&comval->any_of);
 	jso_schema_keyword_free(&comval->one_of);

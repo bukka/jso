@@ -35,10 +35,10 @@ static void jso_schema_uri_parse_internal(jso_schema_uri *uri, jso_string *uri_v
 			&& JSO_STRING_VAL(uri_value)[colon_pos + 2] == '/') {
 		uri->host_start = colon_pos + 3;
 		path_start = jso_string_find_char_pos(uri_value, '/', 0);
-			} else {
-				uri->host_start = JSO_STRING_POS_NOT_FOUND;
-				path_start = 0;
-			}
+	} else {
+		uri->host_start = JSO_STRING_POS_NOT_FOUND;
+		path_start = 0;
+	}
 	uri->path_start = path_start;
 	uri->fragment_start = jso_string_find_char_pos(uri_value, '#', path_start > 0 ? path_start : 0);
 }

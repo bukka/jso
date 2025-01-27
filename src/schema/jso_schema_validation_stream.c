@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -75,7 +75,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 			}
 		} else {
 			pos->validation_result = jso_schema_validation_value_type_error(
-					schema, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_OBJECT);
+					schema, pos, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_OBJECT);
 		}
 	}
 
@@ -145,9 +145,13 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 			}
 		} else {
 			pos->validation_result = jso_schema_validation_value_type_error(
-					schema, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
-			jso_schema_validation_result_propagate(schema, pos);
+					schema, pos, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
 		}
+	}
+	// Now the reverse iteration is done to propagate result
+	jso_schema_validation_stack_layer_reverse_iterator_start(stack, &iterator);
+	while ((pos = jso_schema_validation_stack_layer_reverse_iterator_next(stack, &iterator))) {
+		jso_schema_validation_result_propagate(schema, pos);
 	}
 
 	// Start next iteration round in the parent.
@@ -166,11 +170,6 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 				if (result == JSO_SCHEMA_VALIDATION_ERROR) {
 					return JSO_FAILURE;
 				}
-			} else if (JSO_SCHEMA_VALUE_TYPE_P(value) != JSO_SCHEMA_VALUE_TYPE_MIXED) {
-				// Make sure that non array or mixed types fail.
-				pos->validation_result = jso_schema_validation_value_type_error(
-						schema, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
-				jso_schema_validation_result_propagate(schema, pos);
 			}
 		}
 	}

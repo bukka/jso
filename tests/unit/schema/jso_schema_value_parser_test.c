@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -4050,7 +4050,7 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&any_value, returned_value);
-	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY(any_value)->typed_of;
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY(any_value)->type_any;
 	assert_int_equal(JSO_SCHEMA_KEYWORD_FLAG_PRESENT, JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw));
 	assert_ptr_equal(&typed_of_arr, JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw));
 }
@@ -4443,7 +4443,7 @@ static void test_jso_schema_value_parse_array_type_when_all_ok(void **state)
 	jso_schema_value *returned_value = jso_schema_value_parse(&schema, &data, &parent);
 
 	assert_ptr_equal(&any_value, returned_value);
-	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY(any_value)->typed_of;
+	jso_schema_keyword *typed_of_kw = &JSO_SCHEMA_VALUE_DATA_ANY(any_value)->type_list;
 	assert_int_equal(JSO_SCHEMA_KEYWORD_FLAG_PRESENT, JSO_SCHEMA_KEYWORD_FLAGS_P(typed_of_kw));
 	assert_ptr_equal(&typed_of_arr, JSO_SCHEMA_KEYWORD_DATA_ARR_SCHEMA_OBJ_P(typed_of_kw));
 
