@@ -40,8 +40,13 @@ JSO_API void jso_schema_init(jso_schema *schema)
 	memset(schema, 0, sizeof(jso_schema));
 }
 
+JSO_API void jso_schema_options_init(jso_schema_options *options)
+{
+	memset(options, 0, sizeof(jso_schema_options));
+}
+
 JSO_API jso_rc jso_schema_parse_ex(
-		jso_schema *schema, jso_value *data, jso_schema_version default_version)
+		jso_schema *schema, jso_value *data, const jso_schema_options *options)
 {
 	if (JSO_TYPE_P(data) != JSO_TYPE_OBJECT) {
 		jso_schema_error_set(
@@ -49,7 +54,7 @@ JSO_API jso_rc jso_schema_parse_ex(
 		return JSO_FAILURE;
 	}
 
-	if (jso_schema_version_set(schema, data, default_version) == JSO_FAILURE) {
+	if (jso_schema_version_set(schema, data, options->default_version) == JSO_FAILURE) {
 		return JSO_FAILURE;
 	}
 
@@ -68,7 +73,10 @@ JSO_API jso_rc jso_schema_parse_ex(
 
 JSO_API jso_rc jso_schema_parse(jso_schema *schema, jso_value *data)
 {
-	return jso_schema_parse_ex(schema, data, JSO_SCHEMA_VERSION_NONE);
+	jso_schema_options options;
+	jso_schema_options_init(&options);
+
+	return jso_schema_parse_ex(schema, data, &options);
 }
 
 static inline void jso_schema_empty(jso_schema *schema)

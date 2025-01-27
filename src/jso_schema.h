@@ -914,6 +914,14 @@ typedef enum _jso_schema_version {
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2020_12 "https://json-schema.org/draft/2020-12/schema"
 
 /**
+ * @brief Schema options for schema parsing
+ */
+typedef struct _jso_schema_options {
+	/** version to use if $schema is not present */
+	jso_schema_version default_version;
+} jso_schema_options;
+
+/**
  * @brief Schema error type.
  */
 typedef enum _jso_schema_error_type {
@@ -1042,15 +1050,22 @@ JSO_API jso_schema *jso_schema_alloc();
 JSO_API void jso_schema_init(jso_schema *schema);
 
 /**
+ * Initialize schema options.
+ *
+ * @param options schema options
+ */
+JSO_API void jso_schema_options_init(jso_schema_options *options);
+
+/**
  * Parse data to set up the schema.
  *
  * @param schema schema to parse data to
  * @param data source data
- * @param default_version version to use if $schema is not present
+ * @param options various schema options
  * @return JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */
 JSO_API jso_rc jso_schema_parse_ex(
-		jso_schema *schema, jso_value *data, jso_schema_version default_version);
+		jso_schema *schema, jso_value *data, const jso_schema_options *options);
 
 /**
  * Parse data to set up the schema.
