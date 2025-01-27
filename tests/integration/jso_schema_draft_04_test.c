@@ -241,6 +241,121 @@ static void test_jso_schema_integer(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for a simple integer type with simple min and max range. */
+static void test_jso_schema_integer_range_simple(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+	jso_builder_object_add_int(&builder, "minimum", 0);
+	jso_builder_object_add_int(&builder, "maximum", 100);
+
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+
+	JSO_VALUE_SET_INT(instance, 0);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 10);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 99);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 100);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 101);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, -1);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_DOUBLE(instance, -10);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a simple integer type with exclusive min and max range. */
+static void test_jso_schema_integer_range_exclusive(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "integer");
+	jso_builder_object_add_int(&builder, "minimum", 4);
+	jso_builder_object_add_int(&builder, "maximum", 100);
+	jso_builder_object_add_bool(&builder, "exclusiveMinimum", true);
+	jso_builder_object_add_bool(&builder, "exclusiveMaximum", true);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+
+	JSO_VALUE_SET_INT(instance, 0);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 4);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 5);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 10);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 99);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 100);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, -1);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_DOUBLE(instance, -10);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for a simple number type with multipleOf. */
 static void test_jso_schema_number_multiple(void **state)
 {
@@ -287,8 +402,8 @@ static void test_jso_schema_number_multiple(void **state)
 	jso_schema_clear(&schema);
 }
 
-/* A test for a simple number type with range. */
-static void test_jso_schema_number_range(void **state)
+/* A test for a simple number type with simple min and max range. */
+static void test_jso_schema_number_range_simple(void **state)
 {
 	(void) state; /* unused */
 
@@ -301,6 +416,62 @@ static void test_jso_schema_number_range(void **state)
 	jso_builder_object_add_cstr(&builder, "type", "number");
 	jso_builder_object_add_int(&builder, "minimum", 0);
 	jso_builder_object_add_int(&builder, "maximum", 100);
+
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+
+	JSO_VALUE_SET_INT(instance, 0);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 10);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 99);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 100);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 101);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, -1);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_DOUBLE(instance, -10);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a simple number type with exclusive min and max range. */
+static void test_jso_schema_number_range_exclusive(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_add_int(&builder, "minimum", 4);
+	jso_builder_object_add_int(&builder, "maximum", 100);
+	jso_builder_object_add_bool(&builder, "exclusiveMinimum", true);
 	jso_builder_object_add_bool(&builder, "exclusiveMaximum", true);
 
 	jso_builder_object_end(&builder);
@@ -313,6 +484,14 @@ static void test_jso_schema_number_range(void **state)
 	jso_value instance;
 
 	JSO_VALUE_SET_INT(instance, 0);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 4);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+	jso_value_clear(&instance);
+
+	JSO_VALUE_SET_INT(instance, 5);
 	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
 	jso_value_clear(&instance);
 
@@ -1968,8 +2147,11 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_string_with_lengths),
 		cmocka_unit_test(test_jso_schema_string_with_pattern),
 		cmocka_unit_test(test_jso_schema_integer),
+		cmocka_unit_test(test_jso_schema_integer_range_simple),
+		cmocka_unit_test(test_jso_schema_integer_range_exclusive),
 		cmocka_unit_test(test_jso_schema_number_multiple),
-		cmocka_unit_test(test_jso_schema_number_range),
+		cmocka_unit_test(test_jso_schema_number_range_simple),
+		cmocka_unit_test(test_jso_schema_number_range_exclusive),
 		cmocka_unit_test(test_jso_schema_null),
 		cmocka_unit_test(test_jso_schema_object_props),
 		cmocka_unit_test(test_jso_schema_object_pattern_props),

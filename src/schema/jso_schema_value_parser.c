@@ -59,21 +59,29 @@ static jso_schema_value *jso_schema_value_parse_integer(
 
 	JSO_SCHEMA_KW_SET_UINT_NZ_EX(schema, data, multipleOf, value, intval, multiple_of);
 	JSO_SCHEMA_KW_SET_INT(schema, data, minimum, value, intval);
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, intval, exclusive_minimum);
 	JSO_SCHEMA_KW_SET_INT(schema, data, maximum, value, intval);
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, intval, exclusive_maximum);
 
-	if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_minimum) && !JSO_SCHEMA_KW_IS_SET(intval->minimum)) {
-		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
-				"The minimum must be set when exclusiveMinimum is set");
-		jso_schema_value_free(value);
-		return NULL;
-	}
-	if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_maximum) && !JSO_SCHEMA_KW_IS_SET(intval->maximum)) {
-		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
-				"The maximum must be set when exclusiveMaximum is set");
-		jso_schema_value_free(value);
-		return NULL;
+	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
+		JSO_SCHEMA_KW_SET_INT_EX(schema, data, exclusiveMinimum, value, intval, exclusive_minimum);
+		JSO_SCHEMA_KW_SET_INT_EX(schema, data, exclusiveMaximum, value, intval, exclusive_maximum);
+	} else { // Draft 4
+		JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, intval, exclusive_minimum);
+		JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, intval, exclusive_maximum);
+
+		if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_minimum)
+				&& !JSO_SCHEMA_KW_IS_SET(intval->minimum)) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+					"The minimum must be set when exclusiveMinimum is set");
+			jso_schema_value_free(value);
+			return NULL;
+		}
+		if (JSO_SCHEMA_KW_IS_SET(intval->exclusive_maximum)
+				&& !JSO_SCHEMA_KW_IS_SET(intval->maximum)) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+					"The maximum must be set when exclusiveMaximum is set");
+			jso_schema_value_free(value);
+			return NULL;
+		}
 	}
 
 	return value;
@@ -91,21 +99,29 @@ static jso_schema_value *jso_schema_value_parse_number(
 
 	JSO_SCHEMA_KW_SET_UINT_NZ_EX(schema, data, multipleOf, value, numval, multiple_of);
 	JSO_SCHEMA_KW_SET_NUM(schema, data, minimum, value, numval);
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, numval, exclusive_minimum);
 	JSO_SCHEMA_KW_SET_NUM(schema, data, maximum, value, numval);
-	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, numval, exclusive_maximum);
 
-	if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_minimum) && !JSO_SCHEMA_KW_IS_SET(numval->minimum)) {
-		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
-				"The minimum must be set when exclusiveMinimum is set");
-		jso_schema_value_free(value);
-		return NULL;
-	}
-	if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_maximum) && !JSO_SCHEMA_KW_IS_SET(numval->maximum)) {
-		jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
-				"The maximum must be set when exclusiveMaximum is set");
-		jso_schema_value_free(value);
-		return NULL;
+	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
+		JSO_SCHEMA_KW_SET_NUM_EX(schema, data, exclusiveMinimum, value, numval, exclusive_minimum);
+		JSO_SCHEMA_KW_SET_NUM_EX(schema, data, exclusiveMaximum, value, numval, exclusive_maximum);
+	} else { // Draft 4
+		JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMinimum, value, numval, exclusive_minimum);
+		JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, exclusiveMaximum, value, numval, exclusive_maximum);
+
+		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_minimum)
+				&& !JSO_SCHEMA_KW_IS_SET(numval->minimum)) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+					"The minimum must be set when exclusiveMinimum is set");
+			jso_schema_value_free(value);
+			return NULL;
+		}
+		if (JSO_SCHEMA_KW_IS_SET(numval->exclusive_maximum)
+				&& !JSO_SCHEMA_KW_IS_SET(numval->maximum)) {
+			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
+					"The maximum must be set when exclusiveMaximum is set");
+			jso_schema_value_free(value);
+			return NULL;
+		}
 	}
 
 	return value;
