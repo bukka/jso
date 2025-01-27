@@ -137,7 +137,7 @@ void __wrap_jso_schema_value_free(jso_schema_value *schema_value)
 
 /* Tests for jso_schema_value_init. */
 
-/* Test initializing value if all ok and keword initialization is enabled and id and ref not set. */
+/* Test initializing value if all ok and keyword init is enabled and id and ref not set. */
 static void test_jso_schema_value_init_when_all_good_and_init_with_idref_not_set(void **state)
 {
 	(void) state; /* unused */
@@ -194,7 +194,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_not_set
 	expect_function_call(__wrap_jso_schema_keyword_set);
 	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
 	expect_value(__wrap_jso_schema_keyword_set, data, &data);
-	expect_string(__wrap_jso_schema_keyword_set, key, "id");
+	expect_string(__wrap_jso_schema_keyword_set, key, "$id");
 	expect_value(__wrap_jso_schema_keyword_set, value, &value);
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.id);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
@@ -292,7 +292,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_not_set
 	assert_ptr_equal(value_data.parent, &parent);
 }
 
-/* Test initializing value if all ok and keword initialization is enabled and id and ref are set. */
+/* Test initializing value if all ok and keyword init is enabled and id and ref are set. */
 static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(void **state)
 {
 	(void) state; /* unused */
@@ -310,6 +310,183 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(voi
 	data.data.obj = &obj;
 
 	jso_schema_init(&schema);
+
+	expect_function_call(__wrap_jso_schema_value_alloc);
+	expect_value(__wrap_jso_schema_value_alloc, schema, &schema);
+	expect_string(__wrap_jso_schema_value_alloc, type_name, "null");
+	will_return(__wrap_jso_schema_value_alloc, &value);
+
+	expect_function_call(__wrap_jso_schema_value_data_alloc);
+	expect_value(__wrap_jso_schema_value_data_alloc, value_size, 64);
+	expect_value(__wrap_jso_schema_value_data_alloc, schema, &schema);
+	expect_string(__wrap_jso_schema_value_data_alloc, type_name, "null");
+	will_return(__wrap_jso_schema_value_data_alloc, &value_data);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "default");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.default_value);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_ANY);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "description");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.description);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "title");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.title);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "$id");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.id);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+	JSO_SCHEMA_KEYWORD_FLAGS(value_data.id) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+
+	expect_function_call(__wrap_jso_schema_uri_set);
+	expect_value(__wrap_jso_schema_uri_set, schema, &schema);
+	expect_value(__wrap_jso_schema_uri_set, current_uri, &value.base_uri);
+	expect_value(__wrap_jso_schema_uri_set, parent_uri, &parent.base_uri);
+	expect_value(__wrap_jso_schema_uri_set, new_uri, JSO_SCHEMA_KEYWORD_DATA_STR(value_data.id));
+	will_return(__wrap_jso_schema_uri_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "$ref");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.ref);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+	JSO_SCHEMA_KEYWORD_FLAGS(value_data.ref) = JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+
+	expect_function_call(__wrap_jso_schema_reference_create);
+	expect_value(__wrap_jso_schema_reference_create, schema, &schema);
+	expect_value(__wrap_jso_schema_reference_create, ref_uri,
+			JSO_SCHEMA_KEYWORD_DATA_STR(value_data.ref));
+	expect_value(__wrap_jso_schema_reference_create, value, &value);
+	will_return(__wrap_jso_schema_reference_create, &ref);
+
+	expect_function_call(__wrap_jso_schema_reference_resolve);
+	expect_value(__wrap_jso_schema_reference_resolve, ref, &ref);
+	expect_value(__wrap_jso_schema_reference_resolve, base_uri, &value.base_uri);
+	expect_value(__wrap_jso_schema_reference_resolve, root_value, NULL);
+	expect_value(__wrap_jso_schema_reference_resolve, doc, &schema.doc);
+	will_return(__wrap_jso_schema_reference_resolve, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "enum");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.enum_elements);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_ARRAY);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "allOf");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.all_of);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "anyOf");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.any_of);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "oneOf");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.one_of);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
+			JSO_SCHEMA_KEYWORD_TYPE_ARRAY_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "not");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.not );
+	expect_value(
+			__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "definitions");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.definitions);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type,
+			JSO_SCHEMA_KEYWORD_TYPE_OBJECT_OF_SCHEMA_OBJECTS);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	jso_schema_value *result_value = jso_schema_value_init(
+			&schema, &data, &parent, "null", 64, JSO_SCHEMA_VALUE_TYPE_NULL, true);
+
+	assert_ptr_equal(&value, result_value);
+	assert_ptr_equal(JSO_SCHEMA_VALUE_DATA_COMMON_P(result_value), &value_data);
+	assert_ptr_equal(value_data.parent, &parent);
+}
+
+/* Test initializing value if all ok and keyword init is enabled and draft 4 id and ref are set. */
+static void test_jso_schema_value_init_when_all_good_and_init_with_draft4_id_set(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema schema;
+	jso_value data;
+	jso_schema_value value, parent;
+	jso_schema_value_common value_data;
+	jso_schema_reference ref;
+	jso_object obj;
+
+	memset(&data, 0, sizeof(jso_value));
+	memset(&obj, 0, sizeof(jso_object));
+
+	data.data.obj = &obj;
+
+	jso_schema_init(&schema);
+	schema.version = JSO_SCHEMA_VERSION_DRAFT_04;
 
 	expect_function_call(__wrap_jso_schema_value_alloc);
 	expect_value(__wrap_jso_schema_value_alloc, schema, &schema);
@@ -468,7 +645,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(voi
 	assert_ptr_equal(value_data.parent, &parent);
 }
 
-/* Test initializing value if all ok and keword initialization is enabled and id and ref not set. */
+/* Test initializing value if all ok and keyword init is enabled and id and ref not set. */
 static void test_jso_schema_value_init_when_all_good_and_init_with_ref_only_set(void **state)
 {
 	(void) state; /* unused */
@@ -531,7 +708,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_ref_only_set(
 	expect_function_call(__wrap_jso_schema_keyword_set);
 	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
 	expect_value(__wrap_jso_schema_keyword_set, data, &data);
-	expect_string(__wrap_jso_schema_keyword_set, key, "id");
+	expect_string(__wrap_jso_schema_keyword_set, key, "$id");
 	expect_value(__wrap_jso_schema_keyword_set, value, &value);
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.id);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
@@ -579,7 +756,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_ref_only_set(
 	assert_ptr_equal(value_data.parent, &parent);
 }
 
-/* Test initializing value if all ok and keword initialization is disabled. */
+/* Test initializing value if all ok and keyword init is disabled. */
 static void test_jso_schema_value_init_when_all_good_and_keyword_init_disabled(void **state)
 {
 	(void) state; /* unused */
@@ -673,7 +850,7 @@ static void test_jso_schema_value_init_when_ref_resolve_fails(void **state)
 	expect_function_call(__wrap_jso_schema_keyword_set);
 	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
 	expect_value(__wrap_jso_schema_keyword_set, data, &data);
-	expect_string(__wrap_jso_schema_keyword_set, key, "id");
+	expect_string(__wrap_jso_schema_keyword_set, key, "$id");
 	expect_value(__wrap_jso_schema_keyword_set, value, &value);
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.id);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_STRING);
@@ -832,6 +1009,7 @@ int main(void)
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_init_with_idref_not_set),
 		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_init_with_idref_set),
+		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_init_with_draft4_id_set),
 		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_init_with_ref_only_set),
 		cmocka_unit_test(test_jso_schema_value_init_when_all_good_and_keyword_init_disabled),
 		cmocka_unit_test(test_jso_schema_value_init_when_ref_resolve_fails),

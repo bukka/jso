@@ -61,7 +61,11 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		JSO_SCHEMA_KW_SET_STR(schema, data, title, value, value_data);
 
 		// id keyword
-		JSO_SCHEMA_KW_SET_STR(schema, data, id, value, value_data);
+		if (schema->version == JSO_SCHEMA_VERSION_DRAFT_04) {
+			JSO_SCHEMA_KW_SET_STR(schema, data, id, value, value_data);
+		} else {
+			JSO_SCHEMA_KW_SET_STR_EX(schema, data, $id, value, value_data, id);
+		}
 		if (JSO_SCHEMA_KW_IS_SET(value_data->id)) {
 			if (jso_schema_uri_set(schema, &value->base_uri,
 						parent == NULL ? NULL : &parent->base_uri,
