@@ -7,7 +7,6 @@
 
 ### Array
 - Change to sequential array
-- Add API for random (indexed) access
 
 
 ## Scanner
@@ -48,22 +47,6 @@
 
 ## Pointer
 
-- creation
-  - URI converted to base URI (e.g. @id in case of JsonSchema) and pointer (e.g. @ref in case of JsonSchema)
-    - pointer should be implemented by storing index of the pointer start
-  - add also mixed creation for base and pointer only
-  - tokenize the pointer
-    - path type - each token will be union of string and int (for array index)
-    - decode each string token ~0 -> ~, ~1 -> /
-- evaluation
-  - find data for the token
-    - 1. search cache iteratively for each path part (first canonicalized version and then absolute). If just partial match is found, then set it as target and find value by suffix point (skip to 3)
-    - 2. check if the uri is external, then fetch it, parse json to jso value (in the future it might be skipped and can be pointer parsed directly - special parser method for pointer) and use it as a target, otherwise use current doc as target
-    - 3. find value by going through the target data by tokens
-    - 4. if value found, cache it and return it, otherwise return error (it should differentiate between not found and other error types - introduce some sort of error handling like for schema)
-- external data fetching
-  - generic client interface
-  - curl implementation of the interface
 - pointer parser method - it will save only the pointer result - the rest will be just validated
 
 
@@ -74,24 +57,38 @@
   - it should be cannonical one and maybe absolute from root as well if needed
   - id / @id should reset the canonical path and gets stored to the cache
 - ref parsing
-  - create pointer (needs to provide canonical URI)
-  - if normal ref, pointer should be resolved during compilation (schema creation)
   - for dynamic ref, pointer should be resolved during validation
   - special handling for recursion
     - pointer cache should have a special flag in the jso_value that should distinguish between started or finished resolving
 - draft 6+
-- update and extend unit tests
-- integration tests
-- definitions
-- pointers
+- metadata api so things like description, title, examples and othere can be somehow used
+- definitions ($defs) pre-parsing to speed up dynamic refs
 - formats
+- selected parsing only of the elements that are in the schema instead of checking all fields
+- update and extend unit tests
+
+### References
+
+- external data fetching
+  - some sort of registries when local schema with different ids can be stored
+  - generic client interface
+  - maybe curl implementation of the interface for optional network fetching
+    - this is however discouraged in the schema spec
 
 ### Validation
+
+- early exit for arrays and object
+- propagation should happen only in reverse iteration
+  - add special tests for this
+- validation method for multiple validators
+- introduce simple validator for schemas without composition
+  - this should be significantly faster
 - unit tests
-- integration tests
-- stirng unicode length for correct validation
+- string unicode length for correct validation
 
 ## CLI
+
+- schema support
 - generate help message
   - extend `jso_cli_param` with description
 - add support for grouping of short arguments
@@ -105,7 +102,7 @@
 - extend coverage
 
 ### Integration
-- should still use cmocka but for bigger pieces without mocking
+- create some common place for tests that are the same between drafts (sharing code)
 
 ## Build
 - test - check
@@ -128,11 +125,11 @@
   - included generated files that will be used if not checked
 - autogen.sh
   - check for autoconf, automake, libtool (libtoolize)
-- add CMake support to eventually replace autotools
+- add CMake support mainly for Windows and possibly to eventually replace autotools
 
 ## Documentation
 - document source using doxygent comments
-- MarkDown documentation (Github)
+- MarkDown documentation (GitHub)
   - document jso executable
   - document exported API
   - add some examples
