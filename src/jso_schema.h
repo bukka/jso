@@ -611,7 +611,9 @@ typedef enum {
 	/** array value type */
 	JSO_SCHEMA_VALUE_TYPE_ARRAY,
 	/** object value type */
-	JSO_SCHEMA_VALUE_TYPE_OBJECT
+	JSO_SCHEMA_VALUE_TYPE_OBJECT,
+	/** object with boolean alias value type */
+	JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN,
 } jso_schema_value_type;
 
 /**
@@ -650,6 +652,13 @@ typedef union _jso_schema_value_data {
  * @brief Flag specifying that only reference is set.
  */
 #define JSO_SCHEMA_VALUE_FLAG_REF_ONLY 0x02
+
+/**
+ * @brief Flag specifying the object boolean value true.
+ *
+ * Only for @ref JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN type.
+ */
+#define JSO_SCHEMA_VALUE_FLAG_OBJECT_TRUE 0x04
 
 /**
  * @brief JsonSchema value data and type.
@@ -945,6 +954,7 @@ typedef enum _jso_schema_error_type {
 	JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION,
 	JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 	JSO_SCHEMA_ERROR_VALIDATION_TYPE,
+	JSO_SCHEMA_ERROR_VALIDATION_FALSE,
 	JSO_SCHEMA_ERROR_VALUE_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_ALLOC,
 	JSO_SCHEMA_ERROR_VALUE_DATA_DEPS,
@@ -1031,7 +1041,8 @@ static inline bool jso_schema_error_is_validation(jso_schema *schema)
 	jso_schema_error_type type = JSO_SCHEMA_ERROR_TYPE(schema);
 	return (type == JSO_SCHEMA_ERROR_VALIDATION_KEYWORD
 			|| type == JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION
-			|| type == JSO_SCHEMA_ERROR_VALIDATION_TYPE);
+			|| type == JSO_SCHEMA_ERROR_VALIDATION_TYPE
+			|| type == JSO_SCHEMA_ERROR_VALIDATION_FALSE);
 }
 
 /**

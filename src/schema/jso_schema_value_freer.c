@@ -133,7 +133,7 @@ static const jso_schema_value_free_callback schema_value_free_callbacks[] = {
 
 void jso_schema_value_clear(jso_schema_value *val)
 {
-	if (val == NULL) {
+	if (val == NULL || JSO_SCHEMA_VALUE_TYPE_P(val) == JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN) {
 		return;
 	}
 	jso_schema_reference_free(val->ref);

@@ -294,14 +294,34 @@ static jso_schema_value *jso_schema_value_parse_mixed_type(
 	return schema_value;
 }
 
+jso_schema_value *jso_schema_value_parse_object_boolean(jso_schema *schema, jso_bool bv)
+{
+	jso_schema_value *value = jso_schema_value_alloc(schema, "object boolean");
+	if (value == NULL) {
+		return NULL;
+	}
+	value->type = JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN;
+	if (bv) {
+		value->flags |= JSO_SCHEMA_VALUE_FLAG_OBJECT_TRUE;
+	}
+
+	return value;
+}
+
 jso_schema_value *jso_schema_value_parse(
 		jso_schema *schema, jso_value *data, jso_schema_value *parent)
 {
+	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06 && JSO_TYPE_P(data) == JSO_TYPE_BOOL) {
+		return jso_schema_value_parse_object_boolean(schema, (bool) JSO_IVAL_P(data));
+	}
+	JSO_ASSERT_EQ(JSO_TYPE_P(data), JSO_TYPE_OBJECT);
+
 	jso_value *val = jso_schema_data_get_value_fast(schema, data, "type", 0);
 
 	if (val == NULL) {
 		return jso_schema_value_parse_mixed_type(schema, data, parent);
-	} else if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
+	}
+	if (JSO_TYPE_P(val) == JSO_TYPE_STRING) {
 		return jso_schema_value_parse_by_string_type(schema, data, parent, JSO_STR_P(val), true);
 	}
 	if (jso_schema_data_check_type(schema, "type", val, JSO_TYPE_ARRAY, JSO_TYPE_STRING, true)

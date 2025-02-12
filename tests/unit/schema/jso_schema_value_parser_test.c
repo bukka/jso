@@ -189,6 +189,7 @@ static void test_jso_schema_value_parse_type_null_when_all_good(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("null");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_NULL(value) = &nulval;
 
@@ -229,6 +230,7 @@ static void test_jso_schema_value_parse_type_null_when_value_init_fails(void **s
 
 	jso_string *type = jso_string_create_from_cstr("null");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -268,6 +270,7 @@ static void test_jso_schema_value_parse_type_boolean_when_all_good(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("boolean");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_BOOL(value) = &boolval;
 
@@ -308,6 +311,7 @@ static void test_jso_schema_value_parse_type_boolean_when_value_init_fails(void 
 
 	jso_string *type = jso_string_create_from_cstr("boolean");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -347,6 +351,7 @@ static void test_jso_schema_value_parse_type_integer_when_all_good_without_exclu
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -440,6 +445,7 @@ static void test_jso_schema_value_parse_type_integer_when_all_good_with_exclusiv
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -540,6 +546,7 @@ static void test_jso_schema_value_parse_type_integer_when_all_good_with_exclusiv
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -638,6 +645,7 @@ static void test_jso_schema_value_parse_type_integer_when_min_exclusive_fails(vo
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -744,6 +752,7 @@ static void test_jso_schema_value_parse_type_integer_when_max_exclusive_fails(vo
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -850,6 +859,7 @@ static void test_jso_schema_value_parse_type_integer_when_exclusive_max_setting_
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -947,6 +957,7 @@ static void test_jso_schema_value_parse_type_integer_when_exclusive_min_setting_
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -1034,6 +1045,7 @@ static void test_jso_schema_value_parse_type_integer_when_maximum_setting_fails(
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -1111,6 +1123,7 @@ static void test_jso_schema_value_parse_type_integer_when_minimum_setting_fails(
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -1178,6 +1191,7 @@ static void test_jso_schema_value_parse_type_integer_when_multiple_of_setting_fa
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&intval, 0, sizeof(jso_schema_value_integer));
 	JSO_SCHEMA_VALUE_DATA_INT(value) = &intval;
@@ -1234,6 +1248,7 @@ static void test_jso_schema_value_parse_type_integer_when_value_init_fails(void 
 
 	jso_string *type = jso_string_create_from_cstr("integer");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -1273,6 +1288,7 @@ static void test_jso_schema_value_parse_type_number_when_all_good_without_exclus
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1366,6 +1382,7 @@ static void test_jso_schema_value_parse_type_number_when_all_good_with_exclusive
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1466,6 +1483,7 @@ static void test_jso_schema_value_parse_type_number_when_all_good_with_exclusive
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1564,6 +1582,7 @@ static void test_jso_schema_value_parse_type_number_when_min_exclusive_fails(voi
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1670,6 +1689,7 @@ static void test_jso_schema_value_parse_type_number_when_max_exclusive_fails(voi
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1776,6 +1796,7 @@ static void test_jso_schema_value_parse_type_number_when_exclusive_max_setting_f
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1873,6 +1894,7 @@ static void test_jso_schema_value_parse_type_number_when_maximum_setting_fails(v
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -1950,6 +1972,7 @@ static void test_jso_schema_value_parse_type_number_when_exclusive_min_setting_f
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -2037,6 +2060,7 @@ static void test_jso_schema_value_parse_type_number_when_minimum_setting_fails(v
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -2104,6 +2128,7 @@ static void test_jso_schema_value_parse_type_number_when_multiple_of_setting_fai
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&numval, 0, sizeof(jso_schema_value_number));
 	JSO_SCHEMA_VALUE_DATA_NUM(value) = &numval;
@@ -2160,6 +2185,7 @@ static void test_jso_schema_value_parse_type_number_when_value_init_fails(void *
 
 	jso_string *type = jso_string_create_from_cstr("number");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -2199,6 +2225,7 @@ static void test_jso_schema_value_parse_type_string_when_all_good(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_STR(value) = &strval;
 
@@ -2272,6 +2299,7 @@ static void test_jso_schema_value_parse_type_string_when_pattern_fails(void **st
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_STR(value) = &strval;
 
@@ -2349,6 +2377,7 @@ static void test_jso_schema_value_parse_type_string_when_min_length_fails(void *
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_STR(value) = &strval;
 
@@ -2416,6 +2445,7 @@ static void test_jso_schema_value_parse_type_string_when_max_length_fails(void *
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_STR(value) = &strval;
 
@@ -2471,6 +2501,7 @@ static void test_jso_schema_value_parse_type_string_when_value_init_fails(void *
 
 	jso_string *type = jso_string_create_from_cstr("string");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -2510,6 +2541,7 @@ static void test_jso_schema_value_parse_type_array_when_all_good(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -2610,6 +2642,7 @@ static void test_jso_schema_value_parse_type_array_when_min_items_setting_fails(
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -2714,6 +2747,7 @@ static void test_jso_schema_value_parse_type_array_when_max_items_setting_fails(
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -2807,6 +2841,7 @@ static void test_jso_schema_value_parse_type_array_when_unique_items_setting_fai
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -2889,6 +2924,7 @@ static void test_jso_schema_value_parse_type_array_when_items_setting_fails(void
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -2961,6 +2997,7 @@ static void test_jso_schema_value_parse_type_array_when_addition_items_setting_f
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_ARR(value) = &arrval;
 
@@ -3019,6 +3056,7 @@ static void test_jso_schema_value_parse_type_array_when_value_init_fails(void **
 
 	jso_string *type = jso_string_create_from_cstr("array");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -3058,6 +3096,7 @@ static void test_jso_schema_value_parse_type_object_when_all_good(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3179,6 +3218,7 @@ static void test_jso_schema_value_parse_type_object_when_deps_setting_fails(void
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3304,6 +3344,7 @@ static void test_jso_schema_value_parse_type_object_when_pattern_props_setting_f
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3407,6 +3448,7 @@ static void test_jso_schema_value_parse_type_object_when_props_setting_fails(voi
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3499,6 +3541,7 @@ static void test_jso_schema_value_parse_type_object_when_addition_props_setting_
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3580,6 +3623,7 @@ static void test_jso_schema_value_parse_type_object_when_max_props_setting_fails
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3647,6 +3691,7 @@ static void test_jso_schema_value_parse_type_object_when_min_props_setting_fails
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	JSO_SCHEMA_VALUE_DATA_OBJ(value) = &objval;
 
@@ -3702,6 +3747,7 @@ static void test_jso_schema_value_parse_type_object_when_value_init_fails(void *
 
 	jso_string *type = jso_string_create_from_cstr("object");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -3740,6 +3786,7 @@ static void test_jso_schema_value_parse_empty_string_type(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -3772,6 +3819,7 @@ static void test_jso_schema_value_parse_invalid_string_type(void **state)
 
 	jso_string *type = jso_string_create_from_cstr("wrong");
 	JSO_VALUE_SET_STRING(tval, type);
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
@@ -3811,6 +3859,8 @@ static void test_jso_schema_value_parse_missing_type_when_all_good(void **state)
 	jso_schema_array typed_of_arr;
 
 	jso_schema_init(&schema);
+
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&any_value, 0, sizeof(jso_schema_value));
 	memset(&null_value, 0, sizeof(jso_schema_value));
@@ -4271,6 +4321,8 @@ static void test_jso_schema_value_parse_missing_type_when_bool_parsing_fails(voi
 
 	jso_schema_init(&schema);
 
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
 	memset(&any_value, 0, sizeof(jso_schema_value));
 	memset(&null_value, 0, sizeof(jso_schema_value));
 	memset(&bool_value, 0, sizeof(jso_schema_value));
@@ -4359,6 +4411,8 @@ static void test_jso_schema_value_parse_missing_type_when_any_init_fails(void **
 
 	jso_schema_init(&schema);
 
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
 	memset(&any_value, 0, sizeof(jso_schema_value));
 	memset(&null_value, 0, sizeof(jso_schema_value));
 	memset(&bool_value, 0, sizeof(jso_schema_value));
@@ -4408,6 +4462,8 @@ static void test_jso_schema_value_parse_missing_type_when_typed_of_arr_alloc_fai
 
 	jso_schema_init(&schema);
 
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
 	expect_function_call(__wrap_jso_schema_data_get_value_fast);
 	expect_value(__wrap_jso_schema_data_get_value_fast, schema, &schema);
 	expect_value(__wrap_jso_schema_data_get_value_fast, data, &data);
@@ -4441,6 +4497,8 @@ static void test_jso_schema_value_parse_array_type_when_all_ok(void **state)
 	jso_schema_array typed_of_arr;
 
 	jso_schema_init(&schema);
+
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	memset(&any_value, 0, sizeof(jso_schema_value));
 	memset(&bool_value, 0, sizeof(jso_schema_value));
@@ -4671,6 +4729,8 @@ static void test_jso_schema_value_parse_array_type_when_int_parsing_fails(void *
 
 	jso_schema_init(&schema);
 
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
 	memset(&any_value, 0, sizeof(jso_schema_value));
 	memset(&bool_value, 0, sizeof(jso_schema_value));
 	memset(&int_value, 0, sizeof(jso_schema_value));
@@ -4808,6 +4868,8 @@ static void test_jso_schema_value_parse_array_type_when_any_init_fails(void **st
 
 	jso_schema_init(&schema);
 
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
+
 	jso_array_init(&types_array);
 	jso_string *type_boolean = jso_string_create_from_cstr("boolean");
 	jso_string *type_integer = jso_string_create_from_cstr("integer");
@@ -4878,6 +4940,8 @@ static void test_jso_schema_value_parse_array_type_when_typed_of_arr_alloc_fails
 	jso_schema_value parent;
 
 	jso_schema_init(&schema);
+
+	JSO_SCHEMA_VALUE_TYPE(data) = JSO_SCHEMA_VALUE_TYPE_OBJECT;
 
 	jso_array_init(&types_array);
 	jso_string *type_boolean = jso_string_create_from_cstr("boolean");

@@ -81,6 +81,10 @@ jso_schema_validation_result jso_schema_validation_composition_push(
 {
 	jso_schema_value *current_value = pos->current_value;
 	jso_schema_value_common *data = JSO_SCHEMA_VALUE_DATA_COMMON_P(current_value);
+	if (data == NULL) {
+		JSO_ASSERT_EQ(JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN, JSO_SCHEMA_VALUE_TYPE_P(current_value));
+		return JSO_SCHEMA_VALIDATION_VALID;
+	}
 
 	jso_schema_reference *ref = JSO_SCHEMA_VALUE_REF_P(current_value);
 	if (ref != NULL) {

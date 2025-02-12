@@ -1962,6 +1962,7 @@ static void test_jso_schema_not_basic(void **state)
 			type: number
 			minimum: 100
  */
+
 static void test_jso_schema_composed_mix(void **state)
 {
 	(void) state; /* unused */
@@ -2086,6 +2087,121 @@ static void test_jso_schema_composed_mix(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an empty object where everything is valid. */
+static void test_jso_schema_empty_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_end(&builder); // root
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+	jso_builder instance_builder;
+
+	// All instances valid
+
+	jso_builder_init(&instance_builder);
+	jso_builder_object_start(&instance_builder);
+	jso_builder_object_add_cstr(&instance_builder, "name", "Admin");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&instance_builder)));
+	jso_builder_clear_all(&instance_builder);
+
+	JSO_VALUE_SET_INT(instance, 10);
+	assert_jso_schema_validation_success(jso_schema_validate(&schema, &instance));
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a not object where everything is invalid. */
+static void test_jso_schema_not_object(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_object_start(&builder, "not");
+	jso_builder_object_end(&builder); // not
+	jso_builder_object_end(&builder); // root
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "first_name", "John");
+	jso_builder_object_add_cstr(&builder, "last_name", "Jones");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_value instance;
+	JSO_VALUE_SET_INT(instance, 15);
+	assert_jso_schema_validation_failure(jso_schema_validate(&schema, &instance));
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a true schema that is invalid in root. */
+static void test_jso_schema_root_true(void **state)
+{
+	(void) state; /* unused */
+
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_value schema_val;
+	JSO_VALUE_SET_BOOL(schema_val, false);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_int_equal(JSO_FAILURE, jso_schema_parse(&schema, &schema_val));
+	assert_int_equal(JSO_SCHEMA_ERROR_ROOT_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
+/* A test for a false schema that is invalid in root. */
+static void test_jso_schema_root_false(void **state)
+{
+	(void) state; /* unused */
+
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// set schema
+	jso_value schema_val;
+	JSO_VALUE_SET_BOOL(schema_val, false);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_int_equal(JSO_FAILURE, jso_schema_parse(&schema, &schema_val));
+	assert_int_equal(JSO_SCHEMA_ERROR_ROOT_DATA_TYPE, JSO_SCHEMA_ERROR_TYPE(&schema));
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for a basic schema with $refs and definitions. */
 static void test_jso_schema_refs_with_defs(void **state)
 {
@@ -2177,6 +2293,10 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_one_of_factored),
 		cmocka_unit_test(test_jso_schema_not_basic),
 		cmocka_unit_test(test_jso_schema_composed_mix),
+		cmocka_unit_test(test_jso_schema_empty_object),
+		cmocka_unit_test(test_jso_schema_not_object),
+		cmocka_unit_test(test_jso_schema_root_true),
+		cmocka_unit_test(test_jso_schema_root_false),
 		cmocka_unit_test(test_jso_schema_refs_with_defs),
 	};
 

@@ -123,7 +123,9 @@ jso_schema_keyword *jso_schema_keyword_get_array_of_schema_objects(jso_schema *s
 	}
 	JSO_ARRAY_FOREACH(arr, item)
 	{
-		if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT) {
+		if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT
+				&& (schema->version < JSO_SCHEMA_VERSION_DRAFT_06
+						|| JSO_TYPE_P(item) != JSO_TYPE_BOOL)) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
 					"Object value for keyword %s must be a schema object", key);
 			jso_schema_array_free(schema_arr);

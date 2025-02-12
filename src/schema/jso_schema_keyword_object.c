@@ -50,17 +50,29 @@ jso_schema_keyword *jso_schema_keyword_get_schema_object(jso_schema *schema, jso
 		const char *key, jso_bool error_on_invalid_type, jso_uint32 keyword_flags,
 		jso_schema_keyword *schema_keyword, jso_value *val, jso_schema_value *parent)
 {
-	val = jso_schema_data_get(
-			schema, data, key, JSO_TYPE_OBJECT, keyword_flags, error_on_invalid_type, val);
-	if (val != NULL) {
-		jso_schema_value *schema_value = jso_schema_value_parse(schema, val, parent);
-		if (schema_value != NULL) {
-			JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
-					= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
-			JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT;
-			JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(schema_keyword) = schema_value;
-			return schema_keyword;
+	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
+		val = jso_schema_data_get_value(schema, data, key, keyword_flags, val);
+		if (val == NULL
+				|| jso_schema_data_check_type(
+						   schema, key, val, JSO_TYPE_BOOL, JSO_TYPE_OBJECT, error_on_invalid_type)
+						== JSO_FAILURE) {
+			return NULL;
 		}
+	} else {
+		val = jso_schema_data_get(
+				schema, data, key, JSO_TYPE_OBJECT, keyword_flags, error_on_invalid_type, val);
+		if (val == NULL) {
+			return NULL;
+		}
+	}
+
+	jso_schema_value *schema_value = jso_schema_value_parse(schema, val, parent);
+	if (schema_value != NULL) {
+		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
+				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
+		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_SCHEMA_OBJECT;
+		JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ_P(schema_keyword) = schema_value;
+		return schema_keyword;
 	}
 
 	return NULL;
@@ -102,7 +114,9 @@ static inline jso_schema_keyword *jso_schema_keyword_get_custom_object(jso_schem
 			}
 			JSO_VALUE_SET_ARRAY(objval, jso_array_copy(arr));
 		} else {
-			if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT) {
+			if (JSO_TYPE_P(item) != JSO_TYPE_OBJECT
+					&& (schema->version < JSO_SCHEMA_VERSION_DRAFT_06
+							|| JSO_TYPE_P(item) != JSO_TYPE_BOOL)) {
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALUE_DATA_TYPE,
 						"Object value for keyword %s must be a schema object%s", key,
 						can_be_array_of_strings ? " or array of strings" : "");

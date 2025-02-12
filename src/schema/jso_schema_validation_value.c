@@ -21,6 +21,8 @@
  *
  */
 
+#include "jso_schema_error.h"
+#include "jso_schema_validation_error.h"
 #include "jso_schema_validation_array.h"
 #include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_common.h"
@@ -45,13 +47,24 @@ jso_schema_validation_result jso_schema_validation_value(
 		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
 {
 	jso_schema_value *value = pos->current_value;
+	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
+
+	if (value_type == JSO_SCHEMA_VALUE_TYPE_OBJECT_BOOLEAN) {
+		if (JSO_SCHEMA_VALUE_FLAGS_P(value) & JSO_SCHEMA_VALUE_FLAG_OBJECT_TRUE) {
+			return JSO_SCHEMA_VALIDATION_VALID;
+		}
+		jso_schema_error_set(
+				schema, JSO_SCHEMA_ERROR_VALIDATION_FALSE, "Schema value is always invalid");
+		pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_VALUE;
+		return JSO_SCHEMA_VALIDATION_INVALID;
+	}
+
 	jso_schema_validation_result result
 			= jso_schema_validation_common_value(schema, pos, value, instance);
 	if (result != JSO_SCHEMA_VALIDATION_VALID) {
 		return result;
 	}
 
-	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);
 	if (value_type == JSO_SCHEMA_VALUE_TYPE_MIXED) {
 		return JSO_SCHEMA_VALIDATION_VALID;
 	}
