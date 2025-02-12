@@ -287,7 +287,6 @@ jso_schema_validation_result jso_schema_validation_number_value(
 						"Value %s is equal to exclusive maximum",
 						jso_number_cstr_from_number(&inst_num_str, &inst_num));
 				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-				;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}
@@ -302,7 +301,6 @@ jso_schema_validation_result jso_schema_validation_number_value(
 					"Value %s is is not multiple of keyword value",
 					jso_number_cstr_from_number(&inst_num_str, &inst_num));
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}

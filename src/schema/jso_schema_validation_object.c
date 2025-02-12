@@ -54,7 +54,6 @@ jso_schema_validation_result jso_schema_validation_object_key(
 					"properties %lu",
 					objlen, kw_uval);
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -117,7 +116,6 @@ jso_schema_validation_result jso_schema_validation_object_key(
 						"is is not found in properties or matches any pattern property",
 						JSO_STRING_VAL(key));
 				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-				;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}
@@ -179,7 +177,6 @@ jso_schema_validation_result jso_schema_validation_object_value(
 								JSO_SVAL_P(item), JSO_STRING_VAL(key));
 						pos->validation_invalid_reason
 								= JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-						;
 						return JSO_SCHEMA_VALIDATION_INVALID;
 					}
 				}
@@ -198,7 +195,6 @@ jso_schema_validation_result jso_schema_validation_object_value(
 					"properties %lu",
 					objlen, kw_uval);
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -212,7 +208,6 @@ jso_schema_validation_result jso_schema_validation_object_value(
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 						"Object does not have requier property with key %s", JSO_SVAL_P(item));
 				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-				;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
 		}

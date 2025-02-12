@@ -100,7 +100,6 @@ jso_schema_validation_result jso_schema_validation_array_append(
 					"Array number of items is %zu which is greater than max number of items %lu",
 					arrlen, max_items);
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -126,7 +125,6 @@ jso_schema_validation_result jso_schema_validation_array_append(
 					jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 							"Array additional items are not allowed and number of items is lower");
 					pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-					;
 					return JSO_SCHEMA_VALIDATION_INVALID;
 				}
 			}
@@ -154,7 +152,6 @@ jso_schema_validation_result jso_schema_validation_array_value(
 					"Array number of items is %zu which is lower than minimum number of items %lu",
 					arrlen, kw_uval);
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-			;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
 	}
@@ -164,7 +161,6 @@ jso_schema_validation_result jso_schema_validation_array_value(
 			&& !jso_array_is_unique(JSO_ARRVAL_P(instance))) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD, "Array is not unique");
 		pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
-		;
 		return JSO_SCHEMA_VALIDATION_INVALID;
 	}
 
