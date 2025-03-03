@@ -1210,8 +1210,8 @@ struct _jso_schema_validation_position {
 	jso_schema_validation_composition_type composition_type;
 	/** validation result */
 	jso_schema_validation_result validation_result;
-	/** validation result */
-	jso_schema_validation_result validation_invalid_reason;
+	/** validation reason for invalid result */
+	jso_schema_validation_invalid_reason validation_invalid_reason;
 	/** whether the validation result is final */
 	jso_bool is_final_validation_result;
 	/** schema parent validation position */
