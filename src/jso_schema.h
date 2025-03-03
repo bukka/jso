@@ -590,6 +590,8 @@ typedef struct _jso_schema_value_object {
 	jso_schema_keyword pattern_properties;
 	/** dependencies keyword */
 	jso_schema_keyword dependencies;
+	/** propertyNames keyword */
+	jso_schema_keyword property_names;
 } jso_schema_value_object;
 
 /**

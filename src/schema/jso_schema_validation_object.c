@@ -21,14 +21,15 @@
  *
  */
 
+#include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_error.h"
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
+#include "jso_schema_validation_string.h"
 
 #include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
-#include "jso_schema_value.h"
 
 #include "jso_re.h"
 #include "jso.h"
@@ -53,6 +54,57 @@ jso_schema_validation_result jso_schema_validation_object_key(
 					"Object number of properties is %zu which is greater than maximum number of "
 					"properties %lu",
 					objlen, kw_uval);
+			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+			return JSO_SCHEMA_VALIDATION_INVALID;
+		}
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(objval->property_names)) {
+		jso_schema_validation_position *top_pos = jso_schema_validation_stack_push_basic(
+				stack, JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(objval->property_names), pos);
+		if (top_pos == NULL) {
+			return JSO_SCHEMA_VALIDATION_ERROR;
+		}
+		// Iterate through positions to check composition
+		jso_schema_validation_stack_layer_iterator iterator;
+		jso_schema_validation_position *key_pos;
+		jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
+		while ((key_pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
+			if (jso_schema_validation_composition_check(stack, key_pos) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+		}
+		// Now the reverse iteration is done and each applicable value validated. The reverse order
+		// is done so parent position is validate after children.
+		jso_schema_validation_stack_layer_reverse_iterator_start(stack, &iterator);
+		while ((key_pos
+				= jso_schema_validation_stack_layer_reverse_iterator_next(stack, &iterator))) {
+			if (!key_pos->is_final_validation_result
+					&& key_pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
+					&& (key_pos->composition_type != JSO_SCHEMA_VALIDATION_COMPOSITION_ANY
+							|| !key_pos->parent->any_of_valid)) {
+				key_pos->validation_result
+						= jso_schema_validation_string_value_str(schema, key_pos, key);
+				if (jso_schema_validation_stream_should_terminate(schema, key_pos)) {
+					return JSO_FAILURE;
+				}
+				jso_schema_validation_result_propagate(schema, key_pos);
+			}
+		}
+
+		bool property_names_invalid = top_pos->validation_result != JSO_SCHEMA_VALIDATION_VALID;
+
+		// Reset the layer to the last separator and push new separator to basically reset positions
+		jso_schema_validation_stack_layer_remove(stack);
+		if (jso_schema_validation_stack_push_separator(stack) == NULL) {
+			return JSO_SCHEMA_VALIDATION_ERROR;
+		}
+
+		if (property_names_invalid) {
+			jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Object key %s does not validate against propertyNames schema",
+					JSO_STRING_VAL(key));
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
