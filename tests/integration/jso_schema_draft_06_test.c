@@ -1003,6 +1003,51 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an object type with property names. */
+static void test_jso_schema_object_property_names(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// propertyNames
+	jso_builder_object_add_object_start(&builder, "propertyNames");
+	// name property
+	jso_builder_object_add_cstr(&builder, "pattern", "^[A-Za-z_][A-Za-z0-9_]*$");
+	// end propertyNames
+	jso_builder_object_end(&builder);
+	// end properties
+	jso_builder_object_end(&builder);
+	// end root
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// valid property name
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "_a_proper_token_001", "value");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// invalid name starting with number
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "001 invalid", "value");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for an object type with size requirements. */
 static void test_jso_schema_object_size(void **state)
 {
@@ -2383,6 +2428,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_additional_props_type),
 		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 		cmocka_unit_test(test_jso_schema_object_required_props),
+		cmocka_unit_test(test_jso_schema_object_property_names),
 		cmocka_unit_test(test_jso_schema_object_size),
 		cmocka_unit_test(test_jso_schema_object_with_array),
 		cmocka_unit_test(test_jso_schema_array_items_number),
