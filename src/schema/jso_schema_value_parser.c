@@ -188,7 +188,7 @@ static jso_schema_value *jso_schema_value_parse_object(
 			TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
 	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
 		JSO_SCHEMA_KW_SET_SCHEMA_OBJ_EX(
-				schema, data, property_names, value, objval, property_names);
+				schema, data, propertyNames, value, objval, property_names);
 	}
 
 	return value;

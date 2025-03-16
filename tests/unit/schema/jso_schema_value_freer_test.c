@@ -253,6 +253,7 @@ static void test_jso_schema_value_clear_object(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(objval, required);
 	JSO_TEST_SCHEMA_FREE_KW(objval, pattern_properties);
 	JSO_TEST_SCHEMA_FREE_KW(objval, dependencies);
+	JSO_TEST_SCHEMA_FREE_KW(objval, property_names);
 
 	jso_schema_value_clear(&value);
 }
