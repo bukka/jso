@@ -568,6 +568,8 @@ typedef struct _jso_schema_value_array {
 	jso_schema_keyword max_items;
 	/** minItems keyword */
 	jso_schema_keyword min_items;
+	/** contains keyword */
+	jso_schema_keyword contains;
 } jso_schema_value_array;
 
 /**

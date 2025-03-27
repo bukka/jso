@@ -161,6 +161,9 @@ static jso_schema_value *jso_schema_value_parse_array(
 	JSO_SCHEMA_KW_SET_BOOL_EX(schema, data, uniqueItems, value, arrval, unique_items);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxItems, value, arrval, max_items);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minItems, value, arrval, min_items);
+	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
+		JSO_SCHEMA_KW_SET_SCHEMA_OBJ(schema, data, contains, value, arrval);
+	}
 
 	return value;
 }
