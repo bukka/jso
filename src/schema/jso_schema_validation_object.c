@@ -203,8 +203,9 @@ jso_schema_validation_result jso_schema_validation_object_pre_value(
 	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_schema_validation_result jso_schema_validation_object_value(
-		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
+jso_schema_validation_result jso_schema_validation_object_value(jso_schema *schema,
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
+		jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
 		return jso_schema_validation_value_type_error(

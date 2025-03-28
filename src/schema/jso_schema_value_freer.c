@@ -103,6 +103,7 @@ static void jso_schema_value_free_array(jso_schema_value *val)
 	jso_schema_keyword_free(&arrval->max_items);
 	jso_schema_keyword_free(&arrval->min_items);
 	jso_schema_keyword_free(&arrval->unique_items);
+	jso_schema_keyword_free(&arrval->contains);
 	jso_free(arrval);
 	JSO_SCHEMA_VALUE_DATA_ARR_P(val) = NULL;
 }

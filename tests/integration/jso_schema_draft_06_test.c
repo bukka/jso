@@ -1647,6 +1647,57 @@ static void test_jso_schema_array_unique(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an array contains. */
+static void test_jso_schema_array_contains(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "array");
+	jso_builder_object_add_object_start(&builder, "contains");
+	jso_builder_object_add_cstr(&builder, "type", "number");
+	jso_builder_object_end(&builder);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// valid if one item is number
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_cstr(&builder, "life");
+	jso_builder_array_add_cstr(&builder, "universe");
+	jso_builder_array_add_cstr(&builder, "everything");
+	jso_builder_array_add_int(&builder, 42);
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// invalid if no item is number
+	jso_builder_array_start(&builder);
+	jso_builder_array_add_cstr(&builder, "life");
+	jso_builder_array_add_cstr(&builder, "universe");
+	jso_builder_array_add_cstr(&builder, "everything");
+	jso_builder_array_add_cstr(&builder, "forty-two");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// invalid for empty array
+	jso_builder_array_start(&builder);
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for an array of type. */
 static void test_jso_schema_type_array(void **state)
 {
@@ -2438,6 +2489,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_array_additional_string),
 		cmocka_unit_test(test_jso_schema_array_length),
 		cmocka_unit_test(test_jso_schema_array_unique),
+		cmocka_unit_test(test_jso_schema_array_contains),
 		cmocka_unit_test(test_jso_schema_type_array),
 		cmocka_unit_test(test_jso_schema_enum_anytype_strings),
 		cmocka_unit_test(test_jso_schema_enum_anytype_mixed),

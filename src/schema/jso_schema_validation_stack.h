@@ -80,4 +80,6 @@ jso_schema_validation_position *jso_schema_validation_stack_layer_reverse_iterat
 
 void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack);
 
+void jso_schema_validation_stack_layer_reset_positions(jso_schema_validation_stack *stack);
+
 #endif /* JSO_SCHEMA_VALIDATION_STACK_H */

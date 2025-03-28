@@ -22,9 +22,11 @@
  */
 
 #include "jso_schema_validation_array.h"
+#include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_error.h"
 #include "jso_schema_validation_result.h"
 #include "jso_schema_validation_stack.h"
+#include "jso_schema_validation_value.h"
 
 #include "jso_schema_array.h"
 #include "jso_schema_error.h"
@@ -134,8 +136,9 @@ jso_schema_validation_result jso_schema_validation_array_append(
 	return JSO_SCHEMA_VALIDATION_VALID;
 }
 
-jso_schema_validation_result jso_schema_validation_array_value(
-		jso_schema *schema, jso_schema_validation_position *pos, jso_value *instance)
+jso_schema_validation_result jso_schema_validation_array_value(jso_schema *schema,
+		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
+		jso_value *instance)
 {
 	if (JSO_TYPE_P(instance) != JSO_TYPE_ARRAY) {
 		return jso_schema_validation_value_type_error(
@@ -162,6 +165,75 @@ jso_schema_validation_result jso_schema_validation_array_value(
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD, "Array is not unique");
 		pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
 		return JSO_SCHEMA_VALIDATION_INVALID;
+	}
+
+	if (JSO_SCHEMA_KW_IS_SET(arrval->contains)) {
+		if (jso_schema_validation_stack_push_separator(stack) == NULL) {
+			return JSO_SCHEMA_VALIDATION_ERROR;
+		}
+
+		jso_schema_validation_position *top_pos = jso_schema_validation_stack_push_basic(
+				stack, JSO_SCHEMA_KEYWORD_DATA_SCHEMA_OBJ(arrval->contains), pos);
+		if (top_pos == NULL) {
+			return JSO_SCHEMA_VALIDATION_ERROR;
+		}
+		// Iterate through positions to check composition
+		jso_schema_validation_stack_layer_iterator iterator;
+		jso_schema_validation_position *contains_pos;
+		jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
+		while ((contains_pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
+			if (jso_schema_validation_composition_check(stack, contains_pos) == JSO_FAILURE) {
+				return JSO_FAILURE;
+			}
+		}
+
+		jso_value *instance_item;
+		bool first_item = true;
+		bool contains_item = false;
+		JSO_ARRAY_FOREACH(JSO_ARRVAL_P(instance), instance_item)
+		{
+			if (first_item) {
+				first_item = false;
+			} else {
+				// For the items after the first item, we need to reset all position
+				jso_schema_validation_stack_layer_reset_positions(stack);
+			}
+			// Now the reverse iteration is done and each applicable value validated. The reverse
+			// order is done so parent position is validate after children.
+			jso_schema_validation_stack_layer_reverse_iterator_start(stack, &iterator);
+			while ((contains_pos
+					= jso_schema_validation_stack_layer_reverse_iterator_next(stack, &iterator))) {
+				if (!contains_pos->is_final_validation_result
+						&& contains_pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
+						&& (contains_pos->composition_type != JSO_SCHEMA_VALIDATION_COMPOSITION_ANY
+								|| !contains_pos->parent->any_of_valid)) {
+					contains_pos->validation_result = jso_schema_validation_value(
+							schema, stack, contains_pos, instance_item);
+					if (jso_schema_validation_stream_should_terminate(schema, contains_pos)) {
+						return JSO_FAILURE;
+					}
+					jso_schema_validation_result_propagate(schema, contains_pos);
+				}
+			}
+
+			contains_item = top_pos->validation_result == JSO_SCHEMA_VALIDATION_VALID;
+			if (contains_item) {
+				jso_schema_error_reset(schema);
+				break;
+			}
+		}
+		JSO_ARRAY_FOREACH_END;
+
+		// Reset the layer to the last separator
+		jso_schema_validation_stack_layer_remove(stack);
+
+		if (!contains_item) {
+			jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Array does not contain item that validate against contains schema");
+			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
+			return JSO_SCHEMA_VALIDATION_INVALID;
+		}
 	}
 
 	return JSO_SCHEMA_VALIDATION_VALID;

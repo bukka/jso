@@ -220,3 +220,19 @@ void jso_schema_validation_stack_layer_remove(jso_schema_validation_stack *stack
 		stack->size = stack->depth = 0;
 	}
 }
+
+void jso_schema_validation_stack_layer_reset_positions(jso_schema_validation_stack *stack)
+{
+	jso_schema_validation_stack_layer_iterator iterator;
+	jso_schema_validation_position *pos;
+	jso_schema_validation_stack_layer_iterator_start(stack, &iterator);
+	while ((pos = jso_schema_validation_stack_layer_iterator_next(stack, &iterator))) {
+		pos->validation_result = JSO_SCHEMA_VALIDATION_VALID;
+		pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_NONE;
+		pos->is_final_validation_result = false;
+		pos->count = 0;
+		pos->one_of_valid = 0;
+		pos->any_of_valid = 0;
+		pos->type_valid = 0;
+	}
+}

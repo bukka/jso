@@ -224,6 +224,7 @@ static void test_jso_schema_value_clear_array(void **state)
 	JSO_TEST_SCHEMA_FREE_KW(arrval, max_items);
 	JSO_TEST_SCHEMA_FREE_KW(arrval, min_items);
 	JSO_TEST_SCHEMA_FREE_KW(arrval, unique_items);
+	JSO_TEST_SCHEMA_FREE_KW(arrval, contains);
 
 	jso_schema_value_clear(&value);
 }

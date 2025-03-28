@@ -254,7 +254,7 @@ JSO_API jso_rc jso_schema_validation_stream_value(
 				&& pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
 				&& (pos->composition_type != JSO_SCHEMA_VALIDATION_COMPOSITION_ANY
 						|| !pos->parent->any_of_valid)) {
-			pos->validation_result = jso_schema_validation_value(schema, pos, instance);
+			pos->validation_result = jso_schema_validation_value(schema, stack, pos, instance);
 			if (jso_schema_validation_stream_should_terminate(schema, pos)) {
 				return JSO_FAILURE;
 			}
