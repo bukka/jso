@@ -83,7 +83,7 @@ jso_schema_validation_result jso_schema_validation_object_key(
 					&& key_pos->validation_result == JSO_SCHEMA_VALIDATION_VALID
 					&& (key_pos->composition_type != JSO_SCHEMA_VALIDATION_COMPOSITION_ANY
 							|| !key_pos->parent->any_of_valid)) {
-				if (key_pos->current_value->type == JSO_TYPE_STRING) {
+				if (key_pos->current_value->type == JSO_SCHEMA_VALUE_TYPE_STRING) {
 					key_pos->validation_result
 							= jso_schema_validation_string_value_str(schema, key_pos, key);
 					if (jso_schema_validation_stream_should_terminate(schema, key_pos)) {
