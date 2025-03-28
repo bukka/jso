@@ -72,9 +72,17 @@ struct _jso_string {
  * Get string value for the supplied string pointer.
  *
  * @param _str pointer to @ref jso_string
- * @return The string value (char array)
+ * @return The string value (jso_ctype array)
  */
 #define JSO_STRING_VAL(_str) ((jso_ctype *) &(_str)->val)
+
+/**
+ * Get a C string value for the supplied string pointer.
+ *
+ * @param _str pointer to @ref jso_string
+ * @return The string value (const char array)
+ */
+#define JSO_STRING_CSTR_VAL(_str) ((const char *) &(_str)->val)
 
 /**
  * Get string flags of the supplied string pointer.

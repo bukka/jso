@@ -40,11 +40,11 @@ static void test_jso_pointer_create_simple(void **state)
 	jso_pointer *pointer = jso_pointer_create(str);
 
 	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_NONE);
-	assert_string_equal(JSO_STRING_VAL(pointer->pointer_value), "/path/to/string");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->pointer_value), "/path/to/string");
 	assert_int_equal(pointer->tokens_count, 3);
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[0]), "path");
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[1]), "to");
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[2]), "string");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[0]), "path");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[1]), "to");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[2]), "string");
 	assert_int_equal(pointer->refcount, 0);
 
 	jso_string_free(str);
@@ -61,11 +61,11 @@ static void test_jso_pointer_create_with_valid_simple_escapes(void **state)
 
 	assert_non_null(pointer);
 	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_NONE);
-	assert_string_equal(JSO_STRING_VAL(pointer->pointer_value), "/e1~0+/e2~1+/e3+");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->pointer_value), "/e1~0+/e2~1+/e3+");
 	assert_int_equal(pointer->tokens_count, 3);
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[0]), "e1~+");
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[1]), "e2/+");
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[2]), "e3+");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[0]), "e1~+");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[1]), "e2/+");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[2]), "e3+");
 	assert_int_equal(pointer->refcount, 0);
 
 	jso_string_free(str);
@@ -82,10 +82,10 @@ static void test_jso_pointer_create_with_valid_mixed_escapes(void **state)
 
 	assert_non_null(pointer);
 	assert_int_equal(JSO_POINTER_ERROR_TYPE(pointer), JSO_POINTER_ERROR_NONE);
-	assert_string_equal(JSO_STRING_VAL(pointer->pointer_value), "/esc~0~1-~1-~0/end");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->pointer_value), "/esc~0~1-~1-~0/end");
 	assert_int_equal(pointer->tokens_count, 2);
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[0]), "esc~/-/-~");
-	assert_string_equal(JSO_STRING_VAL(pointer->tokens[1]), "end");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[0]), "esc~/-/-~");
+	assert_string_equal(JSO_STRING_CSTR_VAL(pointer->tokens[1]), "end");
 	assert_int_equal(pointer->refcount, 0);
 
 	jso_string_free(str);

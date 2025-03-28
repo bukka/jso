@@ -96,7 +96,7 @@ static void test_jso_builder_array(void **state)
 				break;
 			case 4:
 				assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));
-				assert_string_equal("test", JSO_SVAL_P(item));
+				assert_string_equal("test", JSO_CSVAL_P(item));
 				break;
 			case 5:
 				assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));
@@ -201,7 +201,7 @@ static void test_jso_builder_object(void **state)
 
 	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "cstr", &item));
 	assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));
-	assert_string_equal("test", JSO_SVAL_P(item));
+	assert_string_equal("test", JSO_CSVAL_P(item));
 
 	assert_int_equal(JSO_SUCCESS, jso_ht_get_by_cstr_key(ht, "str", &item));
 	assert_int_equal(JSO_TYPE_STRING, JSO_TYPE_P(item));

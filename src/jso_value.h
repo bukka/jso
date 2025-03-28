@@ -82,6 +82,14 @@
 #define JSO_SLEN_P(_pjv) JSO_STRING_LEN(JSO_STR_P(_pjv))
 
 /**
+ * Get a cstr string value of the supplied pointer to value.
+ *
+ * @param _pjv pointer to @ref jso_value
+ * @return Pointer to the cstr value (const char buffer).
+ */
+#define JSO_CSVAL_P(_pjv) (const char *) JSO_SVAL_P(_pjv)
+
+/**
  * Get an array of the supplied pointer to value.
  *
  * @param _pjv pointer to @ref jso_value
@@ -194,6 +202,14 @@
  * @return String length.
  */
 #define JSO_SLEN(_jv) JSO_SLEN_P(&(_jv))
+
+/**
+ * Get a C string value of the supplied value.
+ *
+ * @param _jv variable of @ref jso_value type
+ * @return C string value (const char buffer).
+ */
+#define JSO_CSVAL(_jv) JSO_CSVAL_P(&(_jv))
 
 /**
  * Get an array of the supplied value.
