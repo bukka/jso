@@ -69,6 +69,8 @@ void __wrap_jso_schema_uri_clear(jso_schema_uri *uri)
 
 static void jso_test_expect_free_common(jso_schema_value_common *value)
 {
+	JSO_TEST_SCHEMA_FREE_KW(value, id);
+	JSO_TEST_SCHEMA_FREE_KW(value, ref);
 	JSO_TEST_SCHEMA_FREE_KW(value, default_value);
 	JSO_TEST_SCHEMA_FREE_KW(value, title);
 	JSO_TEST_SCHEMA_FREE_KW(value, description);

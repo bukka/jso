@@ -185,7 +185,7 @@ jso_schema_keyword *jso_schema_keyword_get_string(jso_schema *schema, jso_value 
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_STRING;
-		JSO_SCHEMA_KEYWORD_DATA_STR_P(schema_keyword) = JSO_STR_P(val);
+		JSO_SCHEMA_KEYWORD_DATA_STR_P(schema_keyword) = jso_string_copy(JSO_STR_P(val));
 		return schema_keyword;
 	}
 	return NULL;

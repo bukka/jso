@@ -36,6 +36,8 @@ static void jso_schema_value_free_common(jso_schema_value *val)
 	if (comval->re != NULL) {
 		jso_re_code_free(comval->re);
 	}
+	jso_schema_keyword_free(&comval->id);
+	jso_schema_keyword_free(&comval->ref);
 	jso_schema_keyword_free(&comval->default_value);
 	jso_schema_keyword_free(&comval->title);
 	jso_schema_keyword_free(&comval->description);
