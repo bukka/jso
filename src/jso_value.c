@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2012-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -64,6 +64,34 @@ JSO_API void jso_value_clear(jso_value *val)
 JSO_API void jso_value_free(jso_value *val)
 {
 	jso_value_clear(val);
+}
+
+/* COPY */
+
+JSO_API jso_value *jso_value_copy(jso_value *val)
+{
+	switch (JSO_TYPE_P(val)) {
+		case JSO_TYPE_STRING:
+			JSO_STR_P(val) = jso_string_copy(JSO_STR_P(val));
+			break;
+		case JSO_TYPE_ARRAY:
+			JSO_ARRVAL_P(val) = jso_array_copy(JSO_ARRVAL_P(val));
+			break;
+		case JSO_TYPE_OBJECT:
+			JSO_OBJVAL_P(val) = jso_object_copy(JSO_OBJVAL_P(val));
+			break;
+		case JSO_TYPE_POINTER:
+			JSO_PTRVAL_P(val) = jso_pointer_copy(JSO_PTRVAL_P(val));
+			break;
+		case JSO_TYPE_SCHEMA_VALUE:
+		case JSO_TYPE_ERROR:
+			/* those are not copyable atm. */
+			return NULL;
+		default:
+			break;
+	}
+
+	return val;
 }
 
 /* ERROR */

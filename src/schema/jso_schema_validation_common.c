@@ -83,5 +83,14 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 		}
 	}
 
+	if (JSO_SCHEMA_KW_IS_SET(comval->const_value)) {
+		if (!jso_value_equals(instance, JSO_SCHEMA_KEYWORD_DATA_ANY(comval->const_value))) {
+			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
+					"Instance value is not equal to const value");
+			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;
+			return JSO_SCHEMA_VALIDATION_INVALID;
+		}
+	}
+
 	return JSO_SCHEMA_VALIDATION_VALID;
 }

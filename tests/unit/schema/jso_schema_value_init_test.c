@@ -310,6 +310,7 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(voi
 	data.data.obj = &obj;
 
 	jso_schema_init(&schema);
+	schema.version = JSO_SCHEMA_VERSION_DRAFT_06;
 
 	expect_function_call(__wrap_jso_schema_value_alloc);
 	expect_value(__wrap_jso_schema_value_alloc, schema, &schema);
@@ -403,6 +404,16 @@ static void test_jso_schema_value_init_when_all_good_and_init_with_idref_set(voi
 	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.enum_elements);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_ARRAY);
 	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
+	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
+
+	expect_function_call(__wrap_jso_schema_keyword_set);
+	expect_value(__wrap_jso_schema_keyword_set, schema, &schema);
+	expect_value(__wrap_jso_schema_keyword_set, data, &data);
+	expect_string(__wrap_jso_schema_keyword_set, key, "const");
+	expect_value(__wrap_jso_schema_keyword_set, value, &value);
+	expect_value(__wrap_jso_schema_keyword_set, schema_keyword, &value_data.const_value);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_type, JSO_SCHEMA_KEYWORD_TYPE_ANY);
+	expect_value(__wrap_jso_schema_keyword_set, keyword_flags, 0);
 	will_return(__wrap_jso_schema_keyword_set, JSO_SUCCESS);
 
 	expect_function_call(__wrap_jso_schema_keyword_set);

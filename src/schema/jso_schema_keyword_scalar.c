@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,7 +23,6 @@
 
 #include "jso_schema_data.h"
 #include "jso_schema_error.h"
-#include "jso_schema_keyword.h"
 #include "jso_schema_keyword_scalar.h"
 
 #include "jso.h"
@@ -39,6 +38,8 @@ jso_schema_keyword *jso_schema_keyword_get_any(jso_schema *schema, jso_value *da
 		JSO_SCHEMA_KEYWORD_FLAGS_P(schema_keyword)
 				= keyword_flags | JSO_SCHEMA_KEYWORD_FLAG_PRESENT;
 		JSO_SCHEMA_KEYWORD_TYPE_P(schema_keyword) = JSO_SCHEMA_KEYWORD_TYPE_ANY;
+		val = jso_value_copy(val);
+		JSO_ASSERT_NOT_NULL(val);
 		JSO_SCHEMA_KEYWORD_DATA_ANY_P(schema_keyword) = val;
 		return schema_keyword;
 	}

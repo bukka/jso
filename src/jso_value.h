@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2012-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -517,6 +517,14 @@ JSO_API void jso_value_clear(jso_value *val);
  * @deprecated Use jso_value_clear
  */
 JSO_API void jso_value_free(jso_value *val);
+
+/**
+ * Copy @ref jso_value instance.
+ *
+ * @param val instance of @ref jso_value
+ * @return Copied @ref jso_value instance
+ */
+JSO_API jso_value *jso_value_copy(jso_value *val);
 
 /**
  * Return error type for the provided value.

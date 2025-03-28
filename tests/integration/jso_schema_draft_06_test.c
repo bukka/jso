@@ -1860,6 +1860,44 @@ static void test_jso_schema_enum_anytype_mixed(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an const value. */
+static void test_jso_schema_const_value(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_object_start(&builder, "properties");
+	jso_builder_object_add_object_start(&builder, "country");
+	jso_builder_object_add_cstr(&builder, "const", "United States of America");
+	jso_builder_object_end(&builder);
+	jso_builder_object_end(&builder);
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "country", "United States of America");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "country", "Canada");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for a basic allOf schema composition. */
 static void test_jso_schema_all_of_basic(void **state)
 {
@@ -2493,6 +2531,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_type_array),
 		cmocka_unit_test(test_jso_schema_enum_anytype_strings),
 		cmocka_unit_test(test_jso_schema_enum_anytype_mixed),
+		cmocka_unit_test(test_jso_schema_const_value),
 		cmocka_unit_test(test_jso_schema_all_of_basic),
 		cmocka_unit_test(test_jso_schema_all_of_illogical),
 		cmocka_unit_test(test_jso_schema_any_of_basic),

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2024-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -104,6 +104,18 @@ typedef struct _jso_pointer {
 static inline bool jso_pointer_error_is_set(jso_pointer *pointer)
 {
 	return JSO_POINTER_ERROR_TYPE(pointer) != JSO_POINTER_ERROR_NONE;
+}
+
+/**
+ * Copy pointer.
+ *
+ * @param pointer pointer to copy
+ * @return The copied pointer.
+ */
+static inline jso_pointer *jso_pointer_copy(jso_pointer *pointer)
+{
+	++JSO_POINTER_REFCOUNT(pointer);
+	return pointer;
 }
 
 /**

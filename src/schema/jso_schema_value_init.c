@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2023-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,9 +23,7 @@
 
 #include "jso_schema_array.h"
 #include "jso_schema_data.h"
-#include "jso_schema_error.h"
 #include "jso_schema_keyword.h"
-#include "jso_schema_keyword_freer.h"
 #include "jso_schema_value.h"
 #include "jso_schema_reference.h"
 #include "jso_schema_uri.h"
@@ -102,6 +100,9 @@ jso_schema_value *jso_schema_value_init(jso_schema *schema, jso_value *data,
 		// set other common keywords
 		JSO_SCHEMA_KW_SET_WITH_FLAGS_EX(schema, data, enum, value, value_data, enum_elements,
 				TYPE_ARRAY, JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
+		if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
+			JSO_SCHEMA_KW_SET_ANY_EX(schema, data, const, value, value_data, const_value);
+		}
 		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, allOf, value, value_data, all_of);
 		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, anyOf, value, value_data, any_of);
 		JSO_SCHEMA_KW_SET_ARR_OF_SCHEMA_OBJS_NE_EX(schema, data, oneOf, value, value_data, one_of);

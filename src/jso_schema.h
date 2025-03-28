@@ -460,6 +460,8 @@ typedef struct _jso_schema_keyword {
 	jso_schema_keyword ref; \
 	/** enum keyword */ \
 	jso_schema_keyword enum_elements; \
+	/** const keyword */ \
+	jso_schema_keyword const_value; \
 	/** any type virtual composition keyword */ \
 	jso_schema_keyword type_any; \
 	/** type list virtual composition keyword */ \
