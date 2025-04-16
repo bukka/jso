@@ -919,13 +919,13 @@ typedef enum _jso_schema_version {
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DEPRECATED_LATEST "http://json-schema.org/schema#"
 /** @brief Draft 4 identifier */
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_04 "http://json-schema.org/draft-04/schema#"
-/** @brief Draft 4 identifier */
+/** @brief Draft 6 identifier */
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_06 "http://json-schema.org/draft-06/schema#"
-/** @brief Draft 4 identifier */
+/** @brief Draft 7 identifier */
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_07 "http://json-schema.org/draft-07/schema#"
-/** @brief Draft 4 identifier */
+/** @brief Draft 2019-09 identifier */
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2019_09 "https://json-schema.org/draft/2019-09/schema"
-/** @brief Draft 4 identifier */
+/** @brief Draft 2020-12 identifier */
 #define JSO_SCHEMA_VERSION_IDENTIFIER_DRAFT_2020_12 "https://json-schema.org/draft/2020-12/schema"
 
 /**
