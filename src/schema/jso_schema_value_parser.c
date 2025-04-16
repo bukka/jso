@@ -177,6 +177,9 @@ static jso_schema_value *jso_schema_value_parse_object(
 		return NULL;
 	}
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(value);
+	const int not_empty_flag = schema->version == JSO_SCHEMA_VERSION_DRAFT_04
+			? JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY
+			: 0;
 
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, minProperties, value, objval, min_properties);
 	JSO_SCHEMA_KW_SET_UINT_EX(schema, data, maxProperties, value, objval, max_properties);
@@ -186,9 +189,9 @@ static jso_schema_value *jso_schema_value_parse_object(
 	JSO_SCHEMA_KW_SET_EX(schema, data, patternProperties, value, objval, pattern_properties,
 			TYPE_REGEXP_OBJECT_OF_SCHEMA_OBJECTS);
 	JSO_SCHEMA_KW_SET_WITH_FLAGS(schema, data, required, value, objval, TYPE_ARRAY_OF_STRINGS,
-			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE);
+			JSO_SCHEMA_KEYWORD_FLAG_UNIQUE | not_empty_flag);
 	JSO_SCHEMA_KW_SET_WITH_FLAGS(schema, data, dependencies, value, objval,
-			TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS, JSO_SCHEMA_KEYWORD_FLAG_NOT_EMPTY);
+			TYPE_OBJECT_OF_SCHEMA_OBJECTS_OR_ARRAY_OF_STRINGS, not_empty_flag);
 	if (schema->version >= JSO_SCHEMA_VERSION_DRAFT_06) {
 		JSO_SCHEMA_KW_SET_SCHEMA_OBJ_EX(schema, data, propertyNames, value, objval, property_names);
 	}

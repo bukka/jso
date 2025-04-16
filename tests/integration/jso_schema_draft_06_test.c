@@ -1003,6 +1003,78 @@ static void test_jso_schema_object_required_props(void **state)
 	jso_schema_clear(&schema);
 }
 
+/* A test for an object type with empty required properties. */
+static void test_jso_schema_object_required_props_empty(void **state)
+{
+	(void) state; /* unused */
+
+	jso_schema_validation_result result;
+	jso_builder builder;
+	jso_builder_init(&builder);
+
+	// build schema
+	jso_schema_test_start_schema_object(&builder);
+	jso_builder_object_add_cstr(&builder, "type", "object");
+	// properties
+	jso_builder_object_add_object_start(&builder, "properties");
+	// name property
+	jso_builder_object_add_object_start(&builder, "name");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// email property
+	jso_builder_object_add_object_start(&builder, "email");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// address property
+	jso_builder_object_add_object_start(&builder, "address");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// telephone property
+	jso_builder_object_add_object_start(&builder, "telephone");
+	jso_builder_object_add_cstr(&builder, "type", "string");
+	jso_builder_object_end(&builder);
+	// end properties
+	jso_builder_object_end(&builder);
+	// required
+	jso_builder_object_add_array_start(&builder, "required");
+	jso_builder_array_end(&builder);
+	// end root
+	jso_builder_object_end(&builder);
+
+	jso_schema schema;
+	jso_schema_init(&schema);
+	assert_jso_schema_result_success(jso_schema_parse(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// valid with all required properties
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "name", "William Shakespeare");
+	jso_builder_object_add_cstr(&builder, "email", "bill@stratford-upon-avon.co.uk");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// valid with all required and extra properties
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "name", "William Shakespeare");
+	jso_builder_object_add_cstr(&builder, "email", "bill@stratford-upon-avon.co.uk");
+	jso_builder_object_add_cstr(&builder, "address", "Henley Street, Stratford-upon-Avon");
+	jso_builder_object_add_cstr(&builder, "authorship", "in question");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	// valid with missing email
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "name", "William Shakespeare");
+	jso_builder_object_add_cstr(&builder, "address", "Henley Street, Stratford-upon-Avon");
+	assert_jso_schema_validation_success(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
+	jso_schema_clear(&schema);
+}
+
 /* A test for an object type with property names. */
 static void test_jso_schema_object_property_names(void **state)
 {
@@ -2517,6 +2589,7 @@ int main(void)
 		cmocka_unit_test(test_jso_schema_object_additional_props_type),
 		cmocka_unit_test(test_jso_schema_object_all_props_non_overlap),
 		cmocka_unit_test(test_jso_schema_object_required_props),
+		cmocka_unit_test(test_jso_schema_object_required_props_empty),
 		cmocka_unit_test(test_jso_schema_object_property_names),
 		cmocka_unit_test(test_jso_schema_object_size),
 		cmocka_unit_test(test_jso_schema_object_with_array),
