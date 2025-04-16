@@ -69,8 +69,8 @@ JSO_API void jso_re_match_data_free(jso_re_match_data *match_data)
 	pcre2_match_data_free(match_data);
 }
 
-JSO_API int jso_re_match(jso_string *subject, jso_re_code *code, jso_re_match_data *match_data)
+JSO_API int jso_re_match(
+		const char *subject, size_t subject_len, jso_re_code *code, jso_re_match_data *match_data)
 {
-	return pcre2_match(code->re, (PCRE2_SPTR) JSO_STRING_VAL(subject), JSO_STRING_LEN(subject), 0,
-			0, match_data, NULL);
+	return pcre2_match(code->re, (PCRE2_SPTR) subject, subject_len, 0, 0, match_data, NULL);
 }

@@ -33,18 +33,18 @@
 
 jso_schema_validation_result jso_schema_validation_null_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 jso_schema_validation_result jso_schema_validation_boolean_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 jso_schema_validation_result jso_schema_validation_integer_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 jso_schema_validation_result jso_schema_validation_number_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_SCALAR_H */

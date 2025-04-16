@@ -34,8 +34,8 @@
 #include "jso_re.h"
 #include "jso.h"
 
-jso_schema_validation_result jso_schema_validation_object_key(
-		jso_schema_validation_stack *stack, jso_schema_validation_position *pos, jso_string *key)
+jso_schema_validation_result jso_schema_validation_object_key(jso_schema_validation_stack *stack,
+		jso_schema_validation_position *pos, jso_virt_string *key)
 {
 	if (pos->is_final_validation_result) {
 		return JSO_SCHEMA_VALIDATION_VALID;
@@ -106,7 +106,7 @@ jso_schema_validation_result jso_schema_validation_object_key(
 			jso_schema_validation_set_final_result(pos, JSO_SCHEMA_VALIDATION_INVALID);
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Object key %s does not validate against propertyNames schema",
-					JSO_STRING_VAL(key));
+					jso_virt_string_val(key));
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
@@ -117,7 +117,9 @@ jso_schema_validation_result jso_schema_validation_object_key(
 	if (JSO_SCHEMA_KW_IS_SET(objval->properties)) {
 		jso_value *result;
 		jso_object *props = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->properties);
-		if (jso_object_get(props, key, &result) == JSO_SUCCESS) {
+		if (jso_object_get_by_cstr_key(
+					props, jso_virt_string_val(key), jso_virt_string_len(key), &result)
+				== JSO_SUCCESS) {
 			JSO_ASSERT_EQ(JSO_TYPE_P(result), JSO_TYPE_SCHEMA_VALUE);
 			if (jso_schema_validation_stack_push_basic(stack, JSO_SVVAL_P(result), pos) == NULL) {
 				return JSO_SCHEMA_VALIDATION_ERROR;
@@ -138,7 +140,8 @@ jso_schema_validation_result jso_schema_validation_object_key(
 			jso_re_code *code = JSO_SCHEMA_VALUE_REGEXP_P(schema_value);
 			JSO_ASSERT_NOT_NULL(code);
 			jso_re_match_data *match_data = jso_re_match_data_create(code);
-			int match_result = jso_re_match(key, code, match_data);
+			int match_result = jso_re_match(
+					jso_virt_string_val(key), jso_virt_string_len(key), code, match_data);
 			jso_re_match_data_free(match_data);
 			if (match_result > 0) {
 				if (jso_schema_validation_stack_push_basic(stack, schema_value, pos) == NULL) {
@@ -168,7 +171,7 @@ jso_schema_validation_result jso_schema_validation_object_key(
 						"Object does not allow additional properties but added property with key "
 						"%s which "
 						"is is not found in properties or matches any pattern property",
-						JSO_STRING_VAL(key));
+						jso_virt_string_val(key));
 				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
 				return JSO_SCHEMA_VALIDATION_INVALID;
 			}
@@ -205,28 +208,28 @@ jso_schema_validation_result jso_schema_validation_object_pre_value(
 
 jso_schema_validation_result jso_schema_validation_object_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance)
+		jso_virt_value *instance)
 {
-	if (JSO_TYPE_P(instance) != JSO_TYPE_OBJECT) {
+	if (jso_virt_value_type(instance) != JSO_TYPE_OBJECT) {
 		return jso_schema_validation_value_type_error(
-				schema, pos, JSO_TYPE_OBJECT, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_OBJECT, jso_virt_value_type(instance));
 	}
 
 	jso_schema_value_object *objval = JSO_SCHEMA_VALUE_DATA_OBJ_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->dependencies)) {
-		jso_string *key;
-		jso_value *val;
+		jso_virt_string *key;
+		jso_virt_value *val;
 		jso_object *dependencies = JSO_SCHEMA_KEYWORD_DATA_OBJ_SCHEMA_OBJ(objval->dependencies);
-		jso_object *instance_obj = JSO_OBJVAL_P(instance);
-		JSO_OBJECT_FOREACH(dependencies, key, val)
+		jso_virt_object *instance_obj = jso_virt_value_object(instance);
+		JSO_VIRT_OBJECT_FOREACH(dependencies, key, val)
 		{
 			if (JSO_TYPE_P(val) == JSO_TYPE_ARRAY) {
 				jso_value *item;
 				JSO_ARRAY_FOREACH(JSO_ARRVAL_P(val), item)
 				{
 					JSO_ASSERT_EQ(JSO_TYPE_P(item), JSO_TYPE_STRING);
-					if (!jso_object_has(instance_obj, JSO_STR_P(item))) {
+					if (!jso_virt_object_has_str_key(instance_obj, JSO_STR_P(item))) {
 						jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 								"Object key %s is required by dependency %s but it is not present",
 								JSO_SVAL_P(item), JSO_STRING_VAL(key));
@@ -243,7 +246,7 @@ jso_schema_validation_result jso_schema_validation_object_value(jso_schema *sche
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->min_properties)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(objval->min_properties);
-		size_t objlen = JSO_OBJECT_COUNT(JSO_OBJVAL_P(instance));
+		size_t objlen = jso_virt_object_count(jso_virt_value_object(instance));
 		if (objlen < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Object number of properties is %zu which is lower than minimum number of "
@@ -256,10 +259,10 @@ jso_schema_validation_result jso_schema_validation_object_value(jso_schema *sche
 
 	if (JSO_SCHEMA_KW_IS_SET(objval->required)) {
 		jso_value *item;
-		jso_object *instance_object = JSO_OBJVAL_P(instance);
+		jso_virt_object *instance_object = jso_virt_value_object(instance);
 		JSO_ARRAY_FOREACH(JSO_SCHEMA_KEYWORD_DATA_ARR_STR(objval->required), item)
 		{
-			if (!jso_object_has(instance_object, JSO_STR_P(item))) {
+			if (!jso_virt_object_has_str_key(instance_object, JSO_STR_P(item))) {
 				jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 						"Object does not have requier property with key %s", JSO_SVAL_P(item));
 				pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;

@@ -184,6 +184,18 @@ JSO_API jso_bool jso_ht_has(jso_ht *ht, jso_string *key);
  *
  * @param ht hash table
  * @param key C string key of the value to find
+ * @param key_len C string key length
+ * @param value pointer that gets the returned value pointer
+ * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
+ */
+JSO_API jso_rc jso_ht_get_by_cstr_key_with_len(
+		jso_ht *ht, const char *key, size_t key_len, jso_value **value);
+
+/**
+ * Get value from the hash table by C string key.
+ *
+ * @param ht hash table
+ * @param key C string key of the value to find
  * @param value pointer that gets the returned value pointer
  * @return @ref JSO_SUCCESS on success, otherwise @ref JSO_FAILURE.
  */

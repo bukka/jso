@@ -138,18 +138,18 @@ jso_schema_validation_result jso_schema_validation_array_append(
 
 jso_schema_validation_result jso_schema_validation_array_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance)
+		jso_virt_value *instance)
 {
-	if (JSO_TYPE_P(instance) != JSO_TYPE_ARRAY) {
+	if (jso_virt_value_type(instance) != JSO_TYPE_ARRAY) {
 		return jso_schema_validation_value_type_error(
-				schema, pos, JSO_TYPE_ARRAY, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_ARRAY, jso_virt_value_type(instance));
 	}
 
 	jso_schema_value_array *arrval = JSO_SCHEMA_VALUE_DATA_ARR_P(pos->current_value);
 
 	if (JSO_SCHEMA_KW_IS_SET(arrval->min_items)) {
 		jso_uint kw_uval = JSO_SCHEMA_KEYWORD_DATA_UINT(arrval->min_items);
-		size_t arrlen = JSO_ARRAY_LEN(JSO_ARRVAL_P(instance));
+		size_t arrlen = jso_virt_array_len(jso_virt_value_array(instance));
 		if (arrlen < kw_uval) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Array number of items is %zu which is lower than minimum number of items %lu",
@@ -161,7 +161,7 @@ jso_schema_validation_result jso_schema_validation_array_value(jso_schema *schem
 
 	if (JSO_SCHEMA_KW_IS_SET(arrval->unique_items)
 			&& JSO_SCHEMA_KEYWORD_DATA_BOOL(arrval->unique_items)
-			&& !jso_array_is_unique(JSO_ARRVAL_P(instance))) {
+			&& !jso_virt_array_is_unique(jso_virt_value_array(instance))) {
 		jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD, "Array is not unique");
 		pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_KEYWORD;
 		return JSO_SCHEMA_VALIDATION_INVALID;
@@ -187,10 +187,10 @@ jso_schema_validation_result jso_schema_validation_array_value(jso_schema *schem
 			}
 		}
 
-		jso_value *instance_item;
+		jso_virt_value *instance_item;
 		bool first_item = true;
 		bool contains_item = false;
-		JSO_ARRAY_FOREACH(JSO_ARRVAL_P(instance), instance_item)
+		JSO_VIRT_ARRAY_FOREACH(jso_virt_value_array(instance), instance_item)
 		{
 			if (first_item) {
 				first_item = false;

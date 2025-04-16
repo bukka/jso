@@ -29,7 +29,7 @@
 #include "jso.h"
 
 jso_schema_validation_result jso_schema_validation_common_value(jso_schema *schema,
-		jso_schema_validation_position *pos, jso_schema_value *value, jso_value *instance)
+		jso_schema_validation_position *pos, jso_schema_value *value, jso_virt_value *instance)
 {
 	jso_schema_value_common *comval = JSO_SCHEMA_VALUE_DATA_COMMON_P(value);
 
@@ -69,7 +69,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 		bool found = false;
 		JSO_ARRAY_FOREACH(arr, item)
 		{
-			if (jso_value_equals(instance, item)) {
+			if (jso_virt_value_equals(instance, item)) {
 				found = true;
 				break;
 			}
@@ -84,7 +84,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->const_value)) {
-		if (!jso_value_equals(instance, JSO_SCHEMA_KEYWORD_DATA_ANY(comval->const_value))) {
+		if (!jso_virt_value_equals(instance, JSO_SCHEMA_KEYWORD_DATA_ANY(comval->const_value))) {
 			jso_schema_error_format(schema, JSO_SCHEMA_ERROR_VALIDATION_KEYWORD,
 					"Instance value is not equal to const value");
 			pos->validation_invalid_reason = JSO_SCHEMA_ERROR_VALIDATION_COMPOSITION;

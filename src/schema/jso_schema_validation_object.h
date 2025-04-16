@@ -39,6 +39,6 @@ jso_schema_validation_result jso_schema_validation_object_pre_value(
 
 jso_schema_validation_result jso_schema_validation_object_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_OBJECT_H */

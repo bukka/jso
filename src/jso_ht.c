@@ -49,9 +49,9 @@ static inline jso_uint32 jso_ht_get_string_hash(jso_string *str)
 }
 
 static inline jso_ht_entry *jso_ht_find_entry_by_cstr_key(
-		jso_ht_entry *entries, size_t capacity, const char *ckey)
+		jso_ht_entry *entries, size_t capacity, const char *ckey, size_t key_len)
 {
-	jso_uint32 index = jso_ht_create_hash((const jso_ctype *) ckey, strlen(ckey)) % capacity;
+	jso_uint32 index = jso_ht_create_hash((const jso_ctype *) ckey, key_len) % capacity;
 	while (1) {
 		jso_ht_entry *entry = &entries[index];
 		if (entry->key == NULL || jso_string_equals_to_cstr(entry->key, ckey)) {
@@ -211,19 +211,25 @@ JSO_API jso_bool jso_ht_has(jso_ht *ht, jso_string *key)
 	return true;
 }
 
-JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
+JSO_API jso_rc jso_ht_get_by_cstr_key_with_len(
+		jso_ht *ht, const char *key, size_t key_len, jso_value **value)
 {
 	if (ht->count == 0) {
 		return JSO_FAILURE;
 	}
 
-	jso_ht_entry *entry = jso_ht_find_entry_by_cstr_key(ht->entries, ht->capacity, key);
+	jso_ht_entry *entry = jso_ht_find_entry_by_cstr_key(ht->entries, ht->capacity, key, key_len);
 	if (entry->key == NULL) {
 		return JSO_FAILURE;
 	}
 
 	*value = &entry->value;
 	return JSO_SUCCESS;
+}
+
+JSO_API jso_rc jso_ht_get_by_cstr_key(jso_ht *ht, const char *key, jso_value **value)
+{
+	return jso_ht_get_by_cstr_key_with_len(ht, key, strlen(key), value);
 }
 
 JSO_API jso_rc jso_ht_clone(jso_ht *from, jso_ht *to)

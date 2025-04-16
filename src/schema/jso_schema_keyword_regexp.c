@@ -23,7 +23,6 @@
 
 #include "jso_schema_data.h"
 #include "jso_schema_error.h"
-#include "jso_schema_keyword.h"
 #include "jso_schema_keyword_regexp.h"
 
 #include "jso.h"

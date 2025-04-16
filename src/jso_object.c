@@ -67,6 +67,13 @@ JSO_API jso_rc jso_object_get(jso_object *obj, jso_string *key, jso_value **val)
 	return jso_ht_get(&obj->ht, key, val);
 }
 
+/* get element of the object obj by C string key */
+JSO_API jso_rc jso_object_get_by_cstr_key(
+		jso_object *obj, const char *key, size_t key_len, jso_value **val)
+{
+	return jso_ht_get_by_cstr_key_with_len(&obj->ht, key, key_len, val);
+}
+
 /* check if element in the object exists */
 JSO_API jso_bool jso_object_has(jso_object *obj, jso_string *key)
 {

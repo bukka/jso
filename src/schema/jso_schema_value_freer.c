@@ -24,7 +24,6 @@
 #include "jso_schema_keyword_freer.h"
 #include "jso_schema_reference.h"
 #include "jso_schema_uri.h"
-#include "jso_schema_value.h"
 
 #include "jso.h"
 

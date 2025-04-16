@@ -83,7 +83,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_key(
-		jso_schema_validation_stream *stream, jso_string *key)
+		jso_schema_validation_stream *stream, jso_virt_string *key)
 {
 	jso_schema_validation_stack_layer_iterator iterator;
 	jso_schema_validation_position *pos;
@@ -116,7 +116,8 @@ JSO_API jso_rc jso_schema_validation_stream_object_key(
 }
 
 JSO_API jso_rc jso_schema_validation_stream_object_update(jso_schema_validation_stream *stream,
-		jso_object *instance_object, jso_string *instance_key, jso_value *instance_item)
+		jso_virt_object *instance_object, jso_virt_string *instance_key,
+		jso_virt_value *instance_item)
 {
 	// Currently there is nothing to do.
 	return JSO_SUCCESS;
@@ -177,8 +178,8 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 	return JSO_SUCCESS;
 }
 
-JSO_API jso_rc jso_schema_validation_stream_array_append(
-		jso_schema_validation_stream *stream, jso_array *instance_array, jso_value *instance_item)
+JSO_API jso_rc jso_schema_validation_stream_array_append(jso_schema_validation_stream *stream,
+		jso_array *instance_array, jso_virt_value *instance_item)
 {
 	jso_schema_validation_stack_layer_iterator iterator;
 	jso_schema_validation_position *pos;

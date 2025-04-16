@@ -31,8 +31,7 @@
 
 #include "jso_types.h"
 #include "jso_ht.h"
-#include "jso_re.h"
-#include "jso_bitset.h"
+#include "jso_virt.h"
 
 /**
  * @brief Array of schema values.
@@ -1223,7 +1222,7 @@ struct _jso_schema_validation_position {
 	/** schema value currently processed */
 	jso_schema_value *current_value;
 	/** schema object key if object is being processed */
-	jso_string *object_key;
+	jso_virt_string *object_key;
 	/** start of the current layer */
 	size_t layer_start;
 	/** count of elements for array / object */

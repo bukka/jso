@@ -35,11 +35,11 @@
 
 jso_schema_validation_result jso_schema_validation_null_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance)
+		jso_virt_value *instance)
 {
-	if (JSO_TYPE_P(instance) != JSO_TYPE_NULL) {
+	if (jso_virt_value_type(instance) != JSO_TYPE_NULL) {
 		return jso_schema_validation_value_type_error(
-				schema, pos, JSO_TYPE_NULL, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_NULL, jso_virt_value_type(instance));
 	}
 
 	return JSO_SCHEMA_VALIDATION_VALID;
@@ -49,9 +49,9 @@ jso_schema_validation_result jso_schema_validation_boolean_value(jso_schema *sch
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
 		jso_value *instance)
 {
-	if (JSO_TYPE_P(instance) != JSO_TYPE_BOOL) {
+	if (jso_virt_value_type(instance) != JSO_TYPE_BOOL) {
 		return jso_schema_validation_value_type_error(
-				schema, pos, JSO_TYPE_BOOL, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_BOOL, jso_virt_value_type(instance));
 	}
 
 	return JSO_SCHEMA_VALIDATION_VALID;
@@ -62,21 +62,21 @@ jso_schema_validation_result jso_schema_validation_integer_value(jso_schema *sch
 		jso_value *instance)
 {
 	jso_int inst_ival;
-	jso_value_type inst_type = JSO_TYPE_P(instance);
+	jso_value_type inst_type = jso_virt_value_type(instance);
 
 	if (inst_type == JSO_TYPE_INT) {
-		inst_ival = JSO_IVAL_P(instance);
+		inst_ival = jso_virt_value_int(instance);
 	} else if (inst_type == JSO_TYPE_DOUBLE) {
-		if (nearbyint(JSO_DVAL_P(instance)) != JSO_DVAL_P(instance)) {
+		if (nearbyint(jso_virt_value_double(instance)) != jso_virt_value_double(instance)) {
 			jso_schema_error_set(schema, JSO_SCHEMA_ERROR_VALIDATION_TYPE,
 					"Double integer type cannot have decimal point");
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_TYPE;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
-		inst_ival = (jso_int) JSO_DVAL_P(instance);
+		inst_ival = (jso_int) jso_virt_value_double(instance);
 	} else {
 		return jso_schema_validation_value_type_error_ex(
-				schema, pos, JSO_TYPE_INT, JSO_TYPE_DOUBLE, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_INT, JSO_TYPE_DOUBLE, jso_virt_value_type(instance));
 	}
 
 	jso_schema_value_integer *intval = JSO_SCHEMA_VALUE_DATA_INT_P(pos->current_value);
@@ -176,17 +176,17 @@ jso_schema_validation_result jso_schema_validation_number_value(jso_schema *sche
 		jso_value *instance)
 {
 	jso_number inst_num;
-	jso_value_type inst_type = JSO_TYPE_P(instance);
+	jso_value_type inst_type = jso_virt_value_type(instance);
 
 	if (inst_type == JSO_TYPE_INT) {
-		inst_num.ival = JSO_IVAL_P(instance);
+		inst_num.ival = jso_virt_value_int(instance);
 		inst_num.is_int = true;
 	} else if (inst_type == JSO_TYPE_DOUBLE) {
-		inst_num.dval = JSO_DVAL_P(instance);
+		inst_num.dval = jso_virt_value_double(instance);
 		inst_num.is_int = false;
 	} else {
 		return jso_schema_validation_value_type_error_ex(
-				schema, pos, JSO_TYPE_INT, JSO_TYPE_DOUBLE, JSO_TYPE_P(instance));
+				schema, pos, JSO_TYPE_INT, JSO_TYPE_DOUBLE, jso_virt_value_type(instance));
 	}
 
 	jso_schema_value_number *numval = JSO_SCHEMA_VALUE_DATA_NUM_P(pos->current_value);

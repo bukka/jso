@@ -24,7 +24,6 @@
 #include "jso_schema_error.h"
 #include "jso_schema_validation_error.h"
 #include "jso_schema_validation_array.h"
-#include "jso_schema_validation_composition.h"
 #include "jso_schema_validation_common.h"
 #include "jso_schema_validation_object.h"
 #include "jso_schema_validation_scalar.h"
@@ -45,7 +44,7 @@ static const jso_schema_validation_value_callback schema_validation_value_callba
 
 jso_schema_validation_result jso_schema_validation_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance)
+		jso_virt_value *instance)
 {
 	jso_schema_value *value = pos->current_value;
 	jso_schema_value_type value_type = JSO_SCHEMA_VALUE_TYPE_P(value);

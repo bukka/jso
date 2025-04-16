@@ -30,6 +30,7 @@
 #define JSO_RE_H
 
 #include "jso_types.h"
+#include "jso_virt.h"
 
 #define PCRE2_CODE_UNIT_WIDTH 8
 
@@ -126,10 +127,12 @@ JSO_API void jso_re_match_data_free(jso_re_match_data *match_data);
  * Match regular expression.
  *
  * @param subject subject to match
+ * @param subject_len subject to match length
  * @param code regular expression code
  * @param match_data match data
  * @return Result of type @ref jso_re_match_result.
  */
-JSO_API int jso_re_match(jso_string *subject, jso_re_code *code, jso_re_match_data *match_data);
+JSO_API int jso_re_match(
+		const char *subject, size_t subject_len, jso_re_code *code, jso_re_match_data *match_data);
 
 #endif /* JSO_RE_H */

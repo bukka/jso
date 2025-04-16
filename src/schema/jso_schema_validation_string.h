@@ -32,10 +32,10 @@
 #include "jso_schema.h"
 
 jso_schema_validation_result jso_schema_validation_string_value_str(
-		jso_schema *schema, jso_schema_validation_position *pos, jso_string *instance_str);
+		jso_schema *schema, jso_schema_validation_position *pos, jso_virt_string *instance_str);
 
 jso_schema_validation_result jso_schema_validation_string_value(jso_schema *schema,
 		jso_schema_validation_stack *stack, jso_schema_validation_position *pos,
-		jso_value *instance);
+		jso_virt_value *instance);
 
 #endif /* JSO_SCHEMA_VALIDATION_STRING_H */

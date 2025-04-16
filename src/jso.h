@@ -36,6 +36,8 @@
 #include "jso_error.h"
 #include "jso_array.h"
 #include "jso_object.h"
+#include "jso_re.h"
+#include "jso_virt.h"
 
 /**
  * Get a max of two values.
