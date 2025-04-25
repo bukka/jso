@@ -53,16 +53,13 @@
 ## Schema
 
 ### Parsing
-- storing path to value
-  - it should be cannonical one and maybe absolute from root as well if needed
-  - id / @id should reset the canonical path and gets stored to the cache
-- ref parsing
-  - for dynamic ref, pointer should be resolved during validation
-  - special handling for recursion
-    - pointer cache should have a special flag in the jso_value that should distinguish between started or finished resolving
-- draft 6+
-- metadata api so things like description, title, examples and othere can be somehow used
+
+- draft 7 setup (constant and so on)
+- if / then / else keywords
+- default support (when )
+- metadata api so things like description, title, examples, $comment and others can be somehow used
 - definitions ($defs) pre-parsing to speed up dynamic refs
+- draft diffs detailed review (from release notes)
 - formats
 - selected parsing only of the elements that are in the schema instead of checking all fields
 - update and extend unit tests
@@ -73,18 +70,26 @@
   - some sort of registries when local schema with different ids can be stored
   - generic client interface
   - maybe curl implementation of the interface for optional network fetching
-    - this is however discouraged in the schema spec
+    - this is, however, discouraged in the schema spec
 
 ### Validation
 
+- validation for dependencies with a string array (dependentRequired in 2019-09)
+  - this should be in object value
+- special composition for dependencies with a schema type (dependentSchema in 2019-09)
+  - this should use implication logic with `(not { type = object, required = [_key_] }) or [_schema_value_]` 
 - early exit for arrays and object
 - propagation should happen only in reverse iteration
   - add special tests for this
 - validation method for multiple validators
-- introduce simple validator for schemas without composition
+- introduce a simple validator for schemas without composition
   - this should be significantly faster
 - unit tests
 - string unicode length for correct validation
+
+### Errors
+
+- support collecting of multiple errors
 
 ## CLI
 
