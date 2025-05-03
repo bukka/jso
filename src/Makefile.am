@@ -49,7 +49,7 @@ include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_
 
 
 jso_scanner.c: jso_scanner.re jso_scanner.h jso_parser.tab.h
-	$(RE2C) -t jso_scanner_defs.h -bci jso_scanner.re > jso_scanner.c
+	$(RE2C) -t jso_scanner_defs.h --no-generation-date -bci jso_scanner.re > jso_scanner.c
 
 jso_parser.tab.c jso_parser.tab.h: jso_parser.y jso_parser.h
 	$(YACC) --file-prefix=jso_parser -l -d jso_parser.y
