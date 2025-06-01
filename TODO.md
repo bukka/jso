@@ -15,17 +15,21 @@
 - EOI based on the input length
 
 ### String scanning
+- properly support scanning from string
 - add support for YYFILL
   - streams
   - change EOI
 
 
 ## Parser
+- add some function that will parse string and return the value
+  - wrapping all the logic to make usage simple
 - test locations support
 - change it to push parser (stream support)
 
 
 ## IO
+- fix typos in memory IO
 - rename read hook to fill
 - create a new hook read that will copy data to the buffer
 - suppress valgrind errors without using calloc for new buffer
@@ -89,6 +93,7 @@
 
 ### Errors
 
+- function for error description by the code
 - support collecting of multiple errors
 
 ## CLI
