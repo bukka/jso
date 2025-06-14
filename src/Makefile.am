@@ -3,7 +3,7 @@ AM_CFLAGS = -Wall -std=c11
 noinst_LIBRARIES = libjso.a
 libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number.c \
 	jso_builder.c jso_encoder.c jso_error.c jso_ht.c jso_re.c \
-	jso_parser.c jso_parser.tab.c parser/jso_parser_hooks_decode.c jso_scanner.c \
+	jso_parser.tab.c parser/jso_parser.c parser/jso_parser_hooks_decode.c jso_scanner.c \
 	io/jso_io.c io/jso_io_file.c io/jso_io_memory.c io/jso_io_string.c \
 	pointer/jso_pointer_error.c pointer/jso_pointer.c \
 	schema/jso_schema_array.c schema/jso_schema_data.c schema/jso_schema_error.c  \
