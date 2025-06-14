@@ -21,9 +21,11 @@
  *
  */
 
-#include "../jso_parser.h"
-#include "../jso_parser_hooks.h"
-#include "../io/jso_io_string.h"
+#include "jso_parser.h"
+#include "jso_parser_hooks.h"
+#include "io/jso_io_string.h"
+
+#include <string.h>
 
 JSO_API void jso_parser_init_ex(jso_parser *parser, const jso_parser_hooks *hooks)
 {

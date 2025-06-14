@@ -25,8 +25,6 @@
 #include "jso_parser.h"
 #include "jso_parser_hooks_decode.h"
 
-#include "stdlib.h"
-
 jso_error_type jso_parser_decode_array_create(jso_parser *parser, jso_array **array)
 {
 	jso_array *arr = jso_array_alloc();
