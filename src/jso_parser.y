@@ -1,6 +1,6 @@
 %code top {
 /*
- * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2012-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -263,17 +263,6 @@ errlex:
 ;
 
 %%
-
-JSO_API void jso_parser_init_ex(jso_parser *parser, const jso_parser_hooks *hooks)
-{
-	memset(parser, 0, sizeof(jso_parser));
-	memcpy(&parser->hooks, hooks, sizeof(jso_parser_hooks));
-}
-
-JSO_API void jso_parser_init(jso_parser *parser)
-{
-	jso_parser_init_ex(parser, jso_parser_hooks_decode());
-}
 
 JSO_API int jso_yylex(union YYSTYPE *value, YYLTYPE *location, jso_parser *parser)
 {
