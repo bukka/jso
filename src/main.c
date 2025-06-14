@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2023 Jakub Zelenka. All rights reserved.
+ * Copyright (c) 2012-2025 Jakub Zelenka. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -21,13 +21,14 @@
  *
  */
 
-#include <stdlib.h>
 #include "jso_cli.h"
+
+#include <stdlib.h>
 
 int main(int argc, const char *argv[])
 {
 	if (jso_cli_parse_args(argc, argv) == JSO_FAILURE)
 		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
+
+	return EXIT_SUCCESS;
 }
