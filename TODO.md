@@ -78,6 +78,7 @@
 
 ### Validation
 
+- add some debug logging to be able to see the validation steps without using a debugger
 - validation for dependencies with a string array (dependentRequired in 2019-09)
   - this should be in object value
 - special composition for dependencies with a schema type (dependentSchema in 2019-09)
