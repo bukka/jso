@@ -38,8 +38,8 @@ int jso_yydebug = 1;
 }
 
 %locations
-%pure-parser
-%name-prefix "jso_yy"
+%define api.pure
+%define api.prefix {jso_yy}
 %lex-param  { jso_parser *parser  }
 %parse-param { jso_parser *parser }
 
