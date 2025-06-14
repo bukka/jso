@@ -29,7 +29,7 @@
 
 
 ## IO
-- fix typos in memory IO
+- fix printf to not use standard malloc that is used by vsnprintf
 - rename read hook to fill
 - create a new hook read that will copy data to the buffer
 - suppress valgrind errors without using calloc for new buffer
@@ -60,7 +60,7 @@
 
 - draft 7 setup (constant and so on)
 - if / then / else keywords
-- default support (when )
+- default support
 - metadata api so things like description, title, examples, $comment and others can be somehow used
 - definitions ($defs) pre-parsing to speed up dynamic refs
 - draft diffs detailed review (from release notes)
@@ -121,7 +121,7 @@
 - pkg
   - version check
 - bison
-  - autoconf version check
+  - autoconf version check including removal of `-y` flag for POSIX
   - remove Makefile AM rule (use AC)
   - jso_parser.tab.h - prerequisite (build error when it's not created)
   - do not emulate POSIX Yacc (do not use -y option added by default)
