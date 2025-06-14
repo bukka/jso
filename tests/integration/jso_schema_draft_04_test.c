@@ -945,6 +945,13 @@ static void test_jso_schema_object_required_props(void **state)
 			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
 	jso_builder_clear_all(&builder);
 
+	// invalid with missing email when name only
+	jso_builder_object_start(&builder);
+	jso_builder_object_add_cstr(&builder, "name", "William Shakespeare");
+	assert_jso_schema_validation_failure(
+			jso_schema_validate(&schema, jso_builder_get_value(&builder)));
+	jso_builder_clear_all(&builder);
+
 	// invalid with null email
 	jso_builder_object_start(&builder);
 	jso_builder_object_add_cstr(&builder, "name", "William Shakespeare");
