@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": ["electronics", "clothing", "books", "home"]
+        }
+      },
+      "required": ["productId", "name", "category"]
+    },
+    {
+      "anyOf": [
+        {
+          "properties": {
+            "price": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": ["price"]
+        },
+        {
+          "properties": {
+            "priceRange": {
+              "type": "object",
+              "properties": {
+                "min": {"type": "number", "minimum": 0},
+                "max": {"type": "number", "minimum": 0}
+              },
+              "required": ["min", "max"]
+            }
+          },
+          "required": ["priceRange"]
+        }
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "category": {"const": "electronics"}
+        }
+      },
+      "then": {
+        "properties": {
+          "warranty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60
+          }
+        },
+        "required": ["warranty"]
+      }
+    },
+    {
+      "properties": {
+        "tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "inStock": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

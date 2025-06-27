@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lastName": {
+      "type": "string", 
+      "minLength": 1
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 150
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": {"type": "string"},
+        "city": {"type": "string"},
+        "zipCode": {"type": "string"}
+      },
+      "required": ["street", "city"]
+    }
+  },
+  "required": ["firstName", "lastName"],
+  "additionalProperties": false
+}

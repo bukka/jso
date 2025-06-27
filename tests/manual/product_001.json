@@ -1,0 +1,9 @@
+{
+  "productId": "ELEC-1234",
+  "name": "Wireless Headphones",
+  "category": "electronics",
+  "price": 99.99,
+  "warranty": 24,
+  "tags": ["wireless", "bluetooth"],
+  "inStock": true
+}

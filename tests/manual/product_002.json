@@ -1,0 +1,11 @@
+{
+  "productId": "BOOK-5678",
+  "name": "JavaScript Guide",
+  "category": "books",
+  "priceRange": {
+    "min": 19.99,
+    "max": 29.99
+  },
+  "tags": ["programming", "web"],
+  "inStock": true
+}
