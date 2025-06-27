@@ -21,19 +21,49 @@
  *
  */
 
-/**
- * @file jso_parser_hooks.h
- * @brief Parser hooks
- */
+#include "jso_parser_hooks_validate.h"
 
-#ifndef JSO_PARSER_HOOKS_H
-#define JSO_PARSER_HOOKS_H
+#include "../jso.h"
+#include "../jso_parser.h"
 
-#include "jso_types.h"
-#include "jso_parser.h"
+jso_error_type jso_parser_validate_array_create(jso_parser *parser, jso_array **array)
+{
+	*array = NULL;
+	return JSO_ERROR_NONE;
+}
 
-JSO_API const jso_parser_hooks *jso_parser_hooks_decode();
-JSO_API const jso_parser_hooks *jso_parser_hooks_decode_schema();
-JSO_API const jso_parser_hooks *jso_parser_hooks_validate();
+jso_error_type jso_parser_validate_array_append(
+		jso_parser *parser, jso_array *array, jso_value *value)
+{
+	return JSO_ERROR_NONE;
+}
 
-#endif /* JSO_PARSER_HOOKS_H */
+jso_error_type jso_parser_validate_object_create(jso_parser *parser, jso_object **object)
+{
+	*object = NULL;
+	return JSO_ERROR_NONE;
+}
+
+jso_error_type jso_parser_validate_object_update(
+		jso_parser *parser, jso_object *object, jso_string *key, jso_value *value)
+{
+	return JSO_ERROR_NONE;
+}
+
+static const jso_parser_hooks parser_hooks = {
+	jso_parser_validate_array_create,
+	jso_parser_validate_array_append,
+	NULL,
+	NULL,
+	jso_parser_validate_object_create,
+	jso_parser_validate_object_update,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+};
+
+JSO_API const jso_parser_hooks *jso_parser_hooks_validate()
+{
+	return &parser_hooks;
+}

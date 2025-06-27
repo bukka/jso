@@ -38,14 +38,34 @@ JSO_API void jso_parser_init(jso_parser *parser)
 	jso_parser_init_ex(parser, jso_parser_hooks_decode());
 }
 
-JSO_API jso_rc jso_parse_io(jso_io *io, jso_parser_options *options, jso_value *result)
+static const jso_parser_hooks *jso_parser_get_hooks(const jso_parser_options *options)
+{
+	if (options->schema != NULL) {
+		return jso_parser_hooks_decode_schema();
+	}
+	if (options->validate) {
+		return jso_parser_hooks_validate();
+	}
+	return jso_parser_hooks_decode();
+}
+
+JSO_API jso_rc jso_parse_io(jso_io *io, const jso_parser_options *options, jso_value *result)
 {
 	jso_rc rc;
 	jso_parser parser;
+	jso_schema_validation_stream schema_stream;
 
 	/* init scanner */
-	jso_parser_init(&parser);
+	jso_parser_init_ex(&parser, jso_parser_get_hooks(options));
 	jso_scanner_init(&parser.scanner, io);
+
+	if (options->schema != NULL) {
+		parser.schema_stream = &schema_stream;
+		if (jso_schema_validation_stream_init(options->schema, parser.schema_stream, 32)
+				== JSO_FAILURE) {
+			return JSO_FAILURE;
+		}
+	}
 
 	/* set max depth (0 = unlimited) */
 	parser.max_depth = options->max_depth;
@@ -59,11 +79,15 @@ JSO_API jso_rc jso_parse_io(jso_io *io, jso_parser_options *options, jso_value *
 
 	*result = parser.result;
 
+	if (parser.schema_stream != NULL) {
+		jso_schema_validation_stream_clear(parser.schema_stream);
+	}
+
 	return rc;
 }
 
 JSO_API jso_rc jso_parse_cstr(
-		const char *cstr, size_t len, jso_parser_options *options, jso_value *result)
+		const char *cstr, size_t len, const jso_parser_options *options, jso_value *result)
 {
 	jso_io *io = jso_io_string_open_from_cstr(cstr, len);
 	jso_rc rc = jso_parse_io(io, options, result);

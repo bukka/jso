@@ -166,7 +166,9 @@ typedef enum {
 	/** UTF-8 encoding error */
 	JSO_ERROR_UTF8,
 	/** invalid escape error */
-	JSO_ERROR_ESCAPE
+	JSO_ERROR_ESCAPE,
+	/** schema validation error */
+	JSO_ERROR_SCHEMA
 } jso_error_type;
 
 /**
