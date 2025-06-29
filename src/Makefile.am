@@ -1,8 +1,8 @@
 AM_CFLAGS = -Wall -std=c11
 
 noinst_LIBRARIES = libjso.a
-libjso_a_SOURCES = jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c jso_number.c \
-	jso_builder.c jso_encoder.c jso_error.c jso_ht.c jso_re.c \
+libjso_a_SOURCES = jso_dbg.c jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c \
+	jso_number.c  jso_builder.c jso_encoder.c jso_error.c jso_ht.c jso_re.c \
 	jso_scanner.c jso_parser.tab.c parser/jso_parser.c parser/jso_parser_hooks_decode.c \
 	parser/jso_parser_hooks_decode_schema.c parser/jso_parser_hooks_validate.c \
 	io/jso_io.c io/jso_io_file.c io/jso_io_memory.c io/jso_io_string.c \
@@ -28,7 +28,7 @@ bin_PROGRAMS = jso
 jso_SOURCES =  main.c jso_cli.c
 jso_LDADD = libjso.a
 
-include_HEADERS = jso.h jso_types.h jso_value.h jso_array.h jso_object.h jso_dg_dtoa.h \
+include_HEADERS = jso.h jso_types.h jso_dbg.h jso_value.h jso_array.h jso_object.h jso_dg_dtoa.h \
 	jso_bitset.h jso_builder.h jso_number.h jso_error.h jso_encoder.h jso_ht.h jso_mm.h \
 	jso_parser.h jso_parser.tab.h jso_parser_hooks.h parser/jso_parser_hooks_decode.h \
 	parser/jso_parser_hooks_decode_schema.h parser/jso_parser_hooks_validate.h \

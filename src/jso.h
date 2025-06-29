@@ -33,6 +33,7 @@
 
 #include "jso_types.h"
 #include "jso_assert.h"
+#include "jso_dbg.h"
 #include "jso_value.h"
 #include "jso_error.h"
 #include "jso_array.h"

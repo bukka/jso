@@ -79,6 +79,7 @@ if test "x$jso_debug" = "xyes"; then
   CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9s]*//g'`
   changequote([,])
   CFLAGS="$CFLAGS -O0 -gdwarf-2 -g3"
+  AC_DEFINE([JSO_DEBUG_ENABLED], [1], [Whether debug is enabled])
 fi
 
 AC_CONFIG_FILES([Makefile src/Makefile tests/unit/Makefile tests/integration/Makefile])
