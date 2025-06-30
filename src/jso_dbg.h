@@ -44,10 +44,10 @@ void jso_dbg_cleanup(void);
 #define JSO_DBG(_type, ...) jso_dbg_log(#_type, __VA_ARGS__)
 
 #else
-#define jso_dbg_init_from_config(_config) ((void)0)
-#define jso_dbg_init_from_env(_config) ((void)0)
-#define jso_dbg_cleanup() ((void)0)
-#define JSO_DBG(...) ((void)0)
+#define jso_dbg_init_from_config(_config) ((void) 0)
+#define jso_dbg_init_from_env(_config) ((void) 0)
+#define jso_dbg_cleanup() ((void) 0)
+#define JSO_DBG(...) ((void) 0)
 #endif
 
 /**
