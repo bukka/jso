@@ -49,12 +49,17 @@ jso_error_type jso_parser_decode_schema_array_append(
 
 jso_error_type jso_parser_decode_schema_array_start(jso_parser *parser)
 {
-	return jso_schema_validation_stream_array_start(parser->schema_stream);
+	return jso_schema_validation_stream_array_start(parser->schema_stream) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
 }
 
 jso_error_type jso_parser_decode_schema_array_end(jso_parser *parser)
 {
-	return jso_schema_validation_stream_array_end(parser->schema_stream);
+	return jso_schema_validation_stream_array_end(parser->schema_stream) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
+	;
 }
 
 jso_error_type jso_parser_decode_schema_object_create(jso_parser *parser, jso_object **object)
@@ -80,22 +85,34 @@ jso_error_type jso_parser_decode_schema_object_update(
 
 jso_error_type jso_parser_decode_schema_object_start(jso_parser *parser)
 {
-	return jso_schema_validation_stream_object_start(parser->schema_stream);
+	return jso_schema_validation_stream_object_start(parser->schema_stream) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
+	;
 }
 
 jso_error_type jso_parser_decode_schema_object_end(jso_parser *parser)
 {
-	return jso_schema_validation_stream_object_end(parser->schema_stream);
+	return jso_schema_validation_stream_object_end(parser->schema_stream) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
+	;
 }
 
 jso_error_type jso_parser_decode_schema_object_key(jso_parser *parser, jso_string *key)
 {
-	return jso_schema_validation_stream_object_key(parser->schema_stream, key);
+	return jso_schema_validation_stream_object_key(parser->schema_stream, key) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
+	;
 }
 
 jso_error_type jso_parser_decode_schema_value(jso_parser *parser, jso_value *value)
 {
-	return jso_schema_validation_stream_value(parser->schema_stream, value);
+	return jso_schema_validation_stream_value(parser->schema_stream, value) == JSO_FAILURE
+			? JSO_ERROR_SCHEMA
+			: JSO_ERROR_NONE;
+	;
 }
 
 static const jso_parser_hooks parser_hooks = {
