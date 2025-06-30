@@ -29,7 +29,7 @@
 #ifndef JSO_H
 #define JSO_H
 
-#include <config.h>
+#include "../config.h"
 
 #include "jso_types.h"
 #include "jso_assert.h"

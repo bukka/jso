@@ -30,23 +30,24 @@
 #define JSO_DBG_H
 
 #include <stdarg.h>
+#include "../config.h"
 
 #define JSO_DBG_DEFAULT_ENV_NAME "JSO_DEBUG_CONFIG"
 
 #ifdef JSO_DEBUG_ENABLED
 
-JSO_API void jso_dbg_init_from_config(const char *config_string);
-JSO_API void jso_dbg_init_from_env(const char *env_name);
-JSO_API void jso_dbg_log(const char *type, const char *fmt, ...);
-JSO_API void jso_dbg_cleanup(void);
+void jso_dbg_init_from_config(const char *config_string);
+void jso_dbg_init_from_env(const char *env_name);
+void jso_dbg_log(const char *type, const char *fmt, ...);
+void jso_dbg_cleanup(void);
 
 #define JSO_DBG(_type, ...) jso_dbg_log(#_type, __VA_ARGS__)
 
 #else
-#define jso_dbg_init_from_config(_config) ((void) 0)
-#define jso_dbg_init_from_env(_config) ((void) 0)
-#define jso_dbg_cleanup() ((void) 0)
-#define JSO_DBG(_type, _format, ...) ((void) 0)
+#define jso_dbg_init_from_config(_config) ((void)0)
+#define jso_dbg_init_from_env(_config) ((void)0)
+#define jso_dbg_cleanup() ((void)0)
+#define JSO_DBG(...) ((void)0)
 #endif
 
 /**
