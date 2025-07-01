@@ -20,7 +20,7 @@ libjso_a_SOURCES = jso_dbg.c jso_value.c jso_array.c jso_object.c jso_dg_dtoa.c 
 	schema/jso_schema_validation_result.c schema/jso_schema_validation_scalar.c \
 	schema/jso_schema_validation_stack.c schema/jso_schema_validation_stream.c \
 	schema/jso_schema_validation_string.c schema/jso_schema_validation_value.c \
-	schema/jso_schema_value_allocator.c schema/jso_schema_value_freer.c \
+	schema/jso_schema_value.c schema/jso_schema_value_freer.c \
 	schema/jso_schema_value_init.c schema/jso_schema_value_parser.c \
 	schema/jso_schema_version.c schema/jso_schema.c schema/jso_schema_uri.c
 

@@ -74,7 +74,7 @@ JSO_API jso_rc jso_schema_validation_stream_object_start(jso_schema_validation_s
 				return JSO_FAILURE;
 			}
 		} else {
-			pos->validation_result = jso_schema_validation_value_type_error(
+			pos->validation_result = jso_schema_validation_schema_value_type_error(
 					schema, pos, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_OBJECT);
 		}
 	}
@@ -150,7 +150,7 @@ JSO_API jso_rc jso_schema_validation_stream_array_start(jso_schema_validation_st
 				return JSO_FAILURE;
 			}
 		} else {
-			pos->validation_result = jso_schema_validation_value_type_error(
+			pos->validation_result = jso_schema_validation_schema_value_type_error(
 					schema, pos, JSO_SCHEMA_VALUE_TYPE_P(value), JSO_SCHEMA_VALUE_TYPE_ARRAY);
 		}
 	}

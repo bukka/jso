@@ -38,4 +38,8 @@ jso_schema_validation_result jso_schema_validation_value_type_error_ex(jso_schem
 jso_schema_validation_result jso_schema_validation_value_type_error(jso_schema *schema,
 		jso_schema_validation_position *pos, jso_value_type expected, jso_value_type actual);
 
+jso_schema_validation_result jso_schema_validation_schema_value_type_error(jso_schema *schema,
+		jso_schema_validation_position *pos, jso_schema_value_type expected,
+		jso_schema_value_type actual);
+
 #endif /* JSO_SCHEMA_VALIDATION_ERROR_H */

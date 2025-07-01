@@ -51,3 +51,12 @@ jso_schema_value_common *jso_schema_value_data_alloc(
 
 	return value_data;
 }
+
+static const char *type_names[] = { "mixed", "null", "boolean", "integer", "number", "string",
+	"string", "array", "object", "boolean object" };
+
+const char *jso_schema_value_type_to_string(jso_schema_value_type type)
+{
+	JSO_ASSERT_LT(type, sizeof(type_names) / sizeof(const char *));
+	return type_names[(int) type];
+}
