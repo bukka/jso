@@ -60,8 +60,9 @@ JSO_API jso_rc jso_parse_io(jso_io *io, const jso_parser_options *options, jso_v
 	jso_scanner_init(&parser.scanner, io);
 
 	if (options->schema != NULL) {
+		parser.schema = options->schema;
 		parser.schema_stream = &schema_stream;
-		if (jso_schema_validation_stream_init(options->schema, parser.schema_stream, 32)
+		if (jso_schema_validation_stream_init(parser.schema, parser.schema_stream, 32)
 				== JSO_FAILURE) {
 			return JSO_FAILURE;
 		}
@@ -77,7 +78,12 @@ JSO_API jso_rc jso_parse_io(jso_io *io, const jso_parser_options *options, jso_v
 		rc = JSO_FAILURE;
 	}
 
-	*result = parser.result;
+	if (parser.schema != NULL && jso_schema_error_is_set(parser.schema)) {
+		JSO_VALUE_SET_ERROR_P(result, jso_error_new_from_schema(parser.schema));
+		rc = JSO_FAILURE;
+	} else {
+		*result = parser.result;
+	}
 
 	if (parser.schema_stream != NULL) {
 		jso_schema_validation_stream_clear(parser.schema_stream);

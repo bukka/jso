@@ -115,9 +115,19 @@ typedef struct _jso_re_code jso_re_code;
 typedef struct _jso_pointer jso_pointer;
 
 /**
+ * @brief Schema.
+ */
+typedef struct _jso_schema jso_schema;
+
+/**
  * @brief Schema value type.
  */
 typedef struct _jso_schema_value jso_schema_value;
+
+/**
+ * @brief Schema error type.
+ */
+typedef struct _jso_schema_error jso_schema_error;
 
 /**
  * @brief Value type.
@@ -195,6 +205,8 @@ typedef struct _jso_error {
 	jso_error_type type;
 	/** error location */
 	jso_error_location loc;
+	/** schema error */
+	jso_schema_error *schema_error;
 } jso_error;
 
 /**

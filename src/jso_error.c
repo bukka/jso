@@ -22,6 +22,7 @@
  */
 
 #include "jso.h"
+#include "jso_schema.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,9 @@ JSO_API jso_error *jso_error_new_ex(jso_error_type type, jso_error_location *loc
 		return NULL;
 
 	err->type = type;
-	memcpy(&err->loc, loc, sizeof(jso_error_location));
+	if (loc) {
+		memcpy(&err->loc, loc, sizeof(jso_error_location));
+	}
 
 	return err;
 }
@@ -53,6 +56,14 @@ JSO_API jso_error *jso_error_new(jso_error_type type, size_t first_column, size_
 	loc.last_line = last_line;
 
 	return jso_error_new_ex(type, &loc);
+}
+
+/* create error from schema error */
+JSO_API jso_error *jso_error_new_from_schema(jso_schema *schema)
+{
+	jso_error *error = jso_error_new_ex(JSO_ERROR_SCHEMA, NULL);
+	error->schema_error = jso_schema_move_error(schema);
+	return error;
 }
 
 /* get type description */

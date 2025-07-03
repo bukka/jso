@@ -63,7 +63,7 @@
 	} \
 	assert_int_equal(JSO_SCHEMA_VALIDATION_INVALID, result); \
 	assert_true(jso_schema_error_is_validation(&schema)); \
-	jso_schema_error_free(&schema)
+	jso_schema_clear_error(&schema)
 
 #define jso_schema_test_start_schema_object(_builder) \
 	jso_builder_object_start(_builder); \

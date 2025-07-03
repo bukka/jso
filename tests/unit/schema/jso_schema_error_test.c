@@ -108,7 +108,7 @@ static void test_jso_schema_error_free(void **state)
 	assert_int_equal(JSO_SCHEMA_ERROR_TYPE_INVALID, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_string_equal("test message", JSO_SCHEMA_ERROR_MESSAGE(&schema));
 
-	jso_schema_error_free(&schema);
+	jso_schema_clear_error(&schema);
 	assert_int_equal(JSO_SCHEMA_ERROR_NONE, JSO_SCHEMA_ERROR_TYPE(&schema));
 	assert_null(JSO_SCHEMA_ERROR_MESSAGE(&schema));
 

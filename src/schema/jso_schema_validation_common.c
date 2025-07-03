@@ -40,7 +40,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_COMPOSITION;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
-		jso_schema_error_reset(schema);
+		jso_schema_reset_error(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->one_of)) {
@@ -50,7 +50,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_COMPOSITION;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
-		jso_schema_error_reset(schema);
+		jso_schema_reset_error(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->type_list)) {
@@ -60,7 +60,7 @@ jso_schema_validation_result jso_schema_validation_common_value(jso_schema *sche
 			pos->validation_invalid_reason = JSO_SCHEMA_VALIDATION_INVALID_REASON_TYPE;
 			return JSO_SCHEMA_VALIDATION_INVALID;
 		}
-		jso_schema_error_reset(schema);
+		jso_schema_reset_error(schema);
 	}
 
 	if (JSO_SCHEMA_KW_IS_SET(comval->enum_elements)) {

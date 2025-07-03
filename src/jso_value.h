@@ -397,6 +397,18 @@
 	} while (0)
 
 /**
+ * Set error to the supplied value pointer.
+ *
+ * @param _pjv pointer to variable of @ref jso_value type
+ * @param _eval error value
+ */
+#define JSO_VALUE_SET_ERROR_P(_jv, _eval) \
+	do { \
+		JSO_TYPE_P(_jv) = JSO_TYPE_ERROR; \
+		JSO_EVAL_P(_jv) = _eval; \
+	} while (0)
+
+/**
  * Set null to the supplied value pointer.
  *
  * @param _pjv pointer to variable of @ref jso_value type

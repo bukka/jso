@@ -86,6 +86,7 @@ struct _jso_parser {
 	jso_scanner scanner;
 	jso_parser_hooks hooks;
 	jso_parser_location *location;
+	jso_schema *schema;
 	jso_schema_validation_stream *schema_stream;
 	jso_value result;
 	jso_uint depth;
