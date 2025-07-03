@@ -64,7 +64,7 @@ int jso_yydebug = 1;
 %token <value> JSO_T_EOI
 %token <value> JSO_T_ERROR
 
-%type <value> start object key value scalar_value array errlex
+%type <value> start object key value values array errlex
 %type <object> members member
 %type <pair> pair
 %type <array> elements element
@@ -240,16 +240,16 @@ key:
 ;
 
 value:
-		object
-	|	array
-	|	scalar_value
+		values
 			{
 				JSO_PARSER_HOOK(value, @1, &$1);
 				$$ = $1;
 			}
 
-scalar_value:
-		JSO_T_STRING
+values:
+		object
+	|	array
+	|	JSO_T_STRING
 	|	JSO_T_ESTRING
 	|	JSO_T_LONG
 	|	JSO_T_DOUBLE
