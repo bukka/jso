@@ -37,6 +37,11 @@
 #include "jso_object.h"
 #include "jso_value.h"
 
+/**
+ * @brief Definition to check that jso_virt is alias for jso (no embed overwrite)
+ */
+#define JSO_VIRT_IS_JSO 1
+
 /* types */
 
 /**
