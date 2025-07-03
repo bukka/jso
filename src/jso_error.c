@@ -70,6 +70,10 @@ JSO_API jso_error *jso_error_new_from_schema(jso_schema *schema)
 JSO_API const char *jso_error_type_description(jso_error_type type)
 {
 	switch (type) {
+		case JSO_ERROR_NONE:
+			return "none";
+		case JSO_ERROR_ALLOC:
+			return "allocation";
 		case JSO_ERROR_SYNTAX:
 			return "syntax";
 		case JSO_ERROR_DEPTH:
@@ -78,12 +82,14 @@ JSO_API const char *jso_error_type_description(jso_error_type type)
 			return "invalid token";
 		case JSO_ERROR_CTRL_CHAR:
 			return "control character";
-		case JSO_ERROR_ESCAPE:
-			return "invalid escape";
-		case JSO_ERROR_UTF8:
-			return "UTF-8 encoding";
 		case JSO_ERROR_UTF16:
 			return "invalid unicode escape";
+		case JSO_ERROR_UTF8:
+			return "UTF-8 encoding";
+		case JSO_ERROR_ESCAPE:
+			return "invalid escape";
+		case JSO_ERROR_SCHEMA:
+			return "schema";
 		default:
 			return "unknown";
 	}
