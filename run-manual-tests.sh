@@ -46,26 +46,14 @@ for TFILE in `find $TDIRS -name '*.json'`; do
   echo $TFILE
 
   # check for corresponding schema file
-  # extract entity name (everything before first underscore or use full basename)
-  if [[ "$BASENAME" == *"_"* ]]; then
-    ENTITY_NAME="${BASENAME%%_*}"
+  # only use schema for files with numeric suffixes like _001, _002, etc.
+  if [[ "$BASENAME" =~ _[0-9]+$ ]]; then
+    # extract entity name (everything before numeric suffix)
+    ENTITY_NAME=$(echo "$BASENAME" | sed 's/_[0-9]\+$//')
+    SCHEMA_FILE="$JSOBASE/tests/manual/schemas/$ENTITY_NAME.schema.json"
   else
-    ENTITY_NAME="$BASENAME"
-  fi
-
-  SCHEMA_FILE="$JSOBASE/tests/manual/schemas/$ENTITY_NAME.schema.json"
-
-  # if not found and basename had numeric suffix, try removing it
-  if [ ! -f "$SCHEMA_FILE" ]; then
-    BASENAME_NO_SUFFIX=$(echo "$BASENAME" | sed 's/_[0-9]\+$//')
-    if [ "$BASENAME_NO_SUFFIX" != "$BASENAME" ]; then
-      if [[ "$BASENAME_NO_SUFFIX" == *"_"* ]]; then
-        ENTITY_NAME="${BASENAME_NO_SUFFIX%%_*}"
-      else
-        ENTITY_NAME="$BASENAME_NO_SUFFIX"
-      fi
-      SCHEMA_FILE="$JSOBASE/tests/manual/schemas/$ENTITY_NAME.schema.json"
-    fi
+    # no schema lookup for files without numeric suffix
+    SCHEMA_FILE=""
   fi
 
   if [ -f "$SCHEMA_FILE" ]; then
