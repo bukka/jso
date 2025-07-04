@@ -1,0 +1,48 @@
+
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: Linux Build, Test, and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            autoconf \
+            automake \
+            libtool \
+            gcc \
+            clang \
+            make \
+            cmake \
+            libcmocka-dev \
+            clang-format
+
+      - name: Run autogen.sh
+        run: ./autogen.sh
+
+      - name: Configure
+        run: ./configure
+
+      - name: Build
+        run: make -j$(nproc)
+
+      - name: Run tests
+        run: make check
+
+      - name: Format check
+        run: make format-check
+
+
