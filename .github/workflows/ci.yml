@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     name: Linux Build, Test, and Format Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -27,7 +27,7 @@ jobs:
             make \
             cmake \
             libcmocka-dev \
-            clang-format \
+            clang-format-19 \
             bison \
             re2c \
             libpcre2-dev
@@ -45,4 +45,4 @@ jobs:
         run: make check
 
       - name: Format check
-        run: make format-check
+        run: make format-check CLANG_FORMAT=clang-format-19
