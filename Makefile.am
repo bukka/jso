@@ -13,8 +13,23 @@ format:
 	find tests/unit -name '*.c' -or -name '*.h' | xargs $(CLANG_FORMAT) -i
 
 format-check:
-	@UNFORMATTED=$$(find src tests/integration tests/unit -name '*.[ch]' | xargs $(CLANG_FORMAT) -style=file -output-replacements-xml | grep -c '<replacement ' || true); \
-	if [ "$$UNFORMATTED" -ne 0 ]; then \
-	  echo "$$UNFORMATTED files not properly formatted. Run 'make format' to fix."; \
-	  exit 1; \
+	@echo "Checking code formatting..."
+	@FORMATTING_ISSUES=0; \
+	for dir in src tests/unit tests/integration; do \
+		if [ -d "$$dir" ]; then \
+			echo "Checking $$dir/"; \
+			for file in $$(find $$dir -name '*.c' -or -name '*.h' 2>/dev/null); do \
+				if ! $(CLANG_FORMAT) --dry-run --Werror "$$file" >/dev/null 2>&1; then \
+					echo "❌ Formatting issues in: $$file"; \
+					FORMATTING_ISSUES=1; \
+				fi; \
+			done; \
+		fi; \
+	done; \
+	if [ $$FORMATTING_ISSUES -eq 1 ]; then \
+		echo ""; \
+		echo "💡 To fix formatting issues, run: make format"; \
+		exit 1; \
+	else \
+		echo "✅ All files are properly formatted!"; \
 	fi
